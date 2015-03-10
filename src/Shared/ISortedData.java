@@ -9,6 +9,6 @@ package Shared;
  *
  * @author Kargathia
  */
-public interface ISortedData {
+public interface ISortedData extends IData{
 
 }

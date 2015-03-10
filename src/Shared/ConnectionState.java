@@ -9,9 +9,11 @@ package Shared;
  *
  * @author Kargathia
  */
-public enum Tag {
-    Police,
-    Ambulance,
-    FireDepartment,
-    Citizens
+public enum ConnectionState {
+    CONNECTED,
+    ERROR,
+    PING,
+    PONG,
+    TRANSFER_START,
+    TRANSFER_END
 }
