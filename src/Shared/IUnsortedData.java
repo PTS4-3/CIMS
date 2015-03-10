@@ -9,10 +9,16 @@ package Shared;
  *
  * @author Alexander
  */
-public interface IData {
-    int getId();
-    String getTitle();
-    String getDescription();
-    String getLocation();
-    String getSource();
+public interface IUnsortedData {
+    public int getId();
+
+    public String getTitle();
+
+    public String getDescription();
+
+    public String getLocation();
+
+    public String getSource();
+    
+    public Status getStatus();
 }

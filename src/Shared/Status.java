@@ -9,10 +9,8 @@ package Shared;
  *
  * @author Alexander
  */
-public interface IData {
-    int getId();
-    String getTitle();
-    String getDescription();
-    String getLocation();
-    String getSource();
+public enum Status {
+    NONE,
+    INPROCESS,
+    COMPLETED
 }

@@ -7,11 +7,18 @@ package Shared;
 
 /**
  *
- * @author Kargathia
+ * @author Alexander
  */
 public enum Tag {
+<<<<<<< HEAD
     Police,
     Ambulance,
     FireDepartment,
     Citizens
+=======
+    POLICE,
+    AMBULANCE,
+    FIREDEPARTMENT,
+    CITIZENS
+>>>>>>> origin/master
 }

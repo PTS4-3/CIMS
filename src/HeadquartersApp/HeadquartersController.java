@@ -3,16 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Shared;
+package HeadquartersApp;
 
 /**
  *
  * @author Alexander
  */
-public interface IData {
-    int getId();
-    String getTitle();
-    String getDescription();
-    String getLocation();
-    String getSource();
+public class HeadquartersController {
+    
 }

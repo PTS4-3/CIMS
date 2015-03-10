@@ -5,10 +5,15 @@
  */
 package Shared;
 
+import java.util.Set;
+
 /**
  *
- * @author Kargathia
+ * @author Alexander
  */
-public interface ISortedData extends IData{
-
+public interface ISortedData extends IData {
+    public int getRelevance();
+    public int getReliability();
+    public int getQuality();
+    public Set<Tag> getTags();
 }
