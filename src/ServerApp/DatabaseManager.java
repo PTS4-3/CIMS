@@ -10,6 +10,8 @@ import Shared.SortedData;
 import Shared.UnsortedData;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -28,7 +30,27 @@ public class DatabaseManager {
    public boolean insertToUnsortedData(UnsortedData data)
    {
        boolean succeed = false;
-       
+       try{
+            openConnection();
+            String query = "INSERT INTO UNSORTEDDATA VALUES (?,?,?,?,?)";
+            PreparedStatement unsortedData = conn.prepareStatement(query);
+            unsortedData.setString(2, data.getTitle());
+            unsortedData.setString(3, data.getDescription());
+            unsortedData.setString(4, data.getLocation());
+            unsortedData.setString(5, data.getSource());
+            unsortedData.execute();
+            
+            System.out.println("Insert unsortedData succeeded");
+            succeed = true;
+       }
+       catch(SQLException ex)
+       {
+           System.out.println("Insert unsortedData failed: " + ex);
+       }
+       finally
+       {
+           closeConnection();
+       }
        return succeed;
    }
    
@@ -40,7 +62,30 @@ public class DatabaseManager {
    public boolean insertToSortedData(SortedData data)
    {
        boolean succeed = false;
-       
+      try{
+            openConnection();
+            String query = "INSERT INTO SORTEDDATA VALUES (?,?,?,?,?,?,?,?)";
+            PreparedStatement unsortedData = conn.prepareStatement(query);
+            unsortedData.setString(2, data.getTitle());
+            unsortedData.setString(3, data.getDescription());
+            unsortedData.setString(4, data.getLocation());
+            unsortedData.setString(5, data.getSource());
+            unsortedData.setInt(6, data.getRelevance());
+            unsortedData.setInt(7, data.getReliability());
+            unsortedData.setInt(8, data.getQuality());
+            unsortedData.execute();
+            
+            System.out.println("Insert sortedData succeeded");
+            succeed = true;
+       }
+       catch(SQLException ex)
+       {
+           System.out.println("Insert sortedData failed: " + ex);
+       }
+      finally
+       {
+           closeConnection();
+       }
        return succeed;
    }
    
