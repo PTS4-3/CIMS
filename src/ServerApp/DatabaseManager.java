@@ -7,6 +7,7 @@ package ServerApp;
 
 import Shared.SortedData;
 import Shared.Status;
+import Shared.Tag;
 import Shared.UnsortedData;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -14,6 +15,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -33,6 +35,7 @@ public class DatabaseManager {
 
     /**
      * @param data object unsorteddata
+     * @return success on attempting to insert unsorted data.
      */
     public boolean insertToUnsortedData(UnsortedData data) {
         boolean succeed = false;
@@ -58,7 +61,7 @@ public class DatabaseManager {
     }
 
     /**
-     *
+     * @return List unsorteddata
      */
     public List<UnsortedData> getFromUnsortedData() {
         List<UnsortedData> unsorted = new ArrayList();
@@ -71,28 +74,35 @@ public class DatabaseManager {
         Status status;
 
         try {
-            //aanroepen van de connection string
             openConnection();
 
-            //personen laden
-            String query = "SELECT * FROM PERSONEN ORDER BY PERSOONSNUMMER";
+            String query = "SELECT * FROM UNSORTEDDATA ORDER BY ID";
+            String update = null;
             PreparedStatement readData = conn.prepareStatement(query);
             ResultSet result = readData.executeQuery();
-            while (result.next()&& unsorted.size()<50) {
+            while (result.next() && unsorted.size() < 50) {
                 id = result.getInt("ID");
                 title = result.getString("TITLE");
                 description = result.getString("DESCRIPTION");
                 location = result.getString("LOCATION");
                 source = result.getString("SOURCE");
-                //status = result.getString("STATUS")
-                
-                unsorted.add(new UnsortedData(id, title, description, location, source,  status));
+                status = Status.valueOf(result.getString("STATUS"));
+
+                if (!status.equals(Status.INPROCESS)) {
+
+                    unsorted.add(new UnsortedData(id, title, description, location, source, Status.INPROCESS));
+
+                    update = "UPDATE UNSORTEDDATA SET STATUS = 'INPROCESS' WHERE id = " + id;
+                    PreparedStatement updateData = conn.prepareStatement(update);
+                    updateData.execute();
+                }
             }
             System.out.println("Data unsorted read succeeded");
-        }
-        catch(SQLException ex)
-        {
+
+        } catch (SQLException ex) {
             System.out.println("Data unsorted read succeeded");
+        } finally {
+            closeConnection();
         }
         return unsorted;
     }
@@ -100,6 +110,7 @@ public class DatabaseManager {
     /**
      * @param sorted object sorteddata
      * @param unsorted object unsorteddata
+     * @return success on attempting to insert sorted data.
      */
     public boolean insertToSortedData(SortedData sorted, UnsortedData unsorted) {
         boolean succeed = false;
@@ -138,11 +149,52 @@ public class DatabaseManager {
     }
 
     /**
-     *
+     * @return List sorteddata
      */
     public List<SortedData> getFromSortedData() {
         List<SortedData> sorted = new ArrayList();
-        return null;
+
+        int id;
+        String title;
+        String description;
+        String location;
+        String source;
+        int relevance;
+        int reliability;
+        int quality;
+        HashSet<Tag> tags;
+
+        try {
+            openConnection();
+
+            String query = "SELECT * FROM SORTEDDATA ORDER BY ID";
+            String update = null;
+            PreparedStatement readData = conn.prepareStatement(query);
+            ResultSet result = readData.executeQuery();
+            while (result.next() && sorted.size() < 50) {
+                id = result.getInt("ID");
+                title = result.getString("TITLE");
+                description = result.getString("DESCRIPTION");
+                location = result.getString("LOCATION");
+                source = result.getString("SOURCE");
+                relevance = result.getInt("RELEVANCE");
+                reliability = result.getInt("RELIABILITY");
+                quality = result.getInt("QUALITY");
+                //tags
+                
+                //sorted.add(new SortedData(id, title, description, location, source));
+                update = "UPDATE SORTEDDATA SET STATUS = 'INPROCESS' WHERE id = " + id;
+                PreparedStatement updateData = conn.prepareStatement(update);
+                updateData.execute();
+            }
+            System.out.println("Data sorted read succeeded");
+
+        } catch (SQLException ex) {
+            System.out.println("Data sorted read succeeded");
+        } finally {
+            closeConnection();
+        }
+        return sorted;
     }
 
     /**
