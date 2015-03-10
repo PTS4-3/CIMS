@@ -22,11 +22,16 @@ public class DatabaseManager {
     
    private Connection conn;
    
+   /**
+     * 
+     */
    public DatabaseManager()
    {
        
    }
-   
+   /**
+     * @param data object unsorteddata
+     */
    public boolean insertToUnsortedData(UnsortedData data)
    {
        boolean succeed = false;
@@ -55,11 +60,18 @@ public class DatabaseManager {
        return succeed;
    }
    
+   /**
+     * 
+     */
    public UnsortedData getFromUnsortedData()
    {
        return null;
    }
    
+   /**
+     * @param sorted object sorteddata
+     * @param unsorted object unsorteddata
+     */
    public boolean insertToSortedData(SortedData sorted, UnsortedData unsorted)
    {
        boolean succeed = false;
@@ -101,12 +113,17 @@ public class DatabaseManager {
        return succeed;
    }
    
+   /**
+     * 
+     */
    public SortedData getFromSortedData()
    {
        return null;
    }
    
-   
+   /**
+     * opening connection
+     */
    private void openConnection()
    {
        try{
@@ -119,6 +136,9 @@ public class DatabaseManager {
        }
        
    }
+   /**
+     * closing connection
+     */
    private void closeConnection()
    {
        try{
