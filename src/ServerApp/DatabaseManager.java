@@ -32,12 +32,13 @@ public class DatabaseManager {
        boolean succeed = false;
        try{
             openConnection();
-            String query = "INSERT INTO UNSORTEDDATA VALUES (?,?,?,?,?)";
+            String query = "INSERT INTO UNSORTEDDATA VALUES (?,?,?,?,?,?)";
             PreparedStatement unsortedData = conn.prepareStatement(query);
             unsortedData.setString(2, data.getTitle());
             unsortedData.setString(3, data.getDescription());
             unsortedData.setString(4, data.getLocation());
             unsortedData.setString(5, data.getSource());
+            //unsortedData.setString(6, data.getStatus());
             unsortedData.execute();
             
             System.out.println("Insert unsortedData succeeded");
@@ -64,16 +65,17 @@ public class DatabaseManager {
        boolean succeed = false;
       try{
             openConnection();
-            String query = "INSERT INTO SORTEDDATA VALUES (?,?,?,?,?,?,?,?)";
-            PreparedStatement unsortedData = conn.prepareStatement(query);
-            unsortedData.setString(2, data.getTitle());
-            unsortedData.setString(3, data.getDescription());
-            unsortedData.setString(4, data.getLocation());
-            unsortedData.setString(5, data.getSource());
-            unsortedData.setInt(6, data.getRelevance());
-            unsortedData.setInt(7, data.getReliability());
-            unsortedData.setInt(8, data.getQuality());
-            unsortedData.execute();
+            String query = "INSERT INTO SORTEDDATA VALUES (?,?,?,?,?,?,?,?,?)";
+            PreparedStatement sortedData = conn.prepareStatement(query);
+            sortedData.setString(2, data.getTitle());
+            sortedData.setString(3, data.getDescription());
+            sortedData.setString(4, data.getLocation());
+            sortedData.setString(5, data.getSource());
+            sortedData.setInt(6, data.getRelevance());
+            sortedData.setInt(7, data.getReliability());
+            sortedData.setInt(8, data.getQuality());
+            //unsortedData.setString(9, data.getStatus());
+            sortedData.execute();
             
             System.out.println("Insert sortedData succeeded");
             succeed = true;
