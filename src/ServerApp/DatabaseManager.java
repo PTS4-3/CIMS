@@ -5,6 +5,8 @@
  */
 package ServerApp;
 
+import Shared.ISortedData;
+import Shared.IUnsortedData;
 import Shared.SortedData;
 import Shared.Status;
 import Shared.Tag;
@@ -16,6 +18,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -37,7 +40,7 @@ public class DatabaseManager {
      * @param data object unsorteddata
      * @return success on attempting to insert unsorted data.
      */
-    public synchronized boolean insertToUnsortedData(UnsortedData data) {
+    public synchronized boolean insertToUnsortedData(IUnsortedData data) {
         boolean succeed = false;
         try {
             openConnection();
@@ -95,6 +98,7 @@ public class DatabaseManager {
                     update = "UPDATE UNSORTEDDATA SET STATUS = 'INPROCESS' WHERE id = " + id;
                     PreparedStatement updateData = conn.prepareStatement(update);
                     updateData.execute();
+                    System.out.println("Getting object succeed");
                 }
             }
             System.out.println("Data unsorted read succeeded");
@@ -112,7 +116,7 @@ public class DatabaseManager {
      * @param unsorted object unsorteddata
      * @return success on attempting to insert sorted data.
      */
-    public synchronized boolean insertToSortedData(SortedData sorted, UnsortedData unsorted) {
+    public synchronized boolean insertToSortedData(ISortedData sorted, IUnsortedData unsorted) {
         boolean succeed = false;
         try {
             openConnection();
@@ -149,9 +153,10 @@ public class DatabaseManager {
     }
 
     /**
+     * @param info list of tags
      * @return List sorteddata
      */
-    public synchronized List<SortedData> getFromSortedData() {
+    public synchronized List<SortedData> getFromSortedData(HashSet<Tag> info) {
         List<SortedData> sorted = new ArrayList();
 
         int id;
@@ -166,8 +171,14 @@ public class DatabaseManager {
 
         try {
             openConnection();
-
-            String query = "SELECT * FROM SORTEDDATA ORDER BY ID";
+            
+            String query = "SELECT ID FROM SORTEDDATATAGS TAGNAME = ";
+            Iterator it = info.iterator();
+            while (it.hasNext()) {
+            // Get element
+            Object element = it.next();
+            query += "'" +element.toString() + "' ";
+        }
             String update = null;
             PreparedStatement readData = conn.prepareStatement(query);
             ResultSet result = readData.executeQuery();
@@ -193,6 +204,7 @@ public class DatabaseManager {
                 sorted.add(new SortedData(id, title, description, location, source, relevance, reliability
                         ,quality, tags));
                 tags.removeAll(tags);
+                System.out.println("Getting object succeed");
             }
             System.out.println("Data sorted read succeeded");
 
