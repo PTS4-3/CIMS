@@ -45,7 +45,7 @@ public class ConnectionManager {
      Return to start, except on closed conn
      */
     private static ExecutorService pool = Executors.newCachedThreadPool();
-    public static int defaultPort = 8189;
+    public int defaultPort = 8189;
     private String defaultIP;
 
     private InputStream inStream = null;
@@ -56,6 +56,12 @@ public class ConnectionManager {
 
     public ConnectionManager(String defaultIP) {
         this.defaultIP = defaultIP;
+        this.defaultPort = 8189;
+    }
+    
+    public ConnectionManager(String defaultIP, int defaultPort) {
+        this.defaultIP = defaultIP;
+        this.defaultPort = defaultPort;
     }
 
     /**
