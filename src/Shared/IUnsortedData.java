@@ -9,6 +9,6 @@ package Shared;
  *
  * @author Alexander
  */
-public interface IUnsortedData {
-    
+public interface IUnsortedData extends IData {
+    Status getStatus();
 }
