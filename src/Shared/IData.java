@@ -7,8 +7,12 @@ package Shared;
 
 /**
  *
- * @author Kargathia
+ * @author Alexander
  */
 public interface IData {
-
+    int getId();
+    String getTitle();
+    String getDescription();
+    String getLocation();
+    String getSource();
 }

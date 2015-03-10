@@ -7,8 +7,11 @@ package Shared;
 
 /**
  *
- * @author Kargathia
+ * @author Alexander
  */
 public enum Tag {
-
+    Police,
+    Ambulance,
+    FireDepartment,
+    Citizens
 }
