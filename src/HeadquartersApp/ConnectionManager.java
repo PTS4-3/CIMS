@@ -41,7 +41,7 @@ public class ConnectionManager {
      * @param data
      * @return success
      */
-    public boolean sendSOrtedData(ISortedData data){
+    public boolean sendSortedData(ISortedData data){
         return this.sendSortedData(defaultIP, defaultPort, data);
     }
 
