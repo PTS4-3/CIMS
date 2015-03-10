@@ -5,6 +5,7 @@
  */
 package ServerApp;
 
+import Shared.IData;
 import Shared.ISortedData;
 import Shared.IUnsortedData;
 import Shared.SortedData;
@@ -40,7 +41,7 @@ public class DatabaseManager {
      * @param data object unsorteddata
      * @return success on attempting to insert unsorted data.
      */
-    public synchronized boolean insertToUnsortedData(IUnsortedData data) {
+    public synchronized boolean insertToUnsortedData(IData data) {
         boolean succeed = false;
         try {
             openConnection();
@@ -116,7 +117,7 @@ public class DatabaseManager {
      * @param unsorted object unsorteddata
      * @return success on attempting to insert sorted data.
      */
-    public synchronized boolean insertToSortedData(ISortedData sorted, IUnsortedData unsorted) {
+    public synchronized boolean insertToSortedData(ISortedData sorted) {
         boolean succeed = false;
         try {
             openConnection();
@@ -137,7 +138,7 @@ public class DatabaseManager {
             System.out.println("Insert sortedData succeeded");
 
             //delete from unsorteddata
-            query = "DELETE FROM UNSORTEDDATA WHERE ID = " + unsorted.getId();
+            query = "DELETE FROM UNSORTEDDATA WHERE ID = " + sorted.getId();
             PreparedStatement unsortedData = conn.prepareStatement(query);
             unsortedData.execute();
 
@@ -174,10 +175,19 @@ public class DatabaseManager {
             
             String query = "SELECT ID FROM SORTEDDATATAGS TAGNAME = ";
             Iterator it = info.iterator();
+            int aantal = 1;
             while (it.hasNext()) {
             // Get element
             Object element = it.next();
+            if(aantal ==1)
+            {
             query += "'" +element.toString() + "' ";
+            aantal++;
+            }
+            else
+                {
+            query += "AND '" +element.toString() + "' ";
+            }
         }
             String update = null;
             PreparedStatement readData = conn.prepareStatement(query);
