@@ -154,8 +154,7 @@ public class Connection implements Runnable {
         Object inObject = in.readObject();
         if(inObject instanceof HashSet){
             HashSet tags = (HashSet)inObject;
-            // GET SORTED DATA
-            //out.writeObject(output);
+            out.writeObject(ServerMain.databaseManager.getFromSortedData(tags));
         } else {
             out.writeObject(ConnState.ERROR);
         }
@@ -174,7 +173,7 @@ public class Connection implements Runnable {
             return;
         }
         ISortedData data = (ISortedData)inObject;
-        //ServerMain.databaseManager.insertToSortedData(data);
+        ServerMain.databaseManager.insertToSortedData(data);
     }
 
     /**
@@ -189,7 +188,7 @@ public class Connection implements Runnable {
             return;
         }
         IData data = (IData)inObject;
-        //ServerMain.databaseManager.insertToUnsortedData(data);
+        ServerMain.databaseManager.insertToUnsortedData(data);
     }
 
 }
