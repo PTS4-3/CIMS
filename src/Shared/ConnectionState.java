@@ -11,6 +11,7 @@ package Shared;
  */
 public enum ConnectionState {
     CONNECTED,
+    DONE,
     ERROR,
     PING,
     PONG,

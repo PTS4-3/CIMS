@@ -7,8 +7,11 @@ package Shared;
 
 /**
  *
- * @author Alexander
+ * @author Kargathia
  */
-public interface IUnsortedData extends IData{
-    public Status getStatus();
+public enum DataRequest {
+    UNSORTED_SEND,
+    SORTED_SEND,
+    UNSORTED_GET,
+    SORTED_GET
 }
