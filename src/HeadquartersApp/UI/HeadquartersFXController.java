@@ -133,6 +133,6 @@ public class HeadquartersFXController implements Initializable {
      * Set status current data back to none
      */
     public void close() {
-        // roep methode aan
+        connectionManager.stopWorkingOnData(lvUnsortedData.getItems());
     }
 }
