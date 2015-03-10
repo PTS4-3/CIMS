@@ -85,6 +85,7 @@ public class Connection implements Runnable {
             try {
                 boolean isDone = false;
                 while (!isDone) {
+                    // writes this before every cycle
                     out.writeObject(ConnState.CONNECTED);
 
                     Object inObject = in.readObject();
@@ -92,8 +93,11 @@ public class Connection implements Runnable {
                         ConnState state = (ConnState) inObject;
                         if (state == ConnState.DONE) {
                             isDone = true;
+                        } else if (state == ConnState.CONNECTED) {
+                            System.out.println("Connection is working as intended");
                         }
-                    } else if (inObject instanceof DataRequest) {
+                    }
+                    if (inObject instanceof DataRequest) {
                         DataRequest command = (DataRequest) inObject;
                         System.out.println("-- Command: " + command.toString());
 
@@ -111,11 +115,7 @@ public class Connection implements Runnable {
                                 this.saveUnsortedData();
                                 break;
                         }
-                    } else {
-                        System.out.println("Command not recognised: "
-                                + inObject.toString());
                     }
-
                 }
             } catch (IOException ex) {
                 System.out.println("IOException in while loop Runnable: "
@@ -149,11 +149,11 @@ public class Connection implements Runnable {
      *
      * @param tags only data with -all- these tag is provided
      */
-    private void sendSortedData() throws IOException, 
+    private void sendSortedData() throws IOException,
             ClassNotFoundException {
         Object inObject = in.readObject();
-        if(inObject instanceof HashSet){
-            HashSet tags = (HashSet)inObject;
+        if (inObject instanceof HashSet) {
+            HashSet tags = (HashSet) inObject;
             out.writeObject(ServerMain.databaseManager.getFromSortedData(tags));
         } else {
             out.writeObject(ConnState.ERROR);
@@ -161,33 +161,34 @@ public class Connection implements Runnable {
     }
 
     /**
-     * Saves given ISortedData to database. Does nothing if data is null.
+     * Saves given ISortedData to database. Writes a connstate.error if data is
+     * null.
      *
      * @param data
      */
-    private void saveSortedData() throws IOException, 
+    private void saveSortedData() throws IOException,
             ClassNotFoundException {
         Object inObject = in.readObject();
-        if(!(inObject instanceof ISortedData) || inObject == null){
+        if (!(inObject instanceof ISortedData) || inObject == null) {
             out.writeObject(ConnState.ERROR);
             return;
         }
-        ISortedData data = (ISortedData)inObject;
+        ISortedData data = (ISortedData) inObject;
         ServerMain.databaseManager.insertToSortedData(data);
     }
 
     /**
-     * Saves given IData to database. Does nothing if data is null;
+     * Saves given IData to database. Writes a connstate.error if data is null.
      *
      */
-    private void saveUnsortedData() throws IOException, 
+    private void saveUnsortedData() throws IOException,
             ClassNotFoundException {
         Object inObject = in.readObject();
         if (inObject == null || !(inObject instanceof IData)) {
             out.writeObject(ConnState.ERROR);
             return;
         }
-        IData data = (IData)inObject;
+        IData data = (IData) inObject;
         ServerMain.databaseManager.insertToUnsortedData(data);
     }
 
