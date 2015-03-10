@@ -37,7 +37,7 @@ public class DatabaseManager {
      * @param data object unsorteddata
      * @return success on attempting to insert unsorted data.
      */
-    public boolean insertToUnsortedData(UnsortedData data) {
+    public synchronized boolean insertToUnsortedData(UnsortedData data) {
         boolean succeed = false;
         try {
             openConnection();
@@ -63,7 +63,7 @@ public class DatabaseManager {
     /**
      * @return List unsorteddata
      */
-    public List<UnsortedData> getFromUnsortedData() {
+    public synchronized List<UnsortedData> getFromUnsortedData() {
         List<UnsortedData> unsorted = new ArrayList();
 
         int id;
@@ -112,7 +112,7 @@ public class DatabaseManager {
      * @param unsorted object unsorteddata
      * @return success on attempting to insert sorted data.
      */
-    public boolean insertToSortedData(SortedData sorted, UnsortedData unsorted) {
+    public synchronized boolean insertToSortedData(SortedData sorted, UnsortedData unsorted) {
         boolean succeed = false;
         try {
             openConnection();
@@ -151,7 +151,7 @@ public class DatabaseManager {
     /**
      * @return List sorteddata
      */
-    public List<SortedData> getFromSortedData() {
+    public synchronized List<SortedData> getFromSortedData() {
         List<SortedData> sorted = new ArrayList();
 
         int id;
@@ -162,7 +162,7 @@ public class DatabaseManager {
         int relevance;
         int reliability;
         int quality;
-        HashSet<Tag> tags;
+        HashSet<Tag> tags = new HashSet();
 
         try {
             openConnection();
@@ -171,6 +171,7 @@ public class DatabaseManager {
             String update = null;
             PreparedStatement readData = conn.prepareStatement(query);
             ResultSet result = readData.executeQuery();
+            
             while (result.next() && sorted.size() < 50) {
                 id = result.getInt("ID");
                 title = result.getString("TITLE");
@@ -180,12 +181,18 @@ public class DatabaseManager {
                 relevance = result.getInt("RELEVANCE");
                 reliability = result.getInt("RELIABILITY");
                 quality = result.getInt("QUALITY");
-                //tags
-                
-                //sorted.add(new SortedData(id, title, description, location, source));
-                update = "UPDATE SORTEDDATA SET STATUS = 'INPROCESS' WHERE id = " + id;
+
+                update = "SELECT * FROM SORTEDDATATAGS WHERE SORTEDDATAID = " + id;
                 PreparedStatement updateData = conn.prepareStatement(update);
-                updateData.execute();
+                ResultSet resultTag = updateData.executeQuery();
+                while (resultTag.next()) {
+                    Tag tag = Tag.valueOf(resultTag.getString("TAGNAME"));
+                    tags.add(tag);
+                }
+                
+                sorted.add(new SortedData(id, title, description, location, source, relevance, reliability
+                        ,quality, tags));
+                tags.removeAll(tags);
             }
             System.out.println("Data sorted read succeeded");
 
