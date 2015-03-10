@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ServicesApp;
+package HeadquartersApp.UI;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -16,7 +16,7 @@ import javafx.scene.control.Label;
  *
  * @author Kargathia
  */
-public class ServicesController implements Initializable {
+public class HeadquartersFXController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) 

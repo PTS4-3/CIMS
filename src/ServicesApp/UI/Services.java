@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package HeadquartersApp;
+package ServicesApp.UI;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -15,11 +15,11 @@ import javafx.stage.Stage;
  *
  * @author Kargathia
  */
-public class Headquarters extends Application {
+public class Services extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("HeadquartersFX.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("ServicesFX.fxml"));
 
         Scene scene = new Scene(root);
 
