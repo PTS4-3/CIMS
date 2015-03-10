@@ -14,4 +14,5 @@ public enum DataRequest {
     SORTED_SEND,
     UNSORTED_GET,
     SORTED_GET,
+    UNSORTED_RESET
 }

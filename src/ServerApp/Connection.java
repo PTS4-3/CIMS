@@ -29,24 +29,7 @@ import java.util.logging.Logger;
  */
 public class Connection implements Runnable {
 
-    /*
-     Connection start ->
-     Server: ConnState.CONNECTED
-     ------
-     Option 1 - Client: ConnState.DONE
-     -> Closes down connection
-     Option 2 - Client: DataRequest.SORTED_GET
-     -> Client: List<Tag>
-     -> Server: List<ISortedData>
-     Option 3 - Client: DataRequest.SORTED_SEND
-     -> Client: ISortedData
-     Option 4 - Client: DataRequest.UNSORTED_GET
-     -> Server: List<IData>
-     Option 5 - Client: DataRequest.UNSORTED_SEND
-     -> Client: IData
-     -----
-     Return to start, except on closed conn
-     */
+    
     private static String eol = System.getProperty("line.separator");
     private static String fs = File.separator;
 
@@ -65,14 +48,16 @@ public class Connection implements Runnable {
             this.in = new ObjectInputStream(inStream);
             this.out = new ObjectOutputStream(outStream);
         } catch (IOException ex) {
-            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Connection.class.getName()).
+                    log(Level.SEVERE, null, ex);
         }
     }
 
     @Override
     public void run() {
         // lets console know if something went wrong
-        if (conn == null || inStream == null || outStream == null || in == null || out == null) {
+        if (conn == null || inStream == null || outStream == null || in == null
+                || out == null) {
             System.out.println("an object in Runnable was null: " + eol
                     + "conn: " + (conn == null) + eol
                     + "inStream: " + (inStream == null) + eol
@@ -113,6 +98,9 @@ public class Connection implements Runnable {
                                 break;
                             case UNSORTED_SEND:
                                 this.saveUnsortedData();
+                                break;
+                            case UNSORTED_RESET:
+                                this.resetUnsortedData();
                                 break;
                         }
                     }
@@ -156,7 +144,7 @@ public class Connection implements Runnable {
             HashSet tags = (HashSet) inObject;
             out.writeObject(ServerMain.databaseManager.getFromSortedData(tags));
         } else {
-            out.writeObject(ConnState.ERROR);
+//            out.writeObject(ConnState.ERROR);
         }
     }
 
@@ -170,7 +158,7 @@ public class Connection implements Runnable {
             ClassNotFoundException {
         Object inObject = in.readObject();
         if (!(inObject instanceof ISortedData) || inObject == null) {
-            out.writeObject(ConnState.ERROR);
+//            out.writeObject(ConnState.ERROR);
             return;
         }
         ISortedData data = (ISortedData) inObject;
@@ -185,11 +173,26 @@ public class Connection implements Runnable {
             ClassNotFoundException {
         Object inObject = in.readObject();
         if (inObject == null || !(inObject instanceof IData)) {
-            out.writeObject(ConnState.ERROR);
+//            out.writeObject(ConnState.ERROR);
             return;
         }
         IData data = (IData) inObject;
         ServerMain.databaseManager.insertToUnsortedData(data);
+    }
+
+    /**
+     * Notifies Database that a list of data is no longer being worked on.
+     */
+    private void resetUnsortedData() throws IOException, ClassNotFoundException {
+        Object inObject = in.readObject();
+        if(inObject instanceof List){
+            List list = (List) inObject;
+            if(!list.isEmpty() && (list.get(0) instanceof IData)){
+                ServerMain.databaseManager.resetUnsortedData((List<IData>) list);
+            }
+        } else {
+//            out.writeObject(ConnState.ERROR);
+        }
     }
 
 }

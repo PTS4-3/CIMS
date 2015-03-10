@@ -6,6 +6,7 @@
 package HeadquartersApp;
 
 import Shared.ConnState;
+import Shared.DataRequest;
 import Shared.IData;
 import Shared.ISortedData;
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -33,7 +35,7 @@ public class ConnectionManager {
      Option 1 - Client: ConnState.DONE
      -> Closes down connection
      Option 2 - Client: DataRequest.SORTED_GET
-     -> Client: List<Tag>
+     -> Client: Set<Tag>
      -> Server: List<ISortedData>
      Option 3 - Client: DataRequest.SORTED_SEND
      -> Client: ISortedData
@@ -41,6 +43,8 @@ public class ConnectionManager {
      -> Server: List<IData>
      Option 5 - Client: DataRequest.UNSORTED_SEND
      -> Client: IData
+     Option 6 - Client: DataRequest.UNSORTED_RESET
+     -> Client: List<IData>
      -----
      Return to start, except on closed conn
      */
@@ -117,6 +121,22 @@ public class ConnectionManager {
     }
 
     /**
+     * Closes down the connection - also notifies the server.
+     */
+    private void closeSocket() {
+        try {
+            out.writeObject(ConnState.DONE);
+            out.flush();
+            socket.close();
+        } catch (IOException ex) {
+            System.out.println("IOException closing down connection: "
+                    + ex.getMessage());
+            Logger.getLogger(ConnectionManager.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
      * Sends sorted data to server.
      *
      * @param IP manually provided.
@@ -128,14 +148,19 @@ public class ConnectionManager {
         if (!this.greetServer(IP, port)) {
             return false;
         }
+        boolean output = false;
         try {
+            out.writeObject(DataRequest.SORTED_SEND);
             out.writeObject(data);
-            return true;
+            out.flush();
+            output = true;
         } catch (IOException ex) {
             Logger.getLogger(ConnectionManager.class.getName())
                     .log(Level.SEVERE, null, ex);
-            return false;
+        } finally {
+            this.closeSocket();
         }
+        return output;
     }
 
     /**
@@ -156,7 +181,31 @@ public class ConnectionManager {
      * @return batch of data. Null on general error.
      */
     public List<IData> getData(String IP, int port) {
-        return null;
+        if (!this.greetServer(IP, port)) {
+            return null;
+        }
+        List<IData> output = null;
+        try {
+            out.writeObject(DataRequest.UNSORTED_GET);
+            out.flush();
+            Object inObject = in.readObject();
+            if (inObject instanceof List) {
+                List list = (List) inObject;
+                if (list.isEmpty()) {
+                    output = new ArrayList<>();
+                } else {
+                    if (list.get(0) instanceof IData) {
+                        output = (List<IData>) list;
+                    }
+                }
+            }
+        } catch (IOException | ClassNotFoundException ex) {
+            Logger.getLogger(ConnectionManager.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        } finally {
+            this.closeSocket();
+        }
+        return output;
     }
 
     /**
@@ -170,10 +219,39 @@ public class ConnectionManager {
 
     /**
      * Signals server that HQ will not process this checked out data.
+     *
+     * @param data
+     * @param IP
+     * @param port
+     * @return
+     */
+    public boolean stopWorkingOnData(List<IData> data, String IP, int port) {
+        if (!this.greetServer(IP, port)) {
+            return false;
+        }
+        boolean output = false;
+        try {
+            out.writeObject(DataRequest.UNSORTED_RESET);
+            out.writeObject(data);
+            out.flush();
+            output = true;
+        } catch (IOException ex) {
+            Logger.getLogger(ConnectionManager.class.getName())
+                    .log(Level.SEVERE, null, ex);
+            output = false;
+        } finally {
+            this.closeSocket();
+        }
+        return output;
+    }
+
+    /**
+     * Signals server that HQ will nto process this list of data.
+     *
      * @param data
      * @return
      */
-    public boolean stopWorkingOnData(List<IData> data){
-        return false;
+    public boolean stopWorkingOnData(List<IData> data) {
+        return this.stopWorkingOnData(data, defaultIP, defaultPort);
     }
 }
