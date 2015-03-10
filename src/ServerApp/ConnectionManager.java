@@ -30,7 +30,6 @@ import java.util.logging.Logger;
 public class ConnectionManager {
 
     private ExecutorService pool;
-    private DatabaseManager myDBManager;
 
     private int defaultPort = 8189;
 
@@ -40,8 +39,7 @@ public class ConnectionManager {
      *
      * @param manager
      */
-    public ConnectionManager(DatabaseManager manager) {
-        this.myDBManager = manager;
+    public ConnectionManager() {
         this.pool = Executors.newCachedThreadPool();
         this.startListener();
     }
@@ -77,31 +75,5 @@ public class ConnectionManager {
         });
     }
 
-    /**
-     * Sends a batch of 50 items of unsorted data to given IP
-     */
-    private void sendUnsortedData(String destinationIP) {
-
-    }
-
-    /**
-     * Sends a List of sorted data to given IP.
-     * @param destinationIP
-     * @param tags only data with -all- these tag is provided
-     */
-    private void sendSortedData(String destinationIP, List<Tag> tags) {
-
-    }
-
-    /**
-     *
-     * @param data
-     */
-    private void saveSortedData(ISortedData data) {
-
-    }
-
-    private void saveUnsortedData(IData data) {
-
-    }
+    
 }

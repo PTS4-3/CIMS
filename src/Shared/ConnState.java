@@ -9,7 +9,7 @@ package Shared;
  *
  * @author Kargathia
  */
-public enum ConnectionState {
+public enum ConnState {
     CONNECTED,
     DONE,
     ERROR,
