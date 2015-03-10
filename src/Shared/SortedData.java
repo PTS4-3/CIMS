@@ -23,6 +23,56 @@ public class SortedData implements ISortedData {
     private int reliability;
     private int quality;
     private HashSet<Tag> tags;
+    
+    /**
+     * 
+     * @param id
+     * @param title cannot be null or empty
+     * @param description
+     * @param location
+     * @param source cannot be null or empty
+     * @param relevance has to be between 0 and 100
+     * @param reliability has to be between 0 and 100
+     * @param quality has to be between 0 and 100
+     * @param tags has to be a size of at least 1
+     */
+    public SortedData(int id, String title, String description, String location,
+            String source, int relevance, int reliability, int quality, 
+            HashSet<Tag> tags) {
+        if(title == null || title.isEmpty()) {
+            throw new IllegalArgumentException("Title SortedData cannot be "
+                    + "null or empty");
+        }
+        if(source == null || source.isEmpty()) {
+            throw new IllegalArgumentException("Source SortedData cannot be "
+                    + "null or empty");
+        }
+        if(relevance < 0 || relevance > 100) {
+            throw new IllegalArgumentException("Relevance SortedData has to be "
+                    + "between 0 and 100");
+        }
+        if(reliability < 0 || reliability > 100) {
+            throw new IllegalArgumentException("Reliability SortedData has to be "
+                    + "between 0 and 100");
+        }
+        if(quality < 0 || quality > 100) {
+            throw new IllegalArgumentException("Quality SortedData has to be "
+                    + "between 0 and 100");
+        }
+        if(tags == null || tags.size() < 1) {
+            throw new IllegalArgumentException("Tags SortedData has to be a "
+                    + "size of at least 1");
+        }
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.location = location;
+        this.source = source;
+        this.relevance = relevance;
+        this.reliability = reliability;
+        this.quality = quality;
+        this.tags = tags;
+    }
 
     @Override
     public int getId() {

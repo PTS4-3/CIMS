@@ -17,8 +17,25 @@ public class UnsortedData implements IUnsortedData {
     private String source;
     private Status status;
     
+    /**
+     * 
+     * @param id
+     * @param title cannot be null or empty
+     * @param description
+     * @param location
+     * @param source cannot be null or empty
+     * @param status 
+     */
     public UnsortedData(int id, String title, String description, 
             String location, String source, Status status) {
+        if(title == null || title.isEmpty()) {
+            throw new IllegalArgumentException("Title of UnsortedData cannot "
+                    + "be null or empty");
+        }
+        if(source == null || source.isEmpty()) {
+            throw new IllegalArgumentException("Source of UnsortedData cannot "
+                    + "be null or empty");
+        }
         this.id = id;
         this.title = title;
         this.description = description;
