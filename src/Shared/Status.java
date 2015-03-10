@@ -9,9 +9,8 @@ package Shared;
  *
  * @author Alexander
  */
-public enum Tag {
-    POLICE,
-    AMBULANCE,
-    FIREDEPARTMENT,
-    CITIZENS
+public enum Status {
+    NONE,
+    INPROCESS,
+    COMPLETED
 }

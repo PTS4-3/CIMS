@@ -9,9 +9,6 @@ package Shared;
  *
  * @author Alexander
  */
-public enum Tag {
-    POLICE,
-    AMBULANCE,
-    FIREDEPARTMENT,
-    CITIZENS
+public interface IUnsortedData {
+    
 }

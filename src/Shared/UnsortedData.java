@@ -9,20 +9,22 @@ package Shared;
  *
  * @author Alexander
  */
-public class UnsortedData implements IData {
+public class UnsortedData implements IUnsortedData {
     private int id;
     private String title;
     private String description;
     private String location;
     private String source;
+    private Status status;
     
     public UnsortedData(int id, String title, String description, 
-            String location, String source) {
+            String location, String source, Status status) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.location = location;
         this.source = source;
+        this.status = status;
     }
 
     @Override
@@ -50,4 +52,8 @@ public class UnsortedData implements IData {
         return this.source;
     }
     
+    @Override
+    public Status getStatus() {
+        return this.status;
+    }
 }
