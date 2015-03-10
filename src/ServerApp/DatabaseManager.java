@@ -7,7 +7,6 @@ package ServerApp;
 
 import Shared.IData;
 import Shared.ISortedData;
-import Shared.IUnsortedData;
 import Shared.SortedData;
 import Shared.Status;
 import Shared.Tag;
@@ -81,7 +80,7 @@ public class DatabaseManager {
             openConnection();
 
             String query = "SELECT * FROM UNSORTEDDATA ORDER BY ID";
-            String update = null;
+            String update = "";
             PreparedStatement readData = conn.prepareStatement(query);
             ResultSet result = readData.executeQuery();
             while (result.next() && unsorted.size() < 50) {
@@ -114,8 +113,7 @@ public class DatabaseManager {
 
     /**
      * @param sorted object sorteddata
-     * @param unsorted object unsorteddata
-     * @return success on attempting to insert sorted data.
+     * @return succeed on attempting to insert sorted data.
      */
     public synchronized boolean insertToSortedData(ISortedData sorted) {
         boolean succeed = false;
@@ -159,6 +157,7 @@ public class DatabaseManager {
      */
     public synchronized List<SortedData> getFromSortedData(HashSet<Tag> info) {
         List<SortedData> sorted = new ArrayList();
+        List<Integer> numbers = new ArrayList();
 
         int id;
         String title;
@@ -168,56 +167,59 @@ public class DatabaseManager {
         int relevance;
         int reliability;
         int quality;
-        HashSet<Tag> tags = new HashSet();
 
+        //list of id's with correct tags
         try {
             openConnection();
-            
-            String query = "SELECT ID FROM SORTEDDATATAGS TAGNAME = ";
+
+            String query = "SELECT SORTEDDATAID FROM SORTEDDATATAGS WHERE TAGNAME = ";
+            int sizeList = info.size();
             Iterator it = info.iterator();
-            int aantal = 1;
+            int aantal = 0;
             while (it.hasNext()) {
-            // Get element
-            Object element = it.next();
-            if(aantal ==1)
+                // Get element
+                Object element = it.next();
+                if (aantal == 1) {
+                    query += "'" + element.toString() + "' ";
+                    aantal++;
+                } else {
+                    query += "AND SORTEDDATAID IN (SELECT SORTEDDATAID FROM"
+                            +"SORTEDDATATAGS WHERE  '" + element.toString() + "' ";
+                     aantal++;
+                }
+            }
+            for(int x = 1; x < sizeList; x++)
             {
-            query += "'" +element.toString() + "' ";
-            aantal++;
+                query += ")";
             }
-            else
-                {
-            query += "AND '" +element.toString() + "' ";
-            }
-        }
-            String update = null;
+            
             PreparedStatement readData = conn.prepareStatement(query);
             ResultSet result = readData.executeQuery();
-            
-            while (result.next() && sorted.size() < 50) {
-                id = result.getInt("ID");
-                title = result.getString("TITLE");
-                description = result.getString("DESCRIPTION");
-                location = result.getString("LOCATION");
-                source = result.getString("SOURCE");
-                relevance = result.getInt("RELEVANCE");
-                reliability = result.getInt("RELIABILITY");
-                quality = result.getInt("QUALITY");
 
-                update = "SELECT * FROM SORTEDDATATAGS WHERE SORTEDDATAID = " + id;
+            while (result.next()) {
+                numbers.add(result.getInt("SORTEDDATAID"));
+            }
+            //make list of object with correct id's
+            String update = "";
+            for (int x : numbers) {
+                update = "SELECT * FROM SORTEDDATA WHERE ID = " + x;
                 PreparedStatement updateData = conn.prepareStatement(update);
                 ResultSet resultTag = updateData.executeQuery();
-                while (resultTag.next()) {
-                    Tag tag = Tag.valueOf(resultTag.getString("TAGNAME"));
-                    tags.add(tag);
-                }
-                
-                sorted.add(new SortedData(id, title, description, location, source, relevance, reliability
-                        ,quality, tags));
-                tags.removeAll(tags);
-                System.out.println("Getting object succeed");
-            }
-            System.out.println("Data sorted read succeeded");
+                while (resultTag.next() && sorted.size() < 50) {
+                    id = result.getInt("ID");
+                    title = result.getString("TITLE");
+                    description = result.getString("DESCRIPTION");
+                    location = result.getString("LOCATION");
+                    source = result.getString("SOURCE");
+                    relevance = result.getInt("RELEVANCE");
+                    reliability = result.getInt("RELIABILITY");
+                    quality = result.getInt("QUALITY");
 
+                    sorted.add(new SortedData(id, title, description, location, source, relevance, reliability, quality, info));
+                }
+            }
+
+            System.out.println("Getting object succeed");
         } catch (SQLException ex) {
             System.out.println("Data sorted read succeeded");
         } finally {
@@ -226,6 +228,16 @@ public class DatabaseManager {
         return sorted;
     }
 
+    /**
+     * @param data list of unsorteddata
+     * @return succeed reset status unsorted data
+     */
+    public synchronized boolean resetUnsortedData(List<UnsortedData> data)
+    {
+        boolean succeed = false;
+        
+        return succeed;
+    }
     /**
      * opening connection
      */
