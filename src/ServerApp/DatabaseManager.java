@@ -64,7 +64,8 @@ public class DatabaseManager {
     }
 
     /**
-     * @return List unsorteddata
+     * @return List unsorteddata first get information from database second
+     * change status to INPROCESS
      */
     public synchronized List<UnsortedData> getFromUnsortedData() {
         List<UnsortedData> unsorted = new ArrayList();
@@ -79,10 +80,11 @@ public class DatabaseManager {
         try {
             openConnection();
 
-            String query = "SELECT * FROM UNSORTEDDATA ORDER BY ID";
+            String query = "SELECT * FROM UNSORTEDDATA WHERE STATUS = 'NONE' ORDER BY ID";
             String update = "";
             PreparedStatement readData = conn.prepareStatement(query);
             ResultSet result = readData.executeQuery();
+            //getting unsorteddata
             while (result.next() && unsorted.size() < 50) {
                 id = result.getInt("ID");
                 title = result.getString("TITLE");
@@ -91,16 +93,20 @@ public class DatabaseManager {
                 source = result.getString("SOURCE");
                 status = Status.valueOf(result.getString("STATUS"));
 
-                if (!status.equals(Status.INPROCESS)) {
-
-                    unsorted.add(new UnsortedData(id, title, description, location, source, Status.INPROCESS));
-
-                    update = "UPDATE UNSORTEDDATA SET STATUS = 'INPROCESS' WHERE id = " + id;
-                    PreparedStatement updateData = conn.prepareStatement(update);
-                    updateData.execute();
-                    System.out.println("Getting object succeed and updated status succeed");
-                }
+                unsorted.add(new UnsortedData(id, title, description, location, source, Status.INPROCESS));
+                System.out.println("Getting object succeed");
+                
             }
+            
+            //update data
+            for(UnsortedData x : unsorted)
+            {
+            update = "UPDATE UNSORTEDDATA SET STATUS = 'INPROCESS' WHERE id = " + x.getId();
+            PreparedStatement updateData = conn.prepareStatement(update);
+            updateData.execute();
+            System.out.println("Updating status succeed");
+            }
+            
             System.out.println("Data unsorted read succeeded");
         } catch (SQLException ex) {
             System.out.println("Data unsorted read failed: " + ex);
@@ -254,7 +260,7 @@ public class DatabaseManager {
     /**
      * opening connection
      */
-    private void openConnection() {
+    public void openConnection() {
         try {
             conn = DriverManager.getConnection("jdbc:oracle:thin:@fhictora01.fhict.local:1521:fhictora", "dbi294542", "vl4ldKvhy8");
             System.out.println("Connection open succeeded");
@@ -267,7 +273,7 @@ public class DatabaseManager {
     /**
      * closing connection
      */
-    private void closeConnection() {
+    public void closeConnection() {
         try {
             conn.close();
             System.out.println("Connection close succeeded");

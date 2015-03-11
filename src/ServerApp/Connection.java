@@ -188,7 +188,7 @@ public class Connection implements Runnable {
         if(inObject instanceof List){
             List list = (List) inObject;
             if(!list.isEmpty() && (list.get(0) instanceof IData)){
-                ServerMain.databaseManager.resetUnsortedData((List<IData>) list);
+                //ServerMain.databaseManager.resetUnsortedData((List<IData>) list);
             }
         } else {
 //            out.writeObject(ConnState.ERROR);
