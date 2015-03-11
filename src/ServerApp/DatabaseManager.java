@@ -233,13 +233,13 @@ public class DatabaseManager {
      * @param data list of unsorteddata
      * @return succeed reset status unsorted data
      */
-    public synchronized boolean resetUnsortedData(List<UnsortedData> data) {
+    public synchronized boolean resetUnsortedData(List<IData> data) {
         boolean succeed = false;
 
         try {
             openConnection();
 
-            for (UnsortedData x : data) {
+            for (IData x : data) {
                 String query = "UPDATE UNSORTEDDATA SET STATUS = 'NONE' WHERE id = " + x.getId();
                 PreparedStatement reset = conn.prepareStatement(query);
 
