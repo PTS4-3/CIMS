@@ -50,7 +50,7 @@ public class DatabaseManager {
             unsortedData.setString(3, data.getDescription());
             unsortedData.setString(4, data.getLocation());
             unsortedData.setString(5, data.getSource());
-            //unsortedData.setString(6, data.getStatus());
+            unsortedData.setString(6, Status.NONE.toString());
             unsortedData.execute();
 
             System.out.println("Insert unsortedData succeeded");
@@ -98,13 +98,12 @@ public class DatabaseManager {
                     update = "UPDATE UNSORTEDDATA SET STATUS = 'INPROCESS' WHERE id = " + id;
                     PreparedStatement updateData = conn.prepareStatement(update);
                     updateData.execute();
-                    System.out.println("Getting object succeed");
+                    System.out.println("Getting object succeed and updated status succeed");
                 }
             }
             System.out.println("Data unsorted read succeeded");
-
         } catch (SQLException ex) {
-            System.out.println("Data unsorted read succeeded");
+            System.out.println("Data unsorted read failed: " + ex);
         } finally {
             closeConnection();
         }
@@ -120,7 +119,7 @@ public class DatabaseManager {
         try {
             openConnection();
             //insert to sorteddata
-            String query = "INSERT INTO SORTEDDATA VALUES (?,?,?,?,?,?,?,?,?)";
+            String query = "INSERT INTO SORTEDDATA VALUES (?,?,?,?,?,?,?,?)";
             PreparedStatement sortedData = conn.prepareStatement(query);
             sortedData.setInt(1, sorted.getId());
             sortedData.setString(2, sorted.getTitle());
@@ -130,7 +129,6 @@ public class DatabaseManager {
             sortedData.setInt(6, sorted.getRelevance());
             sortedData.setInt(7, sorted.getReliability());
             sortedData.setInt(8, sorted.getQuality());
-            //unsortedData.setString(9, sorted.getStatus());
             sortedData.execute();
 
             System.out.println("Insert sortedData succeeded");
@@ -184,15 +182,13 @@ public class DatabaseManager {
                     aantal++;
                 } else {
                     query += "AND SORTEDDATAID IN (SELECT SORTEDDATAID FROM"
-                            +"SORTEDDATATAGS WHERE  '" + element.toString() + "' ";
-                     aantal++;
+                            + "SORTEDDATATAGS WHERE  '" + element.toString() + "' ";
                 }
             }
-            for(int x = 1; x < sizeList; x++)
-            {
+            for (int x = 1; x < sizeList; x++) {
                 query += ")";
             }
-            
+
             PreparedStatement readData = conn.prepareStatement(query);
             ResultSet result = readData.executeQuery();
 
@@ -218,10 +214,9 @@ public class DatabaseManager {
                     sorted.add(new SortedData(id, title, description, location, source, relevance, reliability, quality, info));
                 }
             }
-
             System.out.println("Getting object succeed");
         } catch (SQLException ex) {
-            System.out.println("Data sorted read succeeded");
+            System.out.println("Data sorted read failed: " + ex);
         } finally {
             closeConnection();
         }
@@ -232,12 +227,30 @@ public class DatabaseManager {
      * @param data list of unsorteddata
      * @return succeed reset status unsorted data
      */
-    public synchronized boolean resetUnsortedData(List<UnsortedData> data)
-    {
+    public synchronized boolean resetUnsortedData(List<UnsortedData> data) {
         boolean succeed = false;
-        
+
+        try {
+            openConnection();
+
+            for (UnsortedData x : data) {
+                String query = "UPDATE UNSORTEDDATA SET STATUS = 'NONE' WHERE id = " + x.getId();
+                PreparedStatement reset = conn.prepareStatement(query);
+
+                reset.execute();
+                System.out.println("Resetting object succeed");
+            }
+
+            System.out.println("Data unsorted reset succeeded");
+            succeed = true;
+        } catch (SQLException ex) {
+            System.out.println("Data unsorted reset failed: " + ex);
+        } finally {
+            closeConnection();
+        }
         return succeed;
     }
+
     /**
      * opening connection
      */
