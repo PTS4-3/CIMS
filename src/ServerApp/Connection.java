@@ -195,4 +195,18 @@ public class Connection implements Runnable {
         }
     }
 
+    private void updateUnsortedData() throws IOException, ClassNotFoundException{
+        Object inObject = in.readObject();
+        if(inObject == null || !(inObject instanceof Integer)){
+            return;
+        }
+        int id = Integer.valueOf(inObject.toString());
+        inObject = in.readObject();
+        if (inObject == null || !(inObject instanceof IData)) {
+//            out.writeObject(ConnState.ERROR);
+            return;
+        }
+        ServerMain.databaseManager.updateUnsortedData(id, (IData)inObject);
+    }
+
 }
