@@ -282,4 +282,14 @@ public class DatabaseManager {
         }
 
     }
+
+    /**
+     * Updates piece of unsorted data with given id. 
+     * @param id
+     * @param iData 
+     * @return false if id not found
+     */
+    public synchronized boolean updateUnsortedData(int id, IData iData) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

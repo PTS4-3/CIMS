@@ -231,7 +231,7 @@ public class ConnectionManager {
         }
         boolean output = false;
         try {
-            out.writeObject(DataRequest.UNSORTED_RESET);
+            out.writeObject(DataRequest.UNSORTED_STATUS_RESET);
             out.writeObject(data);
             out.flush();
             output = true;

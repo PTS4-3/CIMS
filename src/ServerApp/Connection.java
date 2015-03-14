@@ -99,7 +99,7 @@ public class Connection implements Runnable {
                             case UNSORTED_SEND:
                                 this.saveUnsortedData();
                                 break;
-                            case UNSORTED_RESET:
+                            case UNSORTED_STATUS_RESET:
                                 this.resetUnsortedData();
                                 break;
                         }
