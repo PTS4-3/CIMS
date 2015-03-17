@@ -8,6 +8,7 @@ package HeadquartersApp;
 import Shared.ConnState;
 import Shared.ConnCommand;
 import Shared.IData;
+import Shared.IDataRequest;
 import Shared.ISortedData;
 import java.io.IOException;
 import java.io.InputStream;
@@ -289,5 +290,29 @@ public class ConnectionManager {
      */
     public boolean discardUnsortedData(IData data){
         return this.discardUnsortedData(data, defaultIP, defaultPort);
+    }
+    
+    public boolean requestUpdate(IDataRequest data, String IP, int port){
+        if (!this.greetServer(IP, port)) {
+            return false;
+        }
+        boolean output = false;
+        try {
+            out.writeObject(ConnCommand.UNSORTED_UPDATE_REQUEST);
+            out.writeObject(data);
+            out.flush();
+            output = true;
+        } catch (IOException ex) {
+            Logger.getLogger(ConnectionManager.class.getName())
+                    .log(Level.SEVERE, null, ex);
+            output = false;
+        } finally {
+            this.closeSocket();
+        }
+        return output;
+    }
+
+    public boolean requestUpdate(IDataRequest data){
+        return this.requestUpdate(data, defaultIP, defaultPort);
     }
 }

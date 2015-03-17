@@ -102,7 +102,7 @@ public class Connection implements Runnable {
                             case UNSORTED_STATUS_RESET:
                                 this.resetUnsortedData();
                                 break;
-                            case UNSORTED_UPDATE:
+                            case UNSORTED_UPDATE_SEND:
                                 this.updateUnsortedData();
                                 break;
                             case UNSORTED_DISCARD:
