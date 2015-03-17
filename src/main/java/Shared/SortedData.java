@@ -31,9 +31,9 @@ public class SortedData implements ISortedData {
      * @param description
      * @param location
      * @param source cannot be null or empty
-     * @param relevance has to be between 0 and 100
-     * @param reliability has to be between 0 and 100
-     * @param quality has to be between 0 and 100
+     * @param relevance has to be between 1 and 5
+     * @param reliability has to be between 1 and 5
+     * @param quality has to be between 1 and 5
      * @param tags has to be a size of at least 1
      */
     public SortedData(int id, String title, String description, String location,
@@ -47,17 +47,17 @@ public class SortedData implements ISortedData {
             throw new IllegalArgumentException("Source SortedData cannot be "
                     + "null or empty");
         }
-        if(relevance < 0 || relevance > 100) {
+        if(relevance < 1 || relevance > 5) {
             throw new IllegalArgumentException("Relevance SortedData has to be "
-                    + "between 0 and 100");
+                    + "between 1 and 5");
         }
-        if(reliability < 0 || reliability > 100) {
+        if(reliability < 1 || reliability > 5) {
             throw new IllegalArgumentException("Reliability SortedData has to be "
-                    + "between 0 and 100");
+                    + "between 1 and 5");
         }
-        if(quality < 0 || quality > 100) {
+        if(quality < 1 || quality > 5) {
             throw new IllegalArgumentException("Quality SortedData has to be "
-                    + "between 0 and 100");
+                    + "between 1 and 5");
         }
         if(tags == null || tags.size() < 1) {
             throw new IllegalArgumentException("Tags SortedData has to be a "

@@ -5,10 +5,13 @@
  */
 package Shared;
 
+import java.util.Set;
+
 /**
  *
  * @author Alexander
  */
 public interface IDataRequest extends IData {
     int getRequestId();
+    public Set<Tag> getTags();
 }

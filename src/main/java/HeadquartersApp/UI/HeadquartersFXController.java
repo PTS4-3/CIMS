@@ -153,4 +153,8 @@ public class HeadquartersFXController implements Initializable {
             System.out.println(iaEx.getMessage());
         }
     }
+    
+    public void goToSendRequest() {
+        
+    }
 }
