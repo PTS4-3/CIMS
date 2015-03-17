@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="500.0" prefWidth="1200.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="ServicesApp.ServicesController">
+  <children>
+    <TabPane layoutX="0.0" layoutY="0.0" prefHeight="500.0" prefWidth="1200.0" tabClosingPolicy="UNAVAILABLE">
+      <tabs>
+        <Tab text="Informatie verwerken">
+          <content>
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="459.0" prefWidth="1200.0">
+              <children>
+                <ListView layoutX="14.0" layoutY="55.0" prefHeight="390.0" prefWidth="291.0" />
+                <Separator layoutX="754.0" layoutY="8.0" orientation="VERTICAL" prefHeight="431.0" />
+                <Label layoutX="340.0" layoutY="20.0" text="Titel" />
+                <Label layoutX="340.0" layoutY="62.0" text="Beschrijving" />
+                <Label layoutX="340.0" layoutY="338.0" text="Bron" />
+                <Label layoutX="338.0" layoutY="372.0" text="Lokatie" />
+                <Label layoutX="784.0" layoutY="23.0" text="Bestemming" />
+                <Label layoutX="784.0" layoutY="86.0" text="Relevantie" />
+                <Label layoutX="783.0" layoutY="142.0" text="Betrouwbaarheid" />
+                <Label layoutX="784.0" layoutY="192.0" text="Kwaliteit" />
+                <Button layoutX="783.0" layoutY="361.0" mnemonicParsing="false" prefWidth="247.0" text="Informatie update vragen" />
+                <Button layoutX="783.0" layoutY="402.0" mnemonicParsing="false" prefWidth="393.0" text="Toevoegen aan gesorteerde data" />
+                <Button layoutX="1045.0" layoutY="361.0" mnemonicParsing="false" prefWidth="130.0" text="Verwijderen" />
+                <Slider blockIncrement="1.0" layoutX="956.0" layoutY="86.0" majorTickUnit="1.0" max="5.0" min="1.0" minorTickCount="0" prefWidth="219.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
+                <ComboBox layoutX="955.0" layoutY="20.0" prefWidth="219.00009999999747">
+                  <items>
+                    <FXCollections fx:factory="observableArrayList">
+                      <String fx:value="Item 1" />
+                      <String fx:value="Item 2" />
+                      <String fx:value="Item 3" />
+                    </FXCollections>
+                  </items>
+                </ComboBox>
+                <TextField layoutX="484.0" layoutY="17.0" prefWidth="247.0" />
+                <TextField layoutX="484.0" layoutY="338.0" prefWidth="247.0" />
+                <TextField layoutX="484.0" layoutY="379.0" prefWidth="247.0" />
+                <TextArea layoutX="484.0" layoutY="55.0" prefHeight="269.0" prefWidth="247.0" wrapText="true" />
+                <Slider blockIncrement="1.0" layoutX="956.0" layoutY="142.0" majorTickUnit="1.0" max="5.0" min="1.0" minorTickCount="0" prefWidth="220.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
+                <Slider blockIncrement="1.0" layoutX="956.0" layoutY="192.0" majorTickUnit="1.0" max="5.0" min="1.0" minorTickCount="0" prefWidth="220.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
+                <Label layoutX="14.0" layoutY="20.0" text="Ongesorteerde data" textOverrun="ELLIPSIS" underline="true" wrapText="false">
+                  <font>
+                    <Font size="15.0" />
+                  </font>
+                </Label>
+              </children>
+            </AnchorPane>
+          </content>
+        </Tab>
+        <Tab text="Informatie vragen">
+          <content>
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <children>
+                <Label layoutX="27.0" layoutY="66.0" text="Titel" />
+                <Label layoutX="27.0" layoutY="104.0" text="Beschrijving" />
+                <Label layoutX="29.0" layoutY="294.0" text="Bron" />
+                <Label layoutX="27.0" layoutY="335.0" text="Lokatie" />
+                <TextField layoutX="173.0" layoutY="63.0" prefWidth="395.0" />
+                <TextField layoutX="173.0" layoutY="290.0" prefWidth="395.0" />
+                <TextField layoutX="173.0" layoutY="332.0" prefWidth="395.0" />
+                <TextArea layoutX="173.0" layoutY="103.0" prefHeight="174.0" prefWidth="395.0" wrapText="true" />
+                <TextField layoutX="173.0" layoutY="23.0" prefWidth="395.0" />
+                <Label layoutX="27.0" layoutY="26.0" text="Titel data" />
+                <Label layoutX="29.0" layoutY="377.0" text="Bestemming" />
+                <ComboBox layoutX="173.0" layoutY="374.0" prefWidth="395.0">
+                  <items>
+                    <FXCollections fx:factory="observableArrayList">
+                      <String fx:value="Item 1" />
+                      <String fx:value="Item 2" />
+                      <String fx:value="Item 3" />
+                    </FXCollections>
+                  </items>
+                </ComboBox>
+                <Button layoutX="471.0" layoutY="411.0" mnemonicParsing="false" text="Verzenden" />
+                <Button layoutX="384.0" layoutY="411.0" mnemonicParsing="false" text="Button" />
+                <Separator layoutX="596.0" layoutY="14.0" orientation="VERTICAL" prefHeight="431.0" />
+              </children>
+            </AnchorPane>
+          </content>
+        </Tab>
+      </tabs>
+    </TabPane>
+  </children>
+</AnchorPane>
