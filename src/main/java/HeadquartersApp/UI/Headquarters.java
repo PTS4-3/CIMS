@@ -20,14 +20,14 @@ import javafx.stage.Stage;
  */
 public class Headquarters extends Application {
 
-    private HeadquartersFXController controller;
+    private HeadquartersController controller;
 
     @Override
     public void start(Stage stage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("HeadquartersApp/HeadquartersFX.fxml"));
         System.out.println(loader.getLocation().toString());
         Parent root = (Parent) loader.load();
-        controller = (HeadquartersFXController) loader.getController();
+        controller = (HeadquartersController) loader.getController();
 
         this.configure();
 

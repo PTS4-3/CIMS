@@ -25,7 +25,7 @@ import javafx.scene.control.TextField;
  *
  * @author Alexander
  */
-public class HeadquartersFXController implements Initializable {
+public class HeadquartersController implements Initializable {
     @FXML TabPane tabPane;
     
     // ProcessInfo
