@@ -15,11 +15,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertEquals;
 import org.junit.After;
 import org.junit.AfterClass;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -52,7 +49,7 @@ public class TestDatabase {
         tag.add(Tag.FIREDEPARTMENT);
         Status status = Status.NONE;
         sorted = new SortedData(1, "Brand bejaarde huis","Brand bejaarde huis centrum eindhoven, kamer 73", "Eindhoven centrum",
-                "brandweer", 35, 35, 35, tag);
+                "brandweer", 2, 2, 2, tag);
         unsorted = new UnsortedData(1, "Brand bejaarde huis","Brand bejaarde huis centrum eindhoven, kamer 73", "Eindhoven centrum"
                 , "brandweer", status);
         
@@ -62,19 +59,7 @@ public class TestDatabase {
     public void tearDown() {
     }
 
-    // TODO add test methods here.
-    // The methods must be annotated with annotation @Test. For example:
-    //
-    // @Test
-    // public void hello() {}
     
-    
-    @Test
-    public void TestConnectie()
-    {
-        //database.openConnectionSorted();
-        //database.closeConnection();
-    }
     
     @Test
     public void insertUnsorted(){
