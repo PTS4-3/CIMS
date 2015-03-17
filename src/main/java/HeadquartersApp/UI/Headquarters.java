@@ -25,7 +25,6 @@ public class Headquarters extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("HeadquartersApp/HeadquartersFX.fxml"));
-        System.out.println(loader.getLocation().toString());
         Parent root = (Parent) loader.load();
         controller = (HeadquartersController) loader.getController();
 

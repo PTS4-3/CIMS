@@ -133,8 +133,8 @@ public class HeadquartersController implements Initializable {
             String source = tfuSource.getText();
             String location = tfuLocation.getText();
             // Nog via checkboxCombobox
-            //HashSet<Tag> tags = new HashSet<Tag>(lvuTags.getItems());
-            HashSet<Tag> tags = new HashSet<Tag>();
+            //HashSet<Tag> tags = new HashSet<>(lvuTags.getItems());
+            HashSet<Tag> tags = new HashSet<>();
             int relevance = (int) suRelevance.getValue();
             int reliability = (int) suReliability.getValue();
             int quality = (int) suQuality.getValue();
@@ -219,7 +219,17 @@ public class HeadquartersController implements Initializable {
             }
             String title = tfrTitle.getText();
             String description = tarDescription.getText();
+            String source = tfrSource.getText();
+            String location = tfrLocation.getText();
+            // Nog via checkboxCombobox
+            HashSet<Tag> tags = new HashSet<>();
             
+            // Make and send request
+            IDataRequest request = new DataRequest(-1, title, description, 
+                    location, source, requestId, tags);
+            this.connectionManager.requestUpdate(request);
+            
+            // Reset tab
             resetRequest();
         } catch (IllegalArgumentException iaEx) {
             System.out.println(iaEx.getMessage());
