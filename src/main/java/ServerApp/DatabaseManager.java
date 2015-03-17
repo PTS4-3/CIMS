@@ -6,6 +6,7 @@
 package ServerApp;
 
 import Shared.IData;
+import Shared.IDataRequest;
 import Shared.ISortedData;
 import Shared.SortedData;
 import Shared.Status;
@@ -294,6 +295,10 @@ public class DatabaseManager {
     }
 
     void discardUnsortedData(IData iData) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    void insertDataRequest(IDataRequest data) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }

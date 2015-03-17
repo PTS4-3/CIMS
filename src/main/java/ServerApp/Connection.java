@@ -8,6 +8,7 @@ package ServerApp;
 import Shared.ConnState;
 import Shared.ConnCommand;
 import Shared.IData;
+import Shared.IDataRequest;
 import Shared.ISortedData;
 import Shared.Tag;
 import java.io.File;
@@ -107,6 +108,9 @@ public class Connection implements Runnable {
                                 break;
                             case UNSORTED_DISCARD:
                                 this.discardUnsortedData();
+                                break;
+                            case UNSORTED_UPDATE_REQUEST:
+                                this.requestDataUpdate();
                                 break;
                         }
                     }
@@ -231,6 +235,20 @@ public class Connection implements Runnable {
             return;
         }
         ServerMain.databaseManager.discardUnsortedData((IData)inObject);
+    }
+
+    /**
+     * Files a request for an update to given piece of info.
+     */
+    private void requestDataUpdate() throws IOException,
+            ClassNotFoundException {
+        Object inObject = in.readObject();
+        if (!(inObject instanceof IDataRequest) || inObject == null) {
+//            out.writeObject(ConnState.ERROR);
+            return;
+        }
+        IDataRequest data = (IDataRequest) inObject;
+        ServerMain.databaseManager.insertDataRequest(data);
     }
 
 }
