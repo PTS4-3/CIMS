@@ -68,11 +68,8 @@ public class DatabaseManager {
      */
     private void initConnection() throws SQLException{
         String url = (String) props.get("url");
-        System.out.println(url);
         String username = (String) props.get("username");
-        System.out.println(username);
         String password = (String) props.get("password");
-        System.out.println(password);
         
         this.conn = DriverManager.getConnection(url, username, password);
     }
@@ -83,14 +80,19 @@ public class DatabaseManager {
      */
     public synchronized boolean insertToUnsortedData(IData data) {
         boolean succeed = false;
+        String title = data.getTitle();
+        String description = data.getDescription();
+        String location = data.getLocation();
+        String source = data.getSource();
+        String status = Status.NONE.toString();
         try {
-            String query = "INSERT INTO dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` VALUES (?,?,?,?,?,?)";
+            String query = "INSERT INTO dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` VALUES (ID,?,?,?,?,?)";
             PreparedStatement unsortedData = conn.prepareStatement(query);
-            unsortedData.setString(2, data.getTitle());
-            unsortedData.setString(3, data.getDescription());
-            unsortedData.setString(4, data.getLocation());
-            unsortedData.setString(5, data.getSource());
-            unsortedData.setString(6, Status.NONE.toString());
+            unsortedData.setString(1, data.getTitle());
+            unsortedData.setString(2, data.getDescription());
+            unsortedData.setString(3, data.getLocation());
+            unsortedData.setString(4, data.getSource());
+            unsortedData.setString(5, Status.NONE.toString());
             unsortedData.execute();
 
             System.out.println("Insert unsortedData succeeded");
@@ -119,7 +121,7 @@ public class DatabaseManager {
 
         try {
 
-            String query = "SELECT * FROM dbi294542.`UNSORTEDDATABASE` WHERE STATUS = 'NONE' ORDER BY ID";
+            String query = "SELECT * FROM dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` WHERE STATUS = 'NONE' ORDER BY ID";
             String update = "";
             PreparedStatement readData = conn.prepareStatement(query);
             ResultSet result = readData.executeQuery();
@@ -140,7 +142,7 @@ public class DatabaseManager {
             //update data
             for(UnsortedData x : unsorted)
             {
-            update = "UPDATE dbi294542.`UNSORTEDDATABASE` SET STATUS = 'INPROCESS' WHERE ID = " + x.getId();
+            update = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET STATUS = 'INPROCESS' WHERE ID = " + x.getId();
             PreparedStatement updateData = conn.prepareStatement(update);
             updateData.execute();
             System.out.println("Updating status succeed");
@@ -181,7 +183,7 @@ public class DatabaseManager {
             
            // openConnectionUnsorted();
             //delete from unsorteddata
-            query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET STATUS = 'COMPLEET' WHERE id = " + sorted.getId();
+            query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET STATUS = '"+Status.COMPLETED.toString()+"' WHERE id = " + sorted.getId();
             PreparedStatement unsortedData = conn.prepareStatement(query);
             unsortedData.execute();
 
@@ -228,8 +230,8 @@ public class DatabaseManager {
                     query += "'" + element.toString() + "' ";
                     aantal++;
                 } else {
-                    query += "AND IDSORTEDDATA IN (SELECT IDSORTEDDATA FROM"
-                            + "dbi294542.`SORTEDDATABASE.SORTEDDATATAGS` WHERE  '" + element.toString() + "' ";
+                    query += "AND IDSORTEDDATA IN (SELECT ID FROM"
+                            + " dbi294542.`SORTEDDATABASE.SORTEDDATATAGS` WHERE  '" + element.toString() + "' ";
                 }
             }
             for (int x = 1; x < sizeList; x++) {
@@ -281,7 +283,7 @@ public class DatabaseManager {
             //openConnectionUnsorted();
 
             for (IData x : data) {
-                String query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET STATUS = 'NONE' WHERE id = " + x.getId();
+                String query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET STATUS = '"+Status.NONE.toString()+"' WHERE id = " + x.getId();
                 PreparedStatement reset = conn.prepareStatement(query);
 
                 reset.execute();
@@ -305,7 +307,7 @@ public class DatabaseManager {
     public synchronized boolean updateStatusUnsortedData(IData data)
     {
         boolean succeed = false;
-        //dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA`
+        //dbi294542.`UNSORTEDDATABASE`
         return succeed;
     }
     
