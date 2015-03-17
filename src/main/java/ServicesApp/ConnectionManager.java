@@ -6,7 +6,7 @@
 package ServicesApp;
 
 import Shared.ConnState;
-import Shared.DataRequest;
+import Shared.ConnCommand;
 import Shared.IData;
 import Shared.ISortedData;
 import Shared.Tag;
@@ -133,7 +133,7 @@ public class ConnectionManager {
         }
         boolean output = false;
         try {
-            out.writeObject(DataRequest.UNSORTED_SEND);
+            out.writeObject(ConnCommand.UNSORTED_SEND);
             out.writeObject(data);
             out.flush();
             output = true;
@@ -170,7 +170,7 @@ public class ConnectionManager {
         }
         List<ISortedData> output = null;
         try {
-            out.writeObject(DataRequest.SORTED_GET);
+            out.writeObject(ConnCommand.SORTED_GET);
             out.writeObject(tags);
             out.flush();
             Object inObject = in.readObject();

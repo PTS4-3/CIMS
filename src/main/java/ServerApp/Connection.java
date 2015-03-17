@@ -6,7 +6,7 @@
 package ServerApp;
 
 import Shared.ConnState;
-import Shared.DataRequest;
+import Shared.ConnCommand;
 import Shared.IData;
 import Shared.ISortedData;
 import Shared.Tag;
@@ -82,8 +82,8 @@ public class Connection implements Runnable {
                             System.out.println("Connection is working as intended");
                         }
                     }
-                    if (inObject instanceof DataRequest) {
-                        DataRequest command = (DataRequest) inObject;
+                    if (inObject instanceof ConnCommand) {
+                        ConnCommand command = (ConnCommand) inObject;
                         System.out.println("-- Command: " + command.toString());
 
                         switch (command) {

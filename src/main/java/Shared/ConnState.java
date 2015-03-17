@@ -40,6 +40,8 @@ public enum ConnState {
  Option 7 - Client: DataRequest.UNSORTED_UPDATE
  -> Client: int id
  -> Client: IData
+ Option 8 - Client: DataRequest.UNSORTED_DISCARD
+ -> Client: IData
  -----
  Return to start, except on closed conn
  */

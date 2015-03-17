@@ -9,7 +9,7 @@ package Shared;
  *
  * @author Kargathia
  */
-public enum DataRequest {
+public enum ConnCommand {
     UNSORTED_SEND,
     SORTED_SEND,
     UNSORTED_GET,
