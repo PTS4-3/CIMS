@@ -16,6 +16,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
 /**
@@ -23,35 +26,48 @@ import javafx.scene.control.TextField;
  * @author Alexander
  */
 public class HeadquartersFXController implements Initializable {
-    // GUI Components
-    @FXML ListView lvUnsortedData;
-    @FXML TextField tfTitle;
-    @FXML TextField tfDescription;
-    @FXML TextField tfSource;
-    @FXML TextField tfLocation;
-    @FXML ListView lvTags;
-    @FXML ComboBox cbTags;
-    @FXML Slider sRelevance;
-    @FXML Slider sReliability;
-    @FXML Slider sQuality;
+    @FXML TabPane tabPane;
+    
+    // ProcessInfo
+    @FXML Tab tabProcessInfo;
+    @FXML ListView lvuUnsortedData;
+    @FXML TextField tfuTitle;
+    @FXML TextArea tauDescription;
+    @FXML TextField tfuSource;
+    @FXML TextField tfuLocation;
+    @FXML ComboBox cbuTags;
+    @FXML Slider suRelevance;
+    @FXML Slider suReliability;
+    @FXML Slider suQuality;
+    
+    // RequestInfo
+    @FXML Tab tabRequestInfo;
+    @FXML TextField tfrRequestTitle;
+    @FXML TextField tfrTitle;
+    @FXML TextArea tarDescription;
+    @FXML TextField tfrSource;
+    @FXML TextField tfrLocation;
+    @FXML ComboBox cbrTags;
+    
+    private IData requestData;
     
     private ConnectionManager connectionManager;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-
+        this.requestData = null;
     }
     
     public void configure(String ipAdressServer, int portnumber) {
         this.connectionManager = new ConnectionManager(ipAdressServer, portnumber);
         
         // Fill GUI with initial values
-        cbTags.setItems(FXCollections.observableArrayList(Tag.values()));
-        cbTags.getSelectionModel().selectFirst();
-        sRelevance.setValue(sRelevance.getMax() / 2);
-        sReliability.setValue(sReliability.getMax() / 2);
-        sQuality.setValue(sQuality.getMax() / 2);
-        lvUnsortedData.setItems(
+        cbuTags.setItems(FXCollections.observableArrayList(Tag.values()));
+        cbuTags.getSelectionModel().selectFirst();
+        suRelevance.setValue(suRelevance.getMax() / 2);
+        suReliability.setValue(suReliability.getMax() / 2);
+        suQuality.setValue(suQuality.getMax() / 2);
+        lvuUnsortedData.setItems(
                 FXCollections.observableList(connectionManager.getData()));
     }
     
@@ -60,18 +76,19 @@ public class HeadquartersFXController implements Initializable {
      */
     public void selectUnsortedData() {
         IData unsortedData = 
-                (IData) lvUnsortedData.getSelectionModel().getSelectedItem();
+                (IData) lvuUnsortedData.getSelectionModel().getSelectedItem();
         if(unsortedData != null) {
             // Fill GUI with information
-            tfTitle.setText(unsortedData.getTitle());
-            tfDescription.setText(unsortedData.getDescription());
-            tfSource.setText(unsortedData.getSource());
-            tfLocation.setText(unsortedData.getLocation());
-            lvTags.getItems().clear();
-            cbTags.getSelectionModel().selectFirst();
-            sRelevance.setValue(sRelevance.getMax() / 2);
-            sReliability.setValue(sReliability.getMax() / 2);
-            sQuality.setValue(sQuality.getMax() / 2);
+            tfuTitle.setText(unsortedData.getTitle());
+            tauDescription.setText(unsortedData.getDescription());
+            tfuSource.setText(unsortedData.getSource());
+            tfuLocation.setText(unsortedData.getLocation());
+            // ComboBox checks weghalen
+            //lvuTags.getItems().clear();
+            cbuTags.getSelectionModel().selectFirst();
+            suRelevance.setValue(suRelevance.getMax() / 2);
+            suReliability.setValue(suReliability.getMax() / 2);
+            suQuality.setValue(suQuality.getMax() / 2);
         }
     }
     
@@ -79,14 +96,15 @@ public class HeadquartersFXController implements Initializable {
      * Add selected tag to the data
      */
     public void addTag() {
-        try {
-            Tag tag = (Tag) cbTags.getSelectionModel().getSelectedItem();
-            if(lvTags.getItems().contains(tag)) {
-                throw new IllegalArgumentException("U heeft deze tag al toegevoegd");
-            }
-        } catch (IllegalArgumentException iaEx) {
-            System.out.println(iaEx.getMessage());
-        }
+        // Nog via checkboxcombobox
+//        try {
+//            Tag tag = (Tag) cbuTags.getSelectionModel().getSelectedItem();
+//            if(lvuTags.getItems().contains(tag)) {
+//                throw new IllegalArgumentException("U heeft deze tag al toegevoegd");
+//            }
+//        } catch (IllegalArgumentException iaEx) {
+//            System.out.println(iaEx.getMessage());
+//        }
     }
     
     /**
@@ -96,20 +114,22 @@ public class HeadquartersFXController implements Initializable {
         try {
             // Load values from GUI
             IData unsortedData = 
-                (IData) lvUnsortedData.getSelectionModel().getSelectedItem();
+                (IData) lvuUnsortedData.getSelectionModel().getSelectedItem();
             if(unsortedData == null) {
                 throw new IllegalArgumentException("Selecteer eerst een "
                         + "unsorted data");
             }
             int id = unsortedData.getId();
-            String title = tfTitle.getText();
-            String description = tfDescription.getText();
-            String source = tfSource.getText();
-            String location = tfLocation.getText();
-            HashSet<Tag> tags = new HashSet<Tag>(lvTags.getItems());
-            int relevance = (int) sRelevance.getValue();
-            int reliability = (int) sReliability.getValue();
-            int quality = (int) sQuality.getValue();
+            String title = tfuTitle.getText();
+            String description = tauDescription.getText();
+            String source = tfuSource.getText();
+            String location = tfuLocation.getText();
+            // Nog via checkboxCombobox
+            //HashSet<Tag> tags = new HashSet<Tag>(lvuTags.getItems());
+            HashSet<Tag> tags = new HashSet<Tag>();
+            int relevance = (int) suRelevance.getValue();
+            int reliability = (int) suReliability.getValue();
+            int quality = (int) suQuality.getValue();
             
             // Make and send new sorted data
             ISortedData sortedData = new SortedData(id, title, description, 
@@ -117,13 +137,13 @@ public class HeadquartersFXController implements Initializable {
             this.connectionManager.sendSortedData(sortedData);
             
             // Remove old unsorted data
-            lvUnsortedData.getItems().remove(unsortedData);
+            lvuUnsortedData.getItems().remove(unsortedData);
             
             // If less than 10 items, load new unsorted data
-            if(lvUnsortedData.getItems().size() < 10) {
-                lvUnsortedData.getItems().addAll(connectionManager.getData());
+            if(lvuUnsortedData.getItems().size() < 10) {
+                lvuUnsortedData.getItems().addAll(connectionManager.getData());
             }
-            lvUnsortedData.getSelectionModel().selectFirst();
+            lvuUnsortedData.getSelectionModel().selectFirst();
         } catch (IllegalArgumentException iaEx) {
             System.out.println(iaEx.getMessage());
         }
@@ -133,7 +153,7 @@ public class HeadquartersFXController implements Initializable {
      * Set status current data back to none
      */
     public void close() {
-        connectionManager.stopWorkingOnData(lvUnsortedData.getItems());
+        connectionManager.stopWorkingOnData(lvuUnsortedData.getItems());
     }
     
     /**
@@ -143,7 +163,7 @@ public class HeadquartersFXController implements Initializable {
         try {
             // Load values from GUI
             IData unsortedData = 
-                (IData) lvUnsortedData.getSelectionModel().getSelectedItem();
+                (IData) lvuUnsortedData.getSelectionModel().getSelectedItem();
             if(unsortedData == null) {
                 throw new IllegalArgumentException("Selecteer eerst een "
                         + "unsorted data");
@@ -154,7 +174,58 @@ public class HeadquartersFXController implements Initializable {
         }
     }
     
-    public void goToSendRequest() {
+    /**
+     * Go to the tab RequestInfo
+     */
+    public void goToRequestInfo() {
+        try {
+            // Load values from GUI
+            IData unsortedData = 
+                (IData) lvuUnsortedData.getSelectionModel().getSelectedItem();
+            if(unsortedData == null) {
+                throw new IllegalArgumentException("Selecteer eerst een "
+                        + "unsorted data");
+            }
+            // Load values into tabRequestInfo
+            this.requestData = unsortedData;
+            tfrRequestTitle.setText(this.requestData.getTitle());
+            tabPane.getSelectionModel().select(tabRequestInfo);
+            
+        } catch (IllegalArgumentException iaEx) {
+            System.out.println(iaEx.getMessage());
+        }
+    }
+    
+    /**
+     * Sends a request for more data
+     */
+    public void sendRequest() {
+        try {
+            // Load values from GUI
+            int requestId = -1;
+            if(this.requestData != null) {
+                requestId = requestData.getId();
+            }
+            String title = tfrTitle.getText();
+            String description = tarDescription.getText();
+            
+            resetRequest();
+        } catch (IllegalArgumentException iaEx) {
+            System.out.println(iaEx.getMessage());
+        }
         
+    }
+    
+    /**
+     * Resets the tabRequestInfo
+     */
+    public void resetRequest() {
+        this.requestData = null;
+        tfrRequestTitle.clear();
+        tfrTitle.clear();
+        tarDescription.clear();
+        tfrSource.clear();
+        tfrLocation.clear();
+        // uncheck checkbox-thingy
     }
 }
