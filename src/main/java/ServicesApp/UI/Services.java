@@ -13,18 +13,43 @@ import javafx.stage.Stage;
 
 /**
  *
- * @author Kargathia
+ * @author Alexander
  */
 public class Services extends Application {
+    private ServicesController controller;
 
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("ServicesFX.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("ServicesApp/ServicesFX.fxml"));
+        Parent root = (Parent) loader.load();
+        controller = (ServicesController) loader.getController();
+
+        this.configure();
 
         Scene scene = new Scene(root);
 
         stage.setScene(scene);
+        stage.setTitle("Services CIMS");
         stage.show();
+    }
+
+    private void configure() {
+        //Scanner input = new Scanner(System.in);
+        //System.out.print("Client: Voer IP-adres server in: ");
+        //String ipAdressServer = input.nextLine();
+        String ipAdressServer = "127.0.0.1";
+
+        //System.out.print("Client: Voer portnumber in: ");
+        //int portnumber = input.nextInt();
+        int portnumber = 8189;
+
+        controller.configure(ipAdressServer, portnumber);
+    }
+
+    @Override
+    public void stop() throws Exception {
+        controller.close();
+        super.stop();
     }
 
     /**
@@ -33,5 +58,4 @@ public class Services extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-
 }

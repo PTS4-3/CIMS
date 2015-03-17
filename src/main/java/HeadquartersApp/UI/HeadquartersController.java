@@ -59,9 +59,13 @@ public class HeadquartersController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         this.requestData = null;
-
     }
     
+    /**
+     * Configures connectionManager and fills GUI with initial values
+     * @param ipAdressServer
+     * @param portnumber 
+     */
     public void configure(String ipAdressServer, int portnumber) {
         this.connectionManager = new ConnectionManager(this, ipAdressServer, portnumber);
 
@@ -151,6 +155,8 @@ public class HeadquartersController implements Initializable {
             if(lvuUnsortedData.getItems().size() < 10) {
                 this.connectionManager.getData();
             }
+            
+            // Select new
             lvuUnsortedData.getSelectionModel().selectFirst();
         } catch (IllegalArgumentException iaEx) {
             System.out.println(iaEx.getMessage());

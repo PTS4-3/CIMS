@@ -5,6 +5,7 @@
  */
 package ServicesApp;
 
+import ServicesApp.UI.ServicesController;
 import Shared.ConnState;
 import Shared.ConnCommand;
 import Shared.IData;
@@ -47,7 +48,8 @@ public class ConnectionManager {
         this.defaultPort = 8189;
     }
 
-    public ConnectionManager(String defaultIP, int defaultPort) {
+    public ConnectionManager(ServicesController guiController, 
+            String defaultIP, int defaultPort) {
         this.defaultIP = defaultIP;
         this.defaultPort = defaultPort;
     }
@@ -153,7 +155,7 @@ public class ConnectionManager {
      * @param data
      * @return success
      */
-    public boolean sendUnSortedData(ISortedData data) {
+    public boolean sendUnsortedData(IData data) {
         return this.sendUnSortedData(defaultIP, defaultPort, data);
     }
 
@@ -285,6 +287,14 @@ public class ConnectionManager {
      */
     public boolean updateUnsortedData(IData data, int id){
         return this.updateUnsortedData(data, id, defaultIP, defaultPort);
+    }
+
+    public void getSendData(HashSet<Tag> tags) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void getData(int id) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }
