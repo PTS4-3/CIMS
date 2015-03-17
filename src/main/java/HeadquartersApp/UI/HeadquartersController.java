@@ -61,16 +61,20 @@ public class HeadquartersController implements Initializable {
     }
     
     public void configure(String ipAdressServer, int portnumber) {
-        this.connectionManager = new ConnectionManager(ipAdressServer, portnumber);
+        this.connectionManager = new ConnectionManager(this, ipAdressServer, portnumber);
 
         // Fill GUI with initial values
         cbuTags.setItems(FXCollections.observableArrayList(Tag.values()));
         cbuTags.getSelectionModel().selectFirst();
-        suRelevance.setValue(suRelevance.getMin());
-        suReliability.setValue(suReliability.getMin());
-        suQuality.setValue(suQuality.getMin());
-        lvuUnsortedData.setItems(
-                FXCollections.observableList(connectionManager.getData()));
+        this.connectionManager.getData();
+    }
+    
+    /**
+     * Displays the data that came from connectionManager.getData
+     * @param output 
+     */
+    public void displayData(List<IData> output) {
+        lvuUnsortedData.getItems().addAll(output);
     }
     
     /**
@@ -143,7 +147,7 @@ public class HeadquartersController implements Initializable {
             
             // If less than 10 items, load new unsorted data
             if(lvuUnsortedData.getItems().size() < 10) {
-                lvuUnsortedData.getItems().addAll(connectionManager.getData());
+                this.connectionManager.getData();
             }
             lvuUnsortedData.getSelectionModel().selectFirst();
         } catch (IllegalArgumentException iaEx) {
@@ -231,9 +235,5 @@ public class HeadquartersController implements Initializable {
         tfrSource.clear();
         tfrLocation.clear();
         // uncheck checkbox-thingy
-    }
-
-    public void displayData(List<IData> output) {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
