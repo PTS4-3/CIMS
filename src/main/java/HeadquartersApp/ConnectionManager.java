@@ -263,7 +263,23 @@ public class ConnectionManager {
      * @return
      */
     public boolean discardUnsortedData(IData data, String IP, int port){
-        return false;
+        if (!this.greetServer(IP, port)) {
+            return false;
+        }
+        boolean output = false;
+        try {
+            out.writeObject(ConnCommand.UNSORTED_DISCARD);
+            out.writeObject(data);
+            out.flush();
+            output = true;
+        } catch (IOException ex) {
+            Logger.getLogger(ConnectionManager.class.getName())
+                    .log(Level.SEVERE, null, ex);
+            output = false;
+        } finally {
+            this.closeSocket();
+        }
+        return output;
     }
 
     /**

@@ -102,6 +102,12 @@ public class Connection implements Runnable {
                             case UNSORTED_STATUS_RESET:
                                 this.resetUnsortedData();
                                 break;
+                            case UNSORTED_UPDATE:
+                                this.updateUnsortedData();
+                                break;
+                            case UNSORTED_DISCARD:
+                                this.discardUnsortedData();
+                                break;
                         }
                     }
                 }
@@ -195,6 +201,11 @@ public class Connection implements Runnable {
         }
     }
 
+    /**
+     * Updates piece of unsorted data with given id.
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     private void updateUnsortedData() throws IOException, ClassNotFoundException{
         Object inObject = in.readObject();
         if(inObject == null || !(inObject instanceof Integer)){
@@ -207,6 +218,19 @@ public class Connection implements Runnable {
             return;
         }
         ServerMain.databaseManager.updateUnsortedData(id, (IData)inObject);
+    }
+
+    /**
+     * Tells database to mark given piece of IData as discarded.
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private void discardUnsortedData() throws IOException, ClassNotFoundException {
+        Object inObject = in.readObject();
+        if(inObject == null || !(inObject instanceof IData)){
+            return;
+        }
+        ServerMain.databaseManager.discardUnsortedData((IData)inObject);
     }
 
 }

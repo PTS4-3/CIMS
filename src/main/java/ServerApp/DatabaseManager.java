@@ -292,4 +292,8 @@ public class DatabaseManager {
     public synchronized boolean updateUnsortedData(int id, IData iData) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+    void discardUnsortedData(IData iData) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }
