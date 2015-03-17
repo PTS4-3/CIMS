@@ -12,5 +12,6 @@ package Shared;
 public enum Status {
     NONE,
     INPROCESS,
-    COMPLETED
+    COMPLETED,
+    DISCARDED
 }

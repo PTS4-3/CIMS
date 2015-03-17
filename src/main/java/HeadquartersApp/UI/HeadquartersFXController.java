@@ -135,4 +135,22 @@ public class HeadquartersFXController implements Initializable {
     public void close() {
         connectionManager.stopWorkingOnData(lvUnsortedData.getItems());
     }
+    
+    /**
+     * Set status to discarded
+     */
+    public void discard() {
+        try {
+            // Load values from GUI
+            IData unsortedData = 
+                (IData) lvUnsortedData.getSelectionModel().getSelectedItem();
+            if(unsortedData == null) {
+                throw new IllegalArgumentException("Selecteer eerst een "
+                        + "unsorted data");
+            }
+            this.connectionManager.discardUnsortedData(unsortedData);
+        } catch (IllegalArgumentException iaEx) {
+            System.out.println(iaEx.getMessage());
+        }
+    }
 }
