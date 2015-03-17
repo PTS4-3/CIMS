@@ -8,6 +8,7 @@ package ServicesApp;
 import Shared.ConnState;
 import Shared.ConnCommand;
 import Shared.IData;
+import Shared.IDataRequest;
 import Shared.ISortedData;
 import Shared.Tag;
 import java.io.IOException;
@@ -201,6 +202,48 @@ public class ConnectionManager {
      */
     public List<ISortedData> getSortedData(HashSet<Tag> tags) {
         return this.getSortedData(defaultIP, defaultPort, tags);
+    }
+    
+    /**
+     * Gets all data requests conforming to all given tags. Custom IP/port
+     * @param tags
+     * @param IP
+     * @param port
+     * @return 
+     */
+    public List<IDataRequest> getDataRequests(HashSet<Tag> tags, String IP, int port){
+        return null;
+    }
+
+    /**
+     * Gets all data requests conforming to all given tags. Convenience method.
+     * @param tags
+     * @return
+     */
+    public List<IDataRequest> getRequests(HashSet<Tag> tags) {
+        return this.getDataRequests(tags, defaultIP, defaultPort);
+    }
+
+    /**
+     * Updates data with given id with given IData.
+     * @param data
+     * @param id
+     * @param IP
+     * @param port
+     * @return
+     */
+    public boolean updateUnsortedData(IData data, int id, String IP, int port){
+        return false;
+    }
+
+    /**
+     * Updates data with given id with given IData.
+     * @param data
+     * @param id
+     * @return
+     */
+    public boolean updateUnsortedData(IData data, int id){
+        return this.updateUnsortedData(data, id, defaultIP, defaultPort);
     }
 
 }
