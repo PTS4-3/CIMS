@@ -212,7 +212,32 @@ public class ConnectionManager {
      * @return 
      */
     public List<IDataRequest> getDataRequests(HashSet<Tag> tags, String IP, int port){
-        return null;
+         if (!this.greetServer(IP, port)) {
+            return null;
+        }
+        List<IDataRequest> output = null;
+        try {
+            out.writeObject(ConnCommand.UNSORTED_UPDATE_REQUEST_GET);
+            out.writeObject(tags);
+            out.flush();
+            Object inObject = in.readObject();
+            if (inObject instanceof List) {
+                List list = (List) inObject;
+                if (list.isEmpty()) {
+                    output = new ArrayList<>();
+                } else {
+                    if (list.get(0) instanceof IDataRequest) {
+                        output = (List<IDataRequest>) list;
+                    }
+                }
+            }
+        } catch (IOException | ClassNotFoundException ex) {
+            Logger.getLogger(ServicesApp.ConnectionManager.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        } finally {
+            this.closeSocket();
+        }
+        return output;
     }
 
     /**

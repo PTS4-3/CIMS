@@ -44,6 +44,9 @@ public enum ConnState {
  -> Client: IData
  Option 9 - Client: ConnCommand.UNSORTED_UPDATE_REQUEST
  -> Client: IDataRequest
+ Option 10 - Client: ConnCommand.UNSORTED_UPDATE_REQUEST_GET
+ -> Client: Set<Tag>
+ -> Server: List<IDataRequest>
  -----
  Return to start, except on closed conn
  */

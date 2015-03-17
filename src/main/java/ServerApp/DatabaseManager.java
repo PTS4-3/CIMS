@@ -358,4 +358,8 @@ public class DatabaseManager {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    List<IDataRequest> getUpdateRequests(HashSet tags) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 }

@@ -30,7 +30,6 @@ import java.util.logging.Logger;
  */
 public class Connection implements Runnable {
 
-    
     private static String eol = System.getProperty("line.separator");
     private static String fs = File.separator;
 
@@ -111,6 +110,9 @@ public class Connection implements Runnable {
                                 break;
                             case UNSORTED_UPDATE_REQUEST:
                                 this.requestDataUpdate();
+                                break;
+                            case UNSORTED_UPDATE_REQUEST_GET:
+                                this.sendDataRequests();
                                 break;
                         }
                     }
@@ -195,9 +197,9 @@ public class Connection implements Runnable {
      */
     private void resetUnsortedData() throws IOException, ClassNotFoundException {
         Object inObject = in.readObject();
-        if(inObject instanceof List){
+        if (inObject instanceof List) {
             List list = (List) inObject;
-            if(!list.isEmpty() && (list.get(0) instanceof IData)){
+            if (!list.isEmpty() && (list.get(0) instanceof IData)) {
                 ServerMain.databaseManager.resetUnsortedData((List<IData>) list);
             }
         } else {
@@ -207,12 +209,13 @@ public class Connection implements Runnable {
 
     /**
      * Updates piece of unsorted data with given id.
+     *
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    private void updateUnsortedData() throws IOException, ClassNotFoundException{
+    private void updateUnsortedData() throws IOException, ClassNotFoundException {
         Object inObject = in.readObject();
-        if(inObject == null || !(inObject instanceof Integer)){
+        if (inObject == null || !(inObject instanceof Integer)) {
             return;
         }
         int id = Integer.valueOf(inObject.toString());
@@ -221,20 +224,21 @@ public class Connection implements Runnable {
 //            out.writeObject(ConnState.ERROR);
             return;
         }
-        ServerMain.databaseManager.updateUnsortedData(id, (IData)inObject);
+        ServerMain.databaseManager.updateUnsortedData(id, (IData) inObject);
     }
 
     /**
      * Tells database to mark given piece of IData as discarded.
+     *
      * @throws IOException
      * @throws ClassNotFoundException
      */
     private void discardUnsortedData() throws IOException, ClassNotFoundException {
         Object inObject = in.readObject();
-        if(inObject == null || !(inObject instanceof IData)){
+        if (inObject == null || !(inObject instanceof IData)) {
             return;
         }
-        ServerMain.databaseManager.discardUnsortedData((IData)inObject);
+        ServerMain.databaseManager.discardUnsortedData((IData) inObject);
     }
 
     /**
@@ -249,6 +253,17 @@ public class Connection implements Runnable {
         }
         IDataRequest data = (IDataRequest) inObject;
         ServerMain.databaseManager.insertDataRequest(data);
+    }
+
+    private void sendDataRequests()  throws IOException,
+            ClassNotFoundException {
+        Object inObject = in.readObject();
+        if (inObject instanceof HashSet) {
+            HashSet tags = (HashSet) inObject;
+            out.writeObject(ServerMain.databaseManager.getUpdateRequests(tags));
+        } else {
+//            out.writeObject(ConnState.ERROR);
+        }
     }
 
 }
