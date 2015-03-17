@@ -258,7 +258,23 @@ public class ConnectionManager {
      * @return
      */
     public boolean updateUnsortedData(IData data, int id, String IP, int port){
-        return false;
+        if (!this.greetServer(IP, port)) {
+            return false;
+        }
+        boolean output = false;
+        try {
+            out.writeObject(ConnCommand.UNSORTED_UPDATE_SEND);
+            out.writeObject(id);
+            out.writeObject(data);
+            out.flush();
+            output = true;
+        } catch (IOException ex) {
+            Logger.getLogger(ServicesApp.ConnectionManager.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        } finally {
+            this.closeSocket();
+        }
+        return output;
     }
 
     /**
