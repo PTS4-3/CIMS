@@ -5,6 +5,7 @@
  */
 package HeadquartersApp;
 
+import HeadquartersApp.UI.HeadquartersController;
 import Shared.ConnState;
 import Shared.ConnCommand;
 import Shared.IData;
@@ -50,6 +51,7 @@ public class ConnectionManager {
      Return to start, except on closed conn
      */
     private static ExecutorService pool = Executors.newCachedThreadPool();
+    private HeadquartersController guiController = null;
     public int defaultPort = 8189;
     private String defaultIP;
 
@@ -59,12 +61,16 @@ public class ConnectionManager {
     private ObjectOutputStream out = null;
     Socket socket = null;
 
-    public ConnectionManager(String defaultIP) {
+    public ConnectionManager(HeadquartersController guiController,
+            String defaultIP) {
+
         this.defaultIP = defaultIP;
         this.defaultPort = 8189;
     }
-    
-    public ConnectionManager(String defaultIP, int defaultPort) {
+
+    public ConnectionManager(HeadquartersController guiController,
+            String defaultIP, int defaultPort) {
+        this.guiController = guiController;
         this.defaultIP = defaultIP;
         this.defaultPort = defaultPort;
     }
@@ -146,6 +152,18 @@ public class ConnectionManager {
      * @return success on attempting to send sorted data.
      */
     public boolean sendSortedData(String IP, int port, ISortedData data) {
+        final String myIP = IP;
+        final int myPort = port;
+        final ISortedData myData = data;
+
+        pool.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+        });
+
         if (!this.greetServer(IP, port)) {
             return false;
         }
@@ -175,47 +193,56 @@ public class ConnectionManager {
     }
 
     /**
-     * Queries server for a batch of unsorted data.
+     * Queries server for a batch of unsorted data. Automatically calls
+     * controller after data is received.
      *
      * @param IP manually provided
      * @param port manually provided
-     * @return batch of data. Null on general error.
      */
-    public List<IData> getData(String IP, int port) {
-        if (!this.greetServer(IP, port)) {
-            return null;
-        }
-        List<IData> output = null;
-        try {
-            out.writeObject(ConnCommand.UNSORTED_GET);
-            out.flush();
-            Object inObject = in.readObject();
-            if (inObject instanceof List) {
-                List list = (List) inObject;
-                if (list.isEmpty()) {
-                    output = new ArrayList<>();
-                } else {
-                    if (list.get(0) instanceof IData) {
-                        output = (List<IData>) list;
+    public void getData(String IP, int port) {
+        final String myIP = IP;
+        final int myPort = port;
+
+        pool.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                if (!greetServer(myIP, myPort)) {
+                    return;
+                }
+                List<IData> output = null;
+                try {
+                    out.writeObject(ConnCommand.UNSORTED_GET);
+                    out.flush();
+                    Object inObject = in.readObject();
+                    if (inObject instanceof List) {
+                        List list = (List) inObject;
+                        if (list.isEmpty()) {
+                            output = new ArrayList<>();
+                        } else {
+                            if (list.get(0) instanceof IData) {
+                                output = (List<IData>) list;
+                            }
+                        }
+                        guiController.displayData(output);
                     }
+                } catch (IOException | ClassNotFoundException ex) {
+                    Logger.getLogger(ConnectionManager.class.getName())
+                            .log(Level.SEVERE, null, ex);
+                } finally {
+                    closeSocket();
                 }
             }
-        } catch (IOException | ClassNotFoundException ex) {
-            Logger.getLogger(ConnectionManager.class.getName())
-                    .log(Level.SEVERE, null, ex);
-        } finally {
-            this.closeSocket();
-        }
-        return output;
+        });
+
     }
 
     /**
      * Queries server for batch of unsorted data from default IP / port.
-     *
-     * @return batch.
+     * Automatically calls HeadquartersController.displayData(data) on completion
      */
-    public List<IData> getData() {
-        return getData(defaultIP, defaultPort);
+    public void getData() {
+        getData(defaultIP, defaultPort);
     }
 
     /**
@@ -263,7 +290,7 @@ public class ConnectionManager {
      * @param port
      * @return
      */
-    public boolean discardUnsortedData(IData data, String IP, int port){
+    public boolean discardUnsortedData(IData data, String IP, int port) {
         if (!this.greetServer(IP, port)) {
             return false;
         }
@@ -284,15 +311,15 @@ public class ConnectionManager {
     }
 
     /**
-     * 
+     *
      * @param data
      * @return
      */
-    public boolean discardUnsortedData(IData data){
+    public boolean discardUnsortedData(IData data) {
         return this.discardUnsortedData(data, defaultIP, defaultPort);
     }
-    
-    public boolean requestUpdate(IDataRequest data, String IP, int port){
+
+    public boolean requestUpdate(IDataRequest data, String IP, int port) {
         if (!this.greetServer(IP, port)) {
             return false;
         }
@@ -312,7 +339,7 @@ public class ConnectionManager {
         return output;
     }
 
-    public boolean requestUpdate(IDataRequest data){
+    public boolean requestUpdate(IDataRequest data) {
         return this.requestUpdate(data, defaultIP, defaultPort);
     }
 }

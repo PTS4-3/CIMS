@@ -9,6 +9,7 @@ import HeadquartersApp.*;
 import Shared.*;
 import java.net.URL;
 import java.util.HashSet;
+import java.util.List;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -56,11 +57,12 @@ public class HeadquartersController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         this.requestData = null;
+
     }
     
     public void configure(String ipAdressServer, int portnumber) {
         this.connectionManager = new ConnectionManager(ipAdressServer, portnumber);
-        
+
         // Fill GUI with initial values
         cbuTags.setItems(FXCollections.observableArrayList(Tag.values()));
         cbuTags.getSelectionModel().selectFirst();
@@ -153,7 +155,9 @@ public class HeadquartersController implements Initializable {
      * Set status current data back to none
      */
     public void close() {
-        connectionManager.stopWorkingOnData(lvuUnsortedData.getItems());
+        if(this.connectionManager != null){
+            this.connectionManager.stopWorkingOnData(lvuUnsortedData.getItems());
+        }
     }
     
     /**
@@ -227,5 +231,9 @@ public class HeadquartersController implements Initializable {
         tfrSource.clear();
         tfrLocation.clear();
         // uncheck checkbox-thingy
+    }
+
+    public void displayData(List<IData> output) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
