@@ -46,7 +46,7 @@ public class Headquarters extends Application {
 
         //System.out.print("Client: Voer portnumber in: ");
         //int portnumber = input.nextInt();
-        int portnumber = 1099;
+        int portnumber = 8189;
 
         controller.configure(ipAdressServer, portnumber);
     }

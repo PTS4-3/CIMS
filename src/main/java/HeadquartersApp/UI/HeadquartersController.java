@@ -5,9 +5,11 @@
  */
 package HeadquartersApp.UI;
 
+import HeadquartersApp.Connection.ConnectionManager;
 import HeadquartersApp.*;
 import Shared.*;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -160,7 +162,8 @@ public class HeadquartersController implements Initializable {
      */
     public void close() {
         if(this.connectionManager != null){
-            this.connectionManager.stopWorkingOnData(lvuUnsortedData.getItems());
+            this.connectionManager.stopWorkingOnData(
+                    new ArrayList<>(lvuUnsortedData.getItems()));
         }
     }
     

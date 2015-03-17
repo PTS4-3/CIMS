@@ -3,11 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package HeadquartersApp;
+package HeadquartersApp.Connection;
 
+import static HeadquartersApp.Connection.ConnectionManager.pool;
 import HeadquartersApp.UI.HeadquartersController;
-import Shared.ConnState;
 import Shared.ConnCommand;
+import Shared.ConnState;
 import Shared.IData;
 import Shared.IDataRequest;
 import Shared.ISortedData;
@@ -19,8 +20,6 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,52 +27,13 @@ import java.util.logging.Logger;
  *
  * @author Kargathia
  */
-public class ConnectionManager {
-
-    /*
-     Connection start ->
-     Server: ConnState.CONNECTED
-     ------
-     Option 1 - Client: ConnState.DONE
-     -> Closes down connection
-     Option 2 - Client: ConnCommand.SORTED_GET
-     -> Client: Set<Tag>
-     -> Server: List<ISortedData>
-     Option 3 - Client: ConnCommand.SORTED_SEND
-     -> Client: ISortedData
-     Option 4 - Client: ConnCommand.UNSORTED_GET
-     -> Server: List<IData>
-     Option 5 - Client: ConnCommand.UNSORTED_SEND
-     -> Client: IData
-     Option 6 - Client: ConnCommand.UNSORTED_RESET
-     -> Client: List<IData>
-     -----
-     Return to start, except on closed conn
-     */
-    private static ExecutorService pool = Executors.newCachedThreadPool();
-    private HeadquartersController guiController = null;
-    public int defaultPort = 8189;
-    private String defaultIP;
+public class Connection {
 
     private InputStream inStream = null;
     private OutputStream outStream = null;
     private ObjectInputStream in = null;
     private ObjectOutputStream out = null;
     Socket socket = null;
-
-    public ConnectionManager(HeadquartersController guiController,
-            String defaultIP) {
-
-        this.defaultIP = defaultIP;
-        this.defaultPort = 8189;
-    }
-
-    public ConnectionManager(HeadquartersController guiController,
-            String defaultIP, int defaultPort) {
-        this.guiController = guiController;
-        this.defaultIP = defaultIP;
-        this.defaultPort = defaultPort;
-    }
 
     /**
      * Connects to Server
@@ -150,12 +110,12 @@ public class ConnectionManager {
      * @param port manually provided.
      * @param data
      */
-    public void sendSortedData(String IP, int port, ISortedData data) {
+    void sendSortedData(String IP, int port, ISortedData data) {
         final String myIP = IP;
         final int myPort = port;
         final ISortedData myData = data;
 
-        pool.execute(new Runnable() {
+        ConnectionManager.pool.execute(new Runnable() {
 
             @Override
             public void run() {
@@ -178,22 +138,14 @@ public class ConnectionManager {
     }
 
     /**
-     * Sends sorted data to server @ default IP / port
-     *
-     * @param data
-     */
-    public void sendSortedData(ISortedData data) {
-        this.sendSortedData(defaultIP, defaultPort, data);
-    }
-
-    /**
      * Queries server for a batch of unsorted data. Automatically calls
      * controller after data is received.
      *
      * @param IP manually provided
      * @param port manually provided
      */
-    public void getData(String IP, int port) {
+    void getData(String IP, int port, HeadquartersController guiController) {
+        System.out.println("trying to get data");
         final String myIP = IP;
         final int myPort = port;
 
@@ -231,23 +183,14 @@ public class ConnectionManager {
     }
 
     /**
-     * Queries server for batch of unsorted data from default IP / port.
-     * Automatically calls HeadquartersController.displayData(data) on
-     * completion
-     */
-    public void getData() {
-        getData(defaultIP, defaultPort);
-    }
-
-    /**
      * Signals server that HQ will not process this checked out data.
      *
      * @param data
      * @param IP
      * @param port
      */
-    public void stopWorkingOnData(List<IData> data, String IP, int port) {
-        final List<IData> myData = data;
+    void stopWorkingOnData(ArrayList<IData> data, String IP, int port) {
+        final ArrayList<IData> myData = data;
         final String myIP = IP;
         final int myPort = port;
 
@@ -273,15 +216,6 @@ public class ConnectionManager {
     }
 
     /**
-     * Signals server that HQ will not process this list of data.
-     *
-     * @param data
-     */
-    public void stopWorkingOnData(List<IData> data) {
-        this.stopWorkingOnData(data, defaultIP, defaultPort);
-    }
-
-    /**
      * Signals server that this headquarters client is no longer working on
      * given data.
      *
@@ -289,7 +223,7 @@ public class ConnectionManager {
      * @param IP
      * @param port
      */
-    public void discardUnsortedData(IData data, String IP, int port) {
+    void discardUnsortedData(IData data, String IP, int port) {
         final IData myData = data;
         final String myIP = IP;
         final int myPort = port;
@@ -316,22 +250,12 @@ public class ConnectionManager {
     }
 
     /**
-     * Signals server that this headquarters client is no longer working on
-     * given data.
-     *
-     * @param data
-     */
-    public void discardUnsortedData(IData data) {
-        this.discardUnsortedData(data, defaultIP, defaultPort);
-    }
-
-    /**
      * Files a request for an update of given piece of data with the server.
      * @param data
      * @param IP
      * @param port
      */
-    public void requestUpdate(IDataRequest data, String IP, int port) {
+    void requestUpdate(IDataRequest data, String IP, int port) {
         final IDataRequest myData = data;
         final String myIP = IP;
         final int myPort = port;
@@ -357,11 +281,4 @@ public class ConnectionManager {
         });
     }
 
-    /**
-     * Files a request for an update of given piece of data with the server.
-     * @param data
-     */
-    public void requestUpdate(IDataRequest data) {
-        this.requestUpdate(data, defaultIP, defaultPort);
-    }
 }

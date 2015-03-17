@@ -5,11 +5,13 @@
  */
 package Shared;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Alexander
  */
-public interface IData {
+public interface IData extends Serializable{
     int getId();
     String getTitle();
     String getDescription();

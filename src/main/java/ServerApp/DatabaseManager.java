@@ -344,6 +344,7 @@ public class DatabaseManager {
     public void closeConnection() {
         try {
             conn.close();
+            conn = null;
             System.out.println("Connection close succeeded");
         } catch (SQLException ex) {
             System.out.println("Connection close failed: " + ex);

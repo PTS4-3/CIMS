@@ -53,11 +53,21 @@ public class ConnectionManager {
 
             @Override
             public void run() {
+                ServerSocket mySocket = null;
+                try {
+                    mySocket = new ServerSocket(defaultPort);
+                } catch (IOException ex) {
+                    System.out.println("Unable to start serversocket: "
+                            + ex.getMessage());
+                    Logger.getLogger(ConnectionManager.class.getName())
+                            .log(Level.SEVERE, null, ex);
+                    return;
+                }
+                System.out.println("Server started");
+
                 while (true) {
 
                     try {
-                        ServerSocket mySocket = new ServerSocket(defaultPort);
-                        System.out.println("Server started");
 
                         // threadblocking until a connection is made,
                         // then starts a new runnable for it.
@@ -68,12 +78,12 @@ public class ConnectionManager {
                         pool.execute(new Connection(incoming));
 
                     } catch (IOException ex) {
-                        Logger.getLogger(ConnectionManager.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(ConnectionManager.class.getName())
+                                .log(Level.SEVERE, null, ex);
                     }
                 }
             }
         });
     }
 
-    
 }
