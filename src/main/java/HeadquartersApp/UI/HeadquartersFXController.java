@@ -64,9 +64,9 @@ public class HeadquartersFXController implements Initializable {
         // Fill GUI with initial values
         cbuTags.setItems(FXCollections.observableArrayList(Tag.values()));
         cbuTags.getSelectionModel().selectFirst();
-        suRelevance.setValue(suRelevance.getMax() / 2);
-        suReliability.setValue(suReliability.getMax() / 2);
-        suQuality.setValue(suQuality.getMax() / 2);
+        suRelevance.setValue(suRelevance.getMin());
+        suReliability.setValue(suReliability.getMin());
+        suQuality.setValue(suQuality.getMin());
         lvuUnsortedData.setItems(
                 FXCollections.observableList(connectionManager.getData()));
     }
@@ -86,9 +86,9 @@ public class HeadquartersFXController implements Initializable {
             // ComboBox checks weghalen
             //lvuTags.getItems().clear();
             cbuTags.getSelectionModel().selectFirst();
-            suRelevance.setValue(suRelevance.getMax() / 2);
-            suReliability.setValue(suReliability.getMax() / 2);
-            suQuality.setValue(suQuality.getMax() / 2);
+            suRelevance.setValue(suRelevance.getMin());
+            suReliability.setValue(suReliability.getMin());
+            suQuality.setValue(suQuality.getMin());
         }
     }
     

@@ -20,16 +20,16 @@ import javafx.stage.Stage;
  */
 public class Headquarters extends Application {
 
-//    private HeadquartersFXController controller;
+    private HeadquartersFXController controller;
 
     @Override
     public void start(Stage stage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("HeadquartersApp/HeadquartersFX.fxml"));
         System.out.println(loader.getLocation().toString());
         Parent root = (Parent) loader.load();
-        HeadquartersFXController controllerX = (HeadquartersFXController) loader.getController();
+        controller = (HeadquartersFXController) loader.getController();
 
-//        this.configure();
+        this.configure();
 
         Scene scene = new Scene(root);
 
@@ -38,7 +38,7 @@ public class Headquarters extends Application {
         stage.show();
     }
 
-    private void configure(HeadquartersFXController controller) {
+    private void configure() {
         //Scanner input = new Scanner(System.in);
         //System.out.print("Client: Voer IP-adres server in: ");
         //String ipAdressServer = input.nextLine();
@@ -51,11 +51,11 @@ public class Headquarters extends Application {
         controller.configure(ipAdressServer, portnumber);
     }
 
-//    @Override
-//    public void stop() throws Exception {
-//        controller.close();
-//        super.stop();
-//    }
+    @Override
+    public void stop() throws Exception {
+        controller.close();
+        super.stop();
+    }
 
     /**
      * @param args the command line arguments
