@@ -6,8 +6,9 @@
 package ServicesApp;
 
 import Shared.ConnState;
-import Shared.DataRequest;
+import Shared.ConnCommand;
 import Shared.IData;
+import Shared.IDataRequest;
 import Shared.ISortedData;
 import Shared.Tag;
 import java.io.IOException;
@@ -133,7 +134,7 @@ public class ConnectionManager {
         }
         boolean output = false;
         try {
-            out.writeObject(DataRequest.UNSORTED_SEND);
+            out.writeObject(ConnCommand.UNSORTED_SEND);
             out.writeObject(data);
             out.flush();
             output = true;
@@ -170,7 +171,7 @@ public class ConnectionManager {
         }
         List<ISortedData> output = null;
         try {
-            out.writeObject(DataRequest.SORTED_GET);
+            out.writeObject(ConnCommand.SORTED_GET);
             out.writeObject(tags);
             out.flush();
             Object inObject = in.readObject();
@@ -201,6 +202,48 @@ public class ConnectionManager {
      */
     public List<ISortedData> getSortedData(HashSet<Tag> tags) {
         return this.getSortedData(defaultIP, defaultPort, tags);
+    }
+    
+    /**
+     * Gets all data requests conforming to all given tags. Custom IP/port
+     * @param tags
+     * @param IP
+     * @param port
+     * @return 
+     */
+    public List<IDataRequest> getDataRequests(HashSet<Tag> tags, String IP, int port){
+        return null;
+    }
+
+    /**
+     * Gets all data requests conforming to all given tags. Convenience method.
+     * @param tags
+     * @return
+     */
+    public List<IDataRequest> getRequests(HashSet<Tag> tags) {
+        return this.getDataRequests(tags, defaultIP, defaultPort);
+    }
+
+    /**
+     * Updates data with given id with given IData.
+     * @param data
+     * @param id
+     * @param IP
+     * @param port
+     * @return
+     */
+    public boolean updateUnsortedData(IData data, int id, String IP, int port){
+        return false;
+    }
+
+    /**
+     * Updates data with given id with given IData.
+     * @param data
+     * @param id
+     * @return
+     */
+    public boolean updateUnsortedData(IData data, int id){
+        return this.updateUnsortedData(data, id, defaultIP, defaultPort);
     }
 
 }

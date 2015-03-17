@@ -6,8 +6,9 @@
 package HeadquartersApp;
 
 import Shared.ConnState;
-import Shared.DataRequest;
+import Shared.ConnCommand;
 import Shared.IData;
+import Shared.IDataRequest;
 import Shared.ISortedData;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,16 +35,16 @@ public class ConnectionManager {
      ------
      Option 1 - Client: ConnState.DONE
      -> Closes down connection
-     Option 2 - Client: DataRequest.SORTED_GET
+     Option 2 - Client: ConnCommand.SORTED_GET
      -> Client: Set<Tag>
      -> Server: List<ISortedData>
-     Option 3 - Client: DataRequest.SORTED_SEND
+     Option 3 - Client: ConnCommand.SORTED_SEND
      -> Client: ISortedData
-     Option 4 - Client: DataRequest.UNSORTED_GET
+     Option 4 - Client: ConnCommand.UNSORTED_GET
      -> Server: List<IData>
-     Option 5 - Client: DataRequest.UNSORTED_SEND
+     Option 5 - Client: ConnCommand.UNSORTED_SEND
      -> Client: IData
-     Option 6 - Client: DataRequest.UNSORTED_RESET
+     Option 6 - Client: ConnCommand.UNSORTED_RESET
      -> Client: List<IData>
      -----
      Return to start, except on closed conn
@@ -150,7 +151,7 @@ public class ConnectionManager {
         }
         boolean output = false;
         try {
-            out.writeObject(DataRequest.SORTED_SEND);
+            out.writeObject(ConnCommand.SORTED_SEND);
             out.writeObject(data);
             out.flush();
             output = true;
@@ -186,7 +187,7 @@ public class ConnectionManager {
         }
         List<IData> output = null;
         try {
-            out.writeObject(DataRequest.UNSORTED_GET);
+            out.writeObject(ConnCommand.UNSORTED_GET);
             out.flush();
             Object inObject = in.readObject();
             if (inObject instanceof List) {
@@ -231,7 +232,7 @@ public class ConnectionManager {
         }
         boolean output = false;
         try {
-            out.writeObject(DataRequest.UNSORTED_STATUS_RESET);
+            out.writeObject(ConnCommand.UNSORTED_STATUS_RESET);
             out.writeObject(data);
             out.flush();
             output = true;
@@ -253,5 +254,65 @@ public class ConnectionManager {
      */
     public boolean stopWorkingOnData(List<IData> data) {
         return this.stopWorkingOnData(data, defaultIP, defaultPort);
+    }
+
+    /**
+     *
+     * @param data
+     * @param IP
+     * @param port
+     * @return
+     */
+    public boolean discardUnsortedData(IData data, String IP, int port){
+        if (!this.greetServer(IP, port)) {
+            return false;
+        }
+        boolean output = false;
+        try {
+            out.writeObject(ConnCommand.UNSORTED_DISCARD);
+            out.writeObject(data);
+            out.flush();
+            output = true;
+        } catch (IOException ex) {
+            Logger.getLogger(ConnectionManager.class.getName())
+                    .log(Level.SEVERE, null, ex);
+            output = false;
+        } finally {
+            this.closeSocket();
+        }
+        return output;
+    }
+
+    /**
+     * 
+     * @param data
+     * @return
+     */
+    public boolean discardUnsortedData(IData data){
+        return this.discardUnsortedData(data, defaultIP, defaultPort);
+    }
+    
+    public boolean requestUpdate(IDataRequest data, String IP, int port){
+        if (!this.greetServer(IP, port)) {
+            return false;
+        }
+        boolean output = false;
+        try {
+            out.writeObject(ConnCommand.UNSORTED_UPDATE_REQUEST);
+            out.writeObject(data);
+            out.flush();
+            output = true;
+        } catch (IOException ex) {
+            Logger.getLogger(ConnectionManager.class.getName())
+                    .log(Level.SEVERE, null, ex);
+            output = false;
+        } finally {
+            this.closeSocket();
+        }
+        return output;
+    }
+
+    public boolean requestUpdate(IDataRequest data){
+        return this.requestUpdate(data, defaultIP, defaultPort);
     }
 }

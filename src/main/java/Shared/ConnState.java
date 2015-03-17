@@ -26,20 +26,24 @@ public enum ConnState {
  ------
  Option 1 - Client: ConnState.DONE
  -> Closes down connection
- Option 2 - Client: DataRequest.SORTED_GET
+ Option 2 - Client: ConnCommand.SORTED_GET
  -> Client: Set<Tag>
  -> Server: List<ISortedData>
- Option 3 - Client: DataRequest.SORTED_SEND
+ Option 3 - Client: ConnCommand.SORTED_SEND
  -> Client: ISortedData
- Option 4 - Client: DataRequest.UNSORTED_GET
+ Option 4 - Client: ConnCommand.UNSORTED_GET
  -> Server: List<IData>
- Option 5 - Client: DataRequest.UNSORTED_SEND
+ Option 5 - Client: ConnCommand.UNSORTED_SEND
  -> Client: IData
- Option 6 - Client: DataRequest.UNSORTED_STATUS_RESET
+ Option 6 - Client: ConnCommand.UNSORTED_STATUS_RESET
  -> Client: List<IData>
- Option 7 - Client: DataRequest.UNSORTED_UPDATE
+ Option 7 - Client: ConnCommand.UNSORTED_UPDATE_SEND
  -> Client: int id
  -> Client: IData
+ Option 8 - Client: ConnCommand.UNSORTED_DISCARD
+ -> Client: IData
+ Option 9 - Client: ConnCommand.UNSORTED_UPDATE_REQUEST
+ -> Client: IDataRequest
  -----
  Return to start, except on closed conn
  */

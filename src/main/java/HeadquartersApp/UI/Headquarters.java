@@ -20,40 +20,39 @@ import javafx.stage.Stage;
  */
 public class Headquarters extends Application {
 
-    private FXMLLoader fxmlLoader;
-    
+    private HeadquartersFXController controller;
+
     @Override
     public void start(Stage stage) throws Exception {
-        URL location = getClass().getResource("HeadquartersFX.fxml");  
-        fxmlLoader = new FXMLLoader();  
-        fxmlLoader.setLocation(location);  
-        fxmlLoader.setBuilderFactory(new JavaFXBuilderFactory());  
-        Parent root = (Parent) fxmlLoader.load(location.openStream());
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("HeadquartersFX.fxml"));
+        Parent root = (Parent) loader.load();
+        controller = (HeadquartersFXController) loader.getController();
+
         this.configure();
-        
+
         Scene scene = new Scene(root);
-        
+
         stage.setScene(scene);
         stage.setTitle("Headquarters CIMS");
         stage.show();
     }
-    
-    private void configure(){        
+
+    private void configure() {
         //Scanner input = new Scanner(System.in);
         //System.out.print("Client: Voer IP-adres server in: ");
         //String ipAdressServer = input.nextLine();
         String ipAdressServer = "127.0.0.1";
-                
+
         //System.out.print("Client: Voer portnumber in: ");
         //int portnumber = input.nextInt();
         int portnumber = 1099;
-        
-        ((HeadquartersFXController) fxmlLoader.getController()).configure(ipAdressServer, portnumber);
+
+        controller.configure(ipAdressServer, portnumber);
     }
-    
+
     @Override
     public void stop() throws Exception {
-        ((HeadquartersFXController) fxmlLoader.getController()).close();
+        controller.close();
         super.stop();
     }
 

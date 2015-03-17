@@ -6,6 +6,7 @@
 package ServerApp;
 
 import Shared.IData;
+import Shared.IDataRequest;
 import Shared.ISortedData;
 import Shared.SortedData;
 import Shared.Status;
@@ -370,5 +371,25 @@ public class DatabaseManager {
 
     }
 
+<<<<<<< HEAD
     
+=======
+    /**
+     * Updates piece of unsorted data with given id. 
+     * @param id
+     * @param iData 
+     * @return false if id not found
+     */
+    public synchronized boolean updateUnsortedData(int id, IData iData) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    void discardUnsortedData(IData iData) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    void insertDataRequest(IDataRequest data) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+>>>>>>> origin/master
 }

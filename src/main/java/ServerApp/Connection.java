@@ -6,8 +6,9 @@
 package ServerApp;
 
 import Shared.ConnState;
-import Shared.DataRequest;
+import Shared.ConnCommand;
 import Shared.IData;
+import Shared.IDataRequest;
 import Shared.ISortedData;
 import Shared.Tag;
 import java.io.File;
@@ -82,8 +83,8 @@ public class Connection implements Runnable {
                             System.out.println("Connection is working as intended");
                         }
                     }
-                    if (inObject instanceof DataRequest) {
-                        DataRequest command = (DataRequest) inObject;
+                    if (inObject instanceof ConnCommand) {
+                        ConnCommand command = (ConnCommand) inObject;
                         System.out.println("-- Command: " + command.toString());
 
                         switch (command) {
@@ -101,6 +102,15 @@ public class Connection implements Runnable {
                                 break;
                             case UNSORTED_STATUS_RESET:
                                 this.resetUnsortedData();
+                                break;
+                            case UNSORTED_UPDATE_SEND:
+                                this.updateUnsortedData();
+                                break;
+                            case UNSORTED_DISCARD:
+                                this.discardUnsortedData();
+                                break;
+                            case UNSORTED_UPDATE_REQUEST:
+                                this.requestDataUpdate();
                                 break;
                         }
                     }
@@ -195,6 +205,11 @@ public class Connection implements Runnable {
         }
     }
 
+    /**
+     * Updates piece of unsorted data with given id.
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     private void updateUnsortedData() throws IOException, ClassNotFoundException{
         Object inObject = in.readObject();
         if(inObject == null || !(inObject instanceof Integer)){
@@ -207,6 +222,33 @@ public class Connection implements Runnable {
             return;
         }
         ServerMain.databaseManager.updateUnsortedData(id, (IData)inObject);
+    }
+
+    /**
+     * Tells database to mark given piece of IData as discarded.
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private void discardUnsortedData() throws IOException, ClassNotFoundException {
+        Object inObject = in.readObject();
+        if(inObject == null || !(inObject instanceof IData)){
+            return;
+        }
+        ServerMain.databaseManager.discardUnsortedData((IData)inObject);
+    }
+
+    /**
+     * Files a request for an update to given piece of info.
+     */
+    private void requestDataUpdate() throws IOException,
+            ClassNotFoundException {
+        Object inObject = in.readObject();
+        if (!(inObject instanceof IDataRequest) || inObject == null) {
+//            out.writeObject(ConnState.ERROR);
+            return;
+        }
+        IDataRequest data = (IDataRequest) inObject;
+        ServerMain.databaseManager.insertDataRequest(data);
     }
 
 }
