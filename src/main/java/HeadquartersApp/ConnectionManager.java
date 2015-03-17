@@ -254,4 +254,24 @@ public class ConnectionManager {
     public boolean stopWorkingOnData(List<IData> data) {
         return this.stopWorkingOnData(data, defaultIP, defaultPort);
     }
+
+    /**
+     *
+     * @param data
+     * @param IP
+     * @param port
+     * @return
+     */
+    public boolean discardUnsortedData(IData data, String IP, int port){
+        return false;
+    }
+
+    /**
+     * 
+     * @param data
+     * @return
+     */
+    public boolean discardUnsortedData(IData data){
+        return this.discardUnsortedData(data, defaultIP, defaultPort);
+    }
 }
