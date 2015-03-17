@@ -51,9 +51,9 @@ public class TestDatabase {
         
         tag.add(Tag.FIREDEPARTMENT);
         Status status = Status.NONE;
-        sorted = new SortedData(1, "Brand bejaarde huis","Brand bejaarde huis centrum echt, kamer 73", "Eindhoven centrum",
+        sorted = new SortedData(1, "Brand bejaarde huis","Brand bejaarde huis centrum eindhoven, kamer 73", "Eindhoven centrum",
                 "brandweer", 35, 35, 35, tag);
-        unsorted = new UnsortedData(1, "Brand bejaarde huis","Brand bejaarde huis centrum echt, kamer 73", "Eindhoven centrum"
+        unsorted = new UnsortedData(1, "Brand bejaarde huis","Brand bejaarde huis centrum eindhoven, kamer 73", "Eindhoven centrum"
                 , "brandweer", status);
         
     }
@@ -68,11 +68,12 @@ public class TestDatabase {
     // @Test
     // public void hello() {}
     
+    
     @Test
     public void TestConnectie()
     {
-        database.openConnection();
-        database.closeConnection();
+        //database.openConnectionSorted();
+        //database.closeConnection();
     }
     
     @Test
