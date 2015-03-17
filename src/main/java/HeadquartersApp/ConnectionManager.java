@@ -149,9 +149,8 @@ public class ConnectionManager {
      * @param IP manually provided.
      * @param port manually provided.
      * @param data
-     * @return success on attempting to send sorted data.
      */
-    public boolean sendSortedData(String IP, int port, ISortedData data) {
+    public void sendSortedData(String IP, int port, ISortedData data) {
         final String myIP = IP;
         final int myPort = port;
         final ISortedData myData = data;
@@ -160,36 +159,31 @@ public class ConnectionManager {
 
             @Override
             public void run() {
-                throw new UnsupportedOperationException("Not supported yet.");
+                if (!greetServer(myIP, myPort)) {
+                    return;
+                }
+                try {
+                    out.writeObject(ConnCommand.SORTED_SEND);
+                    out.writeObject(myData);
+                    out.flush();
+                } catch (IOException ex) {
+                    Logger.getLogger(ConnectionManager.class.getName())
+                            .log(Level.SEVERE, null, ex);
+                } finally {
+                    closeSocket();
+                }
             }
         });
 
-        if (!this.greetServer(IP, port)) {
-            return false;
-        }
-        boolean output = false;
-        try {
-            out.writeObject(ConnCommand.SORTED_SEND);
-            out.writeObject(data);
-            out.flush();
-            output = true;
-        } catch (IOException ex) {
-            Logger.getLogger(ConnectionManager.class.getName())
-                    .log(Level.SEVERE, null, ex);
-        } finally {
-            this.closeSocket();
-        }
-        return output;
     }
 
     /**
      * Sends sorted data to server @ default IP / port
      *
      * @param data
-     * @return success
      */
-    public boolean sendSortedData(ISortedData data) {
-        return this.sendSortedData(defaultIP, defaultPort, data);
+    public void sendSortedData(ISortedData data) {
+        this.sendSortedData(defaultIP, defaultPort, data);
     }
 
     /**
@@ -234,12 +228,12 @@ public class ConnectionManager {
                 }
             }
         });
-
     }
 
     /**
      * Queries server for batch of unsorted data from default IP / port.
-     * Automatically calls HeadquartersController.displayData(data) on completion
+     * Automatically calls HeadquartersController.displayData(data) on
+     * completion
      */
     public void getData() {
         getData(defaultIP, defaultPort);
@@ -251,95 +245,123 @@ public class ConnectionManager {
      * @param data
      * @param IP
      * @param port
-     * @return
      */
-    public boolean stopWorkingOnData(List<IData> data, String IP, int port) {
-        if (!this.greetServer(IP, port)) {
-            return false;
-        }
-        boolean output = false;
-        try {
-            out.writeObject(ConnCommand.UNSORTED_STATUS_RESET);
-            out.writeObject(data);
-            out.flush();
-            output = true;
-        } catch (IOException ex) {
-            Logger.getLogger(ConnectionManager.class.getName())
-                    .log(Level.SEVERE, null, ex);
-            output = false;
-        } finally {
-            this.closeSocket();
-        }
-        return output;
+    public void stopWorkingOnData(List<IData> data, String IP, int port) {
+        final List<IData> myData = data;
+        final String myIP = IP;
+        final int myPort = port;
+
+        pool.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                if (!greetServer(myIP, myPort)) {
+                    return;
+                }
+                try {
+                    out.writeObject(ConnCommand.UNSORTED_STATUS_RESET);
+                    out.writeObject(myData);
+                    out.flush();
+                } catch (IOException ex) {
+                    Logger.getLogger(ConnectionManager.class.getName())
+                            .log(Level.SEVERE, null, ex);
+                } finally {
+                    closeSocket();
+                }
+            }
+        });
     }
 
     /**
-     * Signals server that HQ will nto process this list of data.
+     * Signals server that HQ will not process this list of data.
      *
      * @param data
-     * @return
      */
-    public boolean stopWorkingOnData(List<IData> data) {
-        return this.stopWorkingOnData(data, defaultIP, defaultPort);
+    public void stopWorkingOnData(List<IData> data) {
+        this.stopWorkingOnData(data, defaultIP, defaultPort);
     }
 
     /**
+     * Signals server that this headquarters client is no longer working on
+     * given data.
      *
      * @param data
      * @param IP
      * @param port
-     * @return
      */
-    public boolean discardUnsortedData(IData data, String IP, int port) {
-        if (!this.greetServer(IP, port)) {
-            return false;
-        }
-        boolean output = false;
-        try {
-            out.writeObject(ConnCommand.UNSORTED_DISCARD);
-            out.writeObject(data);
-            out.flush();
-            output = true;
-        } catch (IOException ex) {
-            Logger.getLogger(ConnectionManager.class.getName())
-                    .log(Level.SEVERE, null, ex);
-            output = false;
-        } finally {
-            this.closeSocket();
-        }
-        return output;
+    public void discardUnsortedData(IData data, String IP, int port) {
+        final IData myData = data;
+        final String myIP = IP;
+        final int myPort = port;
+
+        pool.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                if (!greetServer(myIP, myPort)) {
+                    return;
+                }
+                try {
+                    out.writeObject(ConnCommand.UNSORTED_DISCARD);
+                    out.writeObject(myData);
+                    out.flush();
+                } catch (IOException ex) {
+                    Logger.getLogger(ConnectionManager.class.getName())
+                            .log(Level.SEVERE, null, ex);
+                } finally {
+                    closeSocket();
+                }
+            }
+        });
     }
 
     /**
+     * Signals server that this headquarters client is no longer working on
+     * given data.
      *
      * @param data
-     * @return
      */
-    public boolean discardUnsortedData(IData data) {
-        return this.discardUnsortedData(data, defaultIP, defaultPort);
+    public void discardUnsortedData(IData data) {
+        this.discardUnsortedData(data, defaultIP, defaultPort);
     }
 
-    public boolean requestUpdate(IDataRequest data, String IP, int port) {
-        if (!this.greetServer(IP, port)) {
-            return false;
-        }
-        boolean output = false;
-        try {
-            out.writeObject(ConnCommand.UNSORTED_UPDATE_REQUEST);
-            out.writeObject(data);
-            out.flush();
-            output = true;
-        } catch (IOException ex) {
-            Logger.getLogger(ConnectionManager.class.getName())
-                    .log(Level.SEVERE, null, ex);
-            output = false;
-        } finally {
-            this.closeSocket();
-        }
-        return output;
+    /**
+     * Files a request for an update of given piece of data with the server.
+     * @param data
+     * @param IP
+     * @param port
+     */
+    public void requestUpdate(IDataRequest data, String IP, int port) {
+        final IDataRequest myData = data;
+        final String myIP = IP;
+        final int myPort = port;
+
+        pool.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                if (!greetServer(myIP, myPort)) {
+                    return;
+                }
+                try {
+                    out.writeObject(ConnCommand.UNSORTED_UPDATE_REQUEST);
+                    out.writeObject(myData);
+                    out.flush();
+                } catch (IOException ex) {
+                    Logger.getLogger(ConnectionManager.class.getName())
+                            .log(Level.SEVERE, null, ex);
+                } finally {
+                    closeSocket();
+                }
+            }
+        });
     }
 
-    public boolean requestUpdate(IDataRequest data) {
-        return this.requestUpdate(data, defaultIP, defaultPort);
+    /**
+     * Files a request for an update of given piece of data with the server.
+     * @param data
+     */
+    public void requestUpdate(IDataRequest data) {
+        this.requestUpdate(data, defaultIP, defaultPort);
     }
 }
