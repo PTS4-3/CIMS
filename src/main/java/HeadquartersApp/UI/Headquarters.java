@@ -20,21 +20,14 @@ import javafx.stage.Stage;
  */
 public class Headquarters extends Application {
 
-    private FXMLLoader fxmlLoader;
+    private HeadquartersFXController controller;
 
     @Override
     public void start(Stage stage) throws Exception {
-//        URL location = getClass().getResource("HeadquartersApp.HeadquartersFX.fxml");
-//        fxmlLoader = new FXMLLoader();
-//        fxmlLoader.setLocation(location);
-//        fxmlLoader.setBuilderFactory(new JavaFXBuilderFactory());
-//        Parent root = (Parent) fxmlLoader.load(location.openStream());
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("HeadquartersFX.fxml"));
+        Parent root = (Parent) loader.load();
+        controller = (HeadquartersFXController) loader.getController();
 
-        //FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("Login.fxm"));
-        //Parent root = (Parent) loader.load();
-        //LoginFX controller = (LoginFX) loader.getController();
-
-        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("HeadquartersFX.fxml"));
         this.configure();
 
         Scene scene = new Scene(root);
@@ -54,12 +47,12 @@ public class Headquarters extends Application {
         //int portnumber = input.nextInt();
         int portnumber = 1099;
 
-        ((HeadquartersFXController) fxmlLoader.getController()).configure(ipAdressServer, portnumber);
+        controller.configure(ipAdressServer, portnumber);
     }
 
     @Override
     public void stop() throws Exception {
-        ((HeadquartersFXController) fxmlLoader.getController()).close();
+        controller.close();
         super.stop();
     }
 
