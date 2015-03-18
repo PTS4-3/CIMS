@@ -85,7 +85,7 @@ public class ServicesController implements Initializable {
                 throw new NetworkException("Geen verbinding met server: "
                         + "Kon geen data ophalen");
             }
-            this.connectionManager.getSendData(null);
+            this.connectionManager.getSentData(null);
             if(chbsRequests.isSelected()) {
                 this.connectionManager.getRequests(null);
             }
@@ -240,7 +240,7 @@ public class ServicesController implements Initializable {
             lvuSendData.getItems().clear();
             
             // TODO tags
-            this.connectionManager.getSendData(new HashSet<Tag>());
+            this.connectionManager.getSentData(new HashSet<Tag>());
         } catch (NetworkException nEx) {
             System.out.println(nEx.getMessage());
         }
@@ -317,21 +317,13 @@ public class ServicesController implements Initializable {
                                 + "Kon data niet ophalen");
                     }
                     
-                    this.connectionManager.getData(request.getRequestId());
+                    this.connectionManager.getDataItem(request.getRequestId());
                     tabPane.getSelectionModel().select(tabUpdateInfo);
                 }
             }
         } catch (NetworkException nEx) {
             System.out.println(nEx.getMessage());
         }
-    }
-
-    public void displayRequests(List<IDataRequest> output) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public void displaySortedData(List<ISortedData> output) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public void displaySentData(List<IData> output) {
