@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  * @author Kargathia
  */
 public class ConnClientBase {
-    
+
     private InputStream inStream = null;
     private OutputStream outStream = null;
     protected ObjectInputStream in = null;
@@ -27,8 +27,8 @@ public class ConnClientBase {
     private Socket socket = null;
     protected String IP;
     protected int port;
-    
-    protected ConnClientBase(String IP, int port){
+
+    protected ConnClientBase(String IP, int port) {
         this.IP = IP;
         this.port = port;
     }
@@ -51,7 +51,7 @@ public class ConnClientBase {
             this.in = new ObjectInputStream(inStream);
 
             System.out.println("Saying hello to server");
-            out.writeObject(ConnState.CONNECTED);
+            out.writeObject(ConnState.CONNECTION_START);
             out.flush();
 
             // checks whether connection with server is up and running
@@ -62,17 +62,20 @@ public class ConnClientBase {
                     inObject = in.readObject();
 
                     if ((inObject instanceof ConnState)
-                            && (ConnState) inObject == ConnState.CONNECTED) {
+                            && (ConnState) inObject == ConnState.CONNECTION_START) {
                         System.out.println("Connected to server");
                         doneSayingHello = true;
                     } else {
                         System.out.println("no valid object as connection "
                                 + "confirmation");
+                        System.err.println("Unable to connect to server "
+                                + "- unexpected handshake");
                         return false;
                     }
                 } catch (ClassNotFoundException ex) {
                     Logger.getLogger(ConnClientBase.class.getName())
                             .log(Level.SEVERE, null, ex);
+                    System.err.println("Unable to connect to server");
                     return false;
                 }
             }
@@ -89,16 +92,57 @@ public class ConnClientBase {
      * Closes down the connection - also notifies the server.
      */
     protected void closeSocket() {
+        if (socket == null) {
+            return;
+        }
         try {
-            out.writeObject(ConnState.DONE);
+            out.writeObject(ConnState.CONNECTION_END);
             out.flush();
-            socket.close();
         } catch (IOException ex) {
-            System.out.println("IOException closing down connection: "
+            System.out.println("IOException notifying server of closedown: "
                     + ex.getMessage());
             Logger.getLogger(ConnClientBase.class.getName())
                     .log(Level.SEVERE, null, ex);
         }
+
+        try {
+            socket.close();
+        } catch (IOException ex) {
+            Logger.getLogger(ConnClientBase.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        } finally {
+            socket = null;
+        }
+
     }
-    
+
+    /**
+     * Listens to server output whether command succeeded. Does its own output
+     * to s.err
+     *
+     * @param description - a short description of what calling method was
+     * trying to accomplish
+     */
+    protected void getCommandSuccess(String description){
+        try {
+            Object inObject = in.readObject();
+            if (inObject instanceof ConnState) {
+                ConnState result = (ConnState) inObject;
+                if (result == ConnState.COMMAND_SUCCESS) {
+                    System.err.println(description + ": success");
+                } else if (result == ConnState.COMMAND_FAIL){
+                    System.err.println(description + ": failure");
+                } else {
+                    System.err.println("Unexpected input ("+ description + "): "
+                            + result.toString());
+                }
+            } else {
+                System.err.println(description + ": ERROR");
+            }
+        } catch (ClassNotFoundException | IOException ex) {
+            System.err.println("Exception getting command result: " + ex.getMessage());
+            Logger.getLogger(ConnClientBase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
 }

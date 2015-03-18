@@ -68,7 +68,12 @@ public class ConnectionManager {
             public void run() {
                 List<ISortedData> output = null;
                 output = new Connection(defaultIP, defaultPort).getSortedData(tags);
-                guiController.displaySortedData(output);
+                if(output != null){
+                    guiController.displaySortedData(output);
+                } else {
+                    System.err.println("Unable to retrieve sorted data from server");
+                }
+                
             }
         });
     }
@@ -87,6 +92,8 @@ public class ConnectionManager {
                 output = new Connection(defaultIP, defaultPort).getDataRequests(tags);
                 if(output != null){
                     guiController.displayRequests(output);
+                } else {
+                    System.err.println("Unable to retrieve requests from server.");
                 }                
             }
         });
@@ -98,12 +105,12 @@ public class ConnectionManager {
      * @param data
      * @param id
      */
-    public void updateUnsortedData(IData data, int id) {
+    public void updateUnsortedData(IData data) {
         pool.execute(new Runnable() {
 
             @Override
             public void run() {
-                new Connection(defaultIP, defaultPort).updateUnsortedData(data, id);
+                new Connection(defaultIP, defaultPort).updateUnsortedData(data);
             }
         });
     }
@@ -121,6 +128,8 @@ public class ConnectionManager {
                 output = new Connection(defaultIP, defaultPort).getSentData(tags);
                 if(output != null){
                     guiController.displaySentData(output);
+                } else {
+                    System.err.println("Unable to retrieve sent data from server.");
                 }
             }
         });
@@ -141,6 +150,8 @@ public class ConnectionManager {
                 output = new Connection(defaultIP, defaultPort).getDataItem(id);
                 if(output != null){
                     guiController.displayDataItem(output);
+                } else {
+                    System.err.println("Unable to retrieve specific data item from server.");
                 }
             }
         });

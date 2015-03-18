@@ -44,9 +44,11 @@ class Connection extends ConnClientBase{
             out.writeObject(ConnCommand.SORTED_SEND);
             out.writeObject(myData);
             out.flush();
+            getCommandSuccess("send sorted data (" + data.getTitle() + ")");
         } catch (IOException ex) {
+            System.err.println("Exception trying to send sorted data.");
             Logger.getLogger(ConnectionManager.class.getName())
-                    .log(Level.SEVERE, null, ex);
+                    .log(Level.SEVERE, null, ex);           
         } finally {
             closeSocket();
         }
@@ -79,8 +81,11 @@ class Connection extends ConnClientBase{
                         output = (List<IData>) list;
                     }
                 }
+            } else {
+                System.err.println("Error trying to get unsorted data: unexpected object");
             }
         } catch (IOException | ClassNotFoundException ex) {
+            System.err.println("Exception trying to retrieve unsorted data: " + ex.getMessage());
             Logger.getLogger(ConnectionManager.class.getName())
                     .log(Level.SEVERE, null, ex);
         } finally {
@@ -104,7 +109,9 @@ class Connection extends ConnClientBase{
             out.writeObject(ConnCommand.UNSORTED_STATUS_RESET);
             out.writeObject(myData);
             out.flush();
+            getCommandSuccess("stop working on data");
         } catch (IOException ex) {
+            System.err.println("Unable to notify server data is no longer being worked on");
             Logger.getLogger(ConnectionManager.class.getName())
                     .log(Level.SEVERE, null, ex);
         } finally {
@@ -130,7 +137,9 @@ class Connection extends ConnClientBase{
             out.writeObject(ConnCommand.UNSORTED_DISCARD);
             out.writeObject(myData);
             out.flush();
+            getCommandSuccess("discard unsorted data (" + data.getTitle() + ")");
         } catch (IOException ex) {
+            System.err.println("Error notifying server to discard unsorted data.");
             Logger.getLogger(ConnectionManager.class.getName())
                     .log(Level.SEVERE, null, ex);
         } finally {
@@ -155,7 +164,9 @@ class Connection extends ConnClientBase{
             out.writeObject(ConnCommand.UPDATE_REQUEST_SEND);
             out.writeObject(myData);
             out.flush();
+            getCommandSuccess("request update (" + data.getTitle() + ")");
         } catch (IOException ex) {
+            System.err.println("Error submitting update request: " + ex.getMessage());
             Logger.getLogger(ConnectionManager.class.getName())
                     .log(Level.SEVERE, null, ex);
         } finally {

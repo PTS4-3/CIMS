@@ -71,14 +71,14 @@ public class Connection implements Runnable {
                 boolean isDone = false;
                 while (!isDone) {
                     // writes this before every cycle
-                    out.writeObject(ConnState.CONNECTED);
+                    out.writeObject(ConnState.CONNECTION_START);
 
                     Object inObject = in.readObject();
                     if (inObject instanceof ConnState) {
                         ConnState state = (ConnState) inObject;
-                        if (state == ConnState.DONE) {
+                        if (state == ConnState.CONNECTION_END) {
                             isDone = true;
-                        } else if (state == ConnState.CONNECTED) {
+                        } else if (state == ConnState.CONNECTION_START) {
                             System.out.println("Connection is working as intended");
                         }
                     }
@@ -160,7 +160,7 @@ public class Connection implements Runnable {
             HashSet tags = (HashSet) inObject;
             out.writeObject(ServerMain.databaseManager.getFromSortedData(tags));
         } else {
-//            out.writeObject(ConnState.ERROR);
+            out.writeObject(ConnState.COMMAND_ERROR);
         }
     }
 
@@ -173,11 +173,15 @@ public class Connection implements Runnable {
             ClassNotFoundException {
         Object inObject = in.readObject();
         if (!(inObject instanceof ISortedData) || inObject == null) {
-//            out.writeObject(ConnState.ERROR);
+            out.writeObject(ConnState.COMMAND_ERROR);
             return;
         }
         ISortedData data = (ISortedData) inObject;
-        ServerMain.databaseManager.insertToSortedData(data);
+        if (ServerMain.databaseManager.insertToSortedData(data)) {
+            out.writeObject(ConnState.COMMAND_SUCCESS);
+        } else {
+            out.writeObject(ConnState.COMMAND_FAIL);
+        }
     }
 
     /**
@@ -188,11 +192,15 @@ public class Connection implements Runnable {
             ClassNotFoundException {
         Object inObject = in.readObject();
         if (inObject == null || !(inObject instanceof IData)) {
-//            out.writeObject(ConnState.ERROR);
+            out.writeObject(ConnState.COMMAND_ERROR);
             return;
         }
         IData data = (IData) inObject;
-        ServerMain.databaseManager.insertToUnsortedData(data);
+        if (ServerMain.databaseManager.insertToUnsortedData(data)) {
+            out.writeObject(ConnState.COMMAND_SUCCESS);
+        } else {
+            out.writeObject(ConnState.COMMAND_FAIL);
+        }
     }
 
     /**
@@ -203,10 +211,14 @@ public class Connection implements Runnable {
         if (inObject instanceof List) {
             List list = (List) inObject;
             if (!list.isEmpty() && (list.get(0) instanceof IData)) {
-                ServerMain.databaseManager.resetUnsortedData((List<IData>) list);
+                if (ServerMain.databaseManager.resetUnsortedData((List<IData>) list)) {
+                    out.writeObject(ConnState.COMMAND_SUCCESS);
+                } else {
+                    out.writeObject(ConnState.COMMAND_FAIL);
+                }
             }
         } else {
-//            out.writeObject(ConnState.ERROR);
+            out.writeObject(ConnState.COMMAND_ERROR);
         }
     }
 
@@ -218,16 +230,15 @@ public class Connection implements Runnable {
      */
     private void updateUnsortedData() throws IOException, ClassNotFoundException {
         Object inObject = in.readObject();
-        if (inObject == null || !(inObject instanceof Integer)) {
-            return;
-        }
-        int id = Integer.valueOf(inObject.toString());
-        inObject = in.readObject();
         if (inObject == null || !(inObject instanceof IData)) {
-//            out.writeObject(ConnState.ERROR);
+            out.writeObject(ConnState.COMMAND_ERROR);
             return;
         }
-        ServerMain.databaseManager.updateUnsortedData(id, (IData) inObject);
+        if (ServerMain.databaseManager.updateUnsortedData((IData) inObject)) {
+            out.writeObject(ConnState.COMMAND_SUCCESS);
+        } else {
+            out.writeObject(ConnState.COMMAND_FAIL);
+        }
     }
 
     /**
@@ -239,9 +250,14 @@ public class Connection implements Runnable {
     private void discardUnsortedData() throws IOException, ClassNotFoundException {
         Object inObject = in.readObject();
         if (inObject == null || !(inObject instanceof IData)) {
+            out.writeObject(ConnState.COMMAND_ERROR);
             return;
         }
-        ServerMain.databaseManager.discardUnsortedData((IData) inObject);
+        if(ServerMain.databaseManager.discardUnsortedData((IData) inObject)){
+            out.writeObject(ConnState.COMMAND_SUCCESS);
+        } else {
+            out.writeObject(ConnState.COMMAND_FAIL);
+        }
     }
 
     /**
@@ -251,19 +267,24 @@ public class Connection implements Runnable {
             ClassNotFoundException {
         Object inObject = in.readObject();
         if (!(inObject instanceof IDataRequest) || inObject == null) {
-//            out.writeObject(ConnState.ERROR);
+            out.writeObject(ConnState.COMMAND_ERROR);
             return;
         }
         IDataRequest data = (IDataRequest) inObject;
-        ServerMain.databaseManager.insertDataRequest(data);
+        if(ServerMain.databaseManager.insertDataRequest(data)){
+            out.writeObject(ConnState.COMMAND_SUCCESS);
+        } else {
+            out.writeObject(ConnState.COMMAND_FAIL);
+        }
     }
 
     /**
      * Provides all datarequests conforming to all given tags.
+     *
      * @throws IOException
-     * @throws ClassNotFoundException 
+     * @throws ClassNotFoundException
      */
-    private void sendDataRequests()  throws IOException,
+    private void sendDataRequests() throws IOException,
             ClassNotFoundException {
         Object inObject = in.readObject();
         if (inObject instanceof HashSet) {
@@ -271,19 +292,20 @@ public class Connection implements Runnable {
             out.writeObject(ServerMain.databaseManager.getUpdateRequests(tags));
             out.flush();
         } else {
-//            out.writeObject(ConnState.ERROR);
+            out.writeObject(ConnState.COMMAND_ERROR);
         }
     }
 
     /**
      * returns IData with given ID
+     *
      * @throws IOException
-     * @throws ClassNotFoundException 
+     * @throws ClassNotFoundException
      */
     private void sendDataItem() throws IOException, ClassNotFoundException {
         Object inObject = in.readObject();
-        if(inObject instanceof Integer){
-            out.writeObject(ServerMain.databaseManager.getDataItem((int)inObject));
+        if (inObject instanceof Integer) {
+            out.writeObject(ServerMain.databaseManager.getDataItem((int) inObject));
             out.flush();
         }
     }

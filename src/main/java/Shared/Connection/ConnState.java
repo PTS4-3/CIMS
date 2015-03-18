@@ -11,11 +11,11 @@ package Shared.Connection;
  */
 public enum ConnState {
 
-    CONNECTED,
-    DONE,
-    ERROR,
-    PING,
-    PONG,
+    CONNECTION_START,
+    CONNECTION_END,
     TRANSFER_START,
-    TRANSFER_END
+    TRANSFER_END,
+    COMMAND_ERROR,
+    COMMAND_SUCCESS,
+    COMMAND_FAIL,
 }

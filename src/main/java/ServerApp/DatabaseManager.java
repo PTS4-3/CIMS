@@ -337,7 +337,7 @@ public class DatabaseManager {
      * @param iData
      * @return false if id not found
      */
-    public synchronized boolean updateUnsortedData(int id, IData iData) {
+    public synchronized boolean updateUnsortedData(IData iData) {
         boolean succeed = false;
         try {
             openConnection();

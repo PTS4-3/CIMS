@@ -45,7 +45,10 @@ class Connection extends ConnClientBase {
             out.writeObject(ConnCommand.UNSORTED_SEND);
             out.writeObject(data);
             out.flush();
+            getCommandSuccess("Send unsorted data (" + data.getTitle() + ")");
         } catch (IOException ex) {
+            System.err.println("Exception trying to send unsorted data to server: " 
+                    + ex.getMessage());
             Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
                     .log(Level.SEVERE, null, ex);
         } finally {
@@ -80,8 +83,11 @@ class Connection extends ConnClientBase {
                         output = (List<ISortedData>) list;
                     }
                 }
+            } else {
+                throw new IOException("Unexpected object");
             }
         } catch (IOException | ClassNotFoundException ex) {
+            System.err.println("Exception getting sorted data: " + ex.getMessage());
             Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
                     .log(Level.SEVERE, null, ex);
         } finally {
@@ -117,8 +123,11 @@ class Connection extends ConnClientBase {
                         output = (List<IDataRequest>) list;
                     }
                 }
+            } else {
+                throw new IOException("Unexpected object");
             }
         } catch (IOException | ClassNotFoundException ex) {
+            System.err.println("Exception getting data requests: " + ex.getMessage());
             Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
                     .log(Level.SEVERE, null, ex);
         } finally {
@@ -136,16 +145,17 @@ class Connection extends ConnClientBase {
      * @param port
      * @return
      */
-    protected void updateUnsortedData(IData data, int id) {
+    protected void updateUnsortedData(IData data) {
         if (!this.greetServer()) {
             return;
         }
         try {
             out.writeObject(ConnCommand.UNSORTED_UPDATE_SEND);
-            out.writeObject(id);
             out.writeObject(data);
             out.flush();
+            getCommandSuccess("Update unsorted data (" + data.getTitle() + ")");
         } catch (IOException ex) {
+            System.err.println("Exception updating unsorted data: " + ex.getMessage());
             Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
                     .log(Level.SEVERE, null, ex);
         } finally {
@@ -180,8 +190,11 @@ class Connection extends ConnClientBase {
             Object inObject = in.readObject();
             if (inObject instanceof IData) {
                 output = (IData) inObject;
+            } else {
+                throw new IOException("Unexpected object");
             }
         } catch (IOException | ClassNotFoundException ex) {
+            System.err.println("Exception getting specific data item: " + ex.getMessage());
             Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
                     .log(Level.SEVERE, null, ex);
         } finally {

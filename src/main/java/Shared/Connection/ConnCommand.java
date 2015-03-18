@@ -34,19 +34,24 @@ public enum ConnCommand {
  -> Server: List<ISortedData>
  Option 3 - Client: ConnCommand.SORTED_SEND
  -> Client: ISortedData
+ -> Server: ConnState.COMMAND_<success y/n>
  Option 4 - Client: ConnCommand.UNSORTED_GET
  -> Server: List<IData>
  Option 5 - Client: ConnCommand.UNSORTED_SEND
  -> Client: IData
+ -> Server: ConnState.COMMAND_<success y/n>
  Option 6 - Client: ConnCommand.UNSORTED_STATUS_RESET
  -> Client: List<IData>
+ -> Server: ConnState.COMMAND_<success y/n>
  Option 7 - Client: ConnCommand.UNSORTED_UPDATE_SEND
- -> Client: int id
  -> Client: IData
+ -> Server: ConnState.COMMAND_<success y/n>
  Option 8 - Client: ConnCommand.UNSORTED_DISCARD
  -> Client: IData
+ -> Server: ConnState.COMMAND_<success y/n>
  Option 9 - Client: ConnCommand.UPDATE_REQUEST_SEND
  -> Client: IDataRequest
+ -> Server: ConnState.COMMAND_<success y/n>
  Option 10 - Client: ConnCommand.UPDATE_REQUEST_GET
  -> Client: Set<Tag>
  -> Server: List<IDataRequest>

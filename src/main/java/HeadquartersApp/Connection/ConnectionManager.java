@@ -70,6 +70,8 @@ public class ConnectionManager {
                 output = new Connection(defaultIP, defaultPort).getData();
                 if(output != null){
                     guiController.displayData(output);
+                } else {
+                    System.err.println("Unable to retrieve Unsorted Data from server.");
                 }              
             }
         });       
