@@ -47,7 +47,7 @@ public class ServicesController implements Initializable {
     
     // UpdateInfo
     @FXML Tab tabUpdateInfo;
-    @FXML ListView lvuSendData;
+    @FXML ListView lvuSentData;
     @FXML TextField tfuTitle;
     @FXML TextArea tauDescription;
     @FXML TextField tfuSource;
@@ -85,12 +85,13 @@ public class ServicesController implements Initializable {
                 throw new NetworkException("Geen verbinding met server: "
                         + "Kon geen data ophalen");
             }
-            this.connectionManager.getSentData(null);
+            //TODO source
+            this.connectionManager.getSentData("");
             if(chbsRequests.isSelected()) {
-                this.connectionManager.getRequests(null);
+                this.connectionManager.getRequests(new HashSet<Tag>());
             }
             if(chbsData.isSelected()) {
-                this.connectionManager.getSortedData(null);
+                this.connectionManager.getSortedData(new HashSet<Tag>());
             }
         } catch (NetworkException nEx) {
             System.out.println(nEx.getMessage());
@@ -98,13 +99,13 @@ public class ServicesController implements Initializable {
     }
     
     /**
-     * Displays the sendData that came from connectionManager.getSendData
-     * @param sendData
+     * Displays the sentData that came from connectionManager.getSentData
+     * @param sentData
      */
-    public void displaySendData(List<IData> sendData) {
-        lvuSendData.setItems(FXCollections.observableList(sendData));
-        if(lvuSendData.getSelectionModel().getSelectedItem() == null) {
-            lvuSendData.getSelectionModel().selectFirst();
+    public void displaySentData(List<IData> sentData) {
+        lvuSentData.setItems(FXCollections.observableList(sentData));
+        if(lvuSentData.getSelectionModel().getSelectedItem() == null) {
+            lvuSentData.getSelectionModel().selectFirst();
         }
     }
     
@@ -128,12 +129,12 @@ public class ServicesController implements Initializable {
     
     /**
      * Displays the requestData that came from connectionManager.getData
-     * @param requestData 
+     * @param dataItem 
      */
-    public void displayRequestData(IData requestData) {
-        lvuSendData.getItems().clear();
-        lvuSendData.getItems().add(requestData);
-        lvuSendData.getSelectionModel().selectFirst();
+    public void displayDataItem(IData dataItem) {
+        lvuSentData.getItems().clear();
+        lvuSentData.getItems().add(dataItem);
+        lvuSentData.getSelectionModel().selectFirst();
     }
     
     /**
@@ -184,15 +185,15 @@ public class ServicesController implements Initializable {
     }
     
     /**
-     * Fills the GUI with information of the selected SendData
+     * Fills the GUI with information of the selected SentData
      */
-    public void selectSendData() {
-        IData sendData = (IData) lvuSendData.getSelectionModel().getSelectedItem();
-        if(sendData != null) {
-            tfuTitle.setText(sendData.getTitle());
-            tauDescription.setText(sendData.getDescription());
-            tfuSource.setText(sendData.getSource());
-            tfuLocation.setText(sendData.getLocation());
+    public void selectSentData() {
+        IData sentData = (IData) lvuSentData.getSelectionModel().getSelectedItem();
+        if(sentData != null) {
+            tfuTitle.setText(sentData.getTitle());
+            tauDescription.setText(sentData.getDescription());
+            tfuSource.setText(sentData.getSource());
+            tfuLocation.setText(sentData.getLocation());
         }
     }
     
@@ -207,14 +208,14 @@ public class ServicesController implements Initializable {
             }
             
             // Load values from GUI
-            IData sendData = (IData) lvuSendData.getSelectionModel().getSelectedItem();
+            IData sentData = (IData) lvuSentData.getSelectionModel().getSelectedItem();
             String title = tfuTitle.getText();
             String description = tauDescription.getText();
             String source = tfuSource.getText();
             String location = tfuLocation.getText();
             
             // Make and send update
-            IData update = new UnsortedData(sendData.getId(), title, 
+            IData update = new UnsortedData(sentData.getId(), title, 
                     description, location, source, Status.NONE);
             this.connectionManager.updateUnsortedData(update);
             
@@ -227,20 +228,20 @@ public class ServicesController implements Initializable {
     }
     
     /**
-     * Resets the filter of sendData, all sendData becomes visible
+     * Resets the filter of sentData, all sentData becomes visible
      */
-    public void resetSendData() {
+    public void resetSentData() {
         try {
             if(this.connectionManager == null) {
                 throw new NetworkException("Geen verbinding met server: "
                         + "Kon geen data ophalen");
             }
             
-            // Clear sendData
-            lvuSendData.getItems().clear();
+            // Clear sentData
+            lvuSentData.getItems().clear();
             
-            // TODO tags
-            this.connectionManager.getSentData(new HashSet<Tag>());
+            // TODO source
+            this.connectionManager.getSentData("");
         } catch (NetworkException nEx) {
             System.out.println(nEx.getMessage());
         }
@@ -324,13 +325,5 @@ public class ServicesController implements Initializable {
         } catch (NetworkException nEx) {
             System.out.println(nEx.getMessage());
         }
-    }
-
-    public void displaySentData(List<IData> output) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public void displayDataItem(IData output) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
