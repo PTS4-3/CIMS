@@ -114,16 +114,19 @@ public class Connection implements Runnable {
                             case UPDATE_REQUEST_GET:
                                 this.sendDataRequests();
                                 break;
+                            case UNSORTED_GET_ID:
+                                this.sendDataItem();
+                                break;
                         }
                     }
                 }
             } catch (IOException ex) {
-                System.out.println("IOException in while loop Runnable: "
+                System.out.println("IOException connecting / listening commands: "
                         + ex.getMessage());
                 Logger.getLogger(Connection.class.getName())
                         .log(Level.SEVERE, null, ex);
             } catch (ClassNotFoundException ex) {
-                System.out.println("ClassNotFoundException in while loop Runnable: "
+                System.out.println("ClassNotFoundException connecting / listening commands: "
                         + ex.getMessage());
                 Logger.getLogger(Connection.class.getName())
                         .log(Level.SEVERE, null, ex);
@@ -142,6 +145,7 @@ public class Connection implements Runnable {
      */
     private void sendUnsortedData() throws IOException {
         out.writeObject(ServerMain.databaseManager.getFromUnsortedData());
+        out.flush();
     }
 
     /**
@@ -161,8 +165,7 @@ public class Connection implements Runnable {
     }
 
     /**
-     * Saves given ISortedData to database. Writes a connstate.error if data is
-     * null.
+     * Saves given ISortedData to database.
      *
      * @param data
      */
@@ -178,7 +181,7 @@ public class Connection implements Runnable {
     }
 
     /**
-     * Saves given IData to database. Writes a connstate.error if data is null.
+     * Saves given IData to database.
      *
      */
     private void saveUnsortedData() throws IOException,
@@ -255,14 +258,33 @@ public class Connection implements Runnable {
         ServerMain.databaseManager.insertDataRequest(data);
     }
 
+    /**
+     * Provides all datarequests conforming to all given tags.
+     * @throws IOException
+     * @throws ClassNotFoundException 
+     */
     private void sendDataRequests()  throws IOException,
             ClassNotFoundException {
         Object inObject = in.readObject();
         if (inObject instanceof HashSet) {
             HashSet tags = (HashSet) inObject;
             out.writeObject(ServerMain.databaseManager.getUpdateRequests(tags));
+            out.flush();
         } else {
 //            out.writeObject(ConnState.ERROR);
+        }
+    }
+
+    /**
+     * returns IData with given ID
+     * @throws IOException
+     * @throws ClassNotFoundException 
+     */
+    private void sendDataItem() throws IOException, ClassNotFoundException {
+        Object inObject = in.readObject();
+        if(inObject instanceof Integer){
+            out.writeObject(ServerMain.databaseManager.getDataItem((int)inObject));
+            out.flush();
         }
     }
 

@@ -24,12 +24,12 @@ import java.util.logging.Logger;
  * @author Kargathia
  */
 class Connection extends ConnClientBase {
-      
-    Connection(String IP, int port){
+
+    Connection(String IP, int port) {
         super(IP, port);
     }
-    
-/**
+
+    /**
      * Sends sorted data to server.
      *
      * @param IP manually provided.
@@ -52,7 +52,7 @@ class Connection extends ConnClientBase {
             this.closeSocket();
         }
     }
-    
+
     /**
      * Queries server for sorted data that has all given tags.
      *
@@ -89,16 +89,17 @@ class Connection extends ConnClientBase {
         }
         return output;
     }
-    
+
     /**
      * Gets all data requests conforming to all given tags. Custom IP/port
+     *
      * @param tags
      * @param IP
      * @param port
-     * @return 
+     * @return
      */
-    protected List<IDataRequest> getDataRequests(HashSet<Tag> tags){
-         if (!this.greetServer()) {
+    protected List<IDataRequest> getDataRequests(HashSet<Tag> tags) {
+        if (!this.greetServer()) {
             return null;
         }
         List<IDataRequest> output = null;
@@ -125,16 +126,17 @@ class Connection extends ConnClientBase {
         }
         return output;
     }
-    
+
     /**
      * Updates data with given id with given IData.
+     *
      * @param data
      * @param id
      * @param IP
      * @param port
      * @return
      */
-    protected void updateUnsortedData(IData data, int id){
+    protected void updateUnsortedData(IData data, int id) {
         if (!this.greetServer()) {
             return;
         }
@@ -150,13 +152,42 @@ class Connection extends ConnClientBase {
             this.closeSocket();
         }
     }
-    
+
+    /**
+     *
+     * @param tags
+     * @return unsorted data conforming to parameter (eg. all sent items from
+     * this source)
+     */
     protected List<IData> getSentData(HashSet<Tag> tags) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    /**
+     * @param id
+     * @return specific IData based on given ID.
+     */
     protected IData getDataItem(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (!this.greetServer()) {
+            return null;
+        }
+        IData output = null;
+        try {
+            out.writeObject(ConnCommand.UNSORTED_GET_ID);
+            out.writeObject(id);
+            out.flush();
+
+            Object inObject = in.readObject();
+            if (inObject instanceof IData) {
+                output = (IData) inObject;
+            }
+        } catch (IOException | ClassNotFoundException ex) {
+            Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        } finally {
+            this.closeSocket();
+        }
+        return output;
     }
-    
+
 }
