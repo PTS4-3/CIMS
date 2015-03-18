@@ -3,21 +3,24 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Shared;
+package Shared.Connection;
 
 /**
  *
  * @author Kargathia
  */
-public enum ConnState {
+public enum ConnCommand {
 
-    CONNECTED,
-    DONE,
-    ERROR,
-    PING,
-    PONG,
-    TRANSFER_START,
-    TRANSFER_END
+    SORTED_SEND,
+    SORTED_GET,
+    UNSORTED_SEND,
+    UNSORTED_GET,
+    UNSORTED_GET_ID,
+    UNSORTED_STATUS_RESET,
+    UNSORTED_UPDATE_SEND,
+    UNSORTED_DISCARD,
+    UPDATE_REQUEST_SEND,
+    UPDATE_REQUEST_GET,
 }
 
 /*
@@ -42,11 +45,14 @@ public enum ConnState {
  -> Client: IData
  Option 8 - Client: ConnCommand.UNSORTED_DISCARD
  -> Client: IData
- Option 9 - Client: ConnCommand.UNSORTED_UPDATE_REQUEST
+ Option 9 - Client: ConnCommand.UPDATE_REQUEST_SEND
  -> Client: IDataRequest
- Option 10 - Client: ConnCommand.UNSORTED_UPDATE_REQUEST_GET
+ Option 10 - Client: ConnCommand.UPDATE_REQUEST_GET
  -> Client: Set<Tag>
  -> Server: List<IDataRequest>
+ Option 11 - Client: ConnCommand.UNSORTED_GET_ID
+ -> Client: int id
+ -> Server: IData
  -----
  Return to start, except on closed conn
  */

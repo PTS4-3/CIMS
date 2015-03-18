@@ -5,13 +5,16 @@
  */
 package ServicesApp.UI;
 
-import ServicesApp.ConnectionManager;
+import ServicesApp.Connection.ConnectionManager;
 import Shared.IData;
+import Shared.IDataRequest;
+import Shared.ISortedData;
 import Shared.Status;
 import Shared.Tag;
 import Shared.UnsortedData;
 import java.net.URL;
 import java.util.HashSet;
+import java.util.List;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -67,10 +70,9 @@ public class ServicesController implements Initializable {
     /**
      * Configures connectionManager and fills GUI with initial values
      * @param ipAdressServer
-     * @param portnumber 
      */
-    public void configure(String ipAdressServer, int portnumber) {
-        this.connectionManager = new ConnectionManager(this, ipAdressServer, portnumber);
+    public void configure(String ipAdressServer) {
+        this.connectionManager = new ConnectionManager(this, ipAdressServer);
 
         // Fill GUI with initial values
         //TODO
@@ -146,5 +148,21 @@ public class ServicesController implements Initializable {
      */
     public void goToSendUpdate() {
         //this.connectionManager.getData(-1);
+    }
+
+    public void displayRequests(List<IDataRequest> output) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void displaySortedData(List<ISortedData> output) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void displaySentData(List<IData> output) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void displayDataItem(IData output) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

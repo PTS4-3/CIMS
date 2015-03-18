@@ -41,9 +41,9 @@ public class Services extends Application {
 
         //System.out.print("Client: Voer portnumber in: ");
         //int portnumber = input.nextInt();
-        int portnumber = 8189;
+        //int portnumber = 8189;
 
-        controller.configure(ipAdressServer, portnumber);
+        controller.configure(ipAdressServer);
     }
 
     @Override

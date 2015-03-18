@@ -10,6 +10,7 @@ import Shared.IData;
 import Shared.IDataRequest;
 import Shared.ISortedData;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -19,25 +20,24 @@ import java.util.concurrent.Executors;
  */
 public class ConnectionManager {
 
-    static ExecutorService pool = Executors.newCachedThreadPool();
+    public static final int DEFAULT_PORT = 8189;
+    
+    
+    private static ExecutorService pool = Executors.newCachedThreadPool();
     private HeadquartersController guiController = null;
-    private int defaultPort = 8189;
     private String defaultIP = "127.0.0.1";
+    private int defaultPort;
 
     
-
     public ConnectionManager(HeadquartersController guiController,
             String defaultIP) {
 
         this.defaultIP = defaultIP;
-        this.defaultPort = 8189;
+        this.defaultPort = DEFAULT_PORT;
     }
-
-    public ConnectionManager(HeadquartersController guiController,
-            String defaultIP, int defaultPort) {
-        this.guiController = guiController;
-        this.defaultIP = defaultIP;
-        this.defaultPort = defaultPort;
+    
+    public void setDefaultPort(int port){
+        this.defaultPort = port;
     }
 
     /**
@@ -46,7 +46,14 @@ public class ConnectionManager {
      * @param data
      */
     public void sendSortedData(ISortedData data) {
-        new Connection().sendSortedData(defaultIP, defaultPort, data);
+        pool.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                new Connection(defaultIP, defaultPort).sendSortedData(data);
+            }
+        });
+        
     }
 
     /**
@@ -55,7 +62,17 @@ public class ConnectionManager {
      * completion
      */
     public void getData() {
-        new Connection().getData(defaultIP, defaultPort, guiController);
+        pool.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                List<IData> output;
+                output = new Connection(defaultIP, defaultPort).getData();
+                if(output != null){
+                    guiController.displayData(output);
+                }              
+            }
+        });       
     }
 
     /**
@@ -64,7 +81,14 @@ public class ConnectionManager {
      * @param data
      */
     public void stopWorkingOnData(ArrayList<IData> data) {
-        new Connection().stopWorkingOnData(data, defaultIP, defaultPort);
+        pool.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                new Connection(defaultIP, defaultPort).stopWorkingOnData(data);
+            }
+        });
+        
     }
 
     /**
@@ -74,7 +98,14 @@ public class ConnectionManager {
      * @param data
      */
     public void discardUnsortedData(IData data) {
-        new Connection().discardUnsortedData(data, defaultIP, defaultPort);
+        pool.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                new Connection(defaultIP, defaultPort).discardUnsortedData(data);
+            }
+        });
+        
     }
 
     /**
@@ -82,6 +113,13 @@ public class ConnectionManager {
      * @param data
      */
     public void requestUpdate(IDataRequest data) {
-        new Connection().requestUpdate(data, defaultIP, defaultPort);
+        pool.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                new Connection(defaultIP, defaultPort).requestUpdate(data);
+            }
+        });
+        
     }
 }

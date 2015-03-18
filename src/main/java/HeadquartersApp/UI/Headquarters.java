@@ -24,7 +24,8 @@ public class Headquarters extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("HeadquartersApp/HeadquartersFX.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader()
+                .getResource("HeadquartersApp/HeadquartersFX.fxml"));
         Parent root = (Parent) loader.load();
         controller = (HeadquartersController) loader.getController();
 
@@ -45,9 +46,9 @@ public class Headquarters extends Application {
 
         //System.out.print("Client: Voer portnumber in: ");
         //int portnumber = input.nextInt();
-        int portnumber = 8189;
+        //int portnumber = 8189;
 
-        controller.configure(ipAdressServer, portnumber);
+        controller.configure(ipAdressServer);
     }
 
     @Override

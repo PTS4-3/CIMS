@@ -5,8 +5,8 @@
  */
 package ServerApp;
 
-import Shared.ConnState;
-import Shared.ConnCommand;
+import Shared.Connection.ConnState;
+import Shared.Connection.ConnCommand;
 import Shared.IData;
 import Shared.IDataRequest;
 import Shared.ISortedData;
@@ -108,10 +108,10 @@ public class Connection implements Runnable {
                             case UNSORTED_DISCARD:
                                 this.discardUnsortedData();
                                 break;
-                            case UNSORTED_UPDATE_REQUEST:
+                            case UPDATE_REQUEST_SEND:
                                 this.requestDataUpdate();
                                 break;
-                            case UNSORTED_UPDATE_REQUEST_GET:
+                            case UPDATE_REQUEST_GET:
                                 this.sendDataRequests();
                                 break;
                         }

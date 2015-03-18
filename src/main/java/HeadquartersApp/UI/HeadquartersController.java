@@ -66,8 +66,8 @@ public class HeadquartersController implements Initializable {
      * @param ipAdressServer
      * @param portnumber 
      */
-    public void configure(String ipAdressServer, int portnumber) {
-        this.connectionManager = new ConnectionManager(this, ipAdressServer, portnumber);
+    public void configure(String ipAdressServer) {
+        this.connectionManager = new ConnectionManager(this, ipAdressServer);
 
         // Fill GUI with initial values
         cbuTags.setItems(FXCollections.observableArrayList(Tag.values()));
