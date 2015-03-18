@@ -305,23 +305,24 @@ public class DatabaseManager {
 
     /**
      * @param data object of unsorteddata
-     * @return succeed reset status unsorted data
+     * @return succeed reset status unsorted data to Completed
      */
     public synchronized boolean updateStatusUnsortedData(IData data) {
         boolean succeed = false;
-        //dbi294542.`UNSORTEDDATABASE`
         try {
             openConnection();
 
-            String query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET STATUS = 'NONE' WHERE id = " + id;
+            String query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET STATUS = '" + 
+                        Status.COMPLETED.toString() + "' WHERE id = " + data.getId();
+
             PreparedStatement update = conn.prepareStatement(query);
 
             update.execute();
 
-            System.out.println("Data unsorted reset succeeded");
+            System.out.println("Data unsorted update Completed succeeded");
             succeed = true;
         } catch (SQLException ex) {
-            System.out.println("Data unsorted reset failed: " + ex);
+            System.out.println("Data unsorted update Completed failed: " + ex);
         } finally {
             closeConnection();
         }
@@ -338,40 +339,48 @@ public class DatabaseManager {
      */
     public synchronized boolean updateUnsortedData(int id, IData iData) {
         boolean succeed = false;
-
         try {
             openConnection();
 
-            String query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET STATUS = 'NONE' WHERE id = " + id;
+            String query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET TITLE = '"+ iData.getTitle()+
+                    "', DESCRIPTION = '"+ iData.getDescription()+"', LOCATION = '"+"', SOURCE = '"+iData.getSource() +
+                    " WHERE ID="+id;
+
             PreparedStatement update = conn.prepareStatement(query);
 
             update.execute();
 
-            System.out.println("Data unsorted reset succeeded");
+            System.out.println("Data unsorted update succeeded");
             succeed = true;
         } catch (SQLException ex) {
-            System.out.println("Data unsorted reset failed: " + ex);
+            System.out.println("Data unsorted update failed: " + ex);
         } finally {
             closeConnection();
         }
+
         return succeed;
     }
 
+    /**
+     * @param iData object of unsorteddata
+     * @return succeed reset status unsorted data to Discard
+     */
     public synchronized boolean discardUnsortedData(IData iData) {
         boolean succeed = false;
-        //dbi294542.`UNSORTEDDATABASE`
         try {
             openConnection();
 
-            String query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET STATUS = 'NONE' WHERE id = " + id;
+            String query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET STATUS = '" + 
+                        Status.DISCARDED.toString() + "' WHERE id = " + iData.getId();
+
             PreparedStatement update = conn.prepareStatement(query);
 
             update.execute();
 
-            System.out.println("Data unsorted reset succeeded");
+            System.out.println("Data unsorted update Discard succeeded");
             succeed = true;
         } catch (SQLException ex) {
-            System.out.println("Data unsorted reset failed: " + ex);
+            System.out.println("Data unsorted update Discard failed: " + ex);
         } finally {
             closeConnection();
         }
@@ -381,7 +390,6 @@ public class DatabaseManager {
 
     public synchronized boolean insertDataRequest(IDataRequest data) {
         boolean succeed = false;
-        //dbi294542.`UNSORTEDDATABASE`
         try {
             openConnection();
 
