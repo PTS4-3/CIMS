@@ -72,6 +72,7 @@ public class Connection implements Runnable {
                 while (!isDone) {
                     // writes this before every cycle
                     out.writeObject(ConnState.CONNECTION_START);
+                    out.flush();
 
                     Object inObject = in.readObject();
                     if (inObject instanceof ConnState) {
@@ -116,6 +117,9 @@ public class Connection implements Runnable {
                                 break;
                             case UNSORTED_GET_ID:
                                 this.sendDataItem();
+                                break;
+                            case UNSORTED_GET_SOURCE:
+                                this.sendSentData();
                                 break;
                         }
                     }
@@ -162,6 +166,7 @@ public class Connection implements Runnable {
         } else {
             out.writeObject(ConnState.COMMAND_ERROR);
         }
+        out.flush();
     }
 
     /**
@@ -182,6 +187,7 @@ public class Connection implements Runnable {
         } else {
             out.writeObject(ConnState.COMMAND_FAIL);
         }
+        out.flush();
     }
 
     /**
@@ -201,6 +207,7 @@ public class Connection implements Runnable {
         } else {
             out.writeObject(ConnState.COMMAND_FAIL);
         }
+        out.flush();
     }
 
     /**
@@ -220,6 +227,7 @@ public class Connection implements Runnable {
         } else {
             out.writeObject(ConnState.COMMAND_ERROR);
         }
+        out.flush();
     }
 
     /**
@@ -239,6 +247,7 @@ public class Connection implements Runnable {
         } else {
             out.writeObject(ConnState.COMMAND_FAIL);
         }
+        out.flush();
     }
 
     /**
@@ -258,6 +267,7 @@ public class Connection implements Runnable {
         } else {
             out.writeObject(ConnState.COMMAND_FAIL);
         }
+        out.flush();
     }
 
     /**
@@ -276,6 +286,7 @@ public class Connection implements Runnable {
         } else {
             out.writeObject(ConnState.COMMAND_FAIL);
         }
+        out.flush();
     }
 
     /**
@@ -290,10 +301,10 @@ public class Connection implements Runnable {
         if (inObject instanceof HashSet) {
             HashSet tags = (HashSet) inObject;
             out.writeObject(ServerMain.databaseManager.getUpdateRequests(tags));
-            out.flush();
         } else {
             out.writeObject(ConnState.COMMAND_ERROR);
         }
+        out.flush();
     }
 
     /**
@@ -306,8 +317,25 @@ public class Connection implements Runnable {
         Object inObject = in.readObject();
         if (inObject instanceof Integer) {
             out.writeObject(ServerMain.databaseManager.getDataItem((int) inObject));
-            out.flush();
+        } else {
+            out.writeObject(ConnState.COMMAND_ERROR);
         }
+        out.flush();
+    }
+
+    /**
+     * Returns a list of IData with given source
+     * @throws IOException
+     * @throws ClassNotFoundException 
+     */
+    private void sendSentData() throws IOException, ClassNotFoundException {
+        Object inObject = in.readObject();
+        if (inObject instanceof String) {
+            out.writeObject(ServerMain.databaseManager.getSentData(inObject.toString()));
+        } else {
+            out.writeObject(ConnState.COMMAND_ERROR);
+        }
+        out.flush();
     }
 
 }

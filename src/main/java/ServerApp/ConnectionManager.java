@@ -11,6 +11,7 @@ import Shared.Tag;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -37,7 +38,6 @@ public class ConnectionManager {
      * Needs to be started only once. Automatically responds to incoming
      * queries.
      *
-     * @param manager
      */
     public ConnectionManager() {
         this.pool = Executors.newCachedThreadPool();
@@ -53,9 +53,12 @@ public class ConnectionManager {
 
             @Override
             public void run() {
+                System.setProperty("sun.net.useExclusiveBind", "false"); 
                 ServerSocket mySocket = null;
                 try {
-                    mySocket = new ServerSocket(defaultPort);
+                    mySocket = new ServerSocket();
+                    mySocket.setReuseAddress(true);
+                    mySocket.bind(new InetSocketAddress(defaultPort));
                 } catch (IOException ex) {
                     System.out.println("Unable to start serversocket: "
                             + ex.getMessage());

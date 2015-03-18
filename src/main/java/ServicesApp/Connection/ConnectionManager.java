@@ -117,15 +117,15 @@ public class ConnectionManager {
 
     /**
      * 
-     * @param tags
+     * @param source
      */
-    public void getSentData(HashSet<Tag> tags) {
+    public void getSentData(String source) {
         pool.execute(new Runnable() {
 
             @Override
             public void run() {
                 List<IData> output = null;
-                output = new Connection(defaultIP, defaultPort).getSentData(tags);
+                output = new Connection(defaultIP, defaultPort).getSentData(source);
                 if(output != null){
                     guiController.displaySentData(output);
                 } else {

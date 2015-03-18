@@ -16,6 +16,7 @@ public enum ConnCommand {
     UNSORTED_SEND,
     UNSORTED_GET,
     UNSORTED_GET_ID,
+    UNSORTED_GET_SOURCE,
     UNSORTED_STATUS_RESET,
     UNSORTED_UPDATE_SEND,
     UNSORTED_DISCARD,
@@ -58,6 +59,9 @@ public enum ConnCommand {
  Option 11 - Client: ConnCommand.UNSORTED_GET_ID
  -> Client: int id
  -> Server: IData
+ Option 12 - Client: ConnCommand.UNSORTED_GET_SOURCE
+ -> Client: String source
+ -> Server: List<IData>
  -----
  Return to start, except on closed conn
  */

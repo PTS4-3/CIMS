@@ -167,10 +167,39 @@ class Connection extends ConnClientBase {
      *
      * @param tags
      * @return unsorted data conforming to parameter (eg. all sent items from
-     * this source)
+     * this source).
+     * 
      */
-    protected List<IData> getSentData(HashSet<Tag> tags) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    protected List<IData> getSentData(String source) {
+        if (!this.greetServer()) {
+            return null;
+        }
+        List<IData> output = null;
+        try {
+            out.writeObject(ConnCommand.UNSORTED_GET_SOURCE);
+            out.writeObject(source);
+            out.flush();
+            Object inObject = in.readObject();
+            if (inObject instanceof List) {
+                List list = (List) inObject;
+                if (list.isEmpty()) {
+                    output = new ArrayList<>();
+                } else {
+                    if (list.get(0) instanceof IData) {
+                        output = (List<IData>) list;
+                    }
+                }
+            } else {
+                throw new IOException("Unexpected object");
+            }
+        } catch (IOException | ClassNotFoundException ex) {
+            System.err.println("Exception getting sent data: " + ex.getMessage());
+            Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        } finally {
+            this.closeSocket();
+        }
+        return output;
     }
 
     /**

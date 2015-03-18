@@ -447,17 +447,26 @@ public class DatabaseManager {
      * closing connection
      */
     public synchronized void closeConnection() {
+        if(conn == null){
+            return;
+        }
+        
         try {
             conn.close();
-            conn = null;
             System.out.println("Connection close succeeded");
         } catch (SQLException ex) {
             System.out.println("Connection close failed: " + ex);
+        } finally {
+            conn = null;
         }
 
     }
 
     IData getDataItem(int id) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    List<IData> getSentData(String source) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
