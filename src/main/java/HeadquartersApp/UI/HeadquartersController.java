@@ -72,7 +72,16 @@ public class HeadquartersController implements Initializable {
         // Fill GUI with initial values
         cbuTags.setItems(FXCollections.observableArrayList(Tag.values()));
         cbuTags.getSelectionModel().selectFirst();
-        this.connectionManager.getData();
+        
+        try {
+            if(this.connectionManager == null) {
+                throw new NetworkException("Geen verbinding met server: "
+                        + "Kon geen data ophalen");
+            }
+            this.connectionManager.getData();
+        } catch (NetworkException nEx) {
+            System.out.println(nEx.getMessage());
+        }
     }
     
     /**
@@ -81,6 +90,9 @@ public class HeadquartersController implements Initializable {
      */
     public void displayData(List<IData> output) {
         lvuUnsortedData.getItems().addAll(output);
+        if(lvuUnsortedData.getSelectionModel().getSelectedItem() == null) {
+            lvuUnsortedData.getSelectionModel().selectFirst();
+        }
     }
     
     /**
@@ -124,6 +136,11 @@ public class HeadquartersController implements Initializable {
      */
     public void sendSortedData() {
         try {
+            if(this.connectionManager == null) {
+                throw new NetworkException("Geen verbinding met server: "
+                        + "Kon data niet wegschrijven");
+            }
+            
             // Load values from GUI
             IData unsortedData = 
                 (IData) lvuUnsortedData.getSelectionModel().getSelectedItem();
@@ -160,6 +177,8 @@ public class HeadquartersController implements Initializable {
             lvuUnsortedData.getSelectionModel().selectFirst();
         } catch (IllegalArgumentException iaEx) {
             System.out.println(iaEx.getMessage());
+        } catch (NetworkException nEx) {
+            System.out.println(nEx.getMessage());
         }
     }
     
@@ -178,6 +197,11 @@ public class HeadquartersController implements Initializable {
      */
     public void discard() {
         try {
+            if(this.connectionManager == null) {
+                throw new NetworkException("Geen verbinding met server: "
+                        + "Kon data niet verwijderen");
+            }
+            
             // Load values from GUI
             IData unsortedData = 
                 (IData) lvuUnsortedData.getSelectionModel().getSelectedItem();
@@ -188,6 +212,8 @@ public class HeadquartersController implements Initializable {
             this.connectionManager.discardUnsortedData(unsortedData);
         } catch (IllegalArgumentException iaEx) {
             System.out.println(iaEx.getMessage());
+        } catch (NetworkException nEx) {
+            System.out.println(nEx.getMessage());
         }
     }
     
@@ -218,6 +244,11 @@ public class HeadquartersController implements Initializable {
      */
     public void sendRequest() {
         try {
+            if(this.connectionManager == null) {
+                throw new NetworkException("Geen verbind met server: "
+                        + "Kon verzoek niet versturen");
+            }
+            
             // Load values from GUI
             int requestId = -1;
             if(this.requestData != null) {
@@ -239,6 +270,8 @@ public class HeadquartersController implements Initializable {
             resetRequest();
         } catch (IllegalArgumentException iaEx) {
             System.out.println(iaEx.getMessage());
+        } catch (NetworkException nEx) {
+            System.out.println(nEx.getMessage());
         }
         
     }
