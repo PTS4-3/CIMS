@@ -130,7 +130,7 @@ public class ConnectionManager {
      * @param data
      * @return success on attempting to send piece of unsorted data.
      */
-    public boolean sendUnSortedData(String IP, int port, IData data) {
+    public boolean sendUnsortedData(String IP, int port, IData data) {
         if (!this.greetServer(IP, port)) {
             return false;
         }
@@ -156,7 +156,7 @@ public class ConnectionManager {
      * @return success
      */
     public boolean sendUnsortedData(IData data) {
-        return this.sendUnSortedData(defaultIP, defaultPort, data);
+        return this.sendUnsortedData(defaultIP, defaultPort, data);
     }
 
     /**
@@ -280,13 +280,13 @@ public class ConnectionManager {
     }
 
     /**
-     * Updates data with given id with given IData.
+     * Updates data to given IData.
      * @param data
-     * @param id
      * @return
      */
-    public boolean updateUnsortedData(IData data, int id){
-        return this.updateUnsortedData(data, id, defaultIP, defaultPort);
+    public boolean updateUnsortedData(IData data){
+        // id is already in data
+        return this.updateUnsortedData(data, data.getId(), defaultIP, defaultPort);
     }
 
     public void getSendData(HashSet<Tag> tags) {
