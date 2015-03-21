@@ -25,10 +25,11 @@ public enum ConnCommand {
 }
 
 /*
- Connection start ->
- Server: ConnState.CONNECTED
+ -> Client: ConnState.CONNECTION_START
+ -> Server: ConnState.CONNECTION_START
+ # start ->
  ------
- Option 1 - Client: ConnState.DONE
+ Option 1 - Client: ConnState.CONNECTION_END
  -> Closes down connection
  Option 2 - Client: ConnCommand.SORTED_GET
  -> Client: Set<Tag>
@@ -64,4 +65,8 @@ public enum ConnCommand {
  -> Server: List<IData>
  -----
  Return to start, except on closed conn
+
+ NOTES:
+ if Client input was incorrect, server replies ConnState.COMMAND_ERROR
+ if Database output was incorrect, server replies ConnState.COMMAND_FAIL instead of expected object
  */
