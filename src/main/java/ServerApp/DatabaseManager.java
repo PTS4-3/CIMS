@@ -38,7 +38,7 @@ public class DatabaseManager {
     private Properties props;
 
     /**
-     *constructor
+     * constructor
      */
     public DatabaseManager() {
         this.configure();
@@ -87,9 +87,11 @@ public class DatabaseManager {
     public synchronized boolean insertToUnsortedData(IData data) {
         boolean succeed = false;
 
-        try {
-            openConnection();
+        if (!openConnection()) {
+            return false;
+        }
 
+        try {
             String query = "INSERT INTO dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` VALUES (ID,?,?,?,?,?)";
             PreparedStatement unsortedData = conn.prepareStatement(query);
             unsortedData.setString(1, data.getTitle());
@@ -122,8 +124,11 @@ public class DatabaseManager {
         String location;
         String source;
 
+        if (!openConnection()) {
+            return null;
+        }
+
         try {
-            openConnection();
             String query = "SELECT * FROM dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` WHERE STATUS "
                     + " = 'NONE' ORDER BY ID";
             PreparedStatement readData = conn.prepareStatement(query);
@@ -164,10 +169,13 @@ public class DatabaseManager {
      * @return succeed on attempting to insert sorted data.
      */
     public synchronized boolean insertToSortedData(ISortedData sorted) {
+        if (!openConnection()) {
+            return false;
+        }
+
         boolean succeed = false;
         Set<Tag> tags = sorted.getTags();
         try {
-            openConnection();
             //insert to sorteddata
             String query = "INSERT INTO dbi294542.`SORTEDDATABASE.SORTEDDATA` VALUES (?,?,?,?,?,?,?,?)";
             PreparedStatement sortedData = conn.prepareStatement(query);
@@ -182,7 +190,7 @@ public class DatabaseManager {
             sortedData.execute();
 
             System.out.println("Insert sortedData succeeded");
-            
+
             Iterator it = tags.iterator();
             while (it.hasNext()) {
                 // Get element
@@ -231,9 +239,11 @@ public class DatabaseManager {
         int reliability;
         int quality;
 
-        try {
-            openConnection();
+        if (!openConnection()) {
+            return null;
+        }
 
+        try {
             String query = "SELECT IDSORTEDDATA FROM dbi294542.`SORTEDDATABASE.SORTEDDATATAGS` WHERE"
                     + " TAGNAME = ";
             int sizeList = info.size();
@@ -295,11 +305,13 @@ public class DatabaseManager {
      * @return succeed reset status unsorted data
      */
     public synchronized boolean resetUnsortedData(List<IData> data) {
+        if (!openConnection()) {
+            return false;
+        }
+
         boolean succeed = false;
 
         try {
-            openConnection();
-
             for (IData x : data) {
                 String query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET STATUS = '"
                         + Status.NONE.toString() + "' WHERE id = " + x.getId();
@@ -324,6 +336,10 @@ public class DatabaseManager {
      * @return succeed reset status unsorted data to Completed
      */
     public synchronized boolean updateStatusUnsortedData(IData data) {
+        if (!openConnection()) {
+            return false;
+        }
+
         boolean succeed = false;
         try {
             openConnection();
@@ -353,6 +369,10 @@ public class DatabaseManager {
      * @return false if id not found
      */
     public synchronized boolean updateUnsortedData(IData iData) {
+        if (!openConnection()) {
+            return false;
+        }
+
         boolean succeed = false;
         try {
             openConnection();
@@ -381,6 +401,10 @@ public class DatabaseManager {
      * @return succeed reset status unsorted data to Discard
      */
     public synchronized boolean discardUnsortedData(IData iData) {
+        if (!openConnection()) {
+            return false;
+        }
+
         boolean succeed = false;
         try {
             openConnection();
@@ -408,8 +432,13 @@ public class DatabaseManager {
      * @return succeed if succeeded
      */
     public synchronized boolean insertDataRequest(IDataRequest data) {
+        if (!openConnection()) {
+            return false;
+        }
+
         boolean succeed = false;
         try {
+
             Set<Tag> tags = data.getTags();
             openConnection();
             //insert to sorteddata
@@ -450,6 +479,11 @@ public class DatabaseManager {
      * @return request list of data
      */
     public synchronized List<IDataRequest> getUpdateRequests(HashSet tags) {
+        if (!openConnection()) {
+            return null;
+        }
+
+        boolean succeed = false;
         List<IDataRequest> request = new ArrayList();
         List<Integer> numbers = new ArrayList();
 
@@ -524,12 +558,18 @@ public class DatabaseManager {
     /**
      * open connection
      */
-    private synchronized void openConnection() {
+    private boolean openConnection() {
         try {
-            this.conn = DriverManager.getConnection((String) props.get("url"), (String) props.get("username"), (String) props.get("password"));
+            this.conn = DriverManager.getConnection(
+                    (String) props.get("url"),
+                    (String) props.get("username"),
+                    (String) props.get("password"));
             System.out.println("Connection open succeeded");
-        } catch (SQLException ex) {
+            return true;
+        } catch (Exception ex) {
             System.out.println("Connection open failed: " + ex);
+            closeConnection();
+            return false;
         }
     }
 
@@ -553,10 +593,16 @@ public class DatabaseManager {
     }
 
     IData getDataItem(int id) {
+        if (!openConnection()) {
+            return null;
+        }
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     List<IData> getSentData(String source) {
+        if (!openConnection()) {
+            return null;
+        }
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
