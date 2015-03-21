@@ -13,6 +13,7 @@ public class ServerMain{
 
     public static DatabaseManager databaseManager = null;
     public static ConnectionManager connectionManager = null;
+    public static DummyManager dummyManager = null;
 
     /**
      * @param args the command line arguments
@@ -20,5 +21,6 @@ public class ServerMain{
     public static void main(String[] args) {
        databaseManager = new DatabaseManager();
        connectionManager = new ConnectionManager();
+       dummyManager = new DummyManager();
     }
 }

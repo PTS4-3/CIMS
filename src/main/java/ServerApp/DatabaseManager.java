@@ -34,6 +34,7 @@ public class DatabaseManager {
 
     private Connection conn;
     private Properties props;
+    private int id = -1; // ROUGH HACK TO GET RID OF RED LINES.
 
     /**
      *

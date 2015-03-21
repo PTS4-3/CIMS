@@ -148,7 +148,7 @@ public class Connection implements Runnable {
      * Sends a batch of 50 items of unsorted data
      */
     private void sendUnsortedData() throws IOException {
-        out.writeObject(ServerMain.databaseManager.getFromUnsortedData());
+        out.writeObject(ServerMain.dummyManager.getFromUnsortedData());
         out.flush();
     }
 
@@ -162,7 +162,7 @@ public class Connection implements Runnable {
         Object inObject = in.readObject();
         if (inObject instanceof HashSet) {
             HashSet tags = (HashSet) inObject;
-            out.writeObject(ServerMain.databaseManager.getFromSortedData(tags));
+            out.writeObject(ServerMain.dummyManager.getFromSortedData(tags));
         } else {
             out.writeObject(ConnState.COMMAND_ERROR);
         }
@@ -182,7 +182,7 @@ public class Connection implements Runnable {
             return;
         }
         ISortedData data = (ISortedData) inObject;
-        if (ServerMain.databaseManager.insertToSortedData(data)) {
+        if (ServerMain.dummyManager.insertToSortedData(data)) {
             out.writeObject(ConnState.COMMAND_SUCCESS);
         } else {
             out.writeObject(ConnState.COMMAND_FAIL);
@@ -202,7 +202,7 @@ public class Connection implements Runnable {
             return;
         }
         IData data = (IData) inObject;
-        if (ServerMain.databaseManager.insertToUnsortedData(data)) {
+        if (ServerMain.dummyManager.insertToUnsortedData(data)) {
             out.writeObject(ConnState.COMMAND_SUCCESS);
         } else {
             out.writeObject(ConnState.COMMAND_FAIL);
@@ -218,7 +218,7 @@ public class Connection implements Runnable {
         if (inObject instanceof List) {
             List list = (List) inObject;
             if (!list.isEmpty() && (list.get(0) instanceof IData)) {
-                if (ServerMain.databaseManager.resetUnsortedData((List<IData>) list)) {
+                if (ServerMain.dummyManager.resetUnsortedData((List<IData>) list)) {
                     out.writeObject(ConnState.COMMAND_SUCCESS);
                 } else {
                     out.writeObject(ConnState.COMMAND_FAIL);
@@ -242,7 +242,7 @@ public class Connection implements Runnable {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
         }
-        if (ServerMain.databaseManager.updateUnsortedData((IData) inObject)) {
+        if (ServerMain.dummyManager.updateUnsortedData((IData) inObject)) {
             out.writeObject(ConnState.COMMAND_SUCCESS);
         } else {
             out.writeObject(ConnState.COMMAND_FAIL);
@@ -262,7 +262,7 @@ public class Connection implements Runnable {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
         }
-        if(ServerMain.databaseManager.discardUnsortedData((IData) inObject)){
+        if(ServerMain.dummyManager.discardUnsortedData((IData) inObject)){
             out.writeObject(ConnState.COMMAND_SUCCESS);
         } else {
             out.writeObject(ConnState.COMMAND_FAIL);
@@ -281,7 +281,7 @@ public class Connection implements Runnable {
             return;
         }
         IDataRequest data = (IDataRequest) inObject;
-        if(ServerMain.databaseManager.insertDataRequest(data)){
+        if(ServerMain.dummyManager.insertDataRequest(data)){
             out.writeObject(ConnState.COMMAND_SUCCESS);
         } else {
             out.writeObject(ConnState.COMMAND_FAIL);
@@ -300,7 +300,7 @@ public class Connection implements Runnable {
         Object inObject = in.readObject();
         if (inObject instanceof HashSet) {
             HashSet tags = (HashSet) inObject;
-            out.writeObject(ServerMain.databaseManager.getUpdateRequests(tags));
+            out.writeObject(ServerMain.dummyManager.getUpdateRequests(tags));
         } else {
             out.writeObject(ConnState.COMMAND_ERROR);
         }
@@ -316,7 +316,7 @@ public class Connection implements Runnable {
     private void sendDataItem() throws IOException, ClassNotFoundException {
         Object inObject = in.readObject();
         if (inObject instanceof Integer) {
-            out.writeObject(ServerMain.databaseManager.getDataItem((int) inObject));
+            out.writeObject(ServerMain.dummyManager.getDataItem((int) inObject));
         } else {
             out.writeObject(ConnState.COMMAND_ERROR);
         }
@@ -331,7 +331,7 @@ public class Connection implements Runnable {
     private void sendSentData() throws IOException, ClassNotFoundException {
         Object inObject = in.readObject();
         if (inObject instanceof String) {
-            out.writeObject(ServerMain.databaseManager.getSentData(inObject.toString()));
+            out.writeObject(ServerMain.dummyManager.getSentData(inObject.toString()));
         } else {
             out.writeObject(ConnState.COMMAND_ERROR);
         }
