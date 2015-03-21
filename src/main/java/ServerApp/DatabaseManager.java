@@ -5,6 +5,7 @@
  */
 package ServerApp;
 
+import Shared.DataRequest;
 import Shared.IData;
 import Shared.IDataRequest;
 import Shared.ISortedData;
@@ -25,6 +26,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  *
@@ -34,10 +36,9 @@ public class DatabaseManager {
 
     private Connection conn;
     private Properties props;
-    private int id = -1; // ROUGH HACK TO GET RID OF RED LINES.
 
     /**
-     *
+     *constructor
      */
     public DatabaseManager() {
         this.configure();
@@ -164,6 +165,7 @@ public class DatabaseManager {
      */
     public synchronized boolean insertToSortedData(ISortedData sorted) {
         boolean succeed = false;
+        Set<Tag> tags = sorted.getTags();
         try {
             openConnection();
             //insert to sorteddata
@@ -180,6 +182,19 @@ public class DatabaseManager {
             sortedData.execute();
 
             System.out.println("Insert sortedData succeeded");
+            
+            Iterator it = tags.iterator();
+            while (it.hasNext()) {
+                // Get element
+                Object element = it.next();
+
+                //insert into sorteddatatags database
+                query = "INSERT INTO dbi294542.`SORTEDDATABASE.SORTEDDATATAGS` VALUES (?,?) ";
+                sortedData = conn.prepareStatement(query);
+                sortedData.setInt(1, sorted.getId());
+                sortedData.setString(2, element.toString());
+                sortedData.execute();
+            }
 
             //delete from unsorteddata
             query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET STATUS = '"
@@ -232,7 +247,7 @@ public class DatabaseManager {
                     aantal++;
                 } else {
                     query += "AND IDSORTEDDATA IN (SELECT ID FROM"
-                            + " dbi294542.`SORTEDDATABASE.SORTEDDATATAGS` WHERE  '" + element.toString() + "' ";
+                            + " dbi294542.`SORTEDDATABASE.SORTEDDATATAGS` WHERE  TAGNAME = '" + element.toString() + "' ";
                 }
             }
             for (int x = 1; x < sizeList; x++) {
@@ -286,8 +301,8 @@ public class DatabaseManager {
             openConnection();
 
             for (IData x : data) {
-                String query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET STATUS = '" + 
-                        Status.NONE.toString() + "' WHERE id = " + x.getId();
+                String query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET STATUS = '"
+                        + Status.NONE.toString() + "' WHERE id = " + x.getId();
                 PreparedStatement reset = conn.prepareStatement(query);
 
                 reset.execute();
@@ -313,8 +328,8 @@ public class DatabaseManager {
         try {
             openConnection();
 
-            String query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET STATUS = '" + 
-                        Status.COMPLETED.toString() + "' WHERE id = " + data.getId();
+            String query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET STATUS = '"
+                    + Status.COMPLETED.toString() + "' WHERE id = " + data.getId();
 
             PreparedStatement update = conn.prepareStatement(query);
 
@@ -334,7 +349,6 @@ public class DatabaseManager {
     /**
      * Updates piece of unsorted data with given id.
      *
-     * @param id
      * @param iData
      * @return false if id not found
      */
@@ -343,9 +357,9 @@ public class DatabaseManager {
         try {
             openConnection();
 
-            String query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET TITLE = '"+ iData.getTitle()+
-                    "', DESCRIPTION = '"+ iData.getDescription()+"', LOCATION = '"+"', SOURCE = '"+iData.getSource() +
-                    " WHERE ID="+id;
+            String query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET TITLE = '" + iData.getTitle()
+                    + "', DESCRIPTION = '" + iData.getDescription() + "', LOCATION = '" + "', SOURCE = '" + iData.getSource()
+                    + " WHERE ID=" + iData.getId();
 
             PreparedStatement update = conn.prepareStatement(query);
 
@@ -371,8 +385,8 @@ public class DatabaseManager {
         try {
             openConnection();
 
-            String query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET STATUS = '" + 
-                        Status.DISCARDED.toString() + "' WHERE id = " + iData.getId();
+            String query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET STATUS = '"
+                    + Status.DISCARDED.toString() + "' WHERE id = " + iData.getId();
 
             PreparedStatement update = conn.prepareStatement(query);
 
@@ -396,48 +410,115 @@ public class DatabaseManager {
     public synchronized boolean insertDataRequest(IDataRequest data) {
         boolean succeed = false;
         try {
+            Set<Tag> tags = data.getTags();
             openConnection();
+            //insert to sorteddata
+            String query = "INSERT INTO dbi294542.`REQUESTDATABASE.REQUESTDATA` VALUES (?,?,?,?,?)";
+            PreparedStatement requestData = conn.prepareStatement(query);
+            requestData.setInt(1, data.getId());
+            requestData.setString(2, data.getTitle());
+            requestData.setString(3, data.getDescription());
+            requestData.setString(4, data.getLocation());
+            requestData.setString(5, data.getSource());
+            requestData.execute();
 
-            String query = "";
-            PreparedStatement update = conn.prepareStatement(query);
+            Iterator it = tags.iterator();
+            while (it.hasNext()) {
+                // Get tagid
+                Object element = it.next();
 
-            update.execute();
+                //insert into requesttag database
+                query = "INSERT INTO dbi294542.`REQUESTDATABASE.REQUESTDATATAGS` VALUES (?,?) ";
+                requestData = conn.prepareStatement(query);
+                requestData.setInt(1, data.getId());
+                requestData.setString(2, element.toString());
+                requestData.execute();
+            }
 
-            System.out.println("Data unsorted reset succeeded");
+            System.out.println("Insert requestData succeeded");
             succeed = true;
         } catch (SQLException ex) {
-            System.out.println("Data unsorted reset failed: " + ex);
+            System.out.println("Insert requestData failed: " + ex);
         } finally {
             closeConnection();
         }
-
         return succeed;
     }
 
     /**
      * @param tags list of tags
-     * @return succeed if succeeded
+     * @return request list of data
      */
     public synchronized List<IDataRequest> getUpdateRequests(HashSet tags) {
-        boolean succeed = false;
-        //dbi294542.`UNSORTEDDATABASE`
+        List<IDataRequest> request = new ArrayList();
+        List<Integer> numbers = new ArrayList();
+
+        int id;
+        String title;
+        String description;
+        String location;
+        String source;
+        int requestId;
+
         try {
             openConnection();
 
-            String query = "";
-            PreparedStatement update = conn.prepareStatement(query);
+            //build a string with all tha tags
+            String query = "SELECT REQUESTID FROM dbi294542.`REQUESTDATABASE.REQUESTDATA` WHERE"
+                    + " TAGNAME = ";
+            int sizeList = tags.size();
+            Iterator it = tags.iterator();
+            int aantal = 0;
+            while (it.hasNext()) {
+                // Get element
+                Object element = it.next();
+                if (aantal == 1) {
+                    query += "'" + element.toString() + "' ";
+                    aantal++;
+                } else {
+                    query += "AND IDREQUESTDATA IN (SELECT ID FROM dbi294542.`REQUESTDATABASE."
+                            + "REQUESTTAGS` WHERE  '" + element.toString() + "' ";
+                }
+            }
+            for (int x = 1; x < sizeList; x++) {
+                query += ")";
+            }
+            //making a list with al de id's with correct tags
+            PreparedStatement readData = conn.prepareStatement(query);
+            ResultSet result = readData.executeQuery();
 
-            update.execute();
+            while (result.next()) {
+                numbers.add(result.getInt("REQUESTID"));
+            }
 
-            System.out.println("Data unsorted reset succeeded");
-            succeed = true;
+            //Get request data from database with correct id's
+            String update = "";
+            for (int x : numbers) {
+                if (request.size() < 50) {
+                    update = "SELECT * FROM dbi294542.`REQUESTDATABASE.REQUESTDATA` WHERE REQUESTID = " + x;
+                    PreparedStatement updateData = conn.prepareStatement(update);
+                    ResultSet resultTag = updateData.executeQuery();
+
+                    id = resultTag.getInt("REQUESTID");
+                    title = resultTag.getString("TITLE");
+                    description = resultTag.getString("DESCRIPTION");
+                    location = resultTag.getString("LOCATION");
+                    source = resultTag.getString("SOURCE");
+                    requestId = resultTag.getInt("REQUESTID");
+
+                    request.add(new DataRequest(id, title, description, location, source, requestId, tags));
+
+                    System.out.println("Getting object request succeed");
+                }
+
+            }
+
         } catch (SQLException ex) {
-            System.out.println("Data unsorted reset failed: " + ex);
+            System.out.println("Data request read failed: " + ex);
         } finally {
             closeConnection();
         }
-
-        return null;
+        return request;
     }
 
     /**
@@ -456,10 +537,10 @@ public class DatabaseManager {
      * closing connection
      */
     public synchronized void closeConnection() {
-        if(conn == null){
+        if (conn == null) {
             return;
         }
-        
+
         try {
             conn.close();
             System.out.println("Connection close succeeded");

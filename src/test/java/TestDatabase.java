@@ -6,6 +6,7 @@
 
 import ServerApp.DatabaseManager;
 import Shared.IData;
+import Shared.IDataRequest;
 import Shared.ISortedData;
 import Shared.SortedData;
 import Shared.Status;
@@ -15,6 +16,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -30,7 +34,9 @@ public class TestDatabase {
     private DatabaseManager database;
     private IData unsorted;
     private ISortedData sorted;
+    private IDataRequest request;
     private HashSet<Tag> tag = new HashSet();
+    private List<IData> unsortedData;
     public TestDatabase() {
     }
     
@@ -45,13 +51,15 @@ public class TestDatabase {
     @Before
     public void setUp() {
         database = new DatabaseManager();
+        unsortedData = new ArrayList();
         
         tag.add(Tag.FIREDEPARTMENT);
         Status status = Status.NONE;
-        sorted = new SortedData(10, "Brand bejaarde huis","Brand bejaarde huis centrum eindhoven, kamer 73", "Eindhoven centrum",
-                "brandweer", 2, 2, 2, tag);
-        unsorted = new UnsortedData(10, "Brand bejaarde huis","Brand bejaarde huis centrum eindhoven, kamer 73", "Eindhoven centrum"
-                , "brandweer", status);        
+        sorted = new SortedData(100, "Brand bejaarde huis","Brand bejaarde huis centrum eindhoven, kamer 73", "Eindhoven centrum",
+                "FIREDEPARTMENT", 2, 2, 2, tag);
+        unsorted = new UnsortedData(100, "Brand bejaarde huis","Brand bejaarde huis centrum eindhoven, kamer 73", "Eindhoven centrum"
+                , "FIREDEPARTMENT", status);        
+        unsortedData.add(unsorted);
     }
     
     @After
@@ -85,5 +93,45 @@ public class TestDatabase {
     {
         List<SortedData> sorteddata = new ArrayList();
         sorteddata = database.getFromSortedData(tag);
+        assertNotNull("Have to get a list", sorteddata);
+    }
+    @Test
+    public void resetUnsorted()
+    {
+        boolean succeed = database.resetUnsortedData(unsortedData);
+        assertEquals("Fail reset", succeed, true);
+    }
+    
+    @Test
+    public void updateStatusUnsortedData()
+    {
+        boolean succeed = database.updateStatusUnsortedData(unsorted);
+        assertEquals("Fail update status", succeed, true);
+    }
+    
+    @Test
+    public void updateUnsortedData()
+    {
+        boolean succeed = database.updateUnsortedData(unsorted);
+        assertEquals("Fail update data", succeed, true);
+    }
+    
+    @Test
+    public void discardUnsortedData()
+    {
+        boolean succeed = database.discardUnsortedData(unsorted);
+        assertEquals("Fail discard data", succeed, true);
+    }
+    
+    @Test
+    public void insertDataRequest()
+    {
+        
+    }
+    
+    @Test
+    public void getUpdateRequests()
+    {
+        
     }
 }
