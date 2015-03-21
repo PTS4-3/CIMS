@@ -389,12 +389,16 @@ public class DatabaseManager {
         return succeed;
     }
 
+    /**
+     * @param data object of datarequest
+     * @return succeed if succeeded
+     */
     public synchronized boolean insertDataRequest(IDataRequest data) {
         boolean succeed = false;
         try {
             openConnection();
 
-            String query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET STATUS = 'NONE' WHERE id = " + id;
+            String query = "";
             PreparedStatement update = conn.prepareStatement(query);
 
             update.execute();
@@ -410,13 +414,17 @@ public class DatabaseManager {
         return succeed;
     }
 
+    /**
+     * @param tags list of tags
+     * @return succeed if succeeded
+     */
     public synchronized List<IDataRequest> getUpdateRequests(HashSet tags) {
         boolean succeed = false;
         //dbi294542.`UNSORTEDDATABASE`
         try {
             openConnection();
 
-            String query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET STATUS = 'NONE' WHERE id = " + id;
+            String query = "";
             PreparedStatement update = conn.prepareStatement(query);
 
             update.execute();
