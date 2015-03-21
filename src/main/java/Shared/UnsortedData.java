@@ -44,6 +44,17 @@ public class UnsortedData implements IUnsortedData {
         this.status = status;
     }
 
+    /**
+     * Convenience method for client-side init - no id and status
+     * @param title cannot be null or empty
+     * @param description
+     * @param location
+     * @param source cannot be null or empty
+     */
+    public UnsortedData(String title, String description, String location, String source){
+        this(-1, title, description, location, source, Status.NONE);
+    }
+
     @Override
     public int getId() {
         return this.id;

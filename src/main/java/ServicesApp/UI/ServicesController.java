@@ -103,10 +103,10 @@ public class ServicesController implements Initializable {
      * @param sentData
      */
     public void displaySentData(List<IData> sentData) {
-        lvuSentData.setItems(FXCollections.observableList(sentData));
-        if(lvuSentData.getSelectionModel().getSelectedItem() == null) {
-            lvuSentData.getSelectionModel().selectFirst();
-        }
+//        lvuSentData.setItems(FXCollections.observableList(sentData));
+//        if(lvuSentData.getSelectionModel().getSelectedItem() == null) {
+//            lvuSentData.getSelectionModel().selectFirst();
+//        }
     }
     
     /**
@@ -132,9 +132,9 @@ public class ServicesController implements Initializable {
      * @param dataItem 
      */
     public void displayDataItem(IData dataItem) {
-        lvuSentData.getItems().clear();
-        lvuSentData.getItems().add(dataItem);
-        lvuSentData.getSelectionModel().selectFirst();
+//        lvuSentData.getItems().clear();
+//        lvuSentData.getItems().add(dataItem);
+//        lvuSentData.getSelectionModel().selectFirst();
     }
     
     /**

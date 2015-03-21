@@ -9,7 +9,9 @@ import ServicesApp.UI.ServicesController;
 import Shared.IData;
 import Shared.IDataRequest;
 import Shared.ISortedData;
+import Shared.Status;
 import Shared.Tag;
+import Shared.UnsortedData;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -31,6 +33,22 @@ public class ConnectionManager {
     public ConnectionManager(ServicesController guiController, String defaultIP) {
         this.guiController = guiController;
         this.defaultIP = defaultIP;
+        //this.testMethods();
+    }
+
+    /**
+     * Testing only. Takes place in lieu of unit tests.
+     */
+    private void testMethods(){
+        this.getDataItem(5);
+        HashSet<Tag> tags = new HashSet<>();
+        tags.add(Tag.CITIZENS);
+        this.getRequests(tags);
+        this.getSentData("sourceInput");
+        tags.add(Tag.FIREDEPARTMENT);
+        this.getSortedData(tags);
+        this.sendUnsortedData(new UnsortedData(-1, "servicesTitle", "desc", "loc", "source", Status.NONE));
+        this.updateUnsortedData(new UnsortedData(5, "updateTitle", "updateDesc", "updateLoc", "updateSource", Status.NONE));
     }
 
     /**
@@ -47,6 +65,10 @@ public class ConnectionManager {
      * @param data
      */
     public void sendUnsortedData(IData data) {
+        if(data == null){
+            System.err.println("Null parameter in sendUnsortedData");
+            return;
+        }
         pool.execute(new Runnable() {
 
             @Override
@@ -62,6 +84,10 @@ public class ConnectionManager {
      * @param tags
      */
     public void getSortedData(HashSet<Tag> tags) {
+        if(tags == null){
+            System.err.println("Null parameter in getSortedData");
+            return;
+        }
         pool.execute(new Runnable() {
 
             @Override
@@ -84,6 +110,10 @@ public class ConnectionManager {
      * @param tags
      */
     public void getRequests(HashSet<Tag> tags) {
+        if(tags == null){
+            System.err.println("Null parameter in getRequests");
+            return;
+        }
         pool.execute(new Runnable() {
 
             @Override
@@ -103,9 +133,12 @@ public class ConnectionManager {
      * Updates data with given id with given IData.
      *
      * @param data
-     * @param id
      */
     public void updateUnsortedData(IData data) {
+        if(data == null){
+            System.err.println("Null parameter in updateUnsortedData");
+            return;
+        }
         pool.execute(new Runnable() {
 
             @Override
@@ -120,6 +153,10 @@ public class ConnectionManager {
      * @param source
      */
     public void getSentData(String source) {
+        if(source == null){
+            System.err.println("Null parameter in getSentData");
+            return;
+        }
         pool.execute(new Runnable() {
 
             @Override

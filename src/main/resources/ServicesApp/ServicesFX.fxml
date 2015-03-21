@@ -6,11 +6,11 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="556.0" prefWidth="796.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="ServicesApp.UI.ServicesController">
+<AnchorPane id="AnchorPane" prefHeight="556.0" prefWidth="796.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ServicesApp.UI.ServicesController">
   <children>
     <TabPane layoutX="0.0" layoutY="0.0" prefHeight="556.0" prefWidth="796.0" tabClosingPolicy="UNAVAILABLE">
       <tabs>
-        <Tab text="Informatie versturen">
+        <Tab fx:id="tabSendInfo" text="Informatie versturen">
           <content>
             <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
               <children>
@@ -18,36 +18,36 @@
                 <Label layoutX="28.0" layoutY="65.0" text="Beschrijving" />
                 <Label layoutX="30.0" layoutY="384.0" text="Bron" />
                 <Label layoutX="30.0" layoutY="344.0" text="Locatie" />
-                <TextField layoutX="164.0" layoutY="22.0" prefWidth="603.0" />
-                <TextArea layoutX="164.0" layoutY="65.0" prefHeight="258.0" prefWidth="603.0" wrapText="true" />
-                <TextField layoutX="164.0" layoutY="341.0" prefWidth="603.0" />
-                <TextField layoutX="164.0" layoutY="381.0" prefWidth="603.0" />
+                <TextField fx:id="tfnTitle" layoutX="164.0" layoutY="22.0" prefWidth="603.0" />
+                <TextArea fx:id="tanDescription" layoutX="164.0" layoutY="65.0" prefHeight="258.0" prefWidth="603.0" wrapText="true" />
+                <TextField fx:id="tfnSource" layoutX="164.0" layoutY="341.0" prefWidth="603.0" />
+                <TextField fx:id="tfnLocation" layoutX="164.0" layoutY="381.0" prefWidth="603.0" />
                 <Button layoutX="670.0" layoutY="463.0" mnemonicParsing="false" text="Verzenden" />
               </children>
             </AnchorPane>
           </content>
         </Tab>
-        <Tab text="Informatie updaten">
+        <Tab fx:id="tabUpdateInfo" text="Informatie updaten">
           <content>
             <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
               <children>
-                <ListView layoutX="14.0" layoutY="50.0" prefHeight="451.0" prefWidth="291.0" />
+                <ListView fx:id="lvuSentData" layoutX="14.0" layoutY="50.0" prefHeight="451.0" prefWidth="291.0" />
                 <Label layoutX="14.0" layoutY="14.0" text="Verzonden data" underline="true" />
                 <Label layoutX="354.0" layoutY="26.0" text="Titel" />
                 <Label layoutX="354.0" layoutY="66.0" text="Beschrijving" />
                 <Label layoutX="356.0" layoutY="385.0" text="Bron" />
                 <Label layoutX="356.0" layoutY="345.0" text="Locatie" />
-                <TextField layoutX="490.0" layoutY="23.0" prefWidth="278.0" />
-                <TextArea layoutX="490.0" layoutY="66.0" prefHeight="258.0" prefWidth="278.0" wrapText="true" />
-                <TextField layoutX="490.0" layoutY="342.0" prefWidth="278.0" />
-                <TextField layoutX="490.0" layoutY="382.0" prefWidth="278.0" />
+                <TextField fx:id="tfuTitle" layoutX="490.0" layoutY="23.0" prefWidth="278.0" />
+                <TextArea fx:id="tauDescription" layoutX="490.0" layoutY="66.0" prefHeight="258.0" prefWidth="278.0" wrapText="true" />
+                <TextField fx:id="tfuLocation" layoutX="490.0" layoutY="342.0" prefWidth="278.0" />
+                <TextField fx:id="tfuSource" layoutX="490.0" layoutY="382.0" prefWidth="278.0" />
                 <Button layoutX="589.0" layoutY="465.0" mnemonicParsing="false" text="Reset" />
                 <Button layoutX="670.0" layoutY="465.0" mnemonicParsing="false" text="Verzenden" />
               </children>
             </AnchorPane>
           </content>
         </Tab>
-        <Tab text="Informatie uitlezen">
+        <Tab fx:id="tabReadSortedData" text="Informatie uitlezen">
           <content>
             <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
               <children>
@@ -59,18 +59,18 @@
                     <TableColumn prefWidth="60.0" text="Kwaliteit" />
                   </columns>
                 </TableView>
-                <CheckBox layoutX="518.0" layoutY="58.0" mnemonicParsing="false" text="Meldingen" />
-                <CheckBox layoutX="518.0" layoutY="28.0" mnemonicParsing="false" text="Data" />
+                <CheckBox fx:id="chbsRequests" layoutX="518.0" layoutY="58.0" mnemonicParsing="false" text="Meldingen" />
+                <CheckBox fx:id="chbsData" layoutX="518.0" layoutY="28.0" mnemonicParsing="false" text="Data" />
                 <Label layoutX="396.0" layoutY="28.0" text="Weergave" />
                 <Label layoutX="396.0" layoutY="113.0" text="Titel" />
                 <Label layoutX="396.0" layoutY="153.0" text="Beschrijving" />
                 <Label layoutX="398.0" layoutY="419.0" text="Bron" />
                 <Label layoutX="398.0" layoutY="379.0" text="Locatie" />
-                <TextField layoutX="518.0" layoutY="110.0" prefWidth="257.0" />
-                <TextArea layoutX="518.0" layoutY="153.0" prefWidth="257.0" wrapText="true" />
-                <TextField layoutX="518.0" layoutY="376.0" prefWidth="257.0" />
-                <TextField layoutX="518.0" layoutY="416.0" prefWidth="257.0" />
-                <Button layoutX="614.0" layoutY="464.0" mnemonicParsing="false" text="Reageer op melding" />
+                <TextField fx:id="tfsTitle" layoutX="518.0" layoutY="110.0" prefWidth="257.0" />
+                <TextArea fx:id="tasDescription" layoutX="518.0" layoutY="153.0" prefWidth="257.0" wrapText="true" />
+                <TextField fx:id="tfsLocation" layoutX="518.0" layoutY="376.0" prefWidth="257.0" />
+                <TextField fx:id="tfsSource" layoutX="518.0" layoutY="416.0" prefWidth="257.0" />
+                <Button fx:id="btnAnswerRequest" layoutX="614.0" layoutY="464.0" mnemonicParsing="false" text="Reageer op melding" />
               </children>
             </AnchorPane>
           </content>

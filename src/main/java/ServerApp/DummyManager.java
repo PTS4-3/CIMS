@@ -46,6 +46,7 @@ public class DummyManager {
     }
 
     List<IData> getFromUnsortedData() {
+        System.out.println("getFromUnsortedData - returning list");
         return unsortedData;
     }
 

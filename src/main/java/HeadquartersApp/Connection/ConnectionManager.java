@@ -6,10 +6,16 @@
 package HeadquartersApp.Connection;
 
 import HeadquartersApp.UI.HeadquartersController;
+import Shared.DataRequest;
 import Shared.IData;
 import Shared.IDataRequest;
 import Shared.ISortedData;
+import Shared.SortedData;
+import Shared.Status;
+import Shared.Tag;
+import Shared.UnsortedData;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -34,6 +40,24 @@ public class ConnectionManager {
 
         this.defaultIP = defaultIP;
         this.defaultPort = DEFAULT_PORT;
+        this.guiController = guiController;
+        //this.testMethods();
+    }
+
+    /**
+     * Testing only. Takes place in lieu of unit tests.
+     */
+    private void testMethods(){
+        this.getData();
+        this.discardUnsortedData(new UnsortedData(1, "discardTitle", "discardDesc", "discardLoc", "discardSource", Status.NONE));
+        HashSet<Tag> tags = new HashSet<>();
+        tags.add(Tag.POLICE);
+        this.requestUpdate(new DataRequest(1, "requestTitle", "reqDesc", "recLoc", "recSource", 2, tags));
+        tags.add(Tag.AMBULANCE);
+        this.sendSortedData(new SortedData(2, "sortTitle", "sortDesc", "sortLoc", "sortSource", 3, 2, 1, tags));
+        ArrayList<IData> data = new ArrayList<>();
+        data.add(new UnsortedData(3, "resetTitle", "resetDesc", "resetLoc", "resetSource", Status.NONE));
+        this.stopWorkingOnData(data);
     }
     
     public void setDefaultPort(int port){
@@ -83,6 +107,10 @@ public class ConnectionManager {
      * @param data
      */
     public void stopWorkingOnData(ArrayList<IData> data) {
+        if(data == null){
+            System.err.println("Null parameter in stopWorkingOnData");
+            return;
+        }
         pool.execute(new Runnable() {
 
             @Override
@@ -100,6 +128,10 @@ public class ConnectionManager {
      * @param data
      */
     public void discardUnsortedData(IData data) {
+        if(data == null){
+            System.err.println("Null parameter in discardUnsortedData");
+            return;
+        }
         pool.execute(new Runnable() {
 
             @Override
@@ -115,6 +147,10 @@ public class ConnectionManager {
      * @param data
      */
     public void requestUpdate(IDataRequest data) {
+        if(data == null){
+            System.err.println("Null parameter in requestUpdate");
+            return;
+        }
         pool.execute(new Runnable() {
 
             @Override

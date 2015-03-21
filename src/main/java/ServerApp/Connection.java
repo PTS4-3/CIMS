@@ -68,11 +68,11 @@ public class Connection implements Runnable {
 
         try {
             try {
+                out.writeObject(ConnState.CONNECTION_START);
+                out.flush();
+
                 boolean isDone = false;
                 while (!isDone) {
-                    // writes this before every cycle
-                    out.writeObject(ConnState.CONNECTION_START);
-                    out.flush();
 
                     Object inObject = in.readObject();
                     if (inObject instanceof ConnState) {
@@ -135,6 +135,7 @@ public class Connection implements Runnable {
                 Logger.getLogger(Connection.class.getName())
                         .log(Level.SEVERE, null, ex);
             } finally {
+                System.out.println("Request finished - closing down");
                 conn.close();
             }
         } catch (IOException ex) {
@@ -215,6 +216,13 @@ public class Connection implements Runnable {
      */
     private void resetUnsortedData() throws IOException, ClassNotFoundException {
         Object inObject = in.readObject();
+        if(inObject == null){
+            System.out.println("resetUnsortedData inObject was null");
+            out.writeObject(ConnState.COMMAND_ERROR);
+            out.flush();
+            return;
+        }
+
         if (inObject instanceof List) {
             List list = (List) inObject;
             if (!list.isEmpty() && (list.get(0) instanceof IData)) {
@@ -262,7 +270,7 @@ public class Connection implements Runnable {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
         }
-        if(ServerMain.dummyManager.discardUnsortedData((IData) inObject)){
+        if (ServerMain.dummyManager.discardUnsortedData((IData) inObject)) {
             out.writeObject(ConnState.COMMAND_SUCCESS);
         } else {
             out.writeObject(ConnState.COMMAND_FAIL);
@@ -281,7 +289,7 @@ public class Connection implements Runnable {
             return;
         }
         IDataRequest data = (IDataRequest) inObject;
-        if(ServerMain.dummyManager.insertDataRequest(data)){
+        if (ServerMain.dummyManager.insertDataRequest(data)) {
             out.writeObject(ConnState.COMMAND_SUCCESS);
         } else {
             out.writeObject(ConnState.COMMAND_FAIL);
@@ -325,8 +333,9 @@ public class Connection implements Runnable {
 
     /**
      * Returns a list of IData with given source
+     *
      * @throws IOException
-     * @throws ClassNotFoundException 
+     * @throws ClassNotFoundException
      */
     private void sendSentData() throws IOException, ClassNotFoundException {
         Object inObject = in.readObject();
