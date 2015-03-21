@@ -33,7 +33,7 @@ public class ConnectionManager {
     public ConnectionManager(ServicesController guiController, String defaultIP) {
         this.guiController = guiController;
         this.defaultIP = defaultIP;
-        //this.testMethods();
+//        this.testMethods();
     }
 
     /**

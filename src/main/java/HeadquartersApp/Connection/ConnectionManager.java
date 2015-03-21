@@ -41,7 +41,7 @@ public class ConnectionManager {
         this.defaultIP = defaultIP;
         this.defaultPort = DEFAULT_PORT;
         this.guiController = guiController;
-        //this.testMethods();
+//        this.testMethods();
     }
 
     /**
@@ -49,7 +49,7 @@ public class ConnectionManager {
      */
     private void testMethods(){
         this.getData();
-        this.discardUnsortedData(new UnsortedData(1, "discardTitle", "discardDesc", "discardLoc", "discardSource", Status.NONE));
+        this.discardUnsortedData(new UnsortedData("discardTitle", "discardDesc", "discardLoc", "discardSource"));
         HashSet<Tag> tags = new HashSet<>();
         tags.add(Tag.POLICE);
         this.requestUpdate(new DataRequest(1, "requestTitle", "reqDesc", "recLoc", "recSource", 2, tags));
