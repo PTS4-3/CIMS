@@ -456,6 +456,7 @@ public class DatabaseManager {
                 requestData.setString(2, element.toString());
                 requestData.execute(); 
             }
+            System.out.println("Data unsorted reset succeeded");
             succeed = true;
         } catch (SQLException ex) {
             System.out.println("Data unsorted reset failed: " + ex);
@@ -513,6 +514,7 @@ public class DatabaseManager {
             //making a list with al de id's with correct tags
             PreparedStatement readData = conn.prepareStatement(query);
             ResultSet result = readData.executeQuery();
+        
 
             while (result.next()) {
                 numbers.add(result.getInt("REQUESTID"));
