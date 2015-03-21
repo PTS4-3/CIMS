@@ -20,6 +20,8 @@ import java.util.logging.Logger;
  */
 public class ConnectionManager {
 
+    public static final Object LOCK = "";
+
     private ExecutorService pool;
 
     private int defaultPort = 8189;
