@@ -84,4 +84,9 @@ public class UnsortedData implements IUnsortedData {
     public Status getStatus() {
         return this.status;
     }
+    
+    @Override
+    public String toString() {
+        return this.title;
+    }
 }

@@ -34,7 +34,7 @@ public class SortedData implements ISortedData {
      * @param relevance has to be between 1 and 5
      * @param reliability has to be between 1 and 5
      * @param quality has to be between 1 and 5
-     * @param tags has to be a size of at least 1
+     * @param tags cannot be null
      */
     public SortedData(int id, String title, String description, String location,
             String source, int relevance, int reliability, int quality, 
@@ -59,9 +59,8 @@ public class SortedData implements ISortedData {
             throw new IllegalArgumentException("Quality SortedData has to be "
                     + "between 1 and 5");
         }
-        if(tags == null || tags.size() < 1) {
-            throw new IllegalArgumentException("Tags SortedData has to be a "
-                    + "size of at least 1");
+        if(tags == null) {
+            throw new IllegalArgumentException("Tags SortedData cannot be null");
         }
         this.id = id;
         this.title = title;
@@ -117,6 +116,12 @@ public class SortedData implements ISortedData {
     @Override
     public Set<Tag> getTags() {
         return Collections.unmodifiableSet(tags);
+    }
+    
+    @Override
+    public String toString() {
+        return this.title + ", " + String.valueOf(this.relevance) + ", " +
+                String.valueOf(this.reliability) + ", " + String.valueOf(this.quality);
     }
     
 }

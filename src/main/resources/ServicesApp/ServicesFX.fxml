@@ -41,7 +41,7 @@
                 <TextArea fx:id="tauDescription" layoutX="490.0" layoutY="66.0" prefHeight="258.0" prefWidth="278.0" wrapText="true" />
                 <TextField fx:id="tfuLocation" layoutX="490.0" layoutY="342.0" prefWidth="278.0" />
                 <TextField fx:id="tfuSource" layoutX="490.0" layoutY="382.0" prefWidth="278.0" />
-                <Button layoutX="589.0" layoutY="465.0" mnemonicParsing="false" onAction="#resetSendData" text="Reset" />
+                <Button layoutX="589.0" layoutY="465.0" mnemonicParsing="false" onAction="#resetSentData" text="Reset" />
                 <Button layoutX="670.0" layoutY="465.0" mnemonicParsing="false" onAction="#sendUpdate" text="Verzenden" />
               </children>
             </AnchorPane>
@@ -59,8 +59,8 @@
                     <TableColumn prefWidth="60.0" text="Kwaliteit" />
                   </columns>
                 </TableView>
-                <CheckBox id="chbsRequest" fx:id="chbsRequests" layoutX="518.0" layoutY="58.0" mnemonicParsing="false" onAction="#changeDisplay" text="Meldingen" />
-                <CheckBox fx:id="chbsData" layoutX="518.0" layoutY="28.0" mnemonicParsing="false" onAction="#changeDisplay" text="Data" />
+                <CheckBox id="chbsRequest" fx:id="chbsRequests" layoutX="518.0" layoutY="58.0" mnemonicParsing="false" onAction="#changeDisplay" selected="true" text="Meldingen" />
+                <CheckBox fx:id="chbsData" layoutX="518.0" layoutY="28.0" mnemonicParsing="false" onAction="#changeDisplay" selected="true" text="Data" />
                 <Label layoutX="396.0" layoutY="28.0" text="Weergave" />
                 <Label layoutX="396.0" layoutY="113.0" text="Titel" />
                 <Label layoutX="396.0" layoutY="153.0" text="Beschrijving" />
@@ -70,7 +70,7 @@
                 <TextArea id="tas" fx:id="tasDescription" layoutX="518.0" layoutY="153.0" prefWidth="257.0" wrapText="true" />
                 <TextField fx:id="tfsLocation" layoutX="518.0" layoutY="376.0" prefWidth="257.0" />
                 <TextField fx:id="tfsSource" layoutX="518.0" layoutY="416.0" prefWidth="257.0" />
-                <Button layoutX="614.0" layoutY="464.0" mnemonicParsing="false" onAction="#goToSendUpdate" text="Reageer op melding" />
+                <Button fx:id="btnAnswerRequest" layoutX="614.0" layoutY="464.0" mnemonicParsing="false" onAction="#goToSendUpdate" text="Reageer op melding" />
                 <ListView id="lvSortedData" fx:id="lvsSortedData" layoutX="161.0" layoutY="153.0" prefHeight="200.0" prefWidth="200.0" />
               </children>
             </AnchorPane>

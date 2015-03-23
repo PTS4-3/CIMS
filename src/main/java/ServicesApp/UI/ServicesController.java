@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -73,7 +74,7 @@ public class ServicesController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // Add Change Listeners
-        lvuSentData.getSelectionModel().selectionModeProperty().addListener(
+        lvuSentData.getSelectionModel().selectedItemProperty().addListener(
             new ChangeListener() {
 
             @Override
@@ -83,7 +84,7 @@ public class ServicesController implements Initializable {
             
         });
         
-        lvsSortedData.getSelectionModel().selectionModeProperty().addListener(
+        lvsSortedData.getSelectionModel().selectedItemProperty().addListener(
             new ChangeListener() {
 
             @Override
@@ -127,10 +128,17 @@ public class ServicesController implements Initializable {
      * @param sentData
      */
     public void displaySentData(List<IData> sentData) {
-        lvuSentData.setItems(FXCollections.observableList(sentData));
-        if(lvuSentData.getSelectionModel().getSelectedItem() == null) {
-            lvuSentData.getSelectionModel().selectFirst();
-        }
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                lvuSentData.setItems(FXCollections.observableList(sentData));
+                if(lvuSentData.getSelectionModel().getSelectedItem() == null) {
+                    lvuSentData.getSelectionModel().selectFirst();
+                }
+            }
+            
+        });
     }
     
     /**
@@ -138,10 +146,17 @@ public class ServicesController implements Initializable {
      * @param requests
      */
     public void displayRequests(List<IDataRequest> requests) {
-        lvsSortedData.getItems().addAll(requests);
-        if(lvsSortedData.getSelectionModel().getSelectedItem() == null) {
-            lvsSortedData.getSelectionModel().selectFirst();
-        }
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                lvsSortedData.getItems().addAll(requests);
+                if(lvsSortedData.getSelectionModel().getSelectedItem() == null) {
+                    lvsSortedData.getSelectionModel().selectFirst();
+                }
+            }
+            
+        });
     }
     
     /**
@@ -149,10 +164,17 @@ public class ServicesController implements Initializable {
      * @param sortedData
      */
     public void displaySortedData(List<ISortedData> sortedData) {
-        lvsSortedData.getItems().addAll(sortedData);
-        if(lvsSortedData.getSelectionModel().getSelectedItem() == null) {
-            lvsSortedData.getSelectionModel().selectFirst();
-        }
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                lvsSortedData.getItems().addAll(sortedData);
+                if(lvsSortedData.getSelectionModel().getSelectedItem() == null) {
+                    lvsSortedData.getSelectionModel().selectFirst();
+                }
+            }
+            
+        });
     }
     
     /**
@@ -160,9 +182,16 @@ public class ServicesController implements Initializable {
      * @param dataItem 
      */
     public void displayDataItem(IData dataItem) {
-        lvuSentData.getItems().clear();
-        lvuSentData.getItems().add(dataItem);
-        lvuSentData.getSelectionModel().selectFirst();
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                lvuSentData.getItems().clear();
+                lvuSentData.getItems().add(dataItem);
+                lvuSentData.getSelectionModel().selectFirst();
+            }
+            
+        });
     }
     
     /**
@@ -246,6 +275,9 @@ public class ServicesController implements Initializable {
             IData update = new UnsortedData(sentData.getId(), title, 
                     description, location, source, Status.NONE);
             this.connectionManager.updateUnsortedData(update);
+            
+            // Reset SentData
+            this.resetSentData();
             
             // Bevestiging tonen TODO
         } catch (IllegalArgumentException iaEx) {

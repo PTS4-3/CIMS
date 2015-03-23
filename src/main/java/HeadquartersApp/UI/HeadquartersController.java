@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -59,6 +62,17 @@ public class HeadquartersController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         this.requestData = null;
+        
+        // Add ChangeListeners
+        lvuUnsortedData.getSelectionModel().selectedItemProperty().addListener(
+            new ChangeListener() {
+
+            @Override
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                selectUnsortedData();
+            }
+                
+            });
     }
     
     /**
@@ -72,6 +86,8 @@ public class HeadquartersController implements Initializable {
         // Fill GUI with initial values
         cbuTags.setItems(FXCollections.observableArrayList(Tag.values()));
         cbuTags.getSelectionModel().selectFirst();
+        cbrTags.setItems(FXCollections.observableArrayList(Tag.values()));
+        cbrTags.getSelectionModel().selectFirst();
         
         try {
             if(this.connectionManager == null) {
@@ -89,10 +105,17 @@ public class HeadquartersController implements Initializable {
      * @param output 
      */
     public void displayData(List<IData> output) {
-        lvuUnsortedData.getItems().addAll(output);
-        if(lvuUnsortedData.getSelectionModel().getSelectedItem() == null) {
-            lvuUnsortedData.getSelectionModel().selectFirst();
-        }
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                lvuUnsortedData.getItems().addAll(output);
+                if(lvuUnsortedData.getSelectionModel().getSelectedItem() == null) {
+                    lvuUnsortedData.getSelectionModel().selectFirst();
+                }
+            }
+            
+        });
     }
     
     /**
@@ -132,6 +155,23 @@ public class HeadquartersController implements Initializable {
     }
     
     /**
+     * Remove old data and select new
+     * @param unsortedData 
+     */
+    private void updateLvuUnsortedData(IData unsortedData) {
+        // Remove old unsorted data
+        lvuUnsortedData.getItems().remove(unsortedData);
+
+        // If less than 10 items, load new unsorted data
+        if(lvuUnsortedData.getItems().size() < 10) {
+            this.connectionManager.getData();
+        }
+
+        // Select new
+        lvuUnsortedData.getSelectionModel().selectFirst();
+    }
+    
+    /**
      * Send the new sorted data to the server
      */
     public void sendSortedData() {
@@ -165,16 +205,8 @@ public class HeadquartersController implements Initializable {
                     location, source, relevance, reliability, quality, tags);
             this.connectionManager.sendSortedData(sortedData);
             
-            // Remove old unsorted data
-            lvuUnsortedData.getItems().remove(unsortedData);
-            
-            // If less than 10 items, load new unsorted data
-            if(lvuUnsortedData.getItems().size() < 10) {
-                this.connectionManager.getData();
-            }
-            
-            // Select new
-            lvuUnsortedData.getSelectionModel().selectFirst();
+            // Update ListView
+            this.updateLvuUnsortedData(unsortedData);
         } catch (IllegalArgumentException iaEx) {
             System.out.println(iaEx.getMessage());
         } catch (NetworkException nEx) {
@@ -209,7 +241,12 @@ public class HeadquartersController implements Initializable {
                 throw new IllegalArgumentException("Selecteer eerst een "
                         + "unsorted data");
             }
+            
+            // Discard data
             this.connectionManager.discardUnsortedData(unsortedData);
+            
+            // Update ListView
+            this.updateLvuUnsortedData(unsortedData);
         } catch (IllegalArgumentException iaEx) {
             System.out.println(iaEx.getMessage());
         } catch (NetworkException nEx) {
@@ -233,7 +270,6 @@ public class HeadquartersController implements Initializable {
             this.requestData = unsortedData;
             tfrRequestTitle.setText(this.requestData.getTitle());
             tabPane.getSelectionModel().select(tabRequestInfo);
-            
         } catch (IllegalArgumentException iaEx) {
             System.out.println(iaEx.getMessage());
         }
@@ -245,7 +281,7 @@ public class HeadquartersController implements Initializable {
     public void sendRequest() {
         try {
             if(this.connectionManager == null) {
-                throw new NetworkException("Geen verbind met server: "
+                throw new NetworkException("Geen verbinding met server: "
                         + "Kon verzoek niet versturen");
             }
             
@@ -265,6 +301,9 @@ public class HeadquartersController implements Initializable {
             IDataRequest request = new DataRequest(-1, title, description, 
                     location, source, requestId, tags);
             this.connectionManager.requestUpdate(request);
+            
+            // Update ListView
+            this.updateLvuUnsortedData(requestData);
             
             // Reset tab
             resetRequest();
