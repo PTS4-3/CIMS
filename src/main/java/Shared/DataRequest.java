@@ -14,16 +14,17 @@ import java.util.Set;
  * @author Alexander
  */
 public class DataRequest implements IDataRequest {
+
     private int id;
     private String title;
     private String description;
     private String location;
     private String source;
     private int requestId;
-    private HashSet<Tag> tags;    
-    
-     /**
-     * 
+    private HashSet<Tag> tags;
+
+    /**
+     *
      * @param id
      * @param title cannot be null or empty
      * @param description
@@ -34,15 +35,15 @@ public class DataRequest implements IDataRequest {
      */
     public DataRequest(int id, String title, String description, String location,
             String source, int requestId, HashSet<Tag> tags) {
-        if(title == null || title.isEmpty()) {
+        if (title == null || title.isEmpty()) {
             throw new IllegalArgumentException("Title DataRequest cannot be "
                     + "null or empty");
         }
-        if(source == null || source.isEmpty()) {
+        if (source == null || source.isEmpty()) {
             throw new IllegalArgumentException("Source DataRequest cannot be "
                     + "null or empty");
         }
-        if(tags == null || tags.size() < 1) {
+        if (tags == null || tags.size() < 1) {
             throw new IllegalArgumentException("Tags SortedData has to be a "
                     + "size of at least 1");
         }
@@ -54,7 +55,23 @@ public class DataRequest implements IDataRequest {
         this.requestId = requestId;
         this.tags = tags;
     }
-    
+
+    /**
+     * Convenience method for generating new requests clientSide, when ID is not
+     * assigned yet.
+     *
+     * @param title
+     * @param description
+     * @param location
+     * @param source
+     * @param requestId
+     * @param tags
+     */
+    public DataRequest(String title, String description, String location,
+            String source, int requestId, HashSet<Tag> tags) {
+        this(-1, title, description, location, source, requestId, tags);
+    }
+
     @Override
     public int getId() {
         return this.id;
@@ -79,7 +96,7 @@ public class DataRequest implements IDataRequest {
     public String getSource() {
         return this.source;
     }
-    
+
     @Override
     public int getRequestId() {
         return this.requestId;

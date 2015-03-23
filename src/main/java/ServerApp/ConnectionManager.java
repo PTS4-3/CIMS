@@ -5,20 +5,10 @@
  */
 package ServerApp;
 
-import Shared.IData;
-import Shared.ISortedData;
-import Shared.Tag;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Observable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -29,6 +19,8 @@ import java.util.logging.Logger;
  * @author Kargathia
  */
 public class ConnectionManager {
+
+    public static final Object LOCK = "";
 
     private ExecutorService pool;
 

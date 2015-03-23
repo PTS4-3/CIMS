@@ -8,6 +8,7 @@ package ServicesApp.Connection;
 import ServicesApp.UI.ServicesController;
 import Shared.Connection.ConnClientBase;
 import Shared.Connection.ConnCommand;
+import Shared.Connection.ConnState;
 import Shared.IData;
 import Shared.IDataRequest;
 import Shared.ISortedData;
@@ -47,7 +48,7 @@ class Connection extends ConnClientBase {
             out.flush();
             getCommandSuccess("Send unsorted data (" + data.getTitle() + ")");
         } catch (IOException ex) {
-            System.err.println("Exception trying to send unsorted data to server: " 
+            System.err.println("Exception trying to send unsorted data to server: "
                     + ex.getMessage());
             Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
                     .log(Level.SEVERE, null, ex);
@@ -83,11 +84,20 @@ class Connection extends ConnClientBase {
                         output = (List<ISortedData>) list;
                     }
                 }
+            } else if (inObject instanceof ConnState) {
+                if ((ConnState) inObject == ConnState.COMMAND_FAIL) {
+                    System.err.println("Server failed to execute command "
+                            + "(getSortedData)");
+                } else {
+                    System.err.println("Unexpected ConnState as output: "
+                            + inObject.toString());
+                }
             } else {
                 throw new IOException("Unexpected object");
             }
         } catch (IOException | ClassNotFoundException ex) {
-            System.err.println("Exception getting sorted data: " + ex.getMessage());
+            System.err.println("Exception getting sorted data: "
+                    + ex.getMessage());
             Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
                     .log(Level.SEVERE, null, ex);
         } finally {
@@ -123,11 +133,20 @@ class Connection extends ConnClientBase {
                         output = (List<IDataRequest>) list;
                     }
                 }
+            } else if (inObject instanceof ConnState) {
+                if ((ConnState) inObject == ConnState.COMMAND_FAIL) {
+                    System.err.println("Server failed to execute command "
+                            + "(getDataRequests)");
+                } else {
+                    System.err.println("Unexpected ConnState as output: "
+                            + inObject.toString());
+                }
             } else {
                 throw new IOException("Unexpected object");
             }
         } catch (IOException | ClassNotFoundException ex) {
-            System.err.println("Exception getting data requests: " + ex.getMessage());
+            System.err.println("Exception getting data requests: "
+                    + ex.getMessage());
             Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
                     .log(Level.SEVERE, null, ex);
         } finally {
@@ -155,7 +174,8 @@ class Connection extends ConnClientBase {
             out.flush();
             getCommandSuccess("Update unsorted data (" + data.getTitle() + ")");
         } catch (IOException ex) {
-            System.err.println("Exception updating unsorted data: " + ex.getMessage());
+            System.err.println("Exception updating unsorted data: "
+                    + ex.getMessage());
             Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
                     .log(Level.SEVERE, null, ex);
         } finally {
@@ -168,7 +188,7 @@ class Connection extends ConnClientBase {
      * @param tags
      * @return unsorted data conforming to parameter (eg. all sent items from
      * this source).
-     * 
+     *
      */
     protected List<IData> getSentData(String source) {
         if (!this.greetServer()) {
@@ -188,6 +208,14 @@ class Connection extends ConnClientBase {
                     if (list.get(0) instanceof IData) {
                         output = (List<IData>) list;
                     }
+                }
+            } else if (inObject instanceof ConnState) {
+                if ((ConnState) inObject == ConnState.COMMAND_FAIL) {
+                    System.err.println("Server failed to execute command "
+                            + "(getSentData)");
+                } else {
+                    System.err.println("Unexpected ConnState as output: "
+                            + inObject.toString());
                 }
             } else {
                 throw new IOException("Unexpected object");
@@ -219,11 +247,20 @@ class Connection extends ConnClientBase {
             Object inObject = in.readObject();
             if (inObject instanceof IData) {
                 output = (IData) inObject;
+            } else if (inObject instanceof ConnState) {
+                if ((ConnState) inObject == ConnState.COMMAND_FAIL) {
+                    System.err.println("Server failed to execute command "
+                            + "(getDataItem)");
+                } else {
+                    System.err.println("Unexpected ConnState as output: "
+                            + inObject.toString());
+                }
             } else {
                 throw new IOException("Unexpected object");
             }
         } catch (IOException | ClassNotFoundException ex) {
-            System.err.println("Exception getting specific data item: " + ex.getMessage());
+            System.err.println("Exception getting specific data item: "
+                    + ex.getMessage());
             Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
                     .log(Level.SEVERE, null, ex);
         } finally {

@@ -8,6 +8,7 @@ package HeadquartersApp.Connection;
 import HeadquartersApp.UI.HeadquartersController;
 import Shared.Connection.ConnCommand;
 import Shared.Connection.ConnClientBase;
+import Shared.Connection.ConnState;
 import Shared.IData;
 import Shared.IDataRequest;
 import Shared.ISortedData;
@@ -21,9 +22,9 @@ import java.util.logging.Logger;
  *
  * @author Kargathia
  */
-class Connection extends ConnClientBase{
-    
-    Connection(String IP, int port){
+class Connection extends ConnClientBase {
+
+    Connection(String IP, int port) {
         super(IP, port);
     }
 
@@ -48,7 +49,7 @@ class Connection extends ConnClientBase{
         } catch (IOException ex) {
             System.err.println("Exception trying to send sorted data.");
             Logger.getLogger(ConnectionManager.class.getName())
-                    .log(Level.SEVERE, null, ex);           
+                    .log(Level.SEVERE, null, ex);
         } finally {
             closeSocket();
         }
@@ -80,6 +81,13 @@ class Connection extends ConnClientBase{
                     if (list.get(0) instanceof IData) {
                         output = (List<IData>) list;
                     }
+                }
+            } else if (inObject instanceof ConnState) {
+                if ((ConnState) inObject == ConnState.COMMAND_FAIL) {
+                    System.err.println("Server failed to execute command (getData)");
+                } else {
+                    System.err.println("Unexpected ConnState as output: "
+                            + inObject.toString());
                 }
             } else {
                 System.err.println("Error trying to get unsorted data: unexpected object");

@@ -5,6 +5,7 @@
  */
 package ServerApp;
 
+import static ServerApp.ConnectionManager.LOCK;
 import Shared.Connection.ConnState;
 import Shared.Connection.ConnCommand;
 import Shared.IData;
@@ -53,6 +54,34 @@ public class Connection implements Runnable {
         }
     }
 
+    /**
+     * Output of data after checking if it's not null.
+     *
+     * @param output
+     * @throws IOException
+     */
+    private void writeOutput(Object output) throws IOException {
+        if (output != null) {
+            out.writeObject(output);
+        } else {
+            out.writeObject(ConnState.COMMAND_FAIL);
+        }
+    }
+
+    /**
+     * Output of a boolean result.
+     *
+     * @param result
+     * @throws java.io.IOException
+     */
+    private void writeOutput(boolean result) throws IOException {
+        if (result) {
+            out.writeObject(ConnState.COMMAND_SUCCESS);
+        } else {
+            out.writeObject(ConnState.COMMAND_FAIL);
+        }
+    }
+
     @Override
     public void run() {
         // lets console know if something went wrong
@@ -68,11 +97,11 @@ public class Connection implements Runnable {
 
         try {
             try {
+                out.writeObject(ConnState.CONNECTION_START);
+                out.flush();
+
                 boolean isDone = false;
                 while (!isDone) {
-                    // writes this before every cycle
-                    out.writeObject(ConnState.CONNECTION_START);
-                    out.flush();
 
                     Object inObject = in.readObject();
                     if (inObject instanceof ConnState) {
@@ -135,6 +164,7 @@ public class Connection implements Runnable {
                 Logger.getLogger(Connection.class.getName())
                         .log(Level.SEVERE, null, ex);
             } finally {
+                System.out.println("Request finished - closing down");
                 conn.close();
             }
         } catch (IOException ex) {
@@ -148,7 +178,9 @@ public class Connection implements Runnable {
      * Sends a batch of 50 items of unsorted data
      */
     private void sendUnsortedData() throws IOException {
-        out.writeObject(ServerMain.dummyManager.getFromUnsortedData());
+        synchronized (LOCK) {
+            writeOutput(ServerMain.dummyManager.getFromUnsortedData());
+        }
         out.flush();
     }
 
@@ -162,7 +194,9 @@ public class Connection implements Runnable {
         Object inObject = in.readObject();
         if (inObject instanceof HashSet) {
             HashSet tags = (HashSet) inObject;
-            out.writeObject(ServerMain.dummyManager.getFromSortedData(tags));
+            synchronized (LOCK) {
+                writeOutput(ServerMain.dummyManager.getFromSortedData(tags));
+            }
         } else {
             out.writeObject(ConnState.COMMAND_ERROR);
         }
@@ -182,10 +216,8 @@ public class Connection implements Runnable {
             return;
         }
         ISortedData data = (ISortedData) inObject;
-        if (ServerMain.dummyManager.insertToSortedData(data)) {
-            out.writeObject(ConnState.COMMAND_SUCCESS);
-        } else {
-            out.writeObject(ConnState.COMMAND_FAIL);
+        synchronized (LOCK) {
+            writeOutput(ServerMain.dummyManager.insertToSortedData(data));
         }
         out.flush();
     }
@@ -202,10 +234,8 @@ public class Connection implements Runnable {
             return;
         }
         IData data = (IData) inObject;
-        if (ServerMain.dummyManager.insertToUnsortedData(data)) {
-            out.writeObject(ConnState.COMMAND_SUCCESS);
-        } else {
-            out.writeObject(ConnState.COMMAND_FAIL);
+        synchronized (LOCK) {
+            writeOutput(ServerMain.dummyManager.insertToUnsortedData(data));
         }
         out.flush();
     }
@@ -215,13 +245,18 @@ public class Connection implements Runnable {
      */
     private void resetUnsortedData() throws IOException, ClassNotFoundException {
         Object inObject = in.readObject();
+        if (inObject == null) {
+            System.out.println("resetUnsortedData inObject was null");
+            out.writeObject(ConnState.COMMAND_ERROR);
+            out.flush();
+            return;
+        }
+
         if (inObject instanceof List) {
             List list = (List) inObject;
             if (!list.isEmpty() && (list.get(0) instanceof IData)) {
-                if (ServerMain.dummyManager.resetUnsortedData((List<IData>) list)) {
-                    out.writeObject(ConnState.COMMAND_SUCCESS);
-                } else {
-                    out.writeObject(ConnState.COMMAND_FAIL);
+                synchronized (LOCK) {
+                    writeOutput(ServerMain.dummyManager.resetUnsortedData((List<IData>) list));
                 }
             }
         } else {
@@ -242,10 +277,8 @@ public class Connection implements Runnable {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
         }
-        if (ServerMain.dummyManager.updateUnsortedData((IData) inObject)) {
-            out.writeObject(ConnState.COMMAND_SUCCESS);
-        } else {
-            out.writeObject(ConnState.COMMAND_FAIL);
+        synchronized (LOCK) {
+            writeOutput(ServerMain.dummyManager.updateUnsortedData((IData) inObject));
         }
         out.flush();
     }
@@ -262,10 +295,8 @@ public class Connection implements Runnable {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
         }
-        if(ServerMain.dummyManager.discardUnsortedData((IData) inObject)){
-            out.writeObject(ConnState.COMMAND_SUCCESS);
-        } else {
-            out.writeObject(ConnState.COMMAND_FAIL);
+        synchronized (LOCK) {
+            writeOutput(ServerMain.dummyManager.discardUnsortedData((IData) inObject));
         }
         out.flush();
     }
@@ -281,10 +312,8 @@ public class Connection implements Runnable {
             return;
         }
         IDataRequest data = (IDataRequest) inObject;
-        if(ServerMain.dummyManager.insertDataRequest(data)){
-            out.writeObject(ConnState.COMMAND_SUCCESS);
-        } else {
-            out.writeObject(ConnState.COMMAND_FAIL);
+        synchronized (LOCK) {
+            writeOutput(ServerMain.dummyManager.insertDataRequest(data));
         }
         out.flush();
     }
@@ -300,7 +329,9 @@ public class Connection implements Runnable {
         Object inObject = in.readObject();
         if (inObject instanceof HashSet) {
             HashSet tags = (HashSet) inObject;
-            out.writeObject(ServerMain.dummyManager.getUpdateRequests(tags));
+            synchronized (LOCK) {
+                writeOutput(ServerMain.dummyManager.getUpdateRequests(tags));
+            }
         } else {
             out.writeObject(ConnState.COMMAND_ERROR);
         }
@@ -316,7 +347,9 @@ public class Connection implements Runnable {
     private void sendDataItem() throws IOException, ClassNotFoundException {
         Object inObject = in.readObject();
         if (inObject instanceof Integer) {
-            out.writeObject(ServerMain.dummyManager.getDataItem((int) inObject));
+            synchronized (LOCK) {
+                writeOutput(ServerMain.dummyManager.getDataItem((int) inObject));
+            }
         } else {
             out.writeObject(ConnState.COMMAND_ERROR);
         }
@@ -325,13 +358,16 @@ public class Connection implements Runnable {
 
     /**
      * Returns a list of IData with given source
+     *
      * @throws IOException
-     * @throws ClassNotFoundException 
+     * @throws ClassNotFoundException
      */
     private void sendSentData() throws IOException, ClassNotFoundException {
         Object inObject = in.readObject();
         if (inObject instanceof String) {
-            out.writeObject(ServerMain.dummyManager.getSentData(inObject.toString()));
+            synchronized (LOCK) {
+                writeOutput(ServerMain.dummyManager.getSentData(inObject.toString()));
+            }
         } else {
             out.writeObject(ConnState.COMMAND_ERROR);
         }
