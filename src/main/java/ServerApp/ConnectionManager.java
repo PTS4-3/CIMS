@@ -22,7 +22,7 @@ public class ConnectionManager {
 
     public static final Object LOCK = "";
 
-    private ExecutorService pool;
+    private final ExecutorService pool;
 
     private int defaultPort = 8189;
 
@@ -41,41 +41,37 @@ public class ConnectionManager {
      * forwards them.
      */
     private void startListener() {
-        pool.execute(new Runnable() {
+        pool.execute(() -> {
+            System.setProperty("sun.net.useExclusiveBind", "false");
+            ServerSocket mySocket = null;
+            try {
+                mySocket = new ServerSocket();
+                mySocket.setReuseAddress(true);
+                mySocket.bind(new InetSocketAddress(defaultPort));
+            } catch (IOException ex) {
+                System.out.println("Unable to start serversocket: "
+                        + ex.getMessage());
+                Logger.getLogger(ConnectionManager.class.getName())
+                        .log(Level.SEVERE, null, ex);
+                return;
+            }
+            System.out.println("Server started");
 
-            @Override
-            public void run() {
-                System.setProperty("sun.net.useExclusiveBind", "false"); 
-                ServerSocket mySocket = null;
+            while (true) {
+
                 try {
-                    mySocket = new ServerSocket();
-                    mySocket.setReuseAddress(true);
-                    mySocket.bind(new InetSocketAddress(defaultPort));
+
+                    // threadblocking until a connection is made,
+                    // then starts a new runnable for it.
+                    // repeats until program quit
+                    System.out.println("Waiting for client");
+                    Socket incoming = mySocket.accept();
+                    System.out.println("Handling client requests");
+                    pool.execute(new Connection(incoming));
+
                 } catch (IOException ex) {
-                    System.out.println("Unable to start serversocket: "
-                            + ex.getMessage());
                     Logger.getLogger(ConnectionManager.class.getName())
                             .log(Level.SEVERE, null, ex);
-                    return;
-                }
-                System.out.println("Server started");
-
-                while (true) {
-
-                    try {
-
-                        // threadblocking until a connection is made,
-                        // then starts a new runnable for it.
-                        // repeats until program quit
-                        System.out.println("Waiting for client");
-                        Socket incoming = mySocket.accept();
-                        System.out.println("Handling client requests");
-                        pool.execute(new Connection(incoming));
-
-                    } catch (IOException ex) {
-                        Logger.getLogger(ConnectionManager.class.getName())
-                                .log(Level.SEVERE, null, ex);
-                    }
                 }
             }
         });

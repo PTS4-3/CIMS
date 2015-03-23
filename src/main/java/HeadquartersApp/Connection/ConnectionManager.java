@@ -29,7 +29,7 @@ public class ConnectionManager {
     public static final int DEFAULT_PORT = 8189;
     
     
-    private static ExecutorService pool = Executors.newCachedThreadPool();
+    private static final ExecutorService pool = Executors.newCachedThreadPool();
     private HeadquartersController guiController = null;
     private String defaultIP = "127.0.0.1";
     private int defaultPort;
@@ -70,12 +70,8 @@ public class ConnectionManager {
      * @param data
      */
     public void sendSortedData(ISortedData data) {
-        pool.execute(new Runnable() {
-
-            @Override
-            public void run() {
-                new Connection(defaultIP, defaultPort).sendSortedData(data);
-            }
+        pool.execute(() -> {
+            new Connection(defaultIP, defaultPort).sendSortedData(data);
         });
         
     }
@@ -86,17 +82,13 @@ public class ConnectionManager {
      * completion
      */
     public void getData() {
-        pool.execute(new Runnable() {
-
-            @Override
-            public void run() {
-                List<IData> output;
-                output = new Connection(defaultIP, defaultPort).getData();
-                if(output != null){
-                    guiController.displayData(output);
-                } else {
-                    System.err.println("Unable to retrieve Unsorted Data from server.");
-                }              
+        pool.execute(() -> {
+            List<IData> output;
+            output = new Connection(defaultIP, defaultPort).getData();
+            if(output != null){
+                guiController.displayData(output);
+            } else {
+                System.err.println("Unable to retrieve Unsorted Data from server.");              
             }
         });       
     }
@@ -111,12 +103,8 @@ public class ConnectionManager {
             System.err.println("Null parameter in stopWorkingOnData");
             return;
         }
-        pool.execute(new Runnable() {
-
-            @Override
-            public void run() {
-                new Connection(defaultIP, defaultPort).stopWorkingOnData(data);
-            }
+        pool.execute(() -> {
+            new Connection(defaultIP, defaultPort).stopWorkingOnData(data);
         });
         
     }
@@ -132,12 +120,8 @@ public class ConnectionManager {
             System.err.println("Null parameter in discardUnsortedData");
             return;
         }
-        pool.execute(new Runnable() {
-
-            @Override
-            public void run() {
-                new Connection(defaultIP, defaultPort).discardUnsortedData(data);
-            }
+        pool.execute(() -> {
+            new Connection(defaultIP, defaultPort).discardUnsortedData(data);
         });
         
     }
@@ -151,12 +135,8 @@ public class ConnectionManager {
             System.err.println("Null parameter in requestUpdate");
             return;
         }
-        pool.execute(new Runnable() {
-
-            @Override
-            public void run() {
-                new Connection(defaultIP, defaultPort).requestUpdate(data);
-            }
+        pool.execute(() -> {
+            new Connection(defaultIP, defaultPort).requestUpdate(data);
         });
         
     }

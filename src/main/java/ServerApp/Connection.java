@@ -11,7 +11,6 @@ import Shared.Connection.ConnCommand;
 import Shared.IData;
 import Shared.IDataRequest;
 import Shared.ISortedData;
-import Shared.Tag;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,7 +20,6 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,8 +29,7 @@ import java.util.logging.Logger;
  */
 public class Connection implements Runnable {
 
-    private static String eol = System.getProperty("line.separator");
-    private static String fs = File.separator;
+    private static final String eol = System.getProperty("line.separator");
 
     private Socket conn = null;
     private InputStream inStream = null;

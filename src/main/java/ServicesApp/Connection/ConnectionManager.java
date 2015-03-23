@@ -69,12 +69,8 @@ public class ConnectionManager {
             System.err.println("Null parameter in sendUnsortedData");
             return;
         }
-        pool.execute(new Runnable() {
-
-            @Override
-            public void run() {
-                new Connection(defaultIP, defaultPort).sendUnSortedData(data);
-            }
+        pool.execute(() -> {
+            new Connection(defaultIP, defaultPort).sendUnSortedData(data);
         });
     }
 
@@ -88,18 +84,13 @@ public class ConnectionManager {
             System.err.println("Null parameter in getSortedData");
             return;
         }
-        pool.execute(new Runnable() {
-
-            @Override
-            public void run() {
-                List<ISortedData> output = null;
-                output = new Connection(defaultIP, defaultPort).getSortedData(tags);
-                if(output != null){
-                    guiController.displaySortedData(output);
-                } else {
-                    System.err.println("Unable to retrieve sorted data from server");
-                }
-                
+        pool.execute(() -> {
+            List<ISortedData> output = null;
+            output = new Connection(defaultIP, defaultPort).getSortedData(tags);
+            if(output != null){
+                guiController.displaySortedData(output);
+            } else {
+                System.err.println("Unable to retrieve sorted data from server");
             }
         });
     }
@@ -114,17 +105,13 @@ public class ConnectionManager {
             System.err.println("Null parameter in getRequests");
             return;
         }
-        pool.execute(new Runnable() {
-
-            @Override
-            public void run() {
-                List<IDataRequest> output = null;
-                output = new Connection(defaultIP, defaultPort).getDataRequests(tags);
-                if(output != null){
-                    guiController.displayRequests(output);
-                } else {
-                    System.err.println("Unable to retrieve requests from server.");
-                }                
+        pool.execute(() -> {
+            List<IDataRequest> output = null;
+            output = new Connection(defaultIP, defaultPort).getDataRequests(tags);
+            if(output != null){
+                guiController.displayRequests(output);
+            } else {
+                System.err.println("Unable to retrieve requests from server.");                
             }
         });
     }
@@ -139,12 +126,8 @@ public class ConnectionManager {
             System.err.println("Null parameter in updateUnsortedData");
             return;
         }
-        pool.execute(new Runnable() {
-
-            @Override
-            public void run() {
-                new Connection(defaultIP, defaultPort).updateUnsortedData(data);
-            }
+        pool.execute(() -> {
+            new Connection(defaultIP, defaultPort).updateUnsortedData(data);
         });
     }
 
@@ -157,17 +140,13 @@ public class ConnectionManager {
             System.err.println("Null parameter in getSentData");
             return;
         }
-        pool.execute(new Runnable() {
-
-            @Override
-            public void run() {
-                List<IData> output = null;
-                output = new Connection(defaultIP, defaultPort).getSentData(source);
-                if(output != null){
-                    guiController.displaySentData(output);
-                } else {
-                    System.err.println("Unable to retrieve sent data from server.");
-                }
+        pool.execute(() -> {
+            List<IData> output = null;
+            output = new Connection(defaultIP, defaultPort).getSentData(source);
+            if(output != null){
+                guiController.displaySentData(output);
+            } else {
+                System.err.println("Unable to retrieve sent data from server.");
             }
         });
     }
@@ -179,17 +158,13 @@ public class ConnectionManager {
      * @param id
      */
     public void getDataItem(int id) {
-        pool.execute(new Runnable() {
-
-            @Override
-            public void run() {
-                IData output = null;
-                output = new Connection(defaultIP, defaultPort).getDataItem(id);
-                if(output != null){
-                    guiController.displayDataItem(output);
-                } else {
-                    System.err.println("Unable to retrieve specific data item from server.");
-                }
+        pool.execute(() -> {
+            IData output = null;
+            output = new Connection(defaultIP, defaultPort).getDataItem(id);
+            if(output != null){
+                guiController.displayDataItem(output);
+            } else {
+                System.err.println("Unable to retrieve specific data item from server.");
             }
         });
     }
