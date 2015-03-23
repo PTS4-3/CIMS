@@ -14,12 +14,16 @@ import Shared.Status;
 import Shared.Tag;
 import Shared.UnsortedData;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -55,7 +59,7 @@ public class ServicesController implements Initializable {
     
     // ReadSortedData
     @FXML Tab tabReadSortedData;
-    // tableView or something like that????
+    @FXML ListView lvsSortedData;
     @FXML CheckBox chbsData;
     @FXML CheckBox chbsRequests;
     @FXML TextField tfsTitle;
@@ -68,7 +72,27 @@ public class ServicesController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        // Add Change Listeners
+        lvuSentData.getSelectionModel().selectionModeProperty().addListener(
+            new ChangeListener() {
+
+            @Override
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                selectSentData();
+            }
+            
+        });
+        
+        lvsSortedData.getSelectionModel().selectionModeProperty().addListener(
+            new ChangeListener() {
+
+            @Override
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                selectData();
+            }
+                
+            
+        });
     }
     
     /**
@@ -114,8 +138,10 @@ public class ServicesController implements Initializable {
      * @param requests
      */
     public void displayRequests(List<IDataRequest> requests) {
-        // add requests to TableView TODO
-        // if not selected, select first
+        lvsSortedData.getItems().addAll(requests);
+        if(lvsSortedData.getSelectionModel().getSelectedItem() == null) {
+            lvsSortedData.getSelectionModel().selectFirst();
+        }
     }
     
     /**
@@ -123,8 +149,10 @@ public class ServicesController implements Initializable {
      * @param sortedData
      */
     public void displaySortedData(List<ISortedData> sortedData) {
-        // add sortedData to TableView TODO
-        // if not selected, select first
+        lvsSortedData.getItems().addAll(sortedData);
+        if(lvsSortedData.getSelectionModel().getSelectedItem() == null) {
+            lvsSortedData.getSelectionModel().selectFirst();
+        }
     }
     
     /**
@@ -251,8 +279,7 @@ public class ServicesController implements Initializable {
      * Fills the GUI with the information of the selected data
      */
     public void selectData() {
-        //TODO get selected from TableView
-        IData data = null;
+        IData data = (IData) lvsSortedData.getSelectionModel().getSelectedItem();
         if(data != null) {
             // Fill GUI with information
             tfsTitle.setText(data.getTitle());
@@ -290,11 +317,28 @@ public class ServicesController implements Initializable {
                 System.out.println(nEx.getMessage());
             }
         } else {
-            // Remove TODO
+            // Remove
+            List<ISortedData> sortedData = new ArrayList<>();
+            List<IDataRequest> requests = new ArrayList<>();
+            
+            for(Object o : lvsSortedData.getItems()) {
+                if(o instanceof ISortedData) {
+                    sortedData.add((ISortedData) o);
+                } else if (o instanceof IDataRequest) {
+                    requests.add((IDataRequest) o);
+                }
+            }
+            
             if(source == chbsData) {
-                // Remove sortedData from TableView TODO
+                // Remove sortedData
+                for(ISortedData s : sortedData) {
+                    lvsSortedData.getItems().remove(s);
+                }
             } else if (source == chbsRequests) {
-                // Remove dataRequest from TableView TODO
+                // Remove dataRequest
+                for(IDataRequest r : requests) {
+                    lvsSortedData.getItems().remove(r);
+                }
             }
         }
     }
@@ -304,8 +348,8 @@ public class ServicesController implements Initializable {
      */
     public void goToSendUpdate() {
         try {           
-            //TODO get selected from TableView
-            IDataRequest request = null;
+            IDataRequest request = (IDataRequest) 
+                    lvsSortedData.getSelectionModel().getSelectedItem();
             
             if(request != null) {
                 if(request.getRequestId() == -1) {
