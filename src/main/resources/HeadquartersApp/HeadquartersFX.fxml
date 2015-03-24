@@ -7,6 +7,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
+<?import org.controlsfx.control.*?>
 
 <AnchorPane id="AnchorPane" prefHeight="500.0" prefWidth="1200.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="HeadquartersApp.UI.HeadquartersController">
   <children>
@@ -14,7 +15,7 @@
       <tabs>
         <Tab fx:id="tabProcessInfo" text="Informatie verwerken">
           <content>
-            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="459.0" prefWidth="1200.0">
+            <AnchorPane id="Content" fx:id="apuPane" minHeight="0.0" minWidth="0.0" prefHeight="459.0" prefWidth="1200.0">
               <children>
                 <ListView fx:id="lvuUnsortedData" layoutX="14.0" layoutY="55.0" prefHeight="390.0" prefWidth="291.0" />
                 <Separator layoutX="754.0" layoutY="8.0" orientation="VERTICAL" prefHeight="431.0" />
@@ -30,15 +31,6 @@
                 <Button layoutX="783.0" layoutY="402.0" mnemonicParsing="false" onAction="#sendSortedData" prefWidth="393.0" text="Toevoegen aan gesorteerde data" />
                 <Button layoutX="1046.0" layoutY="361.0" mnemonicParsing="false" onAction="#discard" prefWidth="130.0" text="Verwijderen" />
                 <Slider fx:id="suRelevance" blockIncrement="1.0" layoutX="956.0" layoutY="86.0" majorTickUnit="1.0" max="5.0" min="1.0" minorTickCount="0" prefWidth="219.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
-                <ComboBox fx:id="cbuTags" layoutX="955.0" layoutY="20.0" prefWidth="219.00009999999747">
-                  <items>
-                    <FXCollections fx:factory="observableArrayList">
-                      <String fx:value="Item 1" />
-                      <String fx:value="Item 2" />
-                      <String fx:value="Item 3" />
-                    </FXCollections>
-                  </items>
-                </ComboBox>
                 <TextField fx:id="tfuTitle" layoutX="484.0" layoutY="17.0" prefWidth="247.0" />
                 <TextField fx:id="tfuSource" layoutX="484.0" layoutY="338.0" prefWidth="247.0" />
                 <TextField fx:id="tfuLocation" layoutX="484.0" layoutY="379.0" prefWidth="247.0" />
@@ -56,7 +48,7 @@
         </Tab>
         <Tab fx:id="tabRequestInfo" text="Informatie vragen">
           <content>
-            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+            <AnchorPane id="Content" fx:id="aprPane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
               <children>
                 <Label layoutX="27.0" layoutY="66.0" text="Titel" />
                 <Label layoutX="27.0" layoutY="104.0" text="Beschrijving" />
@@ -69,15 +61,6 @@
                 <TextField fx:id="tfrRequestTitle" editable="false" layoutX="173.0" layoutY="23.0" prefWidth="395.0" />
                 <Label layoutX="27.0" layoutY="26.0" text="Titel data" />
                 <Label layoutX="29.0" layoutY="377.0" text="Bestemming" />
-                <ComboBox fx:id="cbrTags" layoutX="173.0" layoutY="374.0" prefWidth="395.0">
-                  <items>
-                    <FXCollections fx:factory="observableArrayList">
-                      <String fx:value="Item 1" />
-                      <String fx:value="Item 2" />
-                      <String fx:value="Item 3" />
-                    </FXCollections>
-                  </items>
-                </ComboBox>
                 <Button layoutX="471.0" layoutY="411.0" mnemonicParsing="false" onAction="#sendRequest" text="Verzenden" />
                 <Button layoutX="397.0" layoutY="411.0" mnemonicParsing="false" onAction="#resetRequest" text="Reset" />
                 <Separator layoutX="596.0" layoutY="14.0" orientation="VERTICAL" prefHeight="431.0" />

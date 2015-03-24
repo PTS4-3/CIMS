@@ -5,8 +5,8 @@
  */
 package HeadquartersApp.UI;
 
-import HeadquartersApp.Connection.ConnectionManager;
 import HeadquartersApp.*;
+import HeadquartersApp.Connection.ConnectionManager;
 import Shared.*;
 import java.net.URL;
 import java.util.ArrayList;
@@ -26,6 +26,8 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
+import org.controlsfx.control.CheckComboBox;
 
 /**
  *
@@ -41,10 +43,12 @@ public class HeadquartersController implements Initializable {
     @FXML TextArea tauDescription;
     @FXML TextField tfuSource;
     @FXML TextField tfuLocation;
-    @FXML ComboBox cbuTags;
+    //@FXML ComboBox cbuTags;
     @FXML Slider suRelevance;
     @FXML Slider suReliability;
     @FXML Slider suQuality;
+    @FXML AnchorPane apuPane;
+    @FXML CheckComboBox ccuTags;
     
     // RequestInfo
     @FXML Tab tabRequestInfo;
@@ -53,7 +57,9 @@ public class HeadquartersController implements Initializable {
     @FXML TextArea tarDescription;
     @FXML TextField tfrSource;
     @FXML TextField tfrLocation;
-    @FXML ComboBox cbrTags;
+    //@FXML ComboBox cbrTags;
+    @FXML AnchorPane aprPane;
+    @FXML CheckComboBox ccrTags;    
     
     private IData requestData;
     
@@ -83,11 +89,26 @@ public class HeadquartersController implements Initializable {
     public void configure(String ipAdressServer) {
         this.connectionManager = new ConnectionManager(this, ipAdressServer);
 
-        // Fill GUI with initial values
-        cbuTags.setItems(FXCollections.observableArrayList(Tag.values()));
-        cbuTags.getSelectionModel().selectFirst();
-        cbrTags.setItems(FXCollections.observableArrayList(Tag.values()));
-        cbrTags.getSelectionModel().selectFirst();
+        // Fill GUI with initial values        
+        ccuTags = new CheckComboBox(FXCollections.observableArrayList(Tag.values()));
+        ccuTags.setLayoutX(955);
+        ccuTags.setLayoutY(20);
+        ccuTags.prefWidth(220);
+        ccuTags.prefHeight(25);        
+        apuPane.getChildren().add(ccuTags);
+        
+        ccrTags = new CheckComboBox(FXCollections.observableArrayList(Tag.values()));
+        ccrTags.setLayoutX(173);
+        ccrTags.setLayoutY(374);
+        ccrTags.prefWidth(395);
+        ccrTags.prefHeight(25);        
+        aprPane.getChildren().add(ccrTags);
+        
+        
+        //cbuTags.setItems(FXCollections.observableArrayList(Tag.values()));
+        //cbuTags.getSelectionModel().selectFirst();
+        //cbrTags.setItems(FXCollections.observableArrayList(Tag.values()));
+        //cbrTags.getSelectionModel().selectFirst();
         
         try {
             if(this.connectionManager == null) {
@@ -132,7 +153,7 @@ public class HeadquartersController implements Initializable {
             tfuLocation.setText(unsortedData.getLocation());
             // ComboBox checks weghalen
             //lvuTags.getItems().clear();
-            cbuTags.getSelectionModel().selectFirst();
+            //cbuTags.getSelectionModel().selectFirst();
             suRelevance.setValue(suRelevance.getMin());
             suReliability.setValue(suReliability.getMin());
             suQuality.setValue(suQuality.getMin());
