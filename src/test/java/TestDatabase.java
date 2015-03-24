@@ -17,15 +17,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNotNull;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -40,8 +33,9 @@ public class TestDatabase {
     private IDataRequest request;
     private HashSet<Tag> tag = new HashSet();
     private List<IData> unsortedData;
+    private List<UnsortedData> unsorteddata;
     private String source;
-    private int ID = 500;
+    private int ID = 340;
     
     public TestDatabase() {
     }
@@ -50,6 +44,7 @@ public class TestDatabase {
     public void setUp() {
         database = new DatabaseManager();
         unsortedData = new ArrayList();
+        unsorteddata = new ArrayList();
         source = "FIREDEPARTMENT";
         tag.add(Tag.FIREDEPARTMENT);
         tag.add(Tag.AMBULANCE);
@@ -71,7 +66,7 @@ public class TestDatabase {
         assertEquals("Insert unsorted failed", test, true);
         
         System.out.println("\r\nTest2 start\r\n");
-        List<UnsortedData> unsorteddata = new ArrayList();
+        unsorteddata = new ArrayList();
         unsorteddata = database.getFromUnsortedData();
         assertNotNull("Have to get a list", unsorteddata);
         
@@ -126,8 +121,8 @@ public class TestDatabase {
     public void getDataItem()
     {
         System.out.println("\r\nTest11 start\r\n");
-        IData data1 = database.getDataItem(300);
-        assertNotNull("Have to get a list", data1);
+        IData data1 = database.getDataItem(14);
+        assertNotNull("Have to get a object", data1);
         
         System.out.println("\r\nTest12 start\r\n");
         List<IData> data = new ArrayList();
