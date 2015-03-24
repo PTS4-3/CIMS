@@ -101,10 +101,10 @@ public class DatabaseManager {
             unsortedData.setString(5, Status.NONE.toString());
             unsortedData.execute();
 
-            System.out.println("Insert unsortedData succeeded");
+            System.out.println("insertToUnsortedData succeeded");
             succeed = true;
         } catch (SQLException ex) {
-            System.out.println("Insert unsortedData failed: " + ex);
+            System.out.println("insertToUnsortedData failed: " + ex);
         } finally {
             closeConnection();
         }
@@ -155,9 +155,9 @@ public class DatabaseManager {
                 System.out.println("Updating unsorted status succeed");
             }
 
-            System.out.println("Data unsorted read & update succeeded");
+            System.out.println("getFromUnsortedData succeed");
         } catch (SQLException ex) {
-            System.out.println("Data unsorted read failed: " + ex);
+            System.out.println("getFromUnsortedData failed: " + ex);
         } finally {
             closeConnection();
         }
@@ -209,11 +209,11 @@ public class DatabaseManager {
             PreparedStatement unsortedData = conn.prepareStatement(query);
             unsortedData.execute();
 
-            System.out.println("Update unsortedData succeeded");
+            System.out.println("insertToSortedData succeeded");
 
             succeed = true;
         } catch (SQLException ex) {
-            System.out.println("Insert sortedData failed: " + ex);
+            System.out.println("insertToSortedData failed: " + ex);
         } finally {
             closeConnection();
         }
@@ -243,7 +243,7 @@ public class DatabaseManager {
         }
 
         try {
-            String query = "SELECT IDSORTEDDATA FROM dbi294542.`SORTEDDATABASE.SORTEDDATATAGS` WHERE"
+            String query = "SELECT ID FROM dbi294542.`SORTEDDATABASE.SORTEDDATATAGS` WHERE"
                     + " TAGNAME = ";
             int sizeList = info.size();
             Iterator it = info.iterator();
@@ -255,7 +255,7 @@ public class DatabaseManager {
                     query += "'" + element.toString() + "' ";
                     aantal++;
                 } else {
-                    query += "AND IDSORTEDDATA IN (SELECT ID FROM"
+                    query += "AND ID IN (SELECT ID FROM"
                             + " dbi294542.`SORTEDDATABASE.SORTEDDATATAGS` WHERE  '" + element.toString() + "' ";
                 }
             }
@@ -290,9 +290,9 @@ public class DatabaseManager {
                     sorted.add(new SortedData(id, title, description, location, source, relevance, reliability, quality, info));
                 }
             }
-            System.out.println("Getting sorted object succeed");
+            System.out.println("Getting sorted object getFromSortedData succeed");
         } catch (SQLException ex) {
-            System.out.println("Data sorted read failed: " + ex);
+            System.out.println("getFromSortedData failed: " + ex);
         } finally {
             closeConnection();
         }
@@ -320,10 +320,10 @@ public class DatabaseManager {
                 System.out.println("Resetting object succeed");
             }
 
-            System.out.println("Data unsorted reset succeeded");
+            System.out.println("resetUnsortedData succeeded");
             succeed = true;
         } catch (SQLException ex) {
-            System.out.println("Data unsorted reset failed: " + ex);
+            System.out.println("resetUnsortedData failed: " + ex);
         } finally {
             closeConnection();
         }
@@ -348,10 +348,10 @@ public class DatabaseManager {
 
             update.execute();
 
-            System.out.println("Data unsorted update Completed succeeded");
+            System.out.println("updateStatusUnsortedData succeeded");
             succeed = true;
         } catch (SQLException ex) {
-            System.out.println("Data unsorted update Completed failed: " + ex);
+            System.out.println("updateStatusUnsortedData failed: " + ex);
         } finally {
             closeConnection();
         }
@@ -375,16 +375,16 @@ public class DatabaseManager {
         try {
             String query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET TITLE = '"+ iData.getTitle()+
                     "', DESCRIPTION = '"+ iData.getDescription()+"', LOCATION = '"+"', SOURCE = '"+iData.getSource() +
-                    " WHERE ID="+iData.getId();
+                    "' WHERE ID="+iData.getId();
 
             PreparedStatement update = conn.prepareStatement(query);
 
             update.execute();
 
-            System.out.println("Data unsorted update succeeded");
+            System.out.println("updateUnsortedData succeeded");
             succeed = true;
         } catch (SQLException ex) {
-            System.out.println("Data unsorted update failed: " + ex);
+            System.out.println("updateUnsortedData failed: " + ex);
         } finally {
             closeConnection();
         }
@@ -410,10 +410,10 @@ public class DatabaseManager {
 
             update.execute();
 
-            System.out.println("Data unsorted update Discard succeeded");
+            System.out.println("discardUnsortedData succeeded");
             succeed = true;
         } catch (SQLException ex) {
-            System.out.println("Data unsorted update Discard failed: " + ex);
+            System.out.println("discardUnsortedData failed: " + ex);
         } finally {
             closeConnection();
         }
@@ -433,33 +433,32 @@ public class DatabaseManager {
         boolean succeed = false;
         try {
             Set<Tag> tags = data.getTags();
-            openConnection();
             //insert to sorteddata
-            String query = "INSERT INTO dbi294542.`REQUESTDATABASE.REQUESTDATA` VALUES (?,?,?,?,?)";
+            String query = "INSERT INTO dbi294542.`REQUESTDATABASE.SORTEDDATA` VALUES (ID,?,?,?,?,REQUESTID)";
             PreparedStatement requestData = conn.prepareStatement(query);
-            requestData.setInt(1, data.getId());
-            requestData.setString(2, data.getTitle());
-            requestData.setString(3, data.getDescription());
-            requestData.setString(4, data.getLocation());
-            requestData.setString(5, data.getSource());
+            requestData.setString(1, data.getTitle());
+            requestData.setString(2, data.getDescription());
+            requestData.setString(3, data.getLocation());
+            requestData.setString(4, data.getSource());
             requestData.execute();
-
+            
+            System.out.println("insertDataRequest object insert");
             Iterator it = tags.iterator();
             while (it.hasNext()) {
                 // Get tagid
                 Object element = it.next();
 
                 //insert into requesttag database
-                query = "INSERT INTO dbi294542.`REQUESTDATABASE.REQUESTDATATAGS` VALUES (?,?) ";
+                query = "INSERT INTO dbi294542.`REQUESTDATABASE.SORTEDDATATAGS` VALUES (?,?) ";
                 requestData = conn.prepareStatement(query);
                 requestData.setInt(1, data.getId());
                 requestData.setString(2, element.toString());
                 requestData.execute(); 
             }
-            System.out.println("Data unsorted reset succeeded");
+            System.out.println("insertDataRequest succeeded");
             succeed = true;
         } catch (SQLException ex) {
-            System.out.println("Data unsorted reset failed: " + ex);
+            System.out.println("insertDataRequest failed: " + ex);
         } finally {
             closeConnection();
         }
@@ -487,12 +486,9 @@ public class DatabaseManager {
         String source;
         int requestId;
 
-        //dbi294542.`UNSORTEDDATABASE`
         try {
-            openConnection();
-
             //build a string with all tha tags
-            String query = "SELECT REQUESTID FROM dbi294542.`REQUESTDATABASE.REQUESTDATA` WHERE"
+            String query = "SELECT ID FROM dbi294542.`REQUESTDATABASE.SORTEDDATATAGS` WHERE"
                     + " TAGNAME = ";
             int sizeList = tags.size();
             Iterator it = tags.iterator();
@@ -504,8 +500,8 @@ public class DatabaseManager {
                     query += "'" + element.toString() + "' ";
                     aantal++;
                 } else {
-                    query += "AND IDREQUESTDATA IN (SELECT ID FROM dbi294542.`REQUESTDATABASE."
-                            + "REQUESTTAGS` WHERE  '" + element.toString() + "' ";
+                    query += "AND ID IN (SELECT ID FROM dbi294542.`REQUESTDATABASE."
+                            + "SORTEDDATATAGS` WHERE  TAGNAME ='" + element.toString() + "' ";
                 }
             }
             for (int x = 1; x < sizeList; x++) {
@@ -528,7 +524,7 @@ public class DatabaseManager {
                     PreparedStatement updateData = conn.prepareStatement(update);
                     ResultSet resultTag = updateData.executeQuery();
 
-                    id = resultTag.getInt("REQUESTID");
+                    id = resultTag.getInt("ID");
                     title = resultTag.getString("TITLE");
                     description = resultTag.getString("DESCRIPTION");
                     location = resultTag.getString("LOCATION");
@@ -537,12 +533,12 @@ public class DatabaseManager {
 
                     request.add(new DataRequest(id, title, description, location, source, requestId, tags));
 
-                    System.out.println("Getting object request succeed");
+                    System.out.println("getUpdateRequests object succeed");
                 }
             }
             succeed = true;
         } catch (SQLException ex) {
-            System.out.println("Data unsorted reset failed: " + ex);
+            System.out.println("getUpdateRequests failed: " + ex);
         } finally {
             closeConnection();
         }
@@ -550,6 +546,91 @@ public class DatabaseManager {
         return null;
     }
 
+    /**
+     * @param id of object
+     * @return unsorted-object with correct id
+     */
+    public synchronized IData getDataItem(int id) {
+        if(!openConnection()){
+            return null;
+        }
+         IData unsorted = null;
+
+        String title;
+        String description;
+        String location;
+        String source;
+
+        if(!openConnection()){
+            return null;
+        }
+
+        try {
+            String query = "SELECT * FROM dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` WHERE ID = "+id;
+            PreparedStatement readData = conn.prepareStatement(query);
+            ResultSet result = readData.executeQuery();
+
+            //getting unsorteddata
+            while(result.next() && unsorted == null){
+                title = result.getString("TITLE");
+                description = result.getString("DESCRIPTION");
+                location = result.getString("LOCATION");
+                source = result.getString("SOURCE");
+
+                unsorted = new UnsortedData(id, title, description, location, source, Status.NONE);
+                System.out.println("Getting object getDataItem succeed");
+            }
+        } catch (SQLException ex) {
+            System.out.println("getDataItem failed: " + ex);
+        } finally {
+            closeConnection();
+        }
+        return unsorted;
+    }
+
+    /**
+     * @param source of object
+     * @return list unsorted-objects with correct source
+     */
+    public synchronized List<IData> getSentData(String source) {
+        if(!openConnection()){
+            return null;
+        }
+         List<IData> unsorted = new ArrayList();
+
+        int id;
+        String title;
+        String description;
+        String location;
+
+        if(!openConnection()){
+            return null;
+        }
+
+        try {
+            String query = "SELECT * FROM dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` WHERE SOURCE  = '"
+                    + source +"' ORDER BY ID";
+            PreparedStatement readData = conn.prepareStatement(query);
+            ResultSet result = readData.executeQuery();
+
+            //getting unsorteddata
+            while (result.next() && unsorted.size() < 50) {
+                id = result.getInt("ID");
+                title = result.getString("TITLE");
+                description = result.getString("DESCRIPTION");
+                location = result.getString("LOCATION");
+
+                unsorted.add(new UnsortedData(id, title, description, location, source, Status.INPROCESS));
+                System.out.println("Getting object getSentData succeed");
+            }
+
+        } catch (SQLException ex) {
+            System.out.println("getSentData failed: " + ex);
+        } finally {
+            closeConnection();
+        }
+        return unsorted;
+    }
     /**
      * open connection
      */
@@ -585,19 +666,5 @@ public class DatabaseManager {
             conn = null;
         }
 
-    }
-
-    IData getDataItem(int id) {
-        if(!openConnection()){
-            return null;
-        }
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    List<IData> getSentData(String source) {
-        if(!openConnection()){
-            return null;
-        }
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
