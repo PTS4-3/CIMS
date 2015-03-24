@@ -43,7 +43,6 @@ public class HeadquartersController implements Initializable {
     @FXML TextArea tauDescription;
     @FXML TextField tfuSource;
     @FXML TextField tfuLocation;
-    //@FXML ComboBox cbuTags;
     @FXML Slider suRelevance;
     @FXML Slider suReliability;
     @FXML Slider suQuality;
@@ -57,7 +56,6 @@ public class HeadquartersController implements Initializable {
     @FXML TextArea tarDescription;
     @FXML TextField tfrSource;
     @FXML TextField tfrLocation;
-    //@FXML ComboBox cbrTags;
     @FXML AnchorPane aprPane;
     @FXML CheckComboBox ccrTags;    
     
@@ -83,8 +81,7 @@ public class HeadquartersController implements Initializable {
     
     /**
      * Configures connectionManager and fills GUI with initial values
-     * @param ipAdressServer
-     * @param portnumber 
+     * @param ipAdressServer 
      */
     public void configure(String ipAdressServer) {
         this.connectionManager = new ConnectionManager(this, ipAdressServer);
@@ -103,12 +100,6 @@ public class HeadquartersController implements Initializable {
         ccrTags.prefWidth(395);
         ccrTags.prefHeight(25);        
         aprPane.getChildren().add(ccrTags);
-        
-        
-        //cbuTags.setItems(FXCollections.observableArrayList(Tag.values()));
-        //cbuTags.getSelectionModel().selectFirst();
-        //cbrTags.setItems(FXCollections.observableArrayList(Tag.values()));
-        //cbrTags.getSelectionModel().selectFirst();
         
         try {
             if(this.connectionManager == null) {
@@ -151,28 +142,11 @@ public class HeadquartersController implements Initializable {
             tauDescription.setText(unsortedData.getDescription());
             tfuSource.setText(unsortedData.getSource());
             tfuLocation.setText(unsortedData.getLocation());
-            // ComboBox checks weghalen
-            //lvuTags.getItems().clear();
-            //cbuTags.getSelectionModel().selectFirst();
+            ccuTags.getCheckModel().clearChecks();
             suRelevance.setValue(suRelevance.getMin());
             suReliability.setValue(suReliability.getMin());
             suQuality.setValue(suQuality.getMin());
         }
-    }
-    
-    /**
-     * Add selected tag to the data
-     */
-    public void addTag() {
-        // Nog via checkboxcombobox
-//        try {
-//            Tag tag = (Tag) cbuTags.getSelectionModel().getSelectedItem();
-//            if(lvuTags.getItems().contains(tag)) {
-//                throw new IllegalArgumentException("U heeft deze tag al toegevoegd");
-//            }
-//        } catch (IllegalArgumentException iaEx) {
-//            System.out.println(iaEx.getMessage());
-//        }
     }
     
     /**
@@ -214,9 +188,7 @@ public class HeadquartersController implements Initializable {
             String description = tauDescription.getText();
             String source = tfuSource.getText();
             String location = tfuLocation.getText();
-            // Nog via checkboxCombobox
-            //HashSet<Tag> tags = new HashSet<>(lvuTags.getItems());
-            HashSet<Tag> tags = new HashSet<>();
+            HashSet<Tag> tags = new HashSet<>(ccuTags.getCheckModel().getCheckedItems());
             int relevance = (int) suRelevance.getValue();
             int reliability = (int) suReliability.getValue();
             int quality = (int) suQuality.getValue();
@@ -315,8 +287,7 @@ public class HeadquartersController implements Initializable {
             String description = tarDescription.getText();
             String source = tfrSource.getText();
             String location = tfrLocation.getText();
-            // Nog via checkboxCombobox
-            HashSet<Tag> tags = new HashSet<>();
+            HashSet<Tag> tags = new HashSet<>(ccrTags.getCheckModel().getCheckedItems());
             
             // Make and send request
             IDataRequest request = new DataRequest(-1, title, description, 
@@ -346,6 +317,6 @@ public class HeadquartersController implements Initializable {
         tarDescription.clear();
         tfrSource.clear();
         tfrLocation.clear();
-        // uncheck checkbox-thingy
+        ccrTags.getCheckModel().clearChecks();
     }
 }

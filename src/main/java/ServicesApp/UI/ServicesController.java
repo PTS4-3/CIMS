@@ -141,7 +141,7 @@ public class ServicesController implements Initializable {
             }
             
         });
-    }
+    } 
     
     /**
      * Displays the requests that came from connectionManager.getRequests
