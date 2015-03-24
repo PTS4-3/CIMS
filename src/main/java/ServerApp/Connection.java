@@ -147,6 +147,27 @@ public class Connection implements Runnable {
                             case UNSORTED_GET_SOURCE:
                                 this.sendSentData();
                                 break;
+                            case CLIENT_ID_GET:
+                                this.assignID();
+                                break;
+                            case SORTED_GET_NEW:
+                                this.sendNewSortedData();
+                                break;
+                            case SORTED_SUBSCRIBE:
+                                this.subscribeSorted();
+                                break;
+                            case SORTED_UNSUBSCRIBE:
+                                this.unsubscribeSorted();
+                                break;
+                            case UPDATE_REQUEST_GET_NEW:
+                                this.sendNewRequests();
+                                break;
+                            case UPDATE_REQUEST_SUBSCRIBE:
+                                this.subscribeRequest();
+                                break;
+                            case UPDATE_REQUEST_UNSUBSCRIBE:
+                                this.unsubscribeRequest();
+                                break;
                         }
                     }
                 }
@@ -369,6 +390,40 @@ public class Connection implements Runnable {
             out.writeObject(ConnState.COMMAND_ERROR);
         }
         out.flush();
+    }
+
+    /**
+     * Assigns an ID to new clients.
+     * @throws IOException
+     */
+    private void assignID() throws IOException {
+        writeOutput(ConnectionManager.getNextID());
+        out.flush();
+
+    }
+
+    private void sendNewSortedData() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    private void subscribeSorted() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    private void sendNewRequests() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    private void subscribeRequest() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    private void unsubscribeRequest() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    private void unsubscribeSorted() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
 }

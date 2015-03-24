@@ -11,8 +11,12 @@ package Shared.Connection;
  */
 public enum ConnCommand {
 
+    CLIENT_ID_GET,
     SORTED_SEND,
     SORTED_GET,
+    SORTED_GET_NEW,
+    SORTED_SUBSCRIBE,
+    SORTED_UNSUBSCRIBE,
     UNSORTED_SEND,
     UNSORTED_GET,
     UNSORTED_GET_ID,
@@ -22,11 +26,14 @@ public enum ConnCommand {
     UNSORTED_DISCARD,
     UPDATE_REQUEST_SEND,
     UPDATE_REQUEST_GET,
+    UPDATE_REQUEST_GET_NEW,
+    UPDATE_REQUEST_SUBSCRIBE,
+    UPDATE_REQUEST_UNSUBSCRIBE,
 }
 
 /*
- Connection start ->
  Server: ConnState.CONNECTED
+ Connection start ->
  ------
  Option 1 - Client: ConnState.DONE
  -> Closes down connection
@@ -62,6 +69,13 @@ public enum ConnCommand {
  Option 12 - Client: ConnCommand.UNSORTED_GET_SOURCE
  -> Client: String source
  -> Server: List<IData>
+ Option 13 - Client: ConnCommand.CLIENT_ID_GET
+ -> Server: int ID
+ Option 14 - Client: ConnCommand.SORTED_SUBSCRIBE
+ -> Client: int clientID
+ -> Server: ConnState.COMMAND_<success y/n>
+ Option 15 - Client: ConnCommand.SORTED_GET_NEW
+
  -----
  Return to start, except on closed conn
  */

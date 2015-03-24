@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -65,6 +66,13 @@ public class ConnectionManager {
     }
 
     /**
+     * Terminates the active pool, in preparation for program shutdown.
+     */
+    public void close(){
+        pool.shutdown();
+    }
+
+    /**
      * Sends sorted data to server @ default IP / port
      *
      * @param data
@@ -106,7 +114,6 @@ public class ConnectionManager {
         pool.execute(() -> {
             new Connection(defaultIP, defaultPort).stopWorkingOnData(data);
         });
-        
     }
 
     /**

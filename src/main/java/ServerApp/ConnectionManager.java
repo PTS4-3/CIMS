@@ -23,6 +23,8 @@ public class ConnectionManager {
     public static final Object LOCK = "";
 
     private final ExecutorService pool;
+    private static PushBuffer buffer = new PushBuffer();
+    private static int nextID = 0;
 
     private int defaultPort = 8189;
 
@@ -34,6 +36,18 @@ public class ConnectionManager {
     public ConnectionManager() {
         this.pool = Executors.newCachedThreadPool();
         this.startListener();
+    }
+
+    /**
+     * Returns a unique int to serve as client ID.
+     * @return
+     */
+    protected static synchronized int getNextID(){
+        return nextID++;
+    }
+
+    protected static PushBuffer getBuffer(){
+        return buffer;
     }
 
     /**
