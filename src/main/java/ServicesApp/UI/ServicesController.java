@@ -30,12 +30,15 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.paint.Color;
+import javafx.util.Callback;
 
 /**
  *
@@ -82,8 +85,7 @@ public class ServicesController implements Initializable {
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 selectSentData();
-            }
-            
+            }            
         });
         
         lvsSortedData.getSelectionModel().selectedItemProperty().addListener(
@@ -92,10 +94,37 @@ public class ServicesController implements Initializable {
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 selectData();
-            }
-                
-            
+            }             
         });
+        
+        lvsSortedData.setCellFactory(new Callback<ListView<IData>, ListCell<IData>>() {
+
+            @Override
+            public ListCell<IData> call(ListView<IData> param) {
+                return new ListCell<IData>() {
+                
+                    @Override
+                    protected void updateItem(IData item, boolean empty)
+                    {
+                        super.updateItem(item, empty);
+                        
+                        if (!empty)
+                        {
+                            setItem(item);
+                            setText(item.toString());
+                            
+                            if (item instanceof IDataRequest)
+                            {
+                                setTextFill(Color.RED);
+                            }
+                            else if (item instanceof ISortedData)
+                            {
+                                setTextFill(Color.BLACK);
+                            }
+                        }
+                    } 
+                };
+            }});
     }
     
     /**

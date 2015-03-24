@@ -91,14 +91,16 @@ public class HeadquartersController implements Initializable {
         ccuTags.setLayoutX(955);
         ccuTags.setLayoutY(20);
         ccuTags.prefWidth(220);
-        ccuTags.prefHeight(25);        
+        ccuTags.prefHeight(25);       
+        ccuTags.setMaxSize(220, 25);
         apuPane.getChildren().add(ccuTags);
         
         ccrTags = new CheckComboBox(FXCollections.observableArrayList(Tag.values()));
         ccrTags.setLayoutX(173);
         ccrTags.setLayoutY(374);
         ccrTags.prefWidth(395);
-        ccrTags.prefHeight(25);        
+        ccrTags.prefHeight(25);
+        ccrTags.setMaxSize(395, 25);
         aprPane.getChildren().add(ccrTags);
         
         try {
@@ -303,8 +305,7 @@ public class HeadquartersController implements Initializable {
             System.out.println(iaEx.getMessage());
         } catch (NetworkException nEx) {
             System.out.println(nEx.getMessage());
-        }
-        
+        }        
     }
     
     /**
