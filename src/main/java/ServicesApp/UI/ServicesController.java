@@ -13,6 +13,9 @@ import Shared.NetworkException;
 import Shared.Status;
 import Shared.Tag;
 import Shared.UnsortedData;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -72,12 +75,16 @@ public class ServicesController implements Initializable {
     @FXML TextField tfsSource;
     @FXML TextField tfsLocation;
     @FXML Button btnAnswerRequest;
-    @FXML TableView tvData;
     
     private ConnectionManager connectionManager;
+    private boolean showingDataItem;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        this.showingDataItem = false;
+        
+        //System.setErr();
+        
         // Add Change Listeners
         lvuSentData.getSelectionModel().selectedItemProperty().addListener(
             new ChangeListener() {
@@ -135,7 +142,6 @@ public class ServicesController implements Initializable {
         this.connectionManager = new ConnectionManager(this, ipAdressServer);
 
         // Fill GUI with initial values
-        // Tags nog invullen?
         try {
             if(this.connectionManager == null) {
                 throw new NetworkException("Geen verbinding met server: "
@@ -163,9 +169,11 @@ public class ServicesController implements Initializable {
 
             @Override
             public void run() {
-                lvuSentData.setItems(FXCollections.observableList(sentData));
-                if(lvuSentData.getSelectionModel().getSelectedItem() == null) {
-                    lvuSentData.getSelectionModel().selectFirst();
+                if(!showingDataItem) {
+                    lvuSentData.getItems().addAll(sentData);
+                    if(lvuSentData.getSelectionModel().getSelectedItem() == null) {
+                        lvuSentData.getSelectionModel().selectFirst();
+                    }
                 }
             }
             
@@ -181,9 +189,11 @@ public class ServicesController implements Initializable {
 
             @Override
             public void run() {
-                lvsSortedData.getItems().addAll(requests);
-                if(lvsSortedData.getSelectionModel().getSelectedItem() == null) {
-                    lvsSortedData.getSelectionModel().selectFirst();
+                if(chbsRequests.isSelected()) {
+                    lvsSortedData.getItems().addAll(requests);
+                    if(lvsSortedData.getSelectionModel().getSelectedItem() == null) {
+                        lvsSortedData.getSelectionModel().selectFirst();
+                    }
                 }
             }
             
@@ -199,9 +209,11 @@ public class ServicesController implements Initializable {
 
             @Override
             public void run() {
-                lvsSortedData.getItems().addAll(sortedData);
-                if(lvsSortedData.getSelectionModel().getSelectedItem() == null) {
-                    lvsSortedData.getSelectionModel().selectFirst();
+                if(chbsData.isSelected()) {
+                    lvsSortedData.getItems().addAll(sortedData);
+                    if(lvsSortedData.getSelectionModel().getSelectedItem() == null) {
+                        lvsSortedData.getSelectionModel().selectFirst();
+                    }
                 }
             }
             
@@ -217,9 +229,11 @@ public class ServicesController implements Initializable {
 
             @Override
             public void run() {
-                lvuSentData.getItems().clear();
-                lvuSentData.getItems().add(dataItem);
-                lvuSentData.getSelectionModel().selectFirst();
+                if(showingDataItem) {
+                    lvuSentData.getItems().clear();
+                    lvuSentData.getItems().add(dataItem);
+                    lvuSentData.getSelectionModel().selectFirst();
+                }
             }
             
         });
@@ -328,6 +342,8 @@ public class ServicesController implements Initializable {
                         + "Kon geen data ophalen");
             }
             
+            this.showingDataItem = false;
+            
             // Clear sentData
             lvuSentData.getItems().clear();
             
@@ -425,6 +441,7 @@ public class ServicesController implements Initializable {
                                 + "Kon data niet ophalen");
                     }
                     
+                    this.showingDataItem = true;
                     this.connectionManager.getDataItem(request.getRequestId());
                     tabPane.getSelectionModel().select(tabUpdateInfo);
                 }
