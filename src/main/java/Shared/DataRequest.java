@@ -31,7 +31,7 @@ public class DataRequest implements IDataRequest {
      * @param location
      * @param source cannot be null or empty
      * @param requestId id of the data this is a request of, otherwise -1
-     * @param tags cannot be null
+     * @param tags has to be a size of at least 1
      */
     public DataRequest(int id, String title, String description, String location,
             String source, int requestId, HashSet<Tag> tags) {
@@ -43,8 +43,9 @@ public class DataRequest implements IDataRequest {
             throw new IllegalArgumentException("Source DataRequest cannot be "
                     + "null or empty");
         }
-        if (tags == null) {
-            throw new IllegalArgumentException("Tags SortedData cannot be null");
+        if (tags == null || tags.size() < 1) {
+            throw new IllegalArgumentException("Tags SortedData has to be "
+                    + "a size of at least 1");
         }
         this.id = id;
         this.title = title;
