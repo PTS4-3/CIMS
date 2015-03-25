@@ -36,7 +36,7 @@ public class ConnectionManager {
         this.guiController = guiController;
         this.defaultIP = defaultIP;
         this.getID();
-        this.testMethods();
+//        this.testMethods();
     }
 
     /**

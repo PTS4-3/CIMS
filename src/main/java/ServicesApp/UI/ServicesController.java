@@ -475,6 +475,7 @@ public class ServicesController implements Initializable {
      */
     public void displayNewData(List<ISortedData> output) {
         System.out.println("displaying new data");
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     /**
@@ -484,6 +485,7 @@ public class ServicesController implements Initializable {
      */
     public void displayNewRequests(List<IDataRequest> output) {
         System.out.println("displaying new requests");
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     /**
