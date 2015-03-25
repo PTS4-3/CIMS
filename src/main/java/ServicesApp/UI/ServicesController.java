@@ -6,6 +6,7 @@
 package ServicesApp.UI;
 
 import ServicesApp.Connection.ConnectionManager;
+import Shared.Connection.ConnCommand;
 import Shared.IData;
 import Shared.IDataRequest;
 import Shared.ISortedData;
@@ -45,90 +46,110 @@ import javafx.util.Callback;
  * @author Alexander
  */
 public class ServicesController implements Initializable {
-    @FXML TabPane tabPane;
-    
+
+    @FXML
+    TabPane tabPane;
+
     // SendInfo
-    @FXML Tab tabSendInfo;
-    @FXML TextField tfnTitle;
-    @FXML TextArea tanDescription;
-    @FXML TextField tfnSource;
-    @FXML TextField tfnLocation;
-    
+    @FXML
+    Tab tabSendInfo;
+    @FXML
+    TextField tfnTitle;
+    @FXML
+    TextArea tanDescription;
+    @FXML
+    TextField tfnSource;
+    @FXML
+    TextField tfnLocation;
+
     // UpdateInfo
-    @FXML Tab tabUpdateInfo;
-    @FXML ListView lvuSentData;
-    @FXML TextField tfuTitle;
-    @FXML TextArea tauDescription;
-    @FXML TextField tfuSource;
-    @FXML TextField tfuLocation;
-    
+    @FXML
+    Tab tabUpdateInfo;
+    @FXML
+    ListView lvuSentData;
+    @FXML
+    TextField tfuTitle;
+    @FXML
+    TextArea tauDescription;
+    @FXML
+    TextField tfuSource;
+    @FXML
+    TextField tfuLocation;
+
     // ReadSortedData
-    @FXML Tab tabReadSortedData;
-    @FXML ListView lvsSortedData;
-    @FXML CheckBox chbsData;
-    @FXML CheckBox chbsRequests;
-    @FXML TextField tfsTitle;
-    @FXML TextArea tasDescription;
-    @FXML TextField tfsSource;
-    @FXML TextField tfsLocation;
-    @FXML Button btnAnswerRequest;
-    @FXML TableView tvData;
-    
+    @FXML
+    Tab tabReadSortedData;
+    @FXML
+    ListView lvsSortedData;
+    @FXML
+    CheckBox chbsData;
+    @FXML
+    CheckBox chbsRequests;
+    @FXML
+    TextField tfsTitle;
+    @FXML
+    TextArea tasDescription;
+    @FXML
+    TextField tfsSource;
+    @FXML
+    TextField tfsLocation;
+    @FXML
+    Button btnAnswerRequest;
+    @FXML
+    TableView tvData;
+
     private ConnectionManager connectionManager;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // Add Change Listeners
         lvuSentData.getSelectionModel().selectedItemProperty().addListener(
-            new ChangeListener() {
+                new ChangeListener() {
 
-            @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                selectSentData();
-            }            
-        });
-        
+                    @Override
+                    public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                        selectSentData();
+                    }
+                });
+
         lvsSortedData.getSelectionModel().selectedItemProperty().addListener(
-            new ChangeListener() {
+                new ChangeListener() {
 
-            @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                selectData();
-            }             
-        });
-        
+                    @Override
+                    public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                        selectData();
+                    }
+                });
+
         lvsSortedData.setCellFactory(new Callback<ListView<IData>, ListCell<IData>>() {
 
             @Override
             public ListCell<IData> call(ListView<IData> param) {
                 return new ListCell<IData>() {
-                
+
                     @Override
-                    protected void updateItem(IData item, boolean empty)
-                    {
+                    protected void updateItem(IData item, boolean empty) {
                         super.updateItem(item, empty);
-                        
-                        if (!empty)
-                        {
+
+                        if (!empty) {
                             setItem(item);
                             setText(item.toString());
-                            
-                            if (item instanceof IDataRequest)
-                            {
+
+                            if (item instanceof IDataRequest) {
                                 setTextFill(Color.RED);
-                            }
-                            else if (item instanceof ISortedData)
-                            {
+                            } else if (item instanceof ISortedData) {
                                 setTextFill(Color.BLACK);
                             }
                         }
-                    } 
+                    }
                 };
-            }});
+            }
+        });
     }
-    
+
     /**
      * Configures connectionManager and fills GUI with initial values
+     *
      * @param ipAdressServer
      */
     public void configure(String ipAdressServer) {
@@ -137,25 +158,26 @@ public class ServicesController implements Initializable {
         // Fill GUI with initial values
         // Tags nog invullen?
         try {
-            if(this.connectionManager == null) {
+            if (this.connectionManager == null) {
                 throw new NetworkException("Geen verbinding met server: "
                         + "Kon geen data ophalen");
             }
             //TODO source
             this.connectionManager.getSentData("");
-            if(chbsRequests.isSelected()) {
+            if (chbsRequests.isSelected()) {
                 this.connectionManager.getRequests(new HashSet<Tag>());
             }
-            if(chbsData.isSelected()) {
+            if (chbsData.isSelected()) {
                 this.connectionManager.getSortedData(new HashSet<Tag>());
             }
         } catch (NetworkException nEx) {
             System.out.println(nEx.getMessage());
         }
     }
-    
+
     /**
      * Displays the sentData that came from connectionManager.getSentData
+     *
      * @param sentData
      */
     public void displaySentData(List<IData> sentData) {
@@ -164,16 +186,17 @@ public class ServicesController implements Initializable {
             @Override
             public void run() {
                 lvuSentData.setItems(FXCollections.observableList(sentData));
-                if(lvuSentData.getSelectionModel().getSelectedItem() == null) {
+                if (lvuSentData.getSelectionModel().getSelectedItem() == null) {
                     lvuSentData.getSelectionModel().selectFirst();
                 }
             }
-            
+
         });
-    } 
-    
+    }
+
     /**
      * Displays the requests that came from connectionManager.getRequests
+     *
      * @param requests
      */
     public void displayRequests(List<IDataRequest> requests) {
@@ -182,16 +205,17 @@ public class ServicesController implements Initializable {
             @Override
             public void run() {
                 lvsSortedData.getItems().addAll(requests);
-                if(lvsSortedData.getSelectionModel().getSelectedItem() == null) {
+                if (lvsSortedData.getSelectionModel().getSelectedItem() == null) {
                     lvsSortedData.getSelectionModel().selectFirst();
                 }
             }
-            
+
         });
     }
-    
+
     /**
      * Displays the sortedData that came from connectionManager.getSortedData
+     *
      * @param sortedData
      */
     public void displaySortedData(List<ISortedData> sortedData) {
@@ -200,17 +224,18 @@ public class ServicesController implements Initializable {
             @Override
             public void run() {
                 lvsSortedData.getItems().addAll(sortedData);
-                if(lvsSortedData.getSelectionModel().getSelectedItem() == null) {
+                if (lvsSortedData.getSelectionModel().getSelectedItem() == null) {
                     lvsSortedData.getSelectionModel().selectFirst();
                 }
             }
-            
+
         });
     }
-    
+
     /**
      * Displays the requestData that came from connectionManager.getData
-     * @param dataItem 
+     *
+     * @param dataItem
      */
     public void displayDataItem(IData dataItem) {
         Platform.runLater(new Runnable() {
@@ -221,47 +246,47 @@ public class ServicesController implements Initializable {
                 lvuSentData.getItems().add(dataItem);
                 lvuSentData.getSelectionModel().selectFirst();
             }
-            
+
         });
     }
-    
+
     /**
      * Maybe not needed??
      */
     public void close() {
         // TODO??
     }
-    
+
     /**
      * Sends the unsortedData to the server
      */
     public void sendUnsortedData() {
         try {
-            if(this.connectionManager == null) {
+            if (this.connectionManager == null) {
                 throw new NetworkException("Geen verbinding met server: "
                         + "Kon data niet wegschrijven");
             }
-            
+
             // Load values from GUI
             String title = tfnTitle.getText();
             String description = tanDescription.getText();
             String source = tfnSource.getText();
             String location = tfnLocation.getText();
-            
+
             // Make and send new data
-            IData data = new UnsortedData(-1, title, description, 
+            IData data = new UnsortedData(-1, title, description,
                     location, source, Status.NONE);
             this.connectionManager.sendUnsortedData(data);
-            
+
             // Clear tab
             this.clearSendInfo();
-        } catch(IllegalArgumentException iaEx) {
+        } catch (IllegalArgumentException iaEx) {
             System.out.println(iaEx.getMessage());
-        } catch(NetworkException nEx) {
+        } catch (NetworkException nEx) {
             System.out.println(nEx.getMessage());
         }
     }
-    
+
     /**
      * Clear the tab sendInfo
      */
@@ -271,45 +296,45 @@ public class ServicesController implements Initializable {
         tfnSource.clear();
         tfnLocation.clear();
     }
-    
+
     /**
      * Fills the GUI with information of the selected SentData
      */
     public void selectSentData() {
         IData sentData = (IData) lvuSentData.getSelectionModel().getSelectedItem();
-        if(sentData != null) {
+        if (sentData != null) {
             tfuTitle.setText(sentData.getTitle());
             tauDescription.setText(sentData.getDescription());
             tfuSource.setText(sentData.getSource());
             tfuLocation.setText(sentData.getLocation());
         }
     }
-    
+
     /**
      * Sends an update to the server
      */
     public void sendUpdate() {
         try {
-            if(this.connectionManager == null) {
+            if (this.connectionManager == null) {
                 throw new NetworkException("Geen verbinding met server: "
                         + "Kon data niet wegschrijven");
             }
-            
+
             // Load values from GUI
             IData sentData = (IData) lvuSentData.getSelectionModel().getSelectedItem();
             String title = tfuTitle.getText();
             String description = tauDescription.getText();
             String source = tfuSource.getText();
             String location = tfuLocation.getText();
-            
+
             // Make and send update
-            IData update = new UnsortedData(sentData.getId(), title, 
+            IData update = new UnsortedData(sentData.getId(), title,
                     description, location, source, Status.NONE);
             this.connectionManager.updateUnsortedData(update);
-            
+
             // Reset SentData
             this.resetSentData();
-            
+
             // Bevestiging tonen TODO
         } catch (IllegalArgumentException iaEx) {
             System.out.println(iaEx.getMessage());
@@ -317,59 +342,60 @@ public class ServicesController implements Initializable {
             System.out.println(nEx.getMessage());
         }
     }
-    
+
     /**
      * Resets the filter of sentData, all sentData becomes visible
      */
     public void resetSentData() {
         try {
-            if(this.connectionManager == null) {
+            if (this.connectionManager == null) {
                 throw new NetworkException("Geen verbinding met server: "
                         + "Kon geen data ophalen");
             }
-            
+
             // Clear sentData
             lvuSentData.getItems().clear();
-            
+
             // TODO source
             this.connectionManager.getSentData("");
         } catch (NetworkException nEx) {
             System.out.println(nEx.getMessage());
         }
     }
-    
+
     /**
      * Fills the GUI with the information of the selected data
      */
     public void selectData() {
         IData data = (IData) lvsSortedData.getSelectionModel().getSelectedItem();
-        if(data != null) {
+        if (data != null) {
             // Fill GUI with information
             tfsTitle.setText(data.getTitle());
             tasDescription.setText(data.getDescription());
             tfsSource.setText(data.getSource());
             tfsLocation.setText(data.getLocation());
-            
+
             // Determine visibility button requests
             btnAnswerRequest.setVisible(data instanceof IDataRequest);
         }
     }
-    
+
     /**
      * Changes the display of the sorted data
+     *
      * @param evt
      */
     public void changeDisplay(Event evt) {
         CheckBox source = (CheckBox) evt.getSource();
-        if(source.isSelected()) {
+        if (source.isSelected()) {
             try {
-                if(this.connectionManager == null) {
+                if (this.connectionManager == null) {
                     throw new NetworkException("Geen verbinding met server: "
                             + "Kon geen data ophalen");
                 }
-                
+
                 // Add
-                if(source == chbsData) {
+                if (source == chbsData) {
                     //TODO tags
                     this.connectionManager.getSortedData(new HashSet<Tag>());
                 } else if (source == chbsRequests) {
@@ -383,48 +409,47 @@ public class ServicesController implements Initializable {
             // Remove
             List<ISortedData> sortedData = new ArrayList<>();
             List<IDataRequest> requests = new ArrayList<>();
-            
-            for(Object o : lvsSortedData.getItems()) {
-                if(o instanceof ISortedData) {
+
+            for (Object o : lvsSortedData.getItems()) {
+                if (o instanceof ISortedData) {
                     sortedData.add((ISortedData) o);
                 } else if (o instanceof IDataRequest) {
                     requests.add((IDataRequest) o);
                 }
             }
-            
-            if(source == chbsData) {
+
+            if (source == chbsData) {
                 // Remove sortedData
-                for(ISortedData s : sortedData) {
+                for (ISortedData s : sortedData) {
                     lvsSortedData.getItems().remove(s);
                 }
             } else if (source == chbsRequests) {
                 // Remove dataRequest
-                for(IDataRequest r : requests) {
+                for (IDataRequest r : requests) {
                     lvsSortedData.getItems().remove(r);
                 }
             }
         }
     }
-    
+
     /**
      * Go to the tab sendUpdate
      */
     public void goToSendUpdate() {
-        try {           
-            IDataRequest request = (IDataRequest) 
-                    lvsSortedData.getSelectionModel().getSelectedItem();
-            
-            if(request != null) {
-                if(request.getRequestId() == -1) {
+        try {
+            IDataRequest request = (IDataRequest) lvsSortedData.getSelectionModel().getSelectedItem();
+
+            if (request != null) {
+                if (request.getRequestId() == -1) {
                     // new data
                     tabPane.getSelectionModel().select(tabSendInfo);
                 } else {
                     // update
-                    if(this.connectionManager == null) {
+                    if (this.connectionManager == null) {
                         throw new NetworkException("Geen verbinding met server: "
                                 + "Kon data niet ophalen");
                     }
-                    
+
                     this.connectionManager.getDataItem(request.getRequestId());
                     tabPane.getSelectionModel().select(tabUpdateInfo);
                 }
@@ -432,5 +457,36 @@ public class ServicesController implements Initializable {
         } catch (NetworkException nEx) {
             System.out.println(nEx.getMessage());
         }
+    }
+
+    /**
+     * Connection calls this to deliver freshly received new ISortedData from
+     * the server buffer.
+     *
+     * @param output
+     */
+    public void displayNewData(List<ISortedData> output) {
+        System.out.println("displaying new data");
+    }
+
+    /**
+     * Connection calls this to deliver fresh requests from server buffer.
+     *
+     * @param output
+     */
+    public void displayNewRequests(List<IDataRequest> output) {
+        System.out.println("displaying new requests");
+    }
+
+    /**
+     * Connection calls this to notify gui that the server has handled a
+     * specific action. Used for blocking related actions until the server has
+     * processed the previous one.
+     *
+     * @param connCommand detailing the specific command. Corresponds to
+     * commands transmitted to server.
+     */
+    public void notifyConnDone(ConnCommand connCommand) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

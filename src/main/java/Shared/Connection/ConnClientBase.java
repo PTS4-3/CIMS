@@ -50,7 +50,7 @@ public class ConnClientBase {
             this.out = new ObjectOutputStream(outStream);
             this.in = new ObjectInputStream(inStream);
 
-            System.out.println("Saying hello to server");
+//            System.out.println("Saying hello to server");
             out.writeObject(ConnState.CONNECTION_START);
             out.flush();
 
@@ -63,7 +63,7 @@ public class ConnClientBase {
 
                     if ((inObject instanceof ConnState)
                             && (ConnState) inObject == ConnState.CONNECTION_START) {
-                        System.out.println("Connected to server");
+//                        System.out.println("Connected to server");
                         doneSayingHello = true;
                     } else {
                         System.out.println("no valid object as connection "

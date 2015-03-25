@@ -6,6 +6,7 @@
 package ServerApp;
 
 import static ServerApp.ConnectionManager.LOCK;
+import static ServerApp.ConnectionManager.getBuffer;
 import Shared.Connection.ConnState;
 import Shared.Connection.ConnCommand;
 import Shared.IData;
@@ -63,6 +64,7 @@ public class Connection implements Runnable {
         } else {
             out.writeObject(ConnState.COMMAND_FAIL);
         }
+        out.flush();
     }
 
     /**
@@ -77,6 +79,7 @@ public class Connection implements Runnable {
         } else {
             out.writeObject(ConnState.COMMAND_FAIL);
         }
+        out.flush();
     }
 
     @Override
@@ -106,7 +109,7 @@ public class Connection implements Runnable {
                         if (state == ConnState.CONNECTION_END) {
                             isDone = true;
                         } else if (state == ConnState.CONNECTION_START) {
-                            System.out.println("Connection is working as intended");
+//                            System.out.println("Connection is working as intended");
                         }
                     }
                     if (inObject instanceof ConnCommand) {
@@ -136,7 +139,7 @@ public class Connection implements Runnable {
                                 this.discardUnsortedData();
                                 break;
                             case UPDATE_REQUEST_SEND:
-                                this.requestDataUpdate();
+                                this.saveDataRequest();
                                 break;
                             case UPDATE_REQUEST_GET:
                                 this.sendDataRequests();
@@ -182,7 +185,7 @@ public class Connection implements Runnable {
                 Logger.getLogger(Connection.class.getName())
                         .log(Level.SEVERE, null, ex);
             } finally {
-                System.out.println("Request finished - closing down");
+//                System.out.println("Request finished - closing down");
                 conn.close();
             }
         } catch (IOException ex) {
@@ -234,10 +237,14 @@ public class Connection implements Runnable {
             return;
         }
         ISortedData data = (ISortedData) inObject;
+        boolean output = false;
         synchronized (LOCK) {
-            writeOutput(ServerMain.dummyManager.insertToSortedData(data));
+            output = ServerMain.dummyManager.insertToSortedData(data);
         }
-        out.flush();
+        if (output) {
+            getBuffer().addSorted(data);
+            writeOutput(output);
+        }
     }
 
     /**
@@ -255,7 +262,6 @@ public class Connection implements Runnable {
         synchronized (LOCK) {
             writeOutput(ServerMain.dummyManager.insertToUnsortedData(data));
         }
-        out.flush();
     }
 
     /**
@@ -279,8 +285,8 @@ public class Connection implements Runnable {
             }
         } else {
             out.writeObject(ConnState.COMMAND_ERROR);
+            out.flush();
         }
-        out.flush();
     }
 
     /**
@@ -298,7 +304,6 @@ public class Connection implements Runnable {
         synchronized (LOCK) {
             writeOutput(ServerMain.dummyManager.updateUnsortedData((IData) inObject));
         }
-        out.flush();
     }
 
     /**
@@ -316,13 +321,12 @@ public class Connection implements Runnable {
         synchronized (LOCK) {
             writeOutput(ServerMain.dummyManager.discardUnsortedData((IData) inObject));
         }
-        out.flush();
     }
 
     /**
      * Files a request for an update to given piece of info.
      */
-    private void requestDataUpdate() throws IOException,
+    private void saveDataRequest() throws IOException,
             ClassNotFoundException {
         Object inObject = in.readObject();
         if (!(inObject instanceof IDataRequest) || inObject == null) {
@@ -330,10 +334,14 @@ public class Connection implements Runnable {
             return;
         }
         IDataRequest data = (IDataRequest) inObject;
+        boolean output = false;
         synchronized (LOCK) {
-            writeOutput(ServerMain.dummyManager.insertDataRequest(data));
+            output = ServerMain.dummyManager.insertDataRequest(data);
         }
-        out.flush();
+        if (output) {
+            getBuffer().addRequest(data);
+            writeOutput(output);
+        }
     }
 
     /**
@@ -352,8 +360,8 @@ public class Connection implements Runnable {
             }
         } else {
             out.writeObject(ConnState.COMMAND_ERROR);
+            out.flush();
         }
-        out.flush();
     }
 
     /**
@@ -370,8 +378,8 @@ public class Connection implements Runnable {
             }
         } else {
             out.writeObject(ConnState.COMMAND_ERROR);
+            out.flush();
         }
-        out.flush();
     }
 
     /**
@@ -388,42 +396,109 @@ public class Connection implements Runnable {
             }
         } else {
             out.writeObject(ConnState.COMMAND_ERROR);
+            out.flush();
         }
-        out.flush();
     }
 
     /**
      * Assigns an ID to new clients.
+     *
      * @throws IOException
      */
     private void assignID() throws IOException {
         writeOutput(ConnectionManager.getNextID());
-        out.flush();
-
     }
 
-    private void sendNewSortedData() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    /**
+     * Sends the newly submitted sorted data since last sendNewSortedData call
+     * by this client.
+     *
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private void sendNewSortedData() throws IOException, ClassNotFoundException {
+        Object inObject = in.readObject();
+        if (inObject instanceof Integer) {
+            writeOutput(getBuffer().collectSorted((int) inObject));
+        } else {
+            writeOutput(false);
+        }
     }
 
-    private void subscribeSorted() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    /**
+     * Subscribes client with given clientID for his own buffer of new sortedData
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private void subscribeSorted() throws IOException, ClassNotFoundException {
+        Object inObject = in.readObject();
+        if (inObject instanceof Integer) {
+//            System.out.println("clientID subscribing sorted: " + (int)inObject);
+            getBuffer().subscribeSorted((int) inObject);
+            writeOutput(true);
+        } else {
+            writeOutput(false);
+        }
     }
 
-    private void sendNewRequests() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    /**
+     * Sends newly submitted data requests since last method call.
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private void sendNewRequests() throws IOException, ClassNotFoundException {
+        Object inObject = in.readObject();
+        if (inObject instanceof Integer) {
+            writeOutput(getBuffer().collectRequests((int) inObject));
+        } else {
+            writeOutput(false);
+        }
     }
 
-    private void subscribeRequest() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    /**
+     * Subscribes client with given id for his own buffer of datarequests.
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private void subscribeRequest() throws IOException, ClassNotFoundException {
+        Object inObject = in.readObject();
+        if (inObject instanceof Integer) {
+//            System.out.println("clientID subscribing requests: " + (int)inObject);
+            getBuffer().subscribeRequests((int)inObject);
+            writeOutput(true);
+        } else {
+            writeOutput(false);
+        }
     }
 
-    private void unsubscribeRequest() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    /**
+     * Unsubscribes client with given ID from his personal buffer.
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private void unsubscribeRequest() throws IOException, ClassNotFoundException {
+        Object inObject = in.readObject();
+        if (inObject instanceof Integer) {
+            getBuffer().unsubscribeRequests((int) inObject);
+            writeOutput(true);
+        } else {
+            writeOutput(false);
+        }
     }
 
-    private void unsubscribeSorted() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    /**
+     * Unsubscribes client with given ID from his personal buffer.
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private void unsubscribeSorted() throws IOException, ClassNotFoundException {
+        Object inObject = in.readObject();
+        if (inObject instanceof Integer) {
+            getBuffer().unsubscribeSorted((int) inObject);
+            writeOutput(true);
+        } else {
+            writeOutput(false);
+        }
     }
 
 }

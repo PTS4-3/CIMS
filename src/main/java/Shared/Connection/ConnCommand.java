@@ -75,7 +75,8 @@ public enum ConnCommand {
  -> Client: int clientID
  -> Server: ConnState.COMMAND_<success y/n>
  Option 15 - Client: ConnCommand.SORTED_GET_NEW
-
+-> Client: int clientID
+-> Server: List<ISortedData>
  -----
  Return to start, except on closed conn
  */

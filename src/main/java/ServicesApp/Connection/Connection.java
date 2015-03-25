@@ -269,4 +269,205 @@ class Connection extends ConnClientBase {
         return output;
     }
 
+    /**
+     * Queries server for clientID.
+     * @return ClientID. -1 if anything went wrong.
+     */
+    int getClientID() {
+        if (!this.greetServer()) {
+            return -1;
+        }
+        int output = -1;
+        try {
+            out.writeObject(ConnCommand.CLIENT_ID_GET);
+            out.flush();
+
+            Object inObject = in.readObject();
+            if (inObject instanceof Integer) {
+                output = (Integer) inObject;
+            } else if (inObject instanceof ConnState) {
+                if ((ConnState) inObject == ConnState.COMMAND_FAIL) {
+                    System.err.println("Server failed to execute command "
+                            + "(getClientID)");
+                } else {
+                    System.err.println("Unexpected ConnState as output: "
+                            + inObject.toString());
+                }
+            } else {
+                throw new IOException("Unexpected object");
+            }
+        } catch (IOException | ClassNotFoundException ex) {
+            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            this.closeSocket();
+        }
+        return output;
+    }
+
+    /**
+     * Subscribes to buffer on server.
+     * @param clientID
+     */
+    void subscribeSorted(int clientID) {
+        if (!this.greetServer()) {
+            return;
+        }
+        try {
+            out.writeObject(ConnCommand.SORTED_SUBSCRIBE);
+            out.writeObject(clientID);
+            out.flush();
+            getCommandSuccess("Subscribe sorted data (" + clientID + ")");
+        } catch (IOException ex) {
+            System.err.println("Exception updating unsorted data: "
+                    + ex.getMessage());
+            Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        } finally {
+            this.closeSocket();
+        }
+    }
+
+    /**
+     * Subscribes to buffer on server.
+     * @param clientID
+     */
+    void subscribeRequests(int clientID) {
+        if (!this.greetServer()) {
+            return;
+        }
+        try {
+            out.writeObject(ConnCommand.UPDATE_REQUEST_SUBSCRIBE);
+            out.writeObject(clientID);
+            out.flush();
+            getCommandSuccess("Subscribe requests (" + clientID + ")");
+        } catch (IOException ex) {
+            System.err.println("Exception updating unsorted data: "
+                    + ex.getMessage());
+            Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        } finally {
+            this.closeSocket();
+        }
+    }
+
+    /**
+     *
+     * @param clientID
+     * @return newly submitted sorted data since last call.
+     */
+    List<ISortedData> getNewSorted(int clientID) {
+       if (!this.greetServer()) {
+            return null;
+        }
+        List<ISortedData> output = null;
+        try {
+            out.writeObject(ConnCommand.SORTED_GET_NEW);
+            out.writeObject(clientID);
+            out.flush();
+
+            Object inObject = in.readObject();
+            if (inObject instanceof List) {
+                output = (List<ISortedData>) inObject;
+            } else if (inObject instanceof ConnState) {
+                if ((ConnState) inObject == ConnState.COMMAND_FAIL) {
+                    System.err.println("Server failed to execute command "
+                            + "(getNewSorted)");
+                } else {
+                    System.err.println("Unexpected ConnState as output: "
+                            + inObject.toString());
+                }
+            } else {
+                throw new IOException("Unexpected object");
+            }
+        } catch (IOException | ClassNotFoundException ex) {
+            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            this.closeSocket();
+        }
+        return output;
+    }
+
+    /**
+     *
+     * @param clientID
+     * @return newly submitted requests since last call.
+     */
+    List<IDataRequest> getNewRequests(int clientID) {
+        if (!this.greetServer()) {
+            return null;
+        }
+        List<IDataRequest> output = null;
+        try {
+            out.writeObject(ConnCommand.UPDATE_REQUEST_GET_NEW);
+            out.writeObject(clientID);
+            out.flush();
+
+            Object inObject = in.readObject();
+            if (inObject instanceof List) {
+                output = (List<IDataRequest>) inObject;
+            } else if (inObject instanceof ConnState) {
+                if ((ConnState) inObject == ConnState.COMMAND_FAIL) {
+                    System.err.println("Server failed to execute command "
+                            + "(getNewRequests)");
+                } else {
+                    System.err.println("Unexpected ConnState as output: "
+                            + inObject.toString());
+                }
+            } else {
+                throw new IOException("Unexpected object");
+            }
+        } catch (IOException | ClassNotFoundException ex) {
+            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            this.closeSocket();
+        }
+        return output;
+    }
+
+    /**
+     * Unsubscribes from server. Does nothing if not subscribed.
+     * @param clientID
+     */
+    void unsubscribeSorted(int clientID) {
+        if (!this.greetServer()) {
+            return;
+        }
+        try {
+            out.writeObject(ConnCommand.SORTED_UNSUBSCRIBE);
+            out.writeObject(clientID);
+            out.flush();
+            getCommandSuccess("Unsubscribe sorted data (" + clientID + ")");
+        } catch (IOException ex) {
+            System.err.println("Exception updating unsorted data: "
+                    + ex.getMessage());
+            Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        } finally {
+            this.closeSocket();
+        }
+    }
+
+    /**
+     * Unsubscribes from server buffer. Does nothing if not subscribed.
+     * @param clientID
+     */
+    void unsubscribeRequests(int clientID) {
+        if (!this.greetServer()) {
+            return;
+        }
+        try {
+            out.writeObject(ConnCommand.UPDATE_REQUEST_UNSUBSCRIBE);
+            out.writeObject(clientID);
+            out.flush();
+            getCommandSuccess("Unsubscribe requests (" + clientID + ")");
+        } catch (IOException ex) {
+            System.err.println("Exception updating unsorted data: "
+                    + ex.getMessage());
+            Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        } finally {
+            this.closeSocket();
+        }
+    }
+
 }

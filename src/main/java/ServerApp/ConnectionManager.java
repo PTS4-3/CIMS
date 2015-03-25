@@ -78,9 +78,9 @@ public class ConnectionManager {
                     // threadblocking until a connection is made,
                     // then starts a new runnable for it.
                     // repeats until program quit
-                    System.out.println("Waiting for client");
+//                    System.out.println("Waiting for client");
                     Socket incoming = mySocket.accept();
-                    System.out.println("Handling client requests");
+//                    System.out.println("Handling client requests");
                     pool.execute(new Connection(incoming));
 
                 } catch (IOException ex) {

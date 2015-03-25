@@ -6,6 +6,8 @@
 package ServerApp;
 
 import Shared.DataRequest;
+import Shared.IDataRequest;
+import Shared.ISortedData;
 import Shared.SortedData;
 import Shared.Tag;
 import java.util.ArrayList;
@@ -20,66 +22,84 @@ import java.util.TreeSet;
  */
 public class PushBuffer {
 
-    // key: ClientID, Value: sortedData
-    private HashMap<Integer, List<SortedData>> sortedDataBuffer;
-    // key: ClientID, Value: requests
-    private HashMap<Integer, List<DataRequest>> requestBuffer;
+    private final Object
+            LOCK_SORTED = "",
+            LOCK_REQUESTS = "";
 
-    public PushBuffer(){
+    // key: ClientID, Value: sortedData
+    private HashMap<Integer, List<ISortedData>> sortedDataBuffer;
+    // key: ClientID, Value: requests
+    private HashMap<Integer, List<IDataRequest>> requestBuffer;
+
+    public PushBuffer() {
         sortedDataBuffer = new HashMap<>();
         requestBuffer = new HashMap<>();
     }
-    
-    public synchronized void subscribeSorted(int clientID){
-        sortedDataBuffer.put(clientID, new ArrayList<>());
-    }
 
-    public synchronized void subscribeRequests(int clientID){
-        requestBuffer.put(clientID, new ArrayList<>());
-    }
-    
-    public synchronized void unsubscribeSorted(int clientID){
-        sortedDataBuffer.remove(clientID);
-    }
-
-    public synchronized void unsubscribeRequests(int clientID){
-        requestBuffer.remove(clientID);
-    }
-    
-    public synchronized void addSorted(SortedData data){
-        for(int client : sortedDataBuffer.keySet()){
-            sortedDataBuffer.get(client).add(data);
+    public void subscribeSorted(int clientID) {
+        synchronized (LOCK_SORTED) {
+            sortedDataBuffer.put(clientID, new ArrayList<>());
         }
     }
 
-    public synchronized void addRequest(DataRequest request){
-        for(int client : requestBuffer.keySet()){
-            requestBuffer.get(client).add(request);
+    public void subscribeRequests(int clientID) {
+        synchronized (LOCK_REQUESTS) {
+            requestBuffer.put(clientID, new ArrayList<>());
         }
-    }
-    
-    public synchronized List<SortedData> collectSorted(int clientID){
-        if(sortedDataBuffer.get(clientID) == null){
-            return null;
-        }
-        List<SortedData> output = new ArrayList<>();
-        List<SortedData> buffer = sortedDataBuffer.get(clientID);
-        output.addAll(buffer);
-        buffer.clear();
-        return output;
-    }
-    
-    public synchronized List<DataRequest> collectRequests(int clientID){
-        if(requestBuffer.get(clientID) == null){
-            return null;
-        }
-        List<DataRequest> output = new ArrayList<>();
-        List<DataRequest> buffer = requestBuffer.get(clientID);
-        output.addAll(buffer);
-        buffer.clear();
-        return output;
     }
 
+    public void unsubscribeSorted(int clientID) {
+        synchronized (LOCK_SORTED) {
+            sortedDataBuffer.remove(clientID);
+        }
+    }
 
+    public void unsubscribeRequests(int clientID) {
+        synchronized (LOCK_REQUESTS) {
+            requestBuffer.remove(clientID);
+        }
+    }
+
+    public void addSorted(ISortedData data) {
+        synchronized (LOCK_SORTED) {
+            for (int client : sortedDataBuffer.keySet()) {
+                sortedDataBuffer.get(client).add(data);
+            }
+        }
+    }
+
+    public void addRequest(IDataRequest request) {
+        synchronized (LOCK_REQUESTS) {
+            for (int client : requestBuffer.keySet()) {
+                requestBuffer.get(client).add(request);
+            }
+        }
+    }
+
+    public List<ISortedData> collectSorted(int clientID) {
+        synchronized (LOCK_SORTED) {
+            if (sortedDataBuffer.get(clientID) == null) {
+                return null;
+            }
+            List<ISortedData> output = new ArrayList<>();
+            List<ISortedData> buffer = sortedDataBuffer.get(clientID);
+            output.addAll(buffer);
+            buffer.clear();
+            return output;
+        }
+    }
+
+    public List<IDataRequest> collectRequests(int clientID) {
+        synchronized (LOCK_REQUESTS) {
+            if (requestBuffer.get(clientID) == null) {
+                return null;
+            }
+            List<IDataRequest> output = new ArrayList<>();
+            List<IDataRequest> buffer = requestBuffer.get(clientID);
+            output.addAll(buffer);
+            buffer.clear();
+            return output;
+        }
+    }
 
 }
