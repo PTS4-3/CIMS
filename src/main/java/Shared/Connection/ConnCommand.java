@@ -75,8 +75,20 @@ public enum ConnCommand {
  -> Client: int clientID
  -> Server: ConnState.COMMAND_<success y/n>
  Option 15 - Client: ConnCommand.SORTED_GET_NEW
--> Client: int clientID
--> Server: List<ISortedData>
+ -> Client: int clientID
+ -> Server: List<ISortedData>
+ Option 16 - Client: ConnCommand.SORTED_UNSUBSCRIBE
+ -> Client: int clientID
+ -> Server: ConnState.COMMAND_<success y/n>
+ Option 17 - Client: ConnCommand.UPDATE_REQUEST_SUBSCRIBE
+ -> Client: int clientID
+ -> Server: ConnState.COMMAND_<success y/n>
+ Option 18 - Client: ConnCommand.UPDATE_REQUEST_UNSUBSCRIBE
+ -> Client: int clientID
+ -> Server: ConnState.COMMAND_<success y/n>
+ Option 19 - Client: ConnCommand.UPDATE_REQUEST_GET_NEW
+ -> Client: int clientID
+ -> Server: List<IDataRequest>
  -----
  Return to start, except on closed conn
  */
