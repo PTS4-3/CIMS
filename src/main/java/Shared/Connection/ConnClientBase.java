@@ -122,14 +122,16 @@ public class ConnClientBase {
      *
      * @param description - a short description of what calling method was
      * trying to accomplish
+     * @return true if command was a success. Optional.
      */
-    protected void getCommandSuccess(String description){
+    protected boolean getCommandSuccess(String description){
         try {
             Object inObject = in.readObject();
             if (inObject instanceof ConnState) {
                 ConnState result = (ConnState) inObject;
                 if (result == ConnState.COMMAND_SUCCESS) {
                     System.err.println(description + ": success");
+                    return true;
                 } else if (result == ConnState.COMMAND_FAIL){
                     System.err.println(description + ": failure");
                 } else {
@@ -143,6 +145,7 @@ public class ConnClientBase {
             System.err.println("Exception getting command result: " + ex.getMessage());
             Logger.getLogger(ConnClientBase.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return false;
     }
 
 }

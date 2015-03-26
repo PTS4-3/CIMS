@@ -42,7 +42,7 @@ public class ConnectionManager {
         this.defaultIP = defaultIP;
         this.defaultPort = DEFAULT_PORT;
         this.guiController = guiController;
-//        this.testMethods();
+        this.testMethods();
     }
 
     /**

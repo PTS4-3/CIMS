@@ -487,16 +487,4 @@ public class ServicesController implements Initializable {
         System.out.println("displaying new requests");
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
-    /**
-     * Connection calls this to notify gui that the server has handled a
-     * specific action. Used for blocking related actions until the server has
-     * processed the previous one.
-     *
-     * @param connCommand detailing the specific command. Corresponds to
-     * commands transmitted to server.
-     */
-    public void notifyConnDone(ConnCommand connCommand) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
 }

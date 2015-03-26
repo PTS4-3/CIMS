@@ -308,20 +308,22 @@ class Connection extends ConnClientBase {
      * Subscribes to buffer on server.
      * @param clientID
      */
-    void subscribeSorted(int clientID) {
+    boolean subscribeSorted(int clientID) {
         if (!this.greetServer()) {
-            return;
+            return false;
         }
         try {
             out.writeObject(ConnCommand.SORTED_SUBSCRIBE);
             out.writeObject(clientID);
             out.flush();
-            getCommandSuccess("Subscribe sorted data (" + clientID + ")");
+            return getCommandSuccess("Subscribe sorted data (" + clientID + ")");
+
         } catch (IOException ex) {
             System.err.println("Exception updating unsorted data: "
                     + ex.getMessage());
             Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
                     .log(Level.SEVERE, null, ex);
+            return false;
         } finally {
             this.closeSocket();
         }
@@ -331,20 +333,21 @@ class Connection extends ConnClientBase {
      * Subscribes to buffer on server.
      * @param clientID
      */
-    void subscribeRequests(int clientID) {
+    boolean subscribeRequests(int clientID) {
         if (!this.greetServer()) {
-            return;
+            return false;
         }
         try {
             out.writeObject(ConnCommand.UPDATE_REQUEST_SUBSCRIBE);
             out.writeObject(clientID);
             out.flush();
-            getCommandSuccess("Subscribe requests (" + clientID + ")");
+            return getCommandSuccess("Subscribe requests (" + clientID + ")");
         } catch (IOException ex) {
             System.err.println("Exception updating unsorted data: "
                     + ex.getMessage());
             Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
                     .log(Level.SEVERE, null, ex);
+            return false;
         } finally {
             this.closeSocket();
         }
@@ -428,20 +431,21 @@ class Connection extends ConnClientBase {
      * Unsubscribes from server. Does nothing if not subscribed.
      * @param clientID
      */
-    void unsubscribeSorted(int clientID) {
+    boolean unsubscribeSorted(int clientID) {
         if (!this.greetServer()) {
-            return;
+            return false;
         }
         try {
             out.writeObject(ConnCommand.SORTED_UNSUBSCRIBE);
             out.writeObject(clientID);
             out.flush();
-            getCommandSuccess("Unsubscribe sorted data (" + clientID + ")");
+            return getCommandSuccess("Unsubscribe sorted data (" + clientID + ")");
         } catch (IOException ex) {
             System.err.println("Exception updating unsorted data: "
                     + ex.getMessage());
             Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
                     .log(Level.SEVERE, null, ex);
+            return false;
         } finally {
             this.closeSocket();
         }
@@ -451,20 +455,21 @@ class Connection extends ConnClientBase {
      * Unsubscribes from server buffer. Does nothing if not subscribed.
      * @param clientID
      */
-    void unsubscribeRequests(int clientID) {
+    boolean unsubscribeRequests(int clientID) {
         if (!this.greetServer()) {
-            return;
+            return false;
         }
         try {
             out.writeObject(ConnCommand.UPDATE_REQUEST_UNSUBSCRIBE);
             out.writeObject(clientID);
             out.flush();
-            getCommandSuccess("Unsubscribe requests (" + clientID + ")");
+            return getCommandSuccess("Unsubscribe requests (" + clientID + ")");
         } catch (IOException ex) {
             System.err.println("Exception updating unsorted data: "
                     + ex.getMessage());
             Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
                     .log(Level.SEVERE, null, ex);
+            return false;
         } finally {
             this.closeSocket();
         }

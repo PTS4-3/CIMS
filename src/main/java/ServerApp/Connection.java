@@ -200,7 +200,7 @@ public class Connection implements Runnable {
      */
     private void sendUnsortedData() throws IOException {
         synchronized (LOCK) {
-            writeOutput(ServerMain.dummyManager.getFromUnsortedData());
+            writeOutput(ServerMain.databaseManager.getFromUnsortedData());
         }
         out.flush();
     }
@@ -216,7 +216,7 @@ public class Connection implements Runnable {
         if (inObject instanceof HashSet) {
             HashSet tags = (HashSet) inObject;
             synchronized (LOCK) {
-                writeOutput(ServerMain.dummyManager.getFromSortedData(tags));
+                writeOutput(ServerMain.databaseManager.getFromSortedData(tags));
             }
         } else {
             out.writeObject(ConnState.COMMAND_ERROR);
@@ -239,7 +239,7 @@ public class Connection implements Runnable {
         ISortedData data = (ISortedData) inObject;
         boolean output = false;
         synchronized (LOCK) {
-            output = ServerMain.dummyManager.insertToSortedData(data);
+            output = ServerMain.databaseManager.insertToSortedData(data);
         }
         if (output) {
             getBuffer().addSorted(data);
@@ -260,7 +260,7 @@ public class Connection implements Runnable {
         }
         IData data = (IData) inObject;
         synchronized (LOCK) {
-            writeOutput(ServerMain.dummyManager.insertToUnsortedData(data));
+            writeOutput(ServerMain.databaseManager.insertToUnsortedData(data));
         }
     }
 
@@ -280,7 +280,7 @@ public class Connection implements Runnable {
             List list = (List) inObject;
             if (!list.isEmpty() && (list.get(0) instanceof IData)) {
                 synchronized (LOCK) {
-                    writeOutput(ServerMain.dummyManager.resetUnsortedData((List<IData>) list));
+                    writeOutput(ServerMain.databaseManager.resetUnsortedData((List<IData>) list));
                 }
             }
         } else {
@@ -302,7 +302,7 @@ public class Connection implements Runnable {
             return;
         }
         synchronized (LOCK) {
-            writeOutput(ServerMain.dummyManager.updateUnsortedData((IData) inObject));
+            writeOutput(ServerMain.databaseManager.updateUnsortedData((IData) inObject));
         }
     }
 
@@ -319,7 +319,7 @@ public class Connection implements Runnable {
             return;
         }
         synchronized (LOCK) {
-            writeOutput(ServerMain.dummyManager.discardUnsortedData((IData) inObject));
+            writeOutput(ServerMain.databaseManager.discardUnsortedData((IData) inObject));
         }
     }
 
@@ -336,7 +336,7 @@ public class Connection implements Runnable {
         IDataRequest data = (IDataRequest) inObject;
         boolean output = false;
         synchronized (LOCK) {
-            output = ServerMain.dummyManager.insertDataRequest(data);
+            output = ServerMain.databaseManager.insertDataRequest(data);
         }
         if (output) {
             getBuffer().addRequest(data);
@@ -356,7 +356,7 @@ public class Connection implements Runnable {
         if (inObject instanceof HashSet) {
             HashSet tags = (HashSet) inObject;
             synchronized (LOCK) {
-                writeOutput(ServerMain.dummyManager.getUpdateRequests(tags));
+                writeOutput(ServerMain.databaseManager.getUpdateRequests(tags));
             }
         } else {
             out.writeObject(ConnState.COMMAND_ERROR);
@@ -374,7 +374,7 @@ public class Connection implements Runnable {
         Object inObject = in.readObject();
         if (inObject instanceof Integer) {
             synchronized (LOCK) {
-                writeOutput(ServerMain.dummyManager.getDataItem((int) inObject));
+                writeOutput(ServerMain.databaseManager.getDataItem((int) inObject));
             }
         } else {
             out.writeObject(ConnState.COMMAND_ERROR);
@@ -392,7 +392,7 @@ public class Connection implements Runnable {
         Object inObject = in.readObject();
         if (inObject instanceof String) {
             synchronized (LOCK) {
-                writeOutput(ServerMain.dummyManager.getSentData(inObject.toString()));
+                writeOutput(ServerMain.databaseManager.getSentData(inObject.toString()));
             }
         } else {
             out.writeObject(ConnState.COMMAND_ERROR);
