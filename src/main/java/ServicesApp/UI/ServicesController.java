@@ -45,34 +45,22 @@ import javafx.util.Callback;
  */
 public class ServicesController implements Initializable {
 
-    @FXML
-    TabPane tabPane;
+    @FXML TabPane tabPane;
 
     // SendInfo
-    @FXML
-    Tab tabSendInfo;
-    @FXML
-    TextField tfnTitle;
-    @FXML
-    TextArea tanDescription;
-    @FXML
-    TextField tfnSource;
-    @FXML
-    TextField tfnLocation;
+    @FXML Tab tabSendInfo;
+    @FXML TextField tfnTitle;
+    @FXML TextArea tanDescription;
+    @FXML TextField tfnSource;
+    @FXML TextField tfnLocation;
 
     // UpdateInfo
-    @FXML
-    Tab tabUpdateInfo;
-    @FXML
-    ListView lvuSentData;
-    @FXML
-    TextField tfuTitle;
-    @FXML
-    TextArea tauDescription;
-    @FXML
-    TextField tfuSource;
-    @FXML
-    TextField tfuLocation;
+    @FXML Tab tabUpdateInfo;
+    @FXML ListView lvuSentData;
+    @FXML TextField tfuTitle;
+    @FXML TextArea tauDescription;
+    @FXML TextField tfuSource;
+    @FXML TextField tfuLocation;
 
     // ReadSortedData
     @FXML Tab tabReadSortedData;
@@ -86,7 +74,6 @@ public class ServicesController implements Initializable {
     @FXML Button btnAnswerRequest;
     
     private ConnectionManager connectionManager;
-    private Timer timer;
     private boolean showingDataItem;
     private IDataRequest answeredRequest;
 
@@ -156,47 +143,29 @@ public class ServicesController implements Initializable {
                 throw new NetworkException("Geen verbinding met server: "
                         + "Kon geen data ophalen");
             }
-            //TODO source
-            this.connectionManager.getSentData("");
             
             // Subscribe
             this.connectionManager.subscribeRequests();
             this.connectionManager.subscribeSorted();
+            this.connectionManager.subscribeUnsorted();
             
+            // Get initial values
             if (chbsRequests.isSelected()) {
                 this.connectionManager.getRequests(new HashSet<Tag>());
             }
             if (chbsData.isSelected()) {
                 this.connectionManager.getSortedData(new HashSet<Tag>());
             }
-            
-            // Ask regularly for new information
-            this.timer = new Timer();
-            this.timer.schedule(new TimerTask() {
-
-                @Override
-                public void run() {
-                    if(connectionManager != null) {
-                        if (chbsRequests.isSelected()) {
-                            connectionManager.getNewRequests();
-                        }
-                        if (chbsData.isSelected()) {
-                            connectionManager.getNewSorted();
-                        }
-                    } else {
-                        this.cancel();
-                    }
-                }
-                
-            }, 1000, 1000);
+            //TODO source
+            this.connectionManager.getSentData("");
         } catch (NetworkException nEx) {
-            showDialog("Geen verbinding met server", "Kon geen data ophalen.", true);
+            showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
     }
 
     /**
      * Displays the sentData that came from connectionManager.getSentData
-     * 
+     * and updates
      * @param sentData
      */
     public void displaySentData(List<IData> sentData) {
@@ -217,7 +186,7 @@ public class ServicesController implements Initializable {
 
     /**
      * Displays the requests that came from connectionManager.getRequests
-     * and from connectionManager.getNewRequests
+     * and updates
      * @param requests
      */
     public void displayRequests(List<IDataRequest> requests) {
@@ -238,7 +207,7 @@ public class ServicesController implements Initializable {
 
     /**
      * Displays the sortedData that came from connectionManager.getSortedData
-     * and from connectionManager.getNewData
+     * and updates
      * @param sortedData
      */
     public void displaySortedData(List<ISortedData> sortedData) {
@@ -284,6 +253,7 @@ public class ServicesController implements Initializable {
         if(this.connectionManager != null) {
             this.connectionManager.unsubscribeRequests();
             this.connectionManager.unsubscribeSorted();
+            this.connectionManager.unsubscribeUnsorted();
         }
     }
 
@@ -311,13 +281,11 @@ public class ServicesController implements Initializable {
             // Clear tab
             this.clearSendInfo();
             
-            this.resetSentData();
-            
             this.removeAnsweredRequest();
         } catch (IllegalArgumentException iaEx) {
-            showDialog("Invoer onjuist", "Er zijn waardes niet ingevuld of foutief ingevuld. Voer alle gevraagde informatie in.", true);
+            showDialog("Invoer onjuist", iaEx.getMessage(), true);
         } catch (NetworkException nEx) {
-            showDialog("Geen verbinding met server", "Kon data niet wegschrijven.", true);
+            showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
     }
 
@@ -382,15 +350,17 @@ public class ServicesController implements Initializable {
             this.connectionManager.updateUnsortedData(update);
 
             // Reset SentData
-            this.resetSentData();
+            if(this.showingDataItem) {
+                this.resetSentData();
+            }
             
             this.removeAnsweredRequest();
 
             // Bevestiging tonen TODO
         } catch (IllegalArgumentException iaEx) {
-            showDialog("Invoer onjuist", "Er zijn waardes niet ingevuld of foutief ingevuld. Voer alle gevraagde informatie in.", true);
+            showDialog("Invoer onjuist", iaEx.getMessage(), true);
         } catch (NetworkException nEx) {
-            showDialog("Geen verbinding met server", "Kon data niet wegschrijven.", true);
+            showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
     }
 
@@ -413,7 +383,7 @@ public class ServicesController implements Initializable {
             // TODO source
             this.connectionManager.getSentData("");
         } catch (NetworkException nEx) {
-            showDialog("Geen verbinding met server", "Kon geen data ophalen.", true);
+            showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
     }
 
@@ -464,7 +434,7 @@ public class ServicesController implements Initializable {
                     this.connectionManager.getRequests(new HashSet<Tag>());
                 }
             } catch (NetworkException nEx) {
-                showDialog("Geen verbinding met server", "Kon geen data ophalen.", true);
+                showDialog("Geen verbinding met server", nEx.getMessage(), true);
             }
         } else {
             // Remove
@@ -518,29 +488,8 @@ public class ServicesController implements Initializable {
                 }
             }
         } catch (NetworkException nEx) {
-            showDialog("Geen verbinding met server", "Kon geen data ophalen.", true);
+            showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
-    }
-
-    /**
-     * Connection calls this to deliver freshly received new ISortedData from
-     * the server buffer.
-     *
-     * @param output
-     */
-    public void displayNewData(List<ISortedData> output) {
-        System.out.println("displaying new data");
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    /**
-     * Connection calls this to deliver fresh requests from server buffer.
-     *
-     * @param output
-     */
-    public void displayNewRequests(List<IDataRequest> output) {
-        System.out.println("displaying new requests");
-        throw new UnsupportedOperationException("Not supported yet.");
     }
     
     public void showDialog(String title, String melding, boolean warning)
