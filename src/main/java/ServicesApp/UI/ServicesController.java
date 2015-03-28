@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -83,11 +85,14 @@ public class ServicesController implements Initializable {
     @FXML Button btnAnswerRequest;
     
     private ConnectionManager connectionManager;
+    private Timer timer;
     private boolean showingDataItem;
+    private IDataRequest answeredRequest;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         this.showingDataItem = false;
+        this.answeredRequest = null;
         
         //System.setErr();
         
@@ -152,12 +157,37 @@ public class ServicesController implements Initializable {
             }
             //TODO source
             this.connectionManager.getSentData("");
+            
+            // Subscribe
+            this.connectionManager.subscribeRequests();
+            this.connectionManager.subscribeSorted();
+            
             if (chbsRequests.isSelected()) {
                 this.connectionManager.getRequests(new HashSet<Tag>());
             }
             if (chbsData.isSelected()) {
                 this.connectionManager.getSortedData(new HashSet<Tag>());
             }
+            
+            // Ask regularly for new information
+            this.timer = new Timer();
+            this.timer.schedule(new TimerTask() {
+
+                @Override
+                public void run() {
+                    if(connectionManager != null) {
+                        if (chbsRequests.isSelected()) {
+                            connectionManager.getNewRequests();
+                        }
+                        if (chbsData.isSelected()) {
+                            connectionManager.getNewSorted();
+                        }
+                    } else {
+                        this.cancel();
+                    }
+                }
+                
+            }, 1000, 1000);
         } catch (NetworkException nEx) {
             System.out.println(nEx.getMessage());
         }
@@ -165,7 +195,7 @@ public class ServicesController implements Initializable {
 
     /**
      * Displays the sentData that came from connectionManager.getSentData
-     *
+     * 
      * @param sentData
      */
     public void displaySentData(List<IData> sentData) {
@@ -186,7 +216,7 @@ public class ServicesController implements Initializable {
 
     /**
      * Displays the requests that came from connectionManager.getRequests
-     *
+     * and from connectionManager.getNewRequests
      * @param requests
      */
     public void displayRequests(List<IDataRequest> requests) {
@@ -207,7 +237,7 @@ public class ServicesController implements Initializable {
 
     /**
      * Displays the sortedData that came from connectionManager.getSortedData
-     *
+     * and from connectionManager.getNewData
      * @param sortedData
      */
     public void displaySortedData(List<ISortedData> sortedData) {
@@ -227,7 +257,7 @@ public class ServicesController implements Initializable {
     }
 
     /**
-     * Displays the requestData that came from connectionManager.getData
+     * Displays the requestData that came from connectionManager.getDataItem
      *
      * @param dataItem
      */
@@ -247,10 +277,13 @@ public class ServicesController implements Initializable {
     }
 
     /**
-     * Maybe not needed??
+     * Unsubscribe to the information from the connectionManager
      */
     public void close() {
-        // TODO??
+        if(this.connectionManager != null) {
+            this.connectionManager.unsubscribeRequests();
+            this.connectionManager.unsubscribeSorted();
+        }
     }
 
     /**
@@ -276,6 +309,10 @@ public class ServicesController implements Initializable {
 
             // Clear tab
             this.clearSendInfo();
+            
+            this.resetSentData();
+            
+            this.removeAnsweredRequest();
         } catch (IllegalArgumentException iaEx) {
             System.out.println(iaEx.getMessage());
         } catch (NetworkException nEx) {
@@ -291,6 +328,16 @@ public class ServicesController implements Initializable {
         tanDescription.clear();
         tfnSource.clear();
         tfnLocation.clear();
+    }
+    
+    /**
+     * Removes the request that the user just answered
+     */
+    private void removeAnsweredRequest() {
+        if(this.answeredRequest != null) {
+            lvsSortedData.getItems().remove(this.answeredRequest);
+            this.answeredRequest = null;
+        }
     }
 
     /**
@@ -330,6 +377,8 @@ public class ServicesController implements Initializable {
 
             // Reset SentData
             this.resetSentData();
+            
+            this.removeAnsweredRequest();
 
             // Bevestiging tonen TODO
         } catch (IllegalArgumentException iaEx) {
@@ -350,6 +399,7 @@ public class ServicesController implements Initializable {
             }
      
             this.showingDataItem = false;
+            this.answeredRequest = null;
             
             // Clear sentData
             lvuSentData.getItems().clear();
@@ -457,26 +507,5 @@ public class ServicesController implements Initializable {
         } catch (NetworkException nEx) {
             System.out.println(nEx.getMessage());
         }
-    }
-
-    /**
-     * Connection calls this to deliver freshly received new ISortedData from
-     * the server buffer.
-     *
-     * @param output
-     */
-    public void displayNewData(List<ISortedData> output) {
-        System.out.println("displaying new data");
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    /**
-     * Connection calls this to deliver fresh requests from server buffer.
-     *
-     * @param output
-     */
-    public void displayNewRequests(List<IDataRequest> output) {
-        System.out.println("displaying new requests");
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
