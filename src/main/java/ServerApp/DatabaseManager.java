@@ -453,14 +453,13 @@ public class DatabaseManager {
         try {
             Set<Tag> tags = data.getTags();
             //insert to sorteddata
-            String query = "INSERT INTO dbi294542.`REQUESTDATABASE.SORTEDDATA` VALUES (?,?,?,?,?,?)";
+            String query = "INSERT INTO dbi294542.`REQUESTDATABASE.SORTEDDATA` VALUES (ID,?,?,?,?,?)";
             PreparedStatement requestData = conn.prepareStatement(query);
-            requestData.setInt(1, data.getId());
-            requestData.setString(2, data.getTitle());
-            requestData.setString(3, data.getDescription());
-            requestData.setString(4, data.getLocation());
-            requestData.setString(5, data.getSource());
-            requestData.setInt(6, data.getRequestId());
+            requestData.setString(1, data.getTitle());
+            requestData.setString(2, data.getDescription());
+            requestData.setString(3, data.getLocation());
+            requestData.setString(4, data.getSource());
+            requestData.setInt(5, data.getRequestId());
             requestData.execute();
 
             System.out.println("insertDataRequest object insert");
