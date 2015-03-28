@@ -35,7 +35,7 @@ public class TestDatabase {
     private List<IData> unsortedData;
     private List<UnsortedData> unsorteddata;
     private String source;
-    private int ID = 430;
+    private int ID = 440;
     
     public TestDatabase() {
     }
@@ -68,7 +68,7 @@ public class TestDatabase {
         System.out.println("\r\nTest2 start\r\n");
         unsorteddata = new ArrayList();
         unsorteddata = database.getFromUnsortedData();
-        assertNotNull("Have to get a list", unsorteddata);
+        assertEquals("Have to get a list", unsorteddata.isEmpty(), false);
         
         System.out.println("\r\nTest3 start\r\n");
         boolean succeed = database.resetUnsortedData(unsortedData);
@@ -101,7 +101,7 @@ public class TestDatabase {
         System.out.println("\r\nTest8 start\r\n");
         List<SortedData> sorteddata = new ArrayList();
         sorteddata = database.getFromSortedData(tag);
-        assertNotNull("Have to get a list", sorteddata);
+        assertEquals("Have to get a list", sorteddata.isEmpty(), false);
     }
    
     @Test
@@ -114,7 +114,7 @@ public class TestDatabase {
         System.out.println("\r\nTest10 start\r\n");
         List<IDataRequest> result = new ArrayList();
         result = database.getUpdateRequests(tag);
-        assertNotNull("Have to get a list", result);
+        assertEquals("Have to get a list", result.isEmpty(), false);
     }
     
     @Test
@@ -127,7 +127,7 @@ public class TestDatabase {
         System.out.println("\r\nTest12 start\r\n");
         List<IData> data = new ArrayList();
         data = database.getSentData(source);
-        assertNotNull("Have to get a list", data);
+        assertEquals("Have to get a list", data.isEmpty(), false);
     }
 
 }

@@ -268,7 +268,7 @@ public class DatabaseManager {
                     aantal++;
                 } else {
                     query += "AND ID IN (SELECT ID FROM"
-                            + " dbi294542.`SORTEDDATABASE.SORTEDDATATAGS` WHERE  '" + element.toString() + "' ";
+                            + " dbi294542.`SORTEDDATABASE.SORTEDDATATAGS` WHERE  TAGNAME = '" + element.toString() + "' ";
                 }
             }
             for (int x = 1; x < sizeList; x++) {
@@ -279,7 +279,7 @@ public class DatabaseManager {
             ResultSet result = readData.executeQuery();
 
             while (result.next()) {
-                numbers.add(result.getInt("SORTEDDATAID"));
+                numbers.add(result.getInt("ID"));
             }
 
             //make list of object with correct id's
@@ -290,7 +290,7 @@ public class DatabaseManager {
                     PreparedStatement updateData = conn.prepareStatement(update);
                     ResultSet resultTag = updateData.executeQuery();
 
-                    id = result.getInt("IDSORTEDDATA");
+                    id = result.getInt("ID");
                     title = result.getString("TITLE");
                     description = result.getString("DESCRIPTION");
                     location = result.getString("LOCATION");
@@ -300,6 +300,7 @@ public class DatabaseManager {
                     quality = result.getInt("QUALITY");
 
                     sorted.add(new SortedData(id, title, description, location, source, relevance, reliability, quality, info));
+                    System.out.println("Getting sorted object  succeed");
                 }
             }
             System.out.println("Getting sorted object getFromSortedData succeed");
