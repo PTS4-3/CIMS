@@ -322,7 +322,7 @@ public class ConnectionManager {
             List<ISortedData> output
                     = new Connection(defaultIP, defaultPort).getNewSorted(this.clientID);
             if (output != null) {
-                this.guiController.displayNewData(output);
+                this.guiController.displaySortedData(output);
             } else {
                 System.err.println("Unable to retrieve new Sorted Data from "
                         + "buffer in server.");
@@ -347,7 +347,7 @@ public class ConnectionManager {
             List<IDataRequest> output
                     = new Connection(defaultIP, defaultPort).getNewRequests(this.clientID);
             if (output != null) {
-                this.guiController.displayNewRequests(output);
+                this.guiController.displayRequests(output);
             } else {
                 System.err.println("Unable to retrieve new Requests from buffer in server.");
             }
