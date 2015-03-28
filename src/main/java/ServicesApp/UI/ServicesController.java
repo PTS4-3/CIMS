@@ -349,12 +349,12 @@ public class ServicesController implements Initializable {
                     description, location, source, Status.NONE);
             this.connectionManager.updateUnsortedData(update);
 
+            this.removeAnsweredRequest();
+            
             // Reset SentData
             if(this.showingDataItem) {
                 this.resetSentData();
             }
-            
-            this.removeAnsweredRequest();
 
             // Bevestiging tonen TODO
         } catch (IllegalArgumentException iaEx) {

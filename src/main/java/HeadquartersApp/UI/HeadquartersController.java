@@ -309,9 +309,9 @@ public class HeadquartersController implements Initializable {
             // Reset tab
             resetRequest();
         } catch (IllegalArgumentException iaEx) {
-            showDialog("Invoer onjuist", "Er zijn waardes niet ingevuld of foutief ingevuld. Voer alle gevraagde informatie in.", true);
+            showDialog("Invoer onjuist", iaEx.getMessage(), true);
         } catch (NetworkException nEx) {
-            showDialog("Geen verbinding met server", "Kon verzoek niet versturen.", true);
+            showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }        
     }
     

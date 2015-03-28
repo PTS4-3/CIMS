@@ -258,8 +258,7 @@ public class DatabaseManager {
         }
 
         try {
-            String query = "SELECT ID FROM dbi294542.`SORTEDDATABASE.SORTEDDATATAGS` WHERE"
-                    + " TAGNAME = ";
+            String query = "SELECT ID FROM dbi294542.`SORTEDDATABASE.SORTEDDATATAGS` ";
             int sizeList = info.size();
             Iterator it = info.iterator();
             int aantal = 1;
@@ -267,7 +266,7 @@ public class DatabaseManager {
                 // Get element
                 Object element = it.next();
                 if (aantal == 1) {
-                    query += "'" + element.toString() + "' ";
+                    query += "WHERE TAGNAME = '" + element.toString() + "' ";
                     aantal++;
                 } else {
                     query += "AND ID IN (SELECT ID FROM"
@@ -508,8 +507,7 @@ public class DatabaseManager {
 
         try {
             //build a string with all tha tags
-            String query = "SELECT ID FROM dbi294542.`REQUESTDATABASE.SORTEDDATATAGS` WHERE"
-                    + " TAGNAME = ";
+            String query = "SELECT ID FROM dbi294542.`REQUESTDATABASE.SORTEDDATATAGS` ";
             int sizeList = tags.size();
             Iterator it = tags.iterator();
             int aantal = 1;
@@ -517,7 +515,7 @@ public class DatabaseManager {
                 // Get element
                 Object element = it.next();
                 if (aantal == 1) {
-                    query += "'" + element.toString() + "' ";
+                    query += "WHERE TAGNAME = '" + element.toString() + "' ";
                     aantal++;
                 } else {
                     query += "AND ID IN (SELECT ID FROM dbi294542.`REQUESTDATABASE."
@@ -621,14 +619,18 @@ public class DatabaseManager {
         String title;
         String description;
         String location;
+        String realSource;
 
         if (!openConnection()) {
             return null;
         }
 
         try {
-            String query = "SELECT * FROM dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` WHERE SOURCE  = '"
-                    + source + "' ORDER BY ID";
+            String query = "SELECT * FROM dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` ";
+            if(!source.isEmpty()) {
+                query += "WHERE SOURCE = '" + source + "' ";
+            }
+            query += "ORDER BY ID";
             PreparedStatement readData = conn.prepareStatement(query);
             ResultSet result = readData.executeQuery();
 
@@ -638,8 +640,10 @@ public class DatabaseManager {
                 title = result.getString("TITLE");
                 description = result.getString("DESCRIPTION");
                 location = result.getString("LOCATION");
+                realSource = result.getString("SOURCE");
 
-                unsorted.add(new UnsortedData(id, title, description, location, source, Status.INPROCESS));
+// TODO Status uitlezen uit database
+                unsorted.add(new UnsortedData(id, title, description, location, realSource, Status.INPROCESS));
                 System.out.println("Getting object getSentData succeed");
             }
 
