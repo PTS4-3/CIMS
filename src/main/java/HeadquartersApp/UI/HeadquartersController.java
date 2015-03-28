@@ -303,7 +303,7 @@ public class HeadquartersController implements Initializable {
             // Reset tab
             resetRequest();
         } catch (IllegalArgumentException iaEx) {
-            showDialog("Foutieve waardes", "Er zijn waardes niet ingevuld of foutief ingevuld. Voer alle gevraagde informatie in.", true);
+            showDialog("Invoer onjuist", "Er zijn waardes niet ingevuld of foutief ingevuld. Voer alle gevraagde informatie in.", true);
         } catch (NetworkException nEx) {
             showDialog("Geen verbinding met server", "Kon verzoek niet versturen.", true);
         }        

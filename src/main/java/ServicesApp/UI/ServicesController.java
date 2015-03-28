@@ -25,6 +25,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListCell;
@@ -159,7 +160,7 @@ public class ServicesController implements Initializable {
                 this.connectionManager.getSortedData(new HashSet<Tag>());
             }
         } catch (NetworkException nEx) {
-            System.out.println(nEx.getMessage());
+            showDialog("Geen verbinding met server", "Kon geen data ophalen.", true);
         }
     }
 
@@ -277,9 +278,9 @@ public class ServicesController implements Initializable {
             // Clear tab
             this.clearSendInfo();
         } catch (IllegalArgumentException iaEx) {
-            System.out.println(iaEx.getMessage());
+            showDialog("Invoer onjuist", "Er zijn waardes niet ingevuld of foutief ingevuld. Voer alle gevraagde informatie in.", true);
         } catch (NetworkException nEx) {
-            System.out.println(nEx.getMessage());
+            showDialog("Geen verbinding met server", "Kon data niet wegschrijven.", true);
         }
     }
 
@@ -333,9 +334,9 @@ public class ServicesController implements Initializable {
 
             // Bevestiging tonen TODO
         } catch (IllegalArgumentException iaEx) {
-            System.out.println(iaEx.getMessage());
+            showDialog("Invoer onjuist", "Er zijn waardes niet ingevuld of foutief ingevuld. Voer alle gevraagde informatie in.", true);
         } catch (NetworkException nEx) {
-            System.out.println(nEx.getMessage());
+            showDialog("Geen verbinding met server", "Kon data niet wegschrijven.", true);
         }
     }
 
@@ -357,7 +358,7 @@ public class ServicesController implements Initializable {
             // TODO source
             this.connectionManager.getSentData("");
         } catch (NetworkException nEx) {
-            System.out.println(nEx.getMessage());
+            showDialog("Geen verbinding met server", "Kon geen data ophalen.", true);
         }
     }
 
@@ -401,7 +402,7 @@ public class ServicesController implements Initializable {
                     this.connectionManager.getRequests(new HashSet<Tag>());
                 }
             } catch (NetworkException nEx) {
-                System.out.println(nEx.getMessage());
+                showDialog("Geen verbinding met server", "Kon geen data ophalen.", true);
             }
         } else {
             // Remove
@@ -445,7 +446,7 @@ public class ServicesController implements Initializable {
                     // update
                     if (this.connectionManager == null) {
                         throw new NetworkException("Geen verbinding met server: "
-                                + "Kon data niet ophalen");
+                                + "Kon geen data ophalen");
                     }
                     
                     this.showingDataItem = true;
@@ -455,7 +456,7 @@ public class ServicesController implements Initializable {
                 }
             }
         } catch (NetworkException nEx) {
-            System.out.println(nEx.getMessage());
+            showDialog("Geen verbinding met server", "Kon geen data ophalen.", true);
         }
     }
 
@@ -478,5 +479,33 @@ public class ServicesController implements Initializable {
     public void displayNewRequests(List<IDataRequest> output) {
         System.out.println("displaying new requests");
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    public void showDialog(String title, String melding, boolean warning)
+    {
+        Alert alert = null;
+        
+        if (warning)
+        {
+            alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Warning Dialog");
+        }
+        else
+        {
+            alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Information Dialog");            
+        }     
+        
+        if (!title.isEmpty())
+        {
+            alert.setHeaderText(title);
+        }
+        else
+        {
+            alert.setHeaderText(null);
+        }
+        
+        alert.setContentText(melding);
+        alert.showAndWait();
     }
 }
