@@ -303,7 +303,7 @@ public class DatabaseManager {
                     sorted.add(new SortedData(id, title, description, location, source, relevance, reliability, quality, info));
                     System.out.println("Getting sorted object  succeed");
                     }
-                    System.out.println("Getting sorted object  succeed");
+                    
                 }
             }
             System.out.println("Getting sorted object getFromSortedData succeed");
