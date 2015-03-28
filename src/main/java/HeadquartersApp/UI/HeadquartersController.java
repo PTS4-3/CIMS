@@ -145,11 +145,17 @@ public class HeadquartersController implements Initializable {
             tauDescription.setText(unsortedData.getDescription());
             tfuSource.setText(unsortedData.getSource());
             tfuLocation.setText(unsortedData.getLocation());
-            ccuTags.getCheckModel().clearChecks();
-            suRelevance.setValue(suRelevance.getMin());
-            suReliability.setValue(suReliability.getMin());
-            suQuality.setValue(suQuality.getMin());
+        } else {
+            // Clear GUI
+            tfuTitle.clear();
+            tauDescription.clear();
+            tfuSource.clear();
+            tfuLocation.clear();
         }
+        ccuTags.getCheckModel().clearChecks();
+        suRelevance.setValue(suRelevance.getMin());
+        suReliability.setValue(suReliability.getMin());
+        suQuality.setValue(suQuality.getMin());
     }
     
     /**

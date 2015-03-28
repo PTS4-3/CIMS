@@ -351,6 +351,11 @@ public class ServicesController implements Initializable {
             tauDescription.setText(sentData.getDescription());
             tfuSource.setText(sentData.getSource());
             tfuLocation.setText(sentData.getLocation());
+        } else {
+            tfuTitle.clear();
+            tauDescription.clear();
+            tfuSource.clear();
+            tfuLocation.clear();
         }
     }
 
@@ -426,6 +431,13 @@ public class ServicesController implements Initializable {
 
             // Determine visibility button requests
             btnAnswerRequest.setVisible(data instanceof IDataRequest);
+        } else {
+            // Clear GUI
+            tfsTitle.clear();
+            tasDescription.clear();
+            tfsSource.clear();
+            tfsLocation.clear();
+            btnAnswerRequest.setVisible(false);
         }
     }
 
