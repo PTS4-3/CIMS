@@ -132,12 +132,15 @@ public class ConnClientBase {
                     return true;
                 } else if (result == ConnState.COMMAND_FAIL) {
                     System.err.println(description + ": failure");
+                } else if (result == ConnState.COMMAND_ERROR) {
+                    System.err.println(description + ": error");
                 } else {
                     System.err.println("Unexpected input (" + description + "): "
                             + result.toString());
                 }
             } else {
-                System.err.println(description + ": ERROR");
+                System.err.println(description + ": Unrecognised object = "
+                        + inObject.toString());
             }
         } catch (ClassNotFoundException | IOException ex) {
             System.err.println("Exception getting command result: " + ex.getMessage());
@@ -153,7 +156,7 @@ public class ConnClientBase {
      * @param arguments
      * @return
      */
-    public boolean booleanCommand(ConnCommand command, Object[] arguments) {
+    protected boolean booleanCommand(ConnCommand command, Object[] arguments) {
         if (!this.greetServer()) {
             return false;
         }
