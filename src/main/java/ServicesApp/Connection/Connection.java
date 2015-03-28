@@ -465,7 +465,7 @@ class Connection extends ConnClientBase {
             out.flush();
             return getCommandSuccess("Unsubscribe requests (" + clientID + ")");
         } catch (IOException ex) {
-            System.err.println("Exception updating unsorted data: "
+            System.err.println("Exception unsubscribing requests: "
                     + ex.getMessage());
             Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
                     .log(Level.SEVERE, null, ex);
@@ -473,6 +473,93 @@ class Connection extends ConnClientBase {
         } finally {
             this.closeSocket();
         }
+    }
+
+    /**
+     * subscribes to updates of unsorted data
+     * @param clientID
+     * @return
+     */
+    boolean subscribeUnsorted(int clientID) {
+        if (!this.greetServer()) {
+            return false;
+        }
+        try {
+            out.writeObject(ConnCommand.UNSORTED_SUBSCRIBE);
+            out.writeObject(clientID);
+            out.flush();
+            return getCommandSuccess("subscribe unsorted data (" + clientID + ")");
+        } catch (IOException ex) {
+            System.err.println("Exception subscribing unsorted data: "
+                    + ex.getMessage());
+            Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
+                    .log(Level.SEVERE, null, ex);
+            return false;
+        } finally {
+            this.closeSocket();
+        }
+    }
+
+    /**
+     * Unsubscribes to updates unsorted data
+     * @param clientID
+     * @return
+     */
+    boolean unsubscribeUnsorted(int clientID) {
+        if (!this.greetServer()) {
+            return false;
+        }
+        try {
+            out.writeObject(ConnCommand.UNSORTED_UNSUBSCRIBE);
+            out.writeObject(clientID);
+            out.flush();
+            return getCommandSuccess("Unsubscribe unsorted data (" + clientID + ")");
+        } catch (IOException ex) {
+            System.err.println("Exception unsubscribing unsorted data: "
+                    + ex.getMessage());
+            Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
+                    .log(Level.SEVERE, null, ex);
+            return false;
+        } finally {
+            this.closeSocket();
+        }
+    }
+
+    /**
+     * Gets unsorted data held at server since last call
+     * @param clientID
+     * @return
+     */
+    List<IData> getNewUnsorted(int clientID) {
+        if (!this.greetServer()) {
+            return null;
+        }
+        List<IData> output = null;
+        try {
+            out.writeObject(ConnCommand.UNSORTED_GET_NEW);
+            out.writeObject(clientID);
+            out.flush();
+
+            Object inObject = in.readObject();
+            if (inObject instanceof List) {
+                output = (List<IData>) inObject;
+            } else if (inObject instanceof ConnState) {
+                if ((ConnState) inObject == ConnState.COMMAND_FAIL) {
+                    System.err.println("Server failed to execute command "
+                            + "(getNewUnsorted)");
+                } else {
+                    System.err.println("Unexpected ConnState as output: "
+                            + inObject.toString());
+                }
+            } else {
+                throw new IOException("Unexpected object");
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            this.closeSocket();
+        }
+        return output;
     }
 
 }

@@ -5,6 +5,7 @@
  */
 package ServerApp;
 
+import Shared.IData;
 import Shared.IDataRequest;
 import Shared.ISortedData;
 import java.util.ArrayList;
@@ -19,16 +20,20 @@ public class PushBuffer {
 
     private final Object
             LOCK_SORTED = "",
-            LOCK_REQUESTS = "";
+            LOCK_REQUESTS = "",
+            LOCK_UNSORTED = "";
 
     // key: ClientID, Value: sortedData
     private HashMap<Integer, List<ISortedData>> sortedDataBuffer;
     // key: ClientID, Value: requests
     private HashMap<Integer, List<IDataRequest>> requestBuffer;
+    // key: ClientID, Value: sentData
+    private HashMap<Integer, List<IData>> unsortedDataBuffer;
 
     public PushBuffer() {
         sortedDataBuffer = new HashMap<>();
         requestBuffer = new HashMap<>();
+        unsortedDataBuffer = new HashMap<>();
     }
 
     public void subscribeSorted(int clientID) {
@@ -40,6 +45,12 @@ public class PushBuffer {
     public void subscribeRequests(int clientID) {
         synchronized (LOCK_REQUESTS) {
             requestBuffer.put(clientID, new ArrayList<>());
+        }
+    }
+
+    public void subscribeUnsorted(int clientID){
+        synchronized(LOCK_UNSORTED){
+            unsortedDataBuffer.put(clientID, new ArrayList<>());
         }
     }
 
@@ -55,6 +66,12 @@ public class PushBuffer {
         }
     }
 
+    public void unsubscribeUnsorted(int clientID){
+        synchronized(LOCK_UNSORTED){
+            unsortedDataBuffer.remove(clientID);
+        }
+    }
+
     public void addSorted(ISortedData data) {
         synchronized (LOCK_SORTED) {
             for (int client : sortedDataBuffer.keySet()) {
@@ -67,6 +84,14 @@ public class PushBuffer {
         synchronized (LOCK_REQUESTS) {
             for (int client : requestBuffer.keySet()) {
                 requestBuffer.get(client).add(request);
+            }
+        }
+    }
+
+    public void addUnsorted(IData data){
+        synchronized(LOCK_UNSORTED){
+            for(int client : unsortedDataBuffer.keySet()){
+                unsortedDataBuffer.get(client).add(data);
             }
         }
     }
@@ -91,6 +116,19 @@ public class PushBuffer {
             }
             List<IDataRequest> output = new ArrayList<>();
             List<IDataRequest> buffer = requestBuffer.get(clientID);
+            output.addAll(buffer);
+            buffer.clear();
+            return output;
+        }
+    }
+
+    public List<IData> collectUnsorted(int clientID) {
+        synchronized (LOCK_UNSORTED) {
+            if (unsortedDataBuffer.get(clientID) == null) {
+                return null;
+            }
+            List<IData> output = new ArrayList<>();
+            List<IData> buffer = unsortedDataBuffer.get(clientID);
             output.addAll(buffer);
             buffer.clear();
             return output;

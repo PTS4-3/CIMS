@@ -170,6 +170,15 @@ public class Connection implements Runnable {
                             case UPDATE_REQUEST_UNSUBSCRIBE:
                                 this.unsubscribeRequest();
                                 break;
+                            case UNSORTED_GET_NEW:
+                                this.sendNewUnsorted();
+                                break;
+                            case UNSORTED_SUBSCRIBE:
+                                this.subscribeUnsorted();
+                                break;
+                            case UNSORTED_UNSUBSCRIBE:
+                                this.unsubscribeUnsorted();
+                                break;
                         }
                     }
                 }
@@ -425,7 +434,9 @@ public class Connection implements Runnable {
     }
 
     /**
-     * Subscribes client with given clientID for his own buffer of new sortedData
+     * Subscribes client with given clientID for his own buffer of new
+     * sortedData
+     *
      * @throws IOException
      * @throws ClassNotFoundException
      */
@@ -442,6 +453,7 @@ public class Connection implements Runnable {
 
     /**
      * Sends newly submitted data requests since last method call.
+     *
      * @throws IOException
      * @throws ClassNotFoundException
      */
@@ -456,6 +468,7 @@ public class Connection implements Runnable {
 
     /**
      * Subscribes client with given id for his own buffer of datarequests.
+     *
      * @throws IOException
      * @throws ClassNotFoundException
      */
@@ -463,7 +476,7 @@ public class Connection implements Runnable {
         Object inObject = in.readObject();
         if (inObject instanceof Integer) {
 //            System.out.println("clientID subscribing requests: " + (int)inObject);
-            getBuffer().subscribeRequests((int)inObject);
+            getBuffer().subscribeRequests((int) inObject);
             writeOutput(true);
         } else {
             writeOutput(false);
@@ -472,6 +485,7 @@ public class Connection implements Runnable {
 
     /**
      * Unsubscribes client with given ID from his personal buffer.
+     *
      * @throws IOException
      * @throws ClassNotFoundException
      */
@@ -487,6 +501,7 @@ public class Connection implements Runnable {
 
     /**
      * Unsubscribes client with given ID from his personal buffer.
+     *
      * @throws IOException
      * @throws ClassNotFoundException
      */
@@ -494,6 +509,53 @@ public class Connection implements Runnable {
         Object inObject = in.readObject();
         if (inObject instanceof Integer) {
             getBuffer().unsubscribeSorted((int) inObject);
+            writeOutput(true);
+        } else {
+            writeOutput(false);
+        }
+    }
+
+    /**
+     * Sends newly submitted data requests since last method call.
+     *
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private void sendNewUnsorted() throws IOException, ClassNotFoundException {
+        Object inObject = in.readObject();
+        if (inObject instanceof Integer) {
+            writeOutput(getBuffer().collectUnsorted((int) inObject));
+        } else {
+            writeOutput(false);
+        }
+    }
+
+    /**
+     * Subscribes client with given id for his own buffer of datarequests.
+     *
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private void subscribeUnsorted() throws IOException, ClassNotFoundException {
+        Object inObject = in.readObject();
+        if (inObject instanceof Integer) {
+            getBuffer().subscribeUnsorted((int) inObject);
+            writeOutput(true);
+        } else {
+            writeOutput(false);
+        }
+    }
+
+    /**
+     * Unsubscribes client with given ID from his personal buffer.
+     *
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private void unsubscribeUnsorted() throws IOException, ClassNotFoundException {
+        Object inObject = in.readObject();
+        if (inObject instanceof Integer) {
+            getBuffer().unsubscribeUnsorted((int) inObject);
             writeOutput(true);
         } else {
             writeOutput(false);

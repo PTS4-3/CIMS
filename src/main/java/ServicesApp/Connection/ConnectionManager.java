@@ -15,8 +15,9 @@ import Shared.Tag;
 import Shared.UnsortedData;
 import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -26,20 +27,31 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ConnectionManager {
 
     public static final int DEFAULT_PORT = 8189;
+    private static int collectionIntervalInMillis = 10000;
 
-    private static ExecutorService pool = Executors.newCachedThreadPool();
+    private static ScheduledExecutorService pool = Executors.newScheduledThreadPool(4);
     private int defaultPort = DEFAULT_PORT;
     private String defaultIP;
     private int clientID;
     private ServicesController guiController;
-    private AtomicBoolean isRegisteredRequests, isRegisteredData;
+    private AtomicBoolean
+            isRegisteredRequests,
+            isRegisteredSorted,
+            isRegisteredUnsorted;
 
+    /**
+     * Starts a new ConnectionManager, responsible for
+     * @param guiController
+     * @param defaultIP
+     */
     public ConnectionManager(ServicesController guiController, String defaultIP) {
         this.guiController = guiController;
         this.defaultIP = defaultIP;
         this.getID();
-        this.isRegisteredData = new AtomicBoolean(false);
+        this.isRegisteredSorted = new AtomicBoolean(false);
         this.isRegisteredRequests = new AtomicBoolean(false);
+        this.isRegisteredUnsorted = new AtomicBoolean(false);
+        this.startCollectTask();
         //this.testMethods();
     }
 
@@ -56,10 +68,29 @@ public class ConnectionManager {
         this.getSortedData(tags);
         this.subscribeRequests();
         this.subscribeSorted();
+        this.subscribeUnsorted();
         this.sendUnsortedData(new UnsortedData(-1, "servicesTitle", "desc", "loc", "source", Status.NONE));
         this.updateUnsortedData(new UnsortedData(5, "updateTitle", "updateDesc", "updateLoc", "updateSource", Status.NONE));
         this.getNewRequests();
         this.getNewSorted();
+        this.getNewUnsorted();
+    }
+
+    /**
+     * Schedules regular collection of new subscribed items.
+     */
+    private void startCollectTask(){
+        Runnable collectionTask = () -> {
+            this.getNewRequests();
+            this.getNewSorted();
+            this.getNewUnsorted();
+        };
+
+        pool.scheduleWithFixedDelay(
+                collectionTask,
+                collectionIntervalInMillis,
+                collectionIntervalInMillis,
+                TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -99,16 +130,22 @@ public class ConnectionManager {
     private void notifyCommandDone(ConnCommand action) {
         switch (action) {
             case SORTED_SUBSCRIBE:
-                this.isRegisteredData.set(true);
+                this.isRegisteredSorted.set(true);
                 break;
             case SORTED_UNSUBSCRIBE:
-                this.isRegisteredData.set(false);
+                this.isRegisteredSorted.set(false);
                 break;
             case UPDATE_REQUEST_SUBSCRIBE:
                 this.isRegisteredRequests.set(true);
                 break;
             case UPDATE_REQUEST_UNSUBSCRIBE:
                 this.isRegisteredRequests.set(false);
+                break;
+            case UNSORTED_SUBSCRIBE:
+                this.isRegisteredUnsorted.set(true);
+                break;
+            case UNSORTED_UNSUBSCRIBE:
+                this.isRegisteredUnsorted.set(false);
                 break;
         };
 
@@ -235,7 +272,7 @@ public class ConnectionManager {
      * transmitted to server.
      */
     public boolean subscribeSorted() {
-        if (this.isRegisteredData.get()) {
+        if (this.isRegisteredSorted.get()) {
             return false;
         }
         pool.execute(() -> {
@@ -255,7 +292,7 @@ public class ConnectionManager {
      * transmitted to server.
      */
     public boolean unsubscribeSorted() {
-        if (!this.isRegisteredData.get()) {
+        if (!this.isRegisteredSorted.get()) {
             return false;
         }
         pool.execute(() -> {
@@ -307,6 +344,46 @@ public class ConnectionManager {
     }
 
     /**
+     * Subscribes this client to updates of all new sorted data items. call
+     * getNewSorted to collect.
+     *
+     * @return Whether it was able to execute this command right now. A true
+     * return type does not guarantee the command is executed, merely that it is
+     * transmitted to server.
+     */
+    public boolean subscribeUnsorted() {
+        if (this.isRegisteredUnsorted.get()) {
+            return false;
+        }
+        pool.execute(() -> {
+            if(new Connection(defaultIP, defaultPort).subscribeUnsorted(this.clientID)){
+                this.notifyCommandDone(ConnCommand.UNSORTED_SUBSCRIBE);
+            }
+        });
+        return true;
+    }
+
+    /**
+     * Unsubscribes this client from updates. Does nothing if client wasn't
+     * subscribed.
+     *
+     * @return Whether it was able to execute this command right now. A true
+     * return type does not guarantee the command is executed, merely that it is
+     * transmitted to server.
+     */
+    public boolean unsubscribeUnsorted() {
+        if (!this.isRegisteredUnsorted.get()) {
+            return false;
+        }
+        pool.execute(() -> {
+            if(new Connection(defaultIP, defaultPort).unsubscribeUnsorted(this.clientID)){
+                this.notifyCommandDone(ConnCommand.UNSORTED_UNSUBSCRIBE);
+            }
+        });
+        return true;
+    }
+
+    /**
      * Collects all new sorted data collected on server since last call. Client
      * needs to have called subscribeSorted() for this to do anything.
      *
@@ -315,7 +392,7 @@ public class ConnectionManager {
      * transmitted to server.
      */
     public boolean getNewSorted() {
-        if (!this.isRegisteredData.get()) {
+        if (!this.isRegisteredSorted.get()) {
             return false;
         }
         pool.execute(() -> {
@@ -350,6 +427,31 @@ public class ConnectionManager {
                 this.guiController.displayRequests(output);
             } else {
                 System.err.println("Unable to retrieve new Requests from buffer in server.");
+            }
+        });
+        return true;
+    }
+
+    /**
+     * Collects all new unsorted data collected on server since last call. Client
+     * needs to have called subscribeUnsorted() for this to do anything.
+     *
+     * @return Whether it was able to execute this command right now. A true
+     * return type does not guarantee the command is executed, merely that it is
+     * transmitted to server.
+     */
+    public boolean getNewUnsorted() {
+        if (!this.isRegisteredUnsorted.get()) {
+            return false;
+        }
+        pool.execute(() -> {
+            List<IData> output
+                    = new Connection(defaultIP, defaultPort).getNewUnsorted(this.clientID);
+            if (output != null) {
+                this.guiController.displaySentData(output);
+            } else {
+                System.err.println("Unable to retrieve new Unsorted Data from "
+                        + "buffer in server.");
             }
         });
         return true;
