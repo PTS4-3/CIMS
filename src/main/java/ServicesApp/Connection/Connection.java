@@ -39,22 +39,7 @@ class Connection extends ConnClientBase {
      * @return success on attempting to send piece of unsorted data.
      */
     protected void sendUnSortedData(IData data) {
-        if (!greetServer()) {
-            return;
-        }
-        try {
-            out.writeObject(ConnCommand.UNSORTED_SEND);
-            out.writeObject(data);
-            out.flush();
-            getCommandSuccess("Send unsorted data (" + data.getTitle() + ")");
-        } catch (IOException ex) {
-            System.err.println("Exception trying to send unsorted data to server: "
-                    + ex.getMessage());
-            Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
-                    .log(Level.SEVERE, null, ex);
-        } finally {
-            this.closeSocket();
-        }
+        super.booleanCommand(ConnCommand.UNSORTED_SEND, new Object[]{data});
     }
 
     /**
@@ -66,42 +51,21 @@ class Connection extends ConnClientBase {
      * @return batch of data. Null on general error.
      */
     protected List<ISortedData> getSortedData(HashSet<Tag> tags) {
-        if (!this.greetServer()) {
-            return null;
-        }
+
+        Object inObject = super.objectCommand(ConnCommand.SORTED_GET, new Object[]{tags});
         List<ISortedData> output = null;
-        try {
-            out.writeObject(ConnCommand.SORTED_GET);
-            out.writeObject(tags);
-            out.flush();
-            Object inObject = in.readObject();
-            if (inObject instanceof List) {
-                List list = (List) inObject;
-                if (list.isEmpty()) {
-                    output = new ArrayList<>();
-                } else {
-                    if (list.get(0) instanceof ISortedData) {
-                        output = (List<ISortedData>) list;
-                    }
-                }
-            } else if (inObject instanceof ConnState) {
-                if ((ConnState) inObject == ConnState.COMMAND_FAIL) {
-                    System.err.println("Server failed to execute command "
-                            + "(getSortedData)");
-                } else {
-                    System.err.println("Unexpected ConnState as output: "
-                            + inObject.toString());
-                }
+        if (inObject instanceof List) {
+            List list = (List) inObject;
+            if (list.isEmpty()) {
+                output = new ArrayList<>();
             } else {
-                throw new IOException("Unexpected object");
+                if (list.get(0) instanceof ISortedData) {
+                    output = (List<ISortedData>) list;
+                }
             }
-        } catch (IOException | ClassNotFoundException ex) {
-            System.err.println("Exception getting sorted data: "
-                    + ex.getMessage());
-            Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
-                    .log(Level.SEVERE, null, ex);
-        } finally {
-            this.closeSocket();
+        } else {
+            System.err.println("Unexpected output from "
+                    + super.getCommandDescription(ConnCommand.SORTED_GET));
         }
         return output;
     }
@@ -115,43 +79,23 @@ class Connection extends ConnClientBase {
      * @return
      */
     protected List<IDataRequest> getDataRequests(HashSet<Tag> tags) {
-        if (!this.greetServer()) {
-            return null;
-        }
         List<IDataRequest> output = null;
-        try {
-            out.writeObject(ConnCommand.UPDATE_REQUEST_GET);
-            out.writeObject(tags);
-            out.flush();
-            Object inObject = in.readObject();
-            if (inObject instanceof List) {
-                List list = (List) inObject;
-                if (list.isEmpty()) {
-                    output = new ArrayList<>();
-                } else {
-                    if (list.get(0) instanceof IDataRequest) {
-                        output = (List<IDataRequest>) list;
-                    }
-                }
-            } else if (inObject instanceof ConnState) {
-                if ((ConnState) inObject == ConnState.COMMAND_FAIL) {
-                    System.err.println("Server failed to execute command "
-                            + "(getDataRequests)");
-                } else {
-                    System.err.println("Unexpected ConnState as output: "
-                            + inObject.toString());
-                }
+        Object inObject = super.objectCommand(
+                ConnCommand.UPDATE_REQUEST_GET, new Object[]{tags});
+        if (inObject instanceof List) {
+            List list = (List) inObject;
+            if (list.isEmpty()) {
+                output = new ArrayList<>();
             } else {
-                throw new IOException("Unexpected object");
+                if (list.get(0) instanceof IDataRequest) {
+                    output = (List<IDataRequest>) list;
+                }
             }
-        } catch (IOException | ClassNotFoundException ex) {
-            System.err.println("Exception getting data requests: "
-                    + ex.getMessage());
-            Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
-                    .log(Level.SEVERE, null, ex);
-        } finally {
-            this.closeSocket();
+        } else {
+            System.err.println("Unexpected output from "
+                    + super.getCommandDescription(ConnCommand.UPDATE_REQUEST_GET));
         }
+
         return output;
     }
 
@@ -165,22 +109,7 @@ class Connection extends ConnClientBase {
      * @return
      */
     protected void updateUnsortedData(IData data) {
-        if (!this.greetServer()) {
-            return;
-        }
-        try {
-            out.writeObject(ConnCommand.UNSORTED_UPDATE_SEND);
-            out.writeObject(data);
-            out.flush();
-            getCommandSuccess("Update unsorted data (" + data.getTitle() + ")");
-        } catch (IOException ex) {
-            System.err.println("Exception updating unsorted data: "
-                    + ex.getMessage());
-            Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
-                    .log(Level.SEVERE, null, ex);
-        } finally {
-            this.closeSocket();
-        }
+        super.booleanCommand(ConnCommand.UNSORTED_UPDATE_SEND, new Object[]{data});
     }
 
     /**
@@ -191,42 +120,23 @@ class Connection extends ConnClientBase {
      *
      */
     protected List<IData> getSentData(String source) {
-        if (!this.greetServer()) {
-            return null;
-        }
         List<IData> output = null;
-        try {
-            out.writeObject(ConnCommand.UNSORTED_GET_SOURCE);
-            out.writeObject(source);
-            out.flush();
-            Object inObject = in.readObject();
-            if (inObject instanceof List) {
-                List list = (List) inObject;
-                if (list.isEmpty()) {
-                    output = new ArrayList<>();
-                } else {
-                    if (list.get(0) instanceof IData) {
-                        output = (List<IData>) list;
-                    }
-                }
-            } else if (inObject instanceof ConnState) {
-                if ((ConnState) inObject == ConnState.COMMAND_FAIL) {
-                    System.err.println("Server failed to execute command "
-                            + "(getSentData)");
-                } else {
-                    System.err.println("Unexpected ConnState as output: "
-                            + inObject.toString());
-                }
+        Object inObject = super.objectCommand(
+                ConnCommand.UNSORTED_GET_SOURCE, new Object[]{source});
+        if (inObject instanceof List) {
+            List list = (List) inObject;
+            if (list.isEmpty()) {
+                output = new ArrayList<>();
             } else {
-                throw new IOException("Unexpected object");
+                if (list.get(0) instanceof IData) {
+                    output = (List<IData>) list;
+                }
             }
-        } catch (IOException | ClassNotFoundException ex) {
-            System.err.println("Exception getting sent data: " + ex.getMessage());
-            Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
-                    .log(Level.SEVERE, null, ex);
-        } finally {
-            this.closeSocket();
+        } else {
+            System.err.println("Unexpected output from "
+                    + super.getCommandDescription(ConnCommand.UNSORTED_GET_SOURCE));
         }
+
         return output;
     }
 
@@ -235,122 +145,56 @@ class Connection extends ConnClientBase {
      * @return specific IData based on given ID.
      */
     protected IData getDataItem(int id) {
-        if (!this.greetServer()) {
-            return null;
-        }
         IData output = null;
-        try {
-            out.writeObject(ConnCommand.UNSORTED_GET_ID);
-            out.writeObject(id);
-            out.flush();
-
-            Object inObject = in.readObject();
-            if (inObject instanceof IData) {
-                output = (IData) inObject;
-            } else if (inObject instanceof ConnState) {
-                if ((ConnState) inObject == ConnState.COMMAND_FAIL) {
-                    System.err.println("Server failed to execute command "
-                            + "(getDataItem)");
-                } else {
-                    System.err.println("Unexpected ConnState as output: "
-                            + inObject.toString());
-                }
-            } else {
-                throw new IOException("Unexpected object");
-            }
-        } catch (IOException | ClassNotFoundException ex) {
-            System.err.println("Exception getting specific data item: "
-                    + ex.getMessage());
-            Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
-                    .log(Level.SEVERE, null, ex);
-        } finally {
-            this.closeSocket();
+        Object inObject = super.objectCommand(
+                ConnCommand.UNSORTED_GET_ID, new Object[]{id});
+        if (inObject instanceof IData) {
+            output = (IData) inObject;
+        } else {
+            System.err.println("Unexpected output from "
+                    + super.getCommandDescription(ConnCommand.UNSORTED_GET_ID));
         }
+
         return output;
     }
 
     /**
      * Queries server for clientID.
+     *
      * @return ClientID. -1 if anything went wrong.
      */
     int getClientID() {
-        if (!this.greetServer()) {
-            return -1;
-        }
         int output = -1;
-        try {
-            out.writeObject(ConnCommand.CLIENT_ID_GET);
-            out.flush();
-
-            Object inObject = in.readObject();
-            if (inObject instanceof Integer) {
-                output = (Integer) inObject;
-            } else if (inObject instanceof ConnState) {
-                if ((ConnState) inObject == ConnState.COMMAND_FAIL) {
-                    System.err.println("Server failed to execute command "
-                            + "(getClientID)");
-                } else {
-                    System.err.println("Unexpected ConnState as output: "
-                            + inObject.toString());
-                }
-            } else {
-                throw new IOException("Unexpected object");
-            }
-        } catch (IOException | ClassNotFoundException ex) {
-            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            this.closeSocket();
+        Object inObject = super.objectCommand(
+                ConnCommand.CLIENT_ID_GET, new Object[]{});
+        if (inObject instanceof Integer) {
+            output = (Integer) inObject;
+        } else {
+            System.err.println("Unexpected output from "
+                    + super.getCommandDescription(ConnCommand.CLIENT_ID_GET));
         }
+
         return output;
     }
 
     /**
      * Subscribes to buffer on server.
+     *
      * @param clientID
      */
     boolean subscribeSorted(int clientID) {
-        if (!this.greetServer()) {
-            return false;
-        }
-        try {
-            out.writeObject(ConnCommand.SORTED_SUBSCRIBE);
-            out.writeObject(clientID);
-            out.flush();
-            return getCommandSuccess("Subscribe sorted data (" + clientID + ")");
-
-        } catch (IOException ex) {
-            System.err.println("Exception updating unsorted data: "
-                    + ex.getMessage());
-            Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
-                    .log(Level.SEVERE, null, ex);
-            return false;
-        } finally {
-            this.closeSocket();
-        }
+        return super.booleanCommand(
+                ConnCommand.SORTED_SUBSCRIBE, new Object[]{clientID});
     }
 
     /**
      * Subscribes to buffer on server.
+     *
      * @param clientID
      */
     boolean subscribeRequests(int clientID) {
-        if (!this.greetServer()) {
-            return false;
-        }
-        try {
-            out.writeObject(ConnCommand.UPDATE_REQUEST_SUBSCRIBE);
-            out.writeObject(clientID);
-            out.flush();
-            return getCommandSuccess("Subscribe requests (" + clientID + ")");
-        } catch (IOException ex) {
-            System.err.println("Exception updating unsorted data: "
-                    + ex.getMessage());
-            Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
-                    .log(Level.SEVERE, null, ex);
-            return false;
-        } finally {
-            this.closeSocket();
-        }
+        return super.booleanCommand(
+                ConnCommand.UPDATE_REQUEST_SUBSCRIBE, new Object[]{clientID});
     }
 
     /**
@@ -359,34 +203,16 @@ class Connection extends ConnClientBase {
      * @return newly submitted sorted data since last call.
      */
     List<ISortedData> getNewSorted(int clientID) {
-       if (!this.greetServer()) {
-            return null;
-        }
         List<ISortedData> output = null;
-        try {
-            out.writeObject(ConnCommand.SORTED_GET_NEW);
-            out.writeObject(clientID);
-            out.flush();
-
-            Object inObject = in.readObject();
-            if (inObject instanceof List) {
-                output = (List<ISortedData>) inObject;
-            } else if (inObject instanceof ConnState) {
-                if ((ConnState) inObject == ConnState.COMMAND_FAIL) {
-                    System.err.println("Server failed to execute command "
-                            + "(getNewSorted)");
-                } else {
-                    System.err.println("Unexpected ConnState as output: "
-                            + inObject.toString());
-                }
-            } else {
-                throw new IOException("Unexpected object");
-            }
-        } catch (IOException | ClassNotFoundException ex) {
-            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            this.closeSocket();
+        Object inObject = super.objectCommand(
+                ConnCommand.SORTED_GET_NEW, new Object[]{clientID});
+        if (inObject instanceof List) {
+            output = (List<ISortedData>) inObject;
+        } else {
+            System.err.println("Unexpected output from "
+                    + super.getCommandDescription(ConnCommand.SORTED_GET_NEW));
         }
+
         return output;
     }
 
@@ -396,169 +222,77 @@ class Connection extends ConnClientBase {
      * @return newly submitted requests since last call.
      */
     List<IDataRequest> getNewRequests(int clientID) {
-        if (!this.greetServer()) {
-            return null;
-        }
         List<IDataRequest> output = null;
-        try {
-            out.writeObject(ConnCommand.UPDATE_REQUEST_GET_NEW);
-            out.writeObject(clientID);
-            out.flush();
-
-            Object inObject = in.readObject();
-            if (inObject instanceof List) {
-                output = (List<IDataRequest>) inObject;
-            } else if (inObject instanceof ConnState) {
-                if ((ConnState) inObject == ConnState.COMMAND_FAIL) {
-                    System.err.println("Server failed to execute command "
-                            + "(getNewRequests)");
-                } else {
-                    System.err.println("Unexpected ConnState as output: "
-                            + inObject.toString());
-                }
-            } else {
-                throw new IOException("Unexpected object");
-            }
-        } catch (IOException | ClassNotFoundException ex) {
-            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            this.closeSocket();
+        Object inObject = super.objectCommand(
+                ConnCommand.UPDATE_REQUEST_GET_NEW, new Object[]{clientID});
+        if (inObject instanceof List) {
+            output = (List<IDataRequest>) inObject;
+        } else {
+            System.err.println("Unexpected output from "
+                    + super.getCommandDescription(ConnCommand.UPDATE_REQUEST_GET_NEW));
         }
+
         return output;
     }
 
     /**
      * Unsubscribes from server. Does nothing if not subscribed.
+     *
      * @param clientID
      */
     boolean unsubscribeSorted(int clientID) {
-        if (!this.greetServer()) {
-            return false;
-        }
-        try {
-            out.writeObject(ConnCommand.SORTED_UNSUBSCRIBE);
-            out.writeObject(clientID);
-            out.flush();
-            return getCommandSuccess("Unsubscribe sorted data (" + clientID + ")");
-        } catch (IOException ex) {
-            System.err.println("Exception updating unsorted data: "
-                    + ex.getMessage());
-            Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
-                    .log(Level.SEVERE, null, ex);
-            return false;
-        } finally {
-            this.closeSocket();
-        }
+        return super.booleanCommand(
+                ConnCommand.SORTED_UNSUBSCRIBE, new Object[]{clientID});
     }
 
     /**
      * Unsubscribes from server buffer. Does nothing if not subscribed.
+     *
      * @param clientID
      */
     boolean unsubscribeRequests(int clientID) {
-        if (!this.greetServer()) {
-            return false;
-        }
-        try {
-            out.writeObject(ConnCommand.UPDATE_REQUEST_UNSUBSCRIBE);
-            out.writeObject(clientID);
-            out.flush();
-            return getCommandSuccess("Unsubscribe requests (" + clientID + ")");
-        } catch (IOException ex) {
-            System.err.println("Exception unsubscribing requests: "
-                    + ex.getMessage());
-            Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
-                    .log(Level.SEVERE, null, ex);
-            return false;
-        } finally {
-            this.closeSocket();
-        }
+        return super.booleanCommand(
+                ConnCommand.UPDATE_REQUEST_UNSUBSCRIBE, new Object[]{clientID});
     }
 
     /**
      * subscribes to updates of unsorted data
+     *
      * @param clientID
      * @return
      */
     boolean subscribeUnsorted(int clientID) {
-        if (!this.greetServer()) {
-            return false;
-        }
-        try {
-            out.writeObject(ConnCommand.UNSORTED_SUBSCRIBE);
-            out.writeObject(clientID);
-            out.flush();
-            return getCommandSuccess("subscribe unsorted data (" + clientID + ")");
-        } catch (IOException ex) {
-            System.err.println("Exception subscribing unsorted data: "
-                    + ex.getMessage());
-            Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
-                    .log(Level.SEVERE, null, ex);
-            return false;
-        } finally {
-            this.closeSocket();
-        }
+        return super.booleanCommand(
+                ConnCommand.UNSORTED_SUBSCRIBE, new Object[]{clientID});
     }
 
     /**
      * Unsubscribes to updates unsorted data
+     *
      * @param clientID
      * @return
      */
     boolean unsubscribeUnsorted(int clientID) {
-        if (!this.greetServer()) {
-            return false;
-        }
-        try {
-            out.writeObject(ConnCommand.UNSORTED_UNSUBSCRIBE);
-            out.writeObject(clientID);
-            out.flush();
-            return getCommandSuccess("Unsubscribe unsorted data (" + clientID + ")");
-        } catch (IOException ex) {
-            System.err.println("Exception unsubscribing unsorted data: "
-                    + ex.getMessage());
-            Logger.getLogger(ServicesApp.Connection.Connection.class.getName())
-                    .log(Level.SEVERE, null, ex);
-            return false;
-        } finally {
-            this.closeSocket();
-        }
+        return super.booleanCommand(
+                ConnCommand.UNSORTED_UNSUBSCRIBE, new Object[]{clientID});
     }
 
     /**
      * Gets unsorted data held at server since last call
+     *
      * @param clientID
      * @return
      */
     List<IData> getNewUnsorted(int clientID) {
-        if (!this.greetServer()) {
-            return null;
-        }
         List<IData> output = null;
-        try {
-            out.writeObject(ConnCommand.UNSORTED_GET_NEW);
-            out.writeObject(clientID);
-            out.flush();
-
-            Object inObject = in.readObject();
+            Object inObject = super.objectCommand(
+                    ConnCommand.UNSORTED_GET_NEW, new Object[]{clientID});
             if (inObject instanceof List) {
                 output = (List<IData>) inObject;
-            } else if (inObject instanceof ConnState) {
-                if ((ConnState) inObject == ConnState.COMMAND_FAIL) {
-                    System.err.println("Server failed to execute command "
-                            + "(getNewUnsorted)");
-                } else {
-                    System.err.println("Unexpected ConnState as output: "
-                            + inObject.toString());
-                }
             } else {
-                throw new IOException("Unexpected object");
+                System.err.println("Unexpected output from "
+                    + super.getCommandDescription(ConnCommand.UNSORTED_GET_NEW));
             }
-        } catch (Exception ex) {
-            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            this.closeSocket();
-        }
         return output;
     }
 

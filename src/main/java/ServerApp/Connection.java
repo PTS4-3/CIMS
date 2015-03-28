@@ -251,8 +251,8 @@ public class Connection implements Runnable {
         }
         if (output) {
             getBuffer().addSorted(data);
-            writeOutput(output);
         }
+        writeOutput(output);
     }
 
     /**
@@ -267,9 +267,14 @@ public class Connection implements Runnable {
             return;
         }
         IData data = (IData) inObject;
+        boolean output = false;
         synchronized (LOCK) {
-            writeOutput(ServerMain.databaseManager.insertToUnsortedData(data));
+            output = ServerMain.databaseManager.insertToUnsortedData(data);
         }
+        if (output) {
+            getBuffer().addUnsorted(data);
+        }
+        writeOutput(output);
     }
 
     /**
@@ -348,8 +353,8 @@ public class Connection implements Runnable {
         }
         if (output) {
             getBuffer().addRequest(data);
-            writeOutput(output);
         }
+        writeOutput(output);
     }
 
     /**

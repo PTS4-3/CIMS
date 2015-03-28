@@ -36,8 +36,6 @@ public class ConnClientBase {
     /**
      * Connects to Server
      *
-     * @param IP
-     * @param port
      * @return connection success
      */
     protected boolean greetServer() {
@@ -120,11 +118,11 @@ public class ConnClientBase {
      * Listens to server output whether command succeeded. Does its own output
      * to s.err
      *
-     * @param description - a short description of what calling method was
-     * trying to accomplish
+     * @param command
      * @return true if command was a success. Optional.
      */
-    protected boolean getCommandSuccess(String description){
+    protected boolean getCommandSuccess(ConnCommand command) {
+        String description = this.getCommandDescription(command);
         try {
             Object inObject = in.readObject();
             if (inObject instanceof ConnState) {
@@ -132,10 +130,10 @@ public class ConnClientBase {
                 if (result == ConnState.COMMAND_SUCCESS) {
                     System.err.println(description + ": success");
                     return true;
-                } else if (result == ConnState.COMMAND_FAIL){
+                } else if (result == ConnState.COMMAND_FAIL) {
                     System.err.println(description + ": failure");
                 } else {
-                    System.err.println("Unexpected input ("+ description + "): "
+                    System.err.println("Unexpected input (" + description + "): "
                             + result.toString());
                 }
             } else {
@@ -146,6 +144,143 @@ public class ConnClientBase {
             Logger.getLogger(ConnClientBase.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
+    }
+
+    /**
+     * Executes a command expecting only a success indicator.
+     *
+     * @param command
+     * @param arguments
+     * @return
+     */
+    public boolean booleanCommand(ConnCommand command, Object[] arguments) {
+        if (!this.greetServer()) {
+            return false;
+        }
+        try {
+            out.writeObject(command);
+            for (Object arg : arguments) {
+                out.writeObject(arg);
+            }
+            out.flush();
+            return getCommandSuccess(command);
+        } catch (IOException ex) {
+            System.out.println("Exception sending boolean command to server: "
+                    + ex.getMessage());
+            Logger.getLogger(ConnClientBase.class.getName())
+                    .log(Level.SEVERE, null, ex);
+            return false;
+        } finally {
+            this.closeSocket();
+        }
+    }
+
+    /**
+     * Executes a command expecting a return type.
+     *
+     * @param command
+     * @param arguments
+     * @return null if something went wrong.
+     */
+    protected Object objectCommand(ConnCommand command, Object[] arguments) {
+        if (!this.greetServer()) {
+            return null;
+        }
+        Object output = null;
+        try {
+            out.writeObject(command);
+            for (Object arg : arguments) {
+                out.writeObject(arg);
+            }
+            out.flush();
+
+            Object inObject = in.readObject();
+            if (inObject instanceof ConnState) {
+                if ((ConnState) inObject == ConnState.COMMAND_FAIL) {
+                    System.out.println("Server failed to execute object command "
+                            + command.toString());
+                } else {
+                    System.err.println("Unexpected ConnState as output: "
+                            + inObject.toString());
+                }
+                output = null;
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(ConnClientBase.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            this.closeSocket();
+        }
+        return output;
+    }
+
+    protected String getCommandDescription(ConnCommand command) {
+        String output = "Unknown command";
+        switch (command) {
+            case CLIENT_ID_GET:
+                output = "getting client ID";
+                break;
+            case SORTED_SEND:
+                output = "sending sorted data";
+                break;
+            case SORTED_GET:
+                output = "getting sorted data";
+                break;
+            case SORTED_GET_NEW:
+                output = "retrieving new sorted data";
+                break;
+            case SORTED_SUBSCRIBE:
+                output = "subscribing to sorted data updates";
+                break;
+            case SORTED_UNSUBSCRIBE:
+                output = "unsubscribing from sorted data updates";
+                break;
+            case UNSORTED_SEND:
+                output = "submitting new unsorted data";
+                break;
+            case UNSORTED_GET:
+                output = "getting a batch of unsorted data";
+                break;
+            case UNSORTED_GET_ID:
+                output = "get unsorted item by ID";
+                break;
+            case UNSORTED_GET_SOURCE:
+                output = "get unsorted, filtered by source";
+                break;
+            case UNSORTED_STATUS_RESET:
+                output = "notify server that data is nog longer being worked on";
+                break;
+            case UNSORTED_UPDATE_SEND:
+                output = "update unsorted data";
+                break;
+            case UNSORTED_DISCARD:
+                output = "discard given piece of unsorted data";
+                break;
+            case UNSORTED_GET_NEW:
+                output = "retrieving new unsorted data";
+                break;
+            case UNSORTED_SUBSCRIBE:
+                output = "subscriving to unsorted data updates";
+                break;
+            case UNSORTED_UNSUBSCRIBE:
+                output = "unsubscribing from unsorted data updates";
+                break;
+            case UPDATE_REQUEST_SEND:
+                output = "submitting a request for updated data";
+                break;
+            case UPDATE_REQUEST_GET:
+                output = "retrieving all requests for updated data";
+                break;
+            case UPDATE_REQUEST_GET_NEW:
+                output = "retrieving new update requests";
+                break;
+            case UPDATE_REQUEST_SUBSCRIBE:
+                output = "subscribing to new update requests";
+                break;
+            case UPDATE_REQUEST_UNSUBSCRIBE:
+                output = "unsubscribing from new update requests";
+                break;
+        }
+        return output;
     }
 
 }
