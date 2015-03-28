@@ -19,7 +19,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
@@ -110,7 +111,7 @@ public class HeadquartersController implements Initializable {
             }
             this.connectionManager.getData();
         } catch (NetworkException nEx) {
-            System.out.println(nEx.getMessage());
+            showDialog("Geen verbinding met server", "Kon geen data ophalen.", true);
         }
     }
     
@@ -203,9 +204,9 @@ public class HeadquartersController implements Initializable {
             // Update ListView
             this.updateLvuUnsortedData(unsortedData);
         } catch (IllegalArgumentException iaEx) {
-            System.out.println(iaEx.getMessage());
+            showDialog("", "Selecteer eerst een unsorted data.", false);
         } catch (NetworkException nEx) {
-            System.out.println(nEx.getMessage());
+            showDialog("Geen verbinding met server", "Kon data niet wegschrijven.", true);
         }
     }
     
@@ -243,9 +244,9 @@ public class HeadquartersController implements Initializable {
             // Update ListView
             this.updateLvuUnsortedData(unsortedData);
         } catch (IllegalArgumentException iaEx) {
-            System.out.println(iaEx.getMessage());
+            showDialog("", "Selecteer eerst een unsorted data.", false);
         } catch (NetworkException nEx) {
-            System.out.println(nEx.getMessage());
+            showDialog("Geen verbinding met server", "Kon data niet verwijderen.", true);
         }
     }
     
@@ -266,7 +267,7 @@ public class HeadquartersController implements Initializable {
             tfrRequestTitle.setText(this.requestData.getTitle());
             tabPane.getSelectionModel().select(tabRequestInfo);
         } catch (IllegalArgumentException iaEx) {
-            System.out.println(iaEx.getMessage());
+            showDialog("", "Selecteer eerst een unsorted data.", false);
         }
     }
     
@@ -302,9 +303,9 @@ public class HeadquartersController implements Initializable {
             // Reset tab
             resetRequest();
         } catch (IllegalArgumentException iaEx) {
-            System.out.println(iaEx.getMessage());
+            showDialog("Foutieve waardes", "Er zijn waardes niet ingevuld of foutief ingevuld. Voer alle gevraagde informatie in.", true);
         } catch (NetworkException nEx) {
-            System.out.println(nEx.getMessage());
+            showDialog("Geen verbinding met server", "Kon verzoek niet versturen.", true);
         }        
     }
     
@@ -319,5 +320,33 @@ public class HeadquartersController implements Initializable {
         tfrSource.clear();
         tfrLocation.clear();
         ccrTags.getCheckModel().clearChecks();
+    }
+    
+    public void showDialog(String title, String melding, boolean warning)
+    {
+        Alert alert = null;
+        
+        if (warning)
+        {
+            alert = new Alert(AlertType.WARNING);
+            alert.setTitle("Warning Dialog");
+        }
+        else
+        {
+            alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Information Dialog");            
+        }     
+        
+        if (!title.isEmpty())
+        {
+            alert.setHeaderText(title);
+        }
+        else
+        {
+            alert.setHeaderText(null);
+        }
+        
+        alert.setContentText(melding);
+        alert.showAndWait();
     }
 }
