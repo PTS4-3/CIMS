@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -30,6 +31,7 @@ public class ConnectionManager {
     private static int collectionIntervalInMillis = 10000;
 
     private static ScheduledExecutorService pool = Executors.newScheduledThreadPool(4);
+    private ScheduledFuture collectFuture = null;
     private int defaultPort = DEFAULT_PORT;
     private String defaultIP;
     private int clientID;
@@ -86,11 +88,12 @@ public class ConnectionManager {
             this.getNewUnsorted();
         };
 
-        pool.scheduleWithFixedDelay(
+        this.collectFuture = pool.scheduleWithFixedDelay(
                 collectionTask,
                 collectionIntervalInMillis,
                 collectionIntervalInMillis,
                 TimeUnit.MILLISECONDS);
+
     }
 
     /**
@@ -119,6 +122,9 @@ public class ConnectionManager {
      * Orderly shuts down thread pool after all requests are handled.
      */
     public void closeConnection() {
+        if(collectFuture != null){
+            collectFuture.cancel(false);
+        } 
         pool.shutdown();
     }
 

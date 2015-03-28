@@ -254,6 +254,7 @@ public class ServicesController implements Initializable {
             this.connectionManager.unsubscribeRequests();
             this.connectionManager.unsubscribeSorted();
             this.connectionManager.unsubscribeUnsorted();
+            this.connectionManager.closeConnection();
         }
     }
 
