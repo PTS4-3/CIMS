@@ -207,6 +207,8 @@ public class ConnClientBase {
                             + inObject.toString());
                 }
                 output = null;
+            } else {
+                output = inObject;
             }
         } catch (Exception ex) {
             Logger.getLogger(ConnClientBase.class.getName()).log(Level.SEVERE, null, ex);
@@ -216,6 +218,11 @@ public class ConnClientBase {
         return output;
     }
 
+    /**
+     * Translates ConnCommands into human-readable text.
+     * @param command
+     * @return
+     */
     protected String getCommandDescription(ConnCommand command) {
         String output = "Unknown command";
         switch (command) {
