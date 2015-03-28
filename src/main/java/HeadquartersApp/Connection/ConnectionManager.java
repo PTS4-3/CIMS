@@ -19,7 +19,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -29,13 +28,11 @@ public class ConnectionManager {
 
     public static final int DEFAULT_PORT = 8189;
     
-    
     private static final ExecutorService pool = Executors.newCachedThreadPool();
     private HeadquartersController guiController = null;
     private String defaultIP = "127.0.0.1";
     private int defaultPort;
 
-    
     public ConnectionManager(HeadquartersController guiController,
             String defaultIP) {
 

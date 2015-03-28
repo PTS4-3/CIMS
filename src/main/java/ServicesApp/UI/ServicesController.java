@@ -509,7 +509,6 @@ public class ServicesController implements Initializable {
             showDialog("Geen verbinding met server", "Kon geen data ophalen.", true);
         }
     }
-<<<<<<< HEAD
 
     /**
      * Connection calls this to deliver freshly received new ISortedData from
@@ -559,6 +558,4 @@ public class ServicesController implements Initializable {
         alert.setContentText(melding);
         alert.showAndWait();
     }
-=======
->>>>>>> origin/master
 }

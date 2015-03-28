@@ -12,7 +12,6 @@ import Shared.Connection.ConnCommand;
 import Shared.IData;
 import Shared.IDataRequest;
 import Shared.ISortedData;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
