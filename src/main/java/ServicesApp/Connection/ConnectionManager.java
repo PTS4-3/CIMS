@@ -40,7 +40,7 @@ public class ConnectionManager {
         this.getID();
         this.isRegisteredData = new AtomicBoolean(false);
         this.isRegisteredRequests = new AtomicBoolean(false);
-        this.testMethods();
+        //this.testMethods();
     }
 
     /**
