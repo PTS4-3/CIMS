@@ -289,17 +289,20 @@ public class DatabaseManager {
                     update = "SELECT * FROM dbi294542.`SORTEDDATABASE.SORTEDDATA` WHERE ID = " + x;
                     PreparedStatement updateData = conn.prepareStatement(update);
                     ResultSet resultTag = updateData.executeQuery();
-
-                    id = result.getInt("ID");
-                    title = result.getString("TITLE");
-                    description = result.getString("DESCRIPTION");
-                    location = result.getString("LOCATION");
-                    source = result.getString("SOURCE");
-                    relevance = result.getInt("RELEVANCE");
-                    reliability = result.getInt("RELIABILITY");
-                    quality = result.getInt("QUALITY");
+                    while(resultTag.next())
+                    {
+                    id = resultTag.getInt("ID");
+                    title = resultTag.getString("TITLE");
+                    description = resultTag.getString("DESCRIPTION");
+                    location = resultTag.getString("LOCATION");
+                    source = resultTag.getString("SOURCE");
+                    relevance = resultTag.getInt("RELEVANCE");
+                    reliability = resultTag.getInt("RELIABILITY");
+                    quality = resultTag.getInt("QUALITY");
 
                     sorted.add(new SortedData(id, title, description, location, source, relevance, reliability, quality, info));
+                    System.out.println("Getting sorted object  succeed");
+                    }
                     System.out.println("Getting sorted object  succeed");
                 }
             }
