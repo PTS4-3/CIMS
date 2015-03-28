@@ -650,6 +650,7 @@ public class DatabaseManager {
      */
     private boolean openConnection() {
         try {
+            System.setProperty("jdbc.drivers", props.getProperty("driver"));
             this.conn = DriverManager.getConnection(
                     (String) props.get("url"),
                     (String) props.get("username"),
