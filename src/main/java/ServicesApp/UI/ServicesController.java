@@ -159,7 +159,7 @@ public class ServicesController implements Initializable {
             //TODO source
             this.connectionManager.getSentData("");
         } catch (NetworkException nEx) {
-            showDialog("Geen verbinding met server", nEx.getMessage(), true);
+            showDialog("Geen verbinding met server", "Kon geen data ophalen", true);
         }
     }
 
@@ -286,7 +286,7 @@ public class ServicesController implements Initializable {
         } catch (IllegalArgumentException iaEx) {
             showDialog("Invoer onjuist", iaEx.getMessage(), true);
         } catch (NetworkException nEx) {
-            showDialog("Geen verbinding met server", nEx.getMessage(), true);
+            showDialog("Geen verbinding met server", "Kon data niet wegschrijven", true);
         }
     }
 
@@ -361,7 +361,7 @@ public class ServicesController implements Initializable {
         } catch (IllegalArgumentException iaEx) {
             showDialog("Invoer onjuist", iaEx.getMessage(), true);
         } catch (NetworkException nEx) {
-            showDialog("Geen verbinding met server", nEx.getMessage(), true);
+            showDialog("Geen verbinding met server", "Kon data niet wegschrijven", true);
         }
     }
 
@@ -384,7 +384,7 @@ public class ServicesController implements Initializable {
             // TODO source
             this.connectionManager.getSentData("");
         } catch (NetworkException nEx) {
-            showDialog("Geen verbinding met server", nEx.getMessage(), true);
+            showDialog("Geen verbinding met server", "Kon geen data ophalen", true);
         }
     }
 
@@ -435,7 +435,7 @@ public class ServicesController implements Initializable {
                     this.connectionManager.getRequests(new HashSet<Tag>());
                 }
             } catch (NetworkException nEx) {
-                showDialog("Geen verbinding met server", nEx.getMessage(), true);
+                showDialog("Geen verbinding met server", "Kon geen data ophalen", true);
             }
         } else {
             // Remove
@@ -489,7 +489,7 @@ public class ServicesController implements Initializable {
                 }
             }
         } catch (NetworkException nEx) {
-            showDialog("Geen verbinding met server", nEx.getMessage(), true);
+            showDialog("Geen verbinding met server", "Kon geen data ophalen", true);
         }
     }
     

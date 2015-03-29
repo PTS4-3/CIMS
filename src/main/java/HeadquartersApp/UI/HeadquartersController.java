@@ -111,7 +111,7 @@ public class HeadquartersController implements Initializable {
             }
             this.connectionManager.getData();
         } catch (NetworkException nEx) {
-            showDialog("Geen verbinding met server", "Kon geen data ophalen.", true);
+            showDialog("Geen verbinding met server", "Kon geen data ophalen", true);
         }
     }
     
@@ -210,9 +210,9 @@ public class HeadquartersController implements Initializable {
             // Update ListView
             this.updateLvuUnsortedData(unsortedData);
         } catch (IllegalArgumentException iaEx) {
-            showDialog("", "Selecteer eerst een unsorted data.", false);
+            showDialog("", iaEx.getMessage(), false);
         } catch (NetworkException nEx) {
-            showDialog("Geen verbinding met server", "Kon data niet wegschrijven.", true);
+            showDialog("Geen verbinding met server", "Kon data niet wegschrijven", true);
         }
     }
     
@@ -250,9 +250,9 @@ public class HeadquartersController implements Initializable {
             // Update ListView
             this.updateLvuUnsortedData(unsortedData);
         } catch (IllegalArgumentException iaEx) {
-            showDialog("", "Selecteer eerst een unsorted data.", false);
+            showDialog("", iaEx.getMessage(), false);
         } catch (NetworkException nEx) {
-            showDialog("Geen verbinding met server", "Kon data niet verwijderen.", true);
+            showDialog("Geen verbinding met server", "Kon data niet verwijderen", true);
         }
     }
     
@@ -273,7 +273,7 @@ public class HeadquartersController implements Initializable {
             tfrRequestTitle.setText(this.requestData.getTitle());
             tabPane.getSelectionModel().select(tabRequestInfo);
         } catch (IllegalArgumentException iaEx) {
-            showDialog("", "Selecteer eerst een unsorted data.", false);
+            showDialog("", iaEx.getMessage(), false);
         }
     }
     
@@ -311,7 +311,7 @@ public class HeadquartersController implements Initializable {
         } catch (IllegalArgumentException iaEx) {
             showDialog("Invoer onjuist", iaEx.getMessage(), true);
         } catch (NetworkException nEx) {
-            showDialog("Geen verbinding met server", nEx.getMessage(), true);
+            showDialog("Geen verbinding met server", "Kon verzoek niet versturen", true);
         }        
     }
     
