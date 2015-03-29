@@ -283,6 +283,10 @@ public class ServicesController implements Initializable {
             this.clearSendInfo();
             
             this.removeAnsweredRequest();
+            
+            // Bevestiging tonen
+            showDialog("Verzenden geslaagd", "Het verzenden van de ongesorteerde " +
+                    "data is geslaagd", false);
         } catch (IllegalArgumentException iaEx) {
             showDialog("Invoer onjuist", iaEx.getMessage(), true);
         } catch (NetworkException nEx) {
@@ -357,7 +361,9 @@ public class ServicesController implements Initializable {
                 this.resetSentData();
             }
 
-            // Bevestiging tonen TODO
+            // Bevestiging tonen
+            showDialog("Verzenden geslaagd", "Het verzenden van de aanvraag " +
+                    "voor een update is geslaagd", false);
         } catch (IllegalArgumentException iaEx) {
             showDialog("Invoer onjuist", iaEx.getMessage(), true);
         } catch (NetworkException nEx) {

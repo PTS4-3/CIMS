@@ -209,6 +209,10 @@ public class HeadquartersController implements Initializable {
             
             // Update ListView
             this.updateLvuUnsortedData(unsortedData);
+            
+            // Bevestiging tonen
+            showDialog("Verzenden geslaagd", "Het verzenden van de gesorteerde " +
+                    "data is geslaagd", false);
         } catch (IllegalArgumentException iaEx) {
             showDialog("", iaEx.getMessage(), false);
         } catch (NetworkException nEx) {
@@ -249,6 +253,10 @@ public class HeadquartersController implements Initializable {
             
             // Update ListView
             this.updateLvuUnsortedData(unsortedData);
+            
+            // Bevestiging tonen
+            showDialog("Verwijderen geslaagd", "Het verwijderen van de ongesorteerde " +
+                    "data is geslaagd", false);
         } catch (IllegalArgumentException iaEx) {
             showDialog("", iaEx.getMessage(), false);
         } catch (NetworkException nEx) {
@@ -308,6 +316,10 @@ public class HeadquartersController implements Initializable {
             
             // Reset tab
             resetRequest();
+            
+            // Bevestiging tonen
+            showDialog("Verzenden geslaagd", "Het verzenden van de aanvraag " +
+                    "is geslaagd", false);
         } catch (IllegalArgumentException iaEx) {
             showDialog("Invoer onjuist", iaEx.getMessage(), true);
         } catch (NetworkException nEx) {
