@@ -112,6 +112,7 @@ public class HeadquartersController implements Initializable {
                 throw new NetworkException("Kon geen data ophalen");
             }
             this.connectionManager.getData();
+            this.startTimer();        
         } catch (NetworkException nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
@@ -179,20 +180,29 @@ public class HeadquartersController implements Initializable {
             
             // Start timer
             if(lvuUnsortedData.getItems().size() == 0) {
-                this.timer = new Timer();
-                this.timer.schedule(new TimerTask() {
-
-                    @Override
-                    public void run() {
-                        connectionManager.getData();
-                    }
-                    
-                }, 10000, Long.valueOf(10000));
+                this.startTimer();
             }
         }
 
         // Select new
         lvuUnsortedData.getSelectionModel().selectFirst();
+    }
+    
+    /**
+     * Starts the timer for getting data 
+     */
+    private void startTimer() {
+        if(this.timer == null) {
+            this.timer = new Timer();
+            this.timer.schedule(new TimerTask() {
+
+                @Override
+                public void run() {
+                    connectionManager.getData();
+                }
+
+            }, 10000, Long.valueOf(10000));
+        }
     }
     
     /**
