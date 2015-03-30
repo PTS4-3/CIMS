@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -63,6 +65,7 @@ public class HeadquartersController implements Initializable {
     private IData requestData;
     
     private ConnectionManager connectionManager;
+    private Timer timer;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -123,6 +126,11 @@ public class HeadquartersController implements Initializable {
 
             @Override
             public void run() {
+                if(timer != null && !output.isEmpty()) {
+                    timer.cancel();
+                    timer = null;
+                }
+                
                 lvuUnsortedData.getItems().addAll(output);
                 if(lvuUnsortedData.getSelectionModel().getSelectedItem() == null) {
                     lvuUnsortedData.getSelectionModel().selectFirst();
@@ -168,6 +176,19 @@ public class HeadquartersController implements Initializable {
         // If less than 10 items, load new unsorted data
         if(lvuUnsortedData.getItems().size() < 10) {
             this.connectionManager.getData();
+            
+            // Start timer
+            if(lvuUnsortedData.getItems().size() == 0) {
+                this.timer = new Timer();
+                this.timer.schedule(new TimerTask() {
+
+                    @Override
+                    public void run() {
+                        connectionManager.getData();
+                    }
+                    
+                }, 10000, Long.valueOf(10000));
+            }
         }
 
         // Select new
