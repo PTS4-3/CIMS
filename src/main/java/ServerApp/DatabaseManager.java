@@ -240,7 +240,7 @@ public class DatabaseManager {
      */
     public synchronized List<SortedData> getFromSortedData(HashSet<Tag> info) {
         List<SortedData> sorted = new ArrayList();
-        List<Integer> numbers = new ArrayList();
+        HashSet<Integer> numbers = new HashSet<Integer>();
 
         //list of id's with correct tags
         int id;
@@ -270,7 +270,7 @@ public class DatabaseManager {
                     aantal++;
                 } else {
                     query += "AND ID IN (SELECT ID FROM"
-                            + " dbi294542.`SORTEDDATABASE.SORTEDDATATAGS` WHERE  TAGNAME = '" 
+                            + " dbi294542.`SORTEDDATABASE.SORTEDDATATAGS` WHERE  TAGNAME = '"
                             + element.toString() + "' ";
                 }
             }
@@ -287,15 +287,15 @@ public class DatabaseManager {
 
             //make list of object with correct id's
             String update = "";
-            for (int x : numbers) {
+            Iterator it2 = numbers.iterator();
+            while (it2.hasNext()) {
+                // Get element
+                Object element = it2.next();
                 if (sorted.size() < 50) {
-                    int a =0;
-                    update = "SELECT * FROM dbi294542.`SORTEDDATABASE.SORTEDDATA` WHERE ID = " + x;
+                    update = "SELECT * FROM dbi294542.`SORTEDDATABASE.SORTEDDATA` WHERE ID = " + element.toString();
                     PreparedStatement updateData = conn.prepareStatement(update);
                     ResultSet resultTag = updateData.executeQuery();
                     while (resultTag.next()) {
-                        if(a==0)
-                        {
                         id = resultTag.getInt("ID");
                         title = resultTag.getString("TITLE");
                         description = resultTag.getString("DESCRIPTION");
@@ -316,11 +316,10 @@ public class DatabaseManager {
 
                         sorted.add(new SortedData(id, title, description, location, source, relevance, reliability, quality, newTags));
                         System.out.println("Getting sorted object  succeed");
-                        a++;
-                        }
-                    
+
                     }
                 }
+
             }
             System.out.println("Getting sorted object getFromSortedData succeed");
         } catch (SQLException ex) {
