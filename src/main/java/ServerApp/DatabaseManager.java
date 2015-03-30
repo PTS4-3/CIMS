@@ -407,7 +407,7 @@ public class DatabaseManager {
         try {
             String query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET TITLE = '" + iData.getTitle()
                     + "', DESCRIPTION = '" + iData.getDescription() + "', LOCATION = '" + "', SOURCE = '" + iData.getSource()
-                    + "' WHERE ID=" + iData.getId();
+                    + "', STATUS = '"+Status.NONE+ "' WHERE ID=" + iData.getId();
 
             PreparedStatement update = conn.prepareStatement(query);
 
