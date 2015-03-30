@@ -36,16 +36,15 @@ public class DatabaseManager {
 
     /*
      * Notes:
-    - merge initConnection and openConnection
-    - code folding at 80 characters
-    - use a private variable for database / schema name instead of calling it in every
-        command
-        -- less text 
-        -- easier to update for new database
-    - if method throws an error, set output type to null / false to be sure
-    - check input for illegal values before opening connection
-    */
-
+     - merge initConnection and openConnection
+     - code folding at 80 characters
+     - use a private variable for database / schema name instead of calling it in every
+     command
+     -- less text 
+     -- easier to update for new database
+     - if method throws an error, set output type to null / false to be sure
+     - check input for illegal values before opening connection
+     */
     private Connection conn;
     private Properties props;
 
@@ -148,16 +147,16 @@ public class DatabaseManager {
 
             //getting unsorteddata
             while (result.next()) {
-                if(unsorted.size()< 50)
-                {
-                id = result.getInt("ID");
-                title = result.getString("TITLE");
-                description = result.getString("DESCRIPTION");
-                location = result.getString("LOCATION");
-                source = result.getString("SOURCE");
+                if (unsorted.size() < 50) {
+                    id = result.getInt("ID");
+                    title = result.getString("TITLE");
+                    description = result.getString("DESCRIPTION");
+                    location = result.getString("LOCATION");
+                    source = result.getString("SOURCE");
+                    Status status = Status.valueOf(result.getString("STATUS"));
 
-                unsorted.add(new UnsortedData(id, title, description, location, source, Status.INPROCESS));
-                System.out.println("Getting object"+unsorted.size()+" unsorted succeed");
+                    unsorted.add(new UnsortedData(id, title, description, location, source, status));
+                    System.out.println("Getting object" + unsorted.size() + " unsorted succeed");
                 }
             }
 
@@ -252,6 +251,7 @@ public class DatabaseManager {
         int relevance;
         int reliability;
         int quality;
+        HashSet<Tag> newTags = new HashSet<Tag>();
 
         if (!openConnection()) {
             return null;
@@ -291,21 +291,29 @@ public class DatabaseManager {
                     update = "SELECT * FROM dbi294542.`SORTEDDATABASE.SORTEDDATA` WHERE ID = " + x;
                     PreparedStatement updateData = conn.prepareStatement(update);
                     ResultSet resultTag = updateData.executeQuery();
-                    while(resultTag.next())
-                    {
-                    id = resultTag.getInt("ID");
-                    title = resultTag.getString("TITLE");
-                    description = resultTag.getString("DESCRIPTION");
-                    location = resultTag.getString("LOCATION");
-                    source = resultTag.getString("SOURCE");
-                    relevance = resultTag.getInt("RELEVANCE");
-                    reliability = resultTag.getInt("RELIABILITY");
-                    quality = resultTag.getInt("QUALITY");
+                    while (resultTag.next()) {
+                        id = resultTag.getInt("ID");
+                        title = resultTag.getString("TITLE");
+                        description = resultTag.getString("DESCRIPTION");
+                        location = resultTag.getString("LOCATION");
+                        source = resultTag.getString("SOURCE");
+                        relevance = resultTag.getInt("RELEVANCE");
+                        reliability = resultTag.getInt("RELIABILITY");
+                        quality = resultTag.getInt("QUALITY");
 
-                    sorted.add(new SortedData(id, title, description, location, source, relevance, reliability, quality, info));
-                    System.out.println("Getting sorted object  succeed");
+                        String getTags = "Select TAGNAME From dbi294542.`SORTEDDATABASE.SORTEDDATATAGS` WHERE "
+                                + "ID = " + id;
+                        PreparedStatement getTagsData = conn.prepareStatement(getTags);
+                        ResultSet tagsData = getTagsData.executeQuery();
+                        while (tagsData.next()) {
+                            Tag tag = Tag.valueOf(tagsData.getString("TAGNAME"));
+                            newTags.add(tag);
+                        }
+
+                        sorted.add(new SortedData(id, title, description, location, source, relevance, reliability, quality, newTags));
+                        System.out.println("Getting sorted object  succeed");
                     }
-                    
+
                 }
             }
             System.out.println("Getting sorted object getFromSortedData succeed");
@@ -504,6 +512,7 @@ public class DatabaseManager {
         String location;
         String source;
         int requestId;
+        HashSet<Tag> newTags = new HashSet<Tag>();
 
         try {
             //build a string with all tha tags
@@ -547,6 +556,15 @@ public class DatabaseManager {
                         location = resultTag.getString("LOCATION");
                         source = resultTag.getString("SOURCE");
                         requestId = resultTag.getInt("REQUESTID");
+
+                        String getTags = "Select TAGNAME From dbi294542.`REQUESTDATABASE.SORTEDDATATAGS` WHERE "
+                                + "ID = " + id;
+                        PreparedStatement getTagsData = conn.prepareStatement(getTags);
+                        ResultSet tagsData = getTagsData.executeQuery();
+                        while (tagsData.next()) {
+                            Tag tag = Tag.valueOf(tagsData.getString("TAGNAME"));
+                            newTags.add(tag);
+                        }
 
                         request.add(new DataRequest(id, title, description, location, source, requestId, tags));
                     }
@@ -593,8 +611,9 @@ public class DatabaseManager {
                 description = result.getString("DESCRIPTION");
                 location = result.getString("LOCATION");
                 source = result.getString("SOURCE");
+                Status status = Status.valueOf(result.getString("STATUS"));
 
-                unsorted = new UnsortedData(id, title, description, location, source, Status.NONE);
+                unsorted = new UnsortedData(id, title, description, location, source, status);
                 System.out.println("Getting object getDataItem succeed");
             }
         } catch (SQLException ex) {
@@ -627,7 +646,7 @@ public class DatabaseManager {
 
         try {
             String query = "SELECT * FROM dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` ";
-            if(!source.isEmpty()) {
+            if (!source.isEmpty()) {
                 query += "WHERE SOURCE = '" + source + "' ";
             }
             query += "ORDER BY ID";
@@ -641,9 +660,10 @@ public class DatabaseManager {
                 description = result.getString("DESCRIPTION");
                 location = result.getString("LOCATION");
                 realSource = result.getString("SOURCE");
+                Status status = Status.valueOf(result.getString("STATUS"));
 
-// TODO Status uitlezen uit database
-                unsorted.add(new UnsortedData(id, title, description, location, realSource, Status.INPROCESS));
+                // TODO Status uitlezen uit database
+                unsorted.add(new UnsortedData(id, title, description, location, realSource, status));
                 System.out.println("Getting object getSentData succeed");
             }
 
