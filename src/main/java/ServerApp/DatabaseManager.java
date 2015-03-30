@@ -270,7 +270,8 @@ public class DatabaseManager {
                     aantal++;
                 } else {
                     query += "AND ID IN (SELECT ID FROM"
-                            + " dbi294542.`SORTEDDATABASE.SORTEDDATATAGS` WHERE  TAGNAME = '" + element.toString() + "' ";
+                            + " dbi294542.`SORTEDDATABASE.SORTEDDATATAGS` WHERE  TAGNAME = '" 
+                            + element.toString() + "' ";
                 }
             }
             for (int x = 1; x < sizeList; x++) {
@@ -288,10 +289,13 @@ public class DatabaseManager {
             String update = "";
             for (int x : numbers) {
                 if (sorted.size() < 50) {
+                    int a =0;
                     update = "SELECT * FROM dbi294542.`SORTEDDATABASE.SORTEDDATA` WHERE ID = " + x;
                     PreparedStatement updateData = conn.prepareStatement(update);
                     ResultSet resultTag = updateData.executeQuery();
                     while (resultTag.next()) {
+                        if(a==0)
+                        {
                         id = resultTag.getInt("ID");
                         title = resultTag.getString("TITLE");
                         description = resultTag.getString("DESCRIPTION");
@@ -312,8 +316,10 @@ public class DatabaseManager {
 
                         sorted.add(new SortedData(id, title, description, location, source, relevance, reliability, quality, newTags));
                         System.out.println("Getting sorted object  succeed");
+                        a++;
+                        }
+                    
                     }
-
                 }
             }
             System.out.println("Getting sorted object getFromSortedData succeed");
