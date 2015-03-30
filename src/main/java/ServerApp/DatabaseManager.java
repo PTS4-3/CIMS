@@ -22,6 +22,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -187,6 +188,9 @@ public class DatabaseManager {
             return false;
         }
         Set<Tag> tags = sorted.getTags();
+        if (tags.isEmpty()) {
+            tags.addAll(Arrays.asList(Tag.values()));
+        }
         boolean succeed = false;
         try {
             //insert to sorteddata
@@ -464,6 +468,9 @@ public class DatabaseManager {
         boolean succeed = false;
         try {
             Set<Tag> tags = data.getTags();
+            if (tags.isEmpty()) {
+            tags.addAll(Arrays.asList(Tag.values()));
+        }
             //insert to sorteddata
             String query = "INSERT INTO dbi294542.`REQUESTDATABASE.SORTEDDATA` VALUES (ID,?,?,?,?,?)";
             PreparedStatement requestData = conn.prepareStatement(query);
