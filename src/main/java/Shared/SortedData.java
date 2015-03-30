@@ -5,6 +5,7 @@
  */
 package Shared;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -69,6 +70,10 @@ public class SortedData implements ISortedData {
         this.reliability = reliability;
         this.quality = quality;
         this.tags = tags;
+
+        if(this.tags.isEmpty()){
+            this.tags.addAll(Arrays.asList(Tag.values()));
+        }
     }
 
     @Override
