@@ -122,9 +122,6 @@ public class ServicesController implements Initializable {
                             } else if (item instanceof ISortedData) {
                                 setTextFill(Color.BLACK);
                             }
-                        } else {
-                            setItem(null);
-                            setText("");
                         }
                     }
                 };
