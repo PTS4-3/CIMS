@@ -348,12 +348,12 @@ public class HeadquartersController implements Initializable {
         if (warning)
         {
             alert = new Alert(AlertType.WARNING);
-            alert.setTitle("Warning Dialog");
+            alert.setTitle("FoutMelding");
         }
         else
         {
             alert = new Alert(AlertType.INFORMATION);
-            alert.setTitle("Information Dialog");            
+            alert.setTitle("Melding");            
         }     
         
         if (!title.isEmpty())

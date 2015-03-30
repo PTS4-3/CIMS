@@ -509,12 +509,12 @@ public class ServicesController implements Initializable {
         if (warning)
         {
             alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Warning Dialog");
+            alert.setTitle("Foutmelding");
         }
         else
         {
             alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Information Dialog");            
+            alert.setTitle("Melding");            
         }     
         
         if (!title.isEmpty())
