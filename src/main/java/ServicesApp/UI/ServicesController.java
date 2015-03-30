@@ -118,7 +118,6 @@ public class ServicesController implements Initializable {
                             setText(item.toString());
 
                             if (item instanceof IDataRequest) {
-                                //@KittyPussyCat
                                 setTextFill(Color.RED);
                             } else if (item instanceof ISortedData) {
                                 setTextFill(Color.BLACK);
