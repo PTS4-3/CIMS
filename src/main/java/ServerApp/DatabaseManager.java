@@ -473,6 +473,17 @@ public class DatabaseManager {
             requestData.setString(4, data.getSource());
             requestData.setInt(5, data.getRequestId());
             requestData.execute();
+            
+            //Find id from this object
+            int id = 0;
+            query = "SELECT MAX(ID) FROM dbi294542.`REQUESTDATABASE.SORTEDDATA`";
+            PreparedStatement readData = conn.prepareStatement(query);
+            ResultSet result = readData.executeQuery();
+
+            //getting unsorteddata
+            while (result.next()) {
+                id = result.getInt(1);
+            }
 
             System.out.println("insertDataRequest object insert");
             Iterator it = tags.iterator();
@@ -483,7 +494,7 @@ public class DatabaseManager {
                 //insert into requesttag database
                 query = "INSERT INTO dbi294542.`REQUESTDATABASE.SORTEDDATATAGS` VALUES (?,?) ";
                 requestData = conn.prepareStatement(query);
-                requestData.setInt(1, data.getId());
+                requestData.setInt(1, id);
                 requestData.setString(2, element.toString());
                 requestData.execute();
             }
