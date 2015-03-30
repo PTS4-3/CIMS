@@ -521,7 +521,7 @@ public class DatabaseManager {
 
         boolean succeed = false;
         List<IDataRequest> request = new ArrayList();
-        List<Integer> numbers = new ArrayList();
+        HashSet<Integer> numbers = new HashSet<Integer>();
 
         int id;
         String title;
@@ -561,9 +561,13 @@ public class DatabaseManager {
 
             //Get request data from database with correct id's
             String update = "";
-            for (int x : numbers) {
+            Iterator it2 = numbers.iterator();
+            while (it2.hasNext()) {
+                // Get element
+                Object element = it2.next();
                 if (request.size() < 50) {
-                    update = "SELECT * FROM dbi294542.`REQUESTDATABASE.SORTEDDATA` WHERE ID = " + x;
+                    update = "SELECT * FROM dbi294542.`REQUESTDATABASE.SORTEDDATA` WHERE ID = " 
+                            + element.toString();
                     PreparedStatement updateData = conn.prepareStatement(update);
                     ResultSet resultTag = updateData.executeQuery();
                     while (resultTag.next()) {
