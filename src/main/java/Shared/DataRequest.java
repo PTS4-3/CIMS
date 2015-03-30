@@ -5,6 +5,7 @@
  */
 package Shared;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -51,6 +52,10 @@ public class DataRequest implements IDataRequest {
         this.source = source;
         this.requestId = requestId;
         this.tags = tags;
+
+        if(this.tags.isEmpty()){
+            this.tags.addAll(Arrays.asList(Tag.values()));
+        }
     }
 
     /**
