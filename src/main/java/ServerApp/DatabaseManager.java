@@ -405,9 +405,12 @@ public class DatabaseManager {
 
         boolean succeed = false;
         try {
-            String query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET TITLE = '" + iData.getTitle()
-                    + "', DESCRIPTION = '" + iData.getDescription() + "', LOCATION = '" + "', SOURCE = '" + iData.getSource()
-                    + "', STATUS = '"+Status.NONE+ "' WHERE ID=" + iData.getId();
+            String query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET TITLE = '" 
+                    + iData.getTitle() + "', DESCRIPTION = '" 
+                    + iData.getDescription() + "', LOCATION = '" 
+                    +iData.getLocation() + "', SOURCE = '" 
+                    + iData.getSource() + "', STATUS = '"
+                    +Status.NONE+ "' WHERE ID=" + iData.getId();
 
             PreparedStatement update = conn.prepareStatement(query);
 
