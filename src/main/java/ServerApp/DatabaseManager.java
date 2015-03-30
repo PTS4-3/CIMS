@@ -34,18 +34,7 @@ import java.util.Set;
  * @author Linda
  */
 public class DatabaseManager {
-
-    /*
-     * Notes:
-     - merge initConnection and openConnection
-     - code folding at 80 characters
-     - use a private variable for database / schema name instead of calling it in every
-     command
-     -- less text 
-     -- easier to update for new database
-     - if method throws an error, set output type to null / false to be sure
-     - check input for illegal values before opening connection
-     */
+    
     private Connection conn;
     private Properties props;
 
