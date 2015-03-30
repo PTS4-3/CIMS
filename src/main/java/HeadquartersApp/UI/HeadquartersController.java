@@ -248,6 +248,9 @@ public class HeadquartersController implements Initializable {
                     new ArrayList<>(lvuUnsortedData.getItems()));
             this.connectionManager.close();
         }
+        if(this.timer != null) {
+            this.timer.cancel();
+        }
     }
     
     /**
