@@ -227,6 +227,7 @@ public class HeadquartersController implements Initializable {
         if(this.connectionManager != null){
             this.connectionManager.stopWorkingOnData(
                     new ArrayList<>(lvuUnsortedData.getItems()));
+            this.connectionManager.close();
         }
     }
     
