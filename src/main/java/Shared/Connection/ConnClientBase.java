@@ -131,9 +131,9 @@ public class ConnClientBase {
                     System.err.println(description + ": success");
                     return true;
                 } else if (result == ConnState.COMMAND_FAIL) {
-                    System.err.println(description + ": failure");
+                    System.err.println(description + ": failure (Database failure)");
                 } else if (result == ConnState.COMMAND_ERROR) {
-                    System.err.println(description + ": error");
+                    System.err.println(description + ": error (Connection failure)");
                 } else {
                     System.err.println("Unexpected input (" + description + "): "
                             + result.toString());
