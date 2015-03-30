@@ -36,15 +36,13 @@ public class DataRequest implements IDataRequest {
     public DataRequest(int id, String title, String description, String location,
             String source, int requestId, HashSet<Tag> tags) {
         if (title == null || title.isEmpty()) {
-            throw new IllegalArgumentException("Title DataRequest cannot be "
-                    + "null or empty");
+            throw new IllegalArgumentException("Voer een titel in");
         }
         if (source == null || source.isEmpty()) {
-            throw new IllegalArgumentException("Source DataRequest cannot be "
-                    + "null or empty");
+            throw new IllegalArgumentException("Voer een bron in");
         }
         if (tags == null) {
-            throw new IllegalArgumentException("Tags SortedData cannot be null");
+            throw new IllegalArgumentException("Voer een bestemming in");
         }
         this.id = id;
         this.title = title;

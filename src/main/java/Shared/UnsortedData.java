@@ -29,12 +29,10 @@ public class UnsortedData implements IUnsortedData {
     public UnsortedData(int id, String title, String description, 
             String location, String source, Status status) {
         if(title == null || title.isEmpty()) {
-            throw new IllegalArgumentException("Title of UnsortedData cannot "
-                    + "be null or empty");
+            throw new IllegalArgumentException("Voer een titel in");
         }
         if(source == null || source.isEmpty()) {
-            throw new IllegalArgumentException("Source of UnsortedData cannot "
-                    + "be null or empty");
+            throw new IllegalArgumentException("Voer een bron in");
         }
         this.id = id;
         this.title = title;

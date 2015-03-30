@@ -40,27 +40,25 @@ public class SortedData implements ISortedData {
             String source, int relevance, int reliability, int quality, 
             HashSet<Tag> tags) {
         if(title == null || title.isEmpty()) {
-            throw new IllegalArgumentException("Title SortedData cannot be "
-                    + "null or empty");
+            throw new IllegalArgumentException("Voer een titel in");
         }
         if(source == null || source.isEmpty()) {
-            throw new IllegalArgumentException("Source SortedData cannot be "
-                    + "null or empty");
+            throw new IllegalArgumentException("Voer een bron in");
         }
         if(relevance < 1 || relevance > 5) {
-            throw new IllegalArgumentException("Relevance SortedData has to be "
-                    + "between 1 and 5");
+            throw new IllegalArgumentException("Voer een relevantie tussen "
+                    + "1 en 5 in");
         }
         if(reliability < 1 || reliability > 5) {
-            throw new IllegalArgumentException("Reliability SortedData has to be "
-                    + "between 1 and 5");
+            throw new IllegalArgumentException("Voer een betrouwbaarheid tussen "
+                    + "1 en 5 in");
         }
         if(quality < 1 || quality > 5) {
-            throw new IllegalArgumentException("Quality SortedData has to be "
-                    + "between 1 and 5");
+            throw new IllegalArgumentException("Voer een kwaliteit tussen "
+                    + "1 en 5 in");
         }
         if(tags == null) {
-            throw new IllegalArgumentException("Tags SortedData cannot be null");
+            throw new IllegalArgumentException("Voer een bestemming in");
         }
         this.id = id;
         this.title = title;

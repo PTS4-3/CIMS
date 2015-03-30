@@ -143,8 +143,7 @@ public class ServicesController implements Initializable {
         // Fill GUI with initial values
         try {
             if (this.connectionManager == null) {
-                throw new NetworkException("Geen verbinding met server: "
-                        + "Kon geen data ophalen");
+                throw new NetworkException("Kon geen data ophalen");
             }
             
             // Subscribe
@@ -162,7 +161,7 @@ public class ServicesController implements Initializable {
             //TODO source
             this.connectionManager.getSentData("");
         } catch (NetworkException nEx) {
-            showDialog("Geen verbinding met server", "Kon geen data ophalen", true);
+            showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
     }
 
@@ -267,8 +266,7 @@ public class ServicesController implements Initializable {
     public void sendUnsortedData() {
         try {
             if (this.connectionManager == null) {
-                throw new NetworkException("Geen verbinding met server: "
-                        + "Kon data niet wegschrijven");
+                throw new NetworkException("Kon data niet wegschrijven");
             }
 
             // Load values from GUI
@@ -293,7 +291,7 @@ public class ServicesController implements Initializable {
         } catch (IllegalArgumentException iaEx) {
             showDialog("Invoer onjuist", iaEx.getMessage(), true);
         } catch (NetworkException nEx) {
-            showDialog("Geen verbinding met server", "Kon data niet wegschrijven", true);
+            showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
     }
 
@@ -341,8 +339,7 @@ public class ServicesController implements Initializable {
     public void sendUpdate() {
         try {
             if (this.connectionManager == null) {
-                throw new NetworkException("Geen verbinding met server: "
-                        + "Kon data niet wegschrijven");
+                throw new NetworkException("Kon data niet wegschrijven");
             }
 
             // Load values from GUI
@@ -370,7 +367,7 @@ public class ServicesController implements Initializable {
         } catch (IllegalArgumentException iaEx) {
             showDialog("Invoer onjuist", iaEx.getMessage(), true);
         } catch (NetworkException nEx) {
-            showDialog("Geen verbinding met server", "Kon data niet wegschrijven", true);
+            showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
     }
 
@@ -380,8 +377,7 @@ public class ServicesController implements Initializable {
     public void resetSentData() {
         try {
             if (this.connectionManager == null) {
-                throw new NetworkException("Geen verbinding met server: "
-                        + "Kon geen data ophalen");
+                throw new NetworkException("Kon geen data ophalen");
             }
      
             this.showingDataItem = false;
@@ -393,7 +389,7 @@ public class ServicesController implements Initializable {
             // TODO source
             this.connectionManager.getSentData("");
         } catch (NetworkException nEx) {
-            showDialog("Geen verbinding met server", "Kon geen data ophalen", true);
+            showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
     }
 
@@ -431,8 +427,7 @@ public class ServicesController implements Initializable {
         if (source.isSelected()) {
             try {
                 if (this.connectionManager == null) {
-                    throw new NetworkException("Geen verbinding met server: "
-                            + "Kon geen data ophalen");
+                    throw new NetworkException("Kon geen data ophalen");
                 }
 
                 // Add
@@ -444,7 +439,7 @@ public class ServicesController implements Initializable {
                     this.connectionManager.getRequests(new HashSet<Tag>());
                 }
             } catch (NetworkException nEx) {
-                showDialog("Geen verbinding met server", "Kon geen data ophalen", true);
+                showDialog("Geen verbinding met server", nEx.getMessage(), true);
             }
         } else {
             // Remove
@@ -487,8 +482,7 @@ public class ServicesController implements Initializable {
                 } else {
                     // update
                     if (this.connectionManager == null) {
-                        throw new NetworkException("Geen verbinding met server: "
-                                + "Kon geen data ophalen");
+                        throw new NetworkException("Kon geen data ophalen");
                     }
                     
                     this.showingDataItem = true;
@@ -498,7 +492,7 @@ public class ServicesController implements Initializable {
                 }
             }
         } catch (NetworkException nEx) {
-            showDialog("Geen verbinding met server", "Kon geen data ophalen", true);
+            showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
     }
     

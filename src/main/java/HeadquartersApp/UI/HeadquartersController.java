@@ -106,12 +106,11 @@ public class HeadquartersController implements Initializable {
         
         try {
             if(this.connectionManager == null) {
-                throw new NetworkException("Geen verbinding met server: "
-                        + "Kon geen data ophalen");
+                throw new NetworkException("Kon geen data ophalen");
             }
             this.connectionManager.getData();
         } catch (NetworkException nEx) {
-            showDialog("Geen verbinding met server", "Kon geen data ophalen", true);
+            showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
     }
     
@@ -181,8 +180,7 @@ public class HeadquartersController implements Initializable {
     public void sendSortedData() {
         try {
             if(this.connectionManager == null) {
-                throw new NetworkException("Geen verbinding met server: "
-                        + "Kon data niet wegschrijven");
+                throw new NetworkException("Kon data niet wegschrijven");
             }
             
             // Load values from GUI
@@ -190,7 +188,7 @@ public class HeadquartersController implements Initializable {
                 (IData) lvuUnsortedData.getSelectionModel().getSelectedItem();
             if(unsortedData == null) {
                 throw new IllegalArgumentException("Selecteer eerst een "
-                        + "unsorted data");
+                        + "ongesorteerd bericht");
             }
             int id = unsortedData.getId();
             String title = tfuTitle.getText();
@@ -216,7 +214,7 @@ public class HeadquartersController implements Initializable {
         } catch (IllegalArgumentException iaEx) {
             showDialog("", iaEx.getMessage(), false);
         } catch (NetworkException nEx) {
-            showDialog("Geen verbinding met server", "Kon data niet wegschrijven", true);
+            showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
     }
     
@@ -237,8 +235,7 @@ public class HeadquartersController implements Initializable {
     public void discard() {
         try {
             if(this.connectionManager == null) {
-                throw new NetworkException("Geen verbinding met server: "
-                        + "Kon data niet verwijderen");
+                throw new NetworkException("Kon data niet verwijderen");
             }
             
             // Load values from GUI
@@ -246,7 +243,7 @@ public class HeadquartersController implements Initializable {
                 (IData) lvuUnsortedData.getSelectionModel().getSelectedItem();
             if(unsortedData == null) {
                 throw new IllegalArgumentException("Selecteer eerst een "
-                        + "unsorted data");
+                        + "ongesorteerd bericht");
             }
             
             // Discard data
@@ -261,7 +258,7 @@ public class HeadquartersController implements Initializable {
         } catch (IllegalArgumentException iaEx) {
             showDialog("", iaEx.getMessage(), false);
         } catch (NetworkException nEx) {
-            showDialog("Geen verbinding met server", "Kon data niet verwijderen", true);
+            showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
     }
     
@@ -275,7 +272,7 @@ public class HeadquartersController implements Initializable {
                 (IData) lvuUnsortedData.getSelectionModel().getSelectedItem();
             if(unsortedData == null) {
                 throw new IllegalArgumentException("Selecteer eerst een "
-                        + "unsorted data");
+                        + "ongesorteerd bericht");
             }
             // Load values into tabRequestInfo
             this.requestData = unsortedData;
@@ -292,8 +289,7 @@ public class HeadquartersController implements Initializable {
     public void sendRequest() {
         try {
             if(this.connectionManager == null) {
-                throw new NetworkException("Geen verbinding met server: "
-                        + "Kon verzoek niet versturen");
+                throw new NetworkException("Kon verzoek niet versturen");
             }
             
             // Load values from GUI
@@ -324,7 +320,7 @@ public class HeadquartersController implements Initializable {
         } catch (IllegalArgumentException iaEx) {
             showDialog("Invoer onjuist", iaEx.getMessage(), true);
         } catch (NetworkException nEx) {
-            showDialog("Geen verbinding met server", "Kon verzoek niet versturen", true);
+            showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }        
     }
     
