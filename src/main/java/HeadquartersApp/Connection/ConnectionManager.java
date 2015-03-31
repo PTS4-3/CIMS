@@ -6,14 +6,14 @@
 package HeadquartersApp.Connection;
 
 import HeadquartersApp.UI.HeadquartersController;
-import Shared.DataRequest;
-import Shared.IData;
-import Shared.IDataRequest;
-import Shared.ISortedData;
-import Shared.SortedData;
-import Shared.Status;
+import Shared.Data.DataRequest;
+import Shared.Data.IData;
+import Shared.Data.IDataRequest;
+import Shared.Data.ISortedData;
+import Shared.Data.SortedData;
+import Shared.Data.Status;
 import Shared.Tag;
-import Shared.UnsortedData;
+import Shared.Data.UnsortedData;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Shared;
+package Shared.Users;
 
 /**
  *
- * @author Alexander
+ * @author Kargathia
  */
-public interface IUnsortedData extends IData{
-    public Status getStatus();
+public class ServiceUser {
+
 }

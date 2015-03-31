@@ -3,18 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Shared;
-
-import java.io.Serializable;
+package Shared.Data;
 
 /**
  *
  * @author Alexander
  */
-public interface IData extends Serializable{
-    int getId();
-    String getTitle();
-    String getDescription();
-    String getLocation();
-    String getSource();
+public enum Status {
+    NONE,
+    INPROCESS,
+    COMPLETED,
+    DISCARDED
 }

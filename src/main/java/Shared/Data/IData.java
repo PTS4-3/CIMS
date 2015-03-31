@@ -3,17 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Shared;
+package Shared.Data;
 
-import java.util.Set;
+import java.io.Serializable;
 
 /**
  *
  * @author Alexander
  */
-public interface ISortedData extends IData {
-    public int getRelevance();
-    public int getReliability();
-    public int getQuality();
-    public Set<Tag> getTags();
+public interface IData extends Serializable{
+    int getId();
+    String getTitle();
+    String getDescription();
+    String getLocation();
+    String getSource();
 }

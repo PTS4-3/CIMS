@@ -5,6 +5,11 @@
  */
 package HeadquartersApp.UI;
 
+import Shared.Data.SortedData;
+import Shared.Data.ISortedData;
+import Shared.Data.IDataRequest;
+import Shared.Data.IData;
+import Shared.Data.DataRequest;
 import HeadquartersApp.*;
 import HeadquartersApp.Connection.ConnectionManager;
 import Shared.*;

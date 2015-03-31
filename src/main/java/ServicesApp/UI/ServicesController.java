@@ -7,13 +7,13 @@ package ServicesApp.UI;
 
 import ServicesApp.*;
 import ServicesApp.Connection.ConnectionManager;
-import Shared.IData;
-import Shared.IDataRequest;
-import Shared.ISortedData;
+import Shared.Data.IData;
+import Shared.Data.IDataRequest;
+import Shared.Data.ISortedData;
 import Shared.NetworkException;
-import Shared.Status;
+import Shared.Data.Status;
 import Shared.Tag;
-import Shared.UnsortedData;
+import Shared.Data.UnsortedData;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;

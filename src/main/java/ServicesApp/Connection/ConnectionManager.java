@@ -7,12 +7,12 @@ package ServicesApp.Connection;
 
 import ServicesApp.UI.ServicesController;
 import Shared.Connection.ConnCommand;
-import Shared.IData;
-import Shared.IDataRequest;
-import Shared.ISortedData;
-import Shared.Status;
+import Shared.Data.IData;
+import Shared.Data.IDataRequest;
+import Shared.Data.ISortedData;
+import Shared.Data.Status;
 import Shared.Tag;
-import Shared.UnsortedData;
+import Shared.Data.UnsortedData;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.Executors;

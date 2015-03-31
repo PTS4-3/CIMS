@@ -3,15 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Shared;
+package Shared.Data;
+
+import Shared.Tag;
+import java.util.Set;
 
 /**
  *
  * @author Alexander
  */
-public enum Status {
-    NONE,
-    INPROCESS,
-    COMPLETED,
-    DISCARDED
+public interface IDataRequest extends IData {
+    int getRequestId();
+    public Set<Tag> getTags();
 }

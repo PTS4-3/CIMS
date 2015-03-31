@@ -5,9 +5,9 @@
  */
 package ServerApp;
 
-import Shared.IData;
-import Shared.IDataRequest;
-import Shared.ISortedData;
+import Shared.Data.IData;
+import Shared.Data.IDataRequest;
+import Shared.Data.ISortedData;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
