@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ServerApp.Database;
+package ServerApp;
 
 import Shared.Data.DataRequest;
 import Shared.Data.IData;
@@ -11,28 +11,81 @@ import Shared.Data.IDataRequest;
 import Shared.Data.ISortedData;
 import Shared.Data.SortedData;
 import Shared.Data.Status;
-import Shared.Data.UnsortedData;
 import Shared.Tag;
+import Shared.Data.UnsortedData;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 
 /**
  *
- * @author Kargathia
+ * @author Linda
  */
-public class DataDBManager extends BaseDBManager {
+public class DatabaseManager {
+    
+    private Connection conn;
+    private Properties props;
+
+    /**
+     *
+     */
+    public DatabaseManager() {
+        this.configure();
+    }
+
+    /**
+     * configureproperties
+     */
+    private void configure() {
+        this.props = new Properties();
+        try (FileInputStream in = new FileInputStream("database.properties")) {
+            props.load(in);
+
+        } catch (FileNotFoundException ex) {
+            System.out.println("file not found in database configure: " + ex.getMessage());
+        } catch (IOException ex) {
+            System.out.println("IOException in database configure: " + ex.getMessage());
+        }
+
+        try {
+            this.initConnection();
+        } catch (SQLException ex) {
+            System.out.println("failed to init connection: " + ex.getMessage());
+        }
+    }
+
+    /**
+     * test properties
+     */
+    private void initConnection() throws SQLException {
+        String url = (String) props.get("url");
+        String username = (String) props.get("username");
+        String password = (String) props.get("password");
+
+        this.conn = DriverManager.getConnection(url, username, password);
+        if (!conn.isClosed()) {
+            System.out.println("test connection succeed");
+            this.conn.close();
+        }
+    }
 
     /**
      * @param data object unsorteddata
      * @return success on attempting to insert unsorted data.
      */
-    public boolean insertToUnsorted(IData data) {
+    public synchronized boolean insertToUnsortedData(IData data) {
         boolean succeed = false;
 
         if (!openConnection()) {
@@ -40,7 +93,7 @@ public class DataDBManager extends BaseDBManager {
         }
 
         try {
-            String query = "INSERT INTO " + UNSORTEDDATA_TABLE + " VALUES (ID,?,?,?,?,?)";
+            String query = "INSERT INTO dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` VALUES (ID,?,?,?,?,?)";
             PreparedStatement unsortedData = conn.prepareStatement(query);
             unsortedData.setString(1, data.getTitle());
             unsortedData.setString(2, data.getDescription());
@@ -63,7 +116,7 @@ public class DataDBManager extends BaseDBManager {
      * @return List unsorteddata first get information from database second
      * change status to INPROCESS
      */
-    public List<UnsortedData> getFromUnsorted() {
+    public synchronized List<UnsortedData> getFromUnsortedData() {
         List<UnsortedData> unsorted = new ArrayList();
 
         int id;
@@ -77,7 +130,7 @@ public class DataDBManager extends BaseDBManager {
         }
 
         try {
-            String query = "SELECT * FROM " + UNSORTEDDATA_TABLE + " WHERE STATUS "
+            String query = "SELECT * FROM dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` WHERE STATUS "
                     + " = 'NONE' ORDER BY ID";
             PreparedStatement readData = conn.prepareStatement(query);
             ResultSet result = readData.executeQuery();
@@ -99,7 +152,7 @@ public class DataDBManager extends BaseDBManager {
 
             //update data
             for (UnsortedData x : unsorted) {
-                String update = "UPDATE " + UNSORTEDDATA_TABLE + " SET STATUS = '"
+                String update = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET STATUS = '"
                         + Status.INPROCESS.toString() + "' WHERE ID = " + x.getId();
                 PreparedStatement updateData = conn.prepareStatement(update);
                 updateData.execute();
@@ -119,7 +172,7 @@ public class DataDBManager extends BaseDBManager {
      * @param sorted object sorteddata
      * @return succeed on attempting to insert sorted data.
      */
-    public boolean insertToSorted(ISortedData sorted) {
+    public synchronized boolean insertToSortedData(ISortedData sorted) {
         if (!openConnection()) {
             return false;
         }
@@ -127,7 +180,7 @@ public class DataDBManager extends BaseDBManager {
         boolean succeed = false;
         try {
             //insert to sorteddata
-            String query = "INSERT INTO " + SORTEDDATA_TABLE + " VALUES (?,?,?,?,?,?,?,?)";
+            String query = "INSERT INTO dbi294542.`SORTEDDATABASE.SORTEDDATA` VALUES (?,?,?,?,?,?,?,?)";
             PreparedStatement sortedData = conn.prepareStatement(query);
             sortedData.setInt(1, sorted.getId());
             sortedData.setString(2, sorted.getTitle());
@@ -147,7 +200,7 @@ public class DataDBManager extends BaseDBManager {
                 Object element = it.next();
 
                 //insert into sorteddatatags database
-                query = "INSERT INTO " + SORTEDDATATAGS_TABLE + " VALUES (?,?) ";
+                query = "INSERT INTO dbi294542.`SORTEDDATABASE.SORTEDDATATAGS` VALUES (?,?) ";
                 sortedData = conn.prepareStatement(query);
                 sortedData.setInt(1, sorted.getId());
                 sortedData.setString(2, element.toString());
@@ -155,7 +208,7 @@ public class DataDBManager extends BaseDBManager {
             }
 
             //delete from unsorteddata
-            query = "UPDATE " + UNSORTEDDATA_TABLE + " SET STATUS = '"
+            query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET STATUS = '"
                     + Status.COMPLETED.toString() + "' WHERE id = " + sorted.getId();
             PreparedStatement unsortedData = conn.prepareStatement(query);
             unsortedData.execute();
@@ -175,7 +228,7 @@ public class DataDBManager extends BaseDBManager {
      * @param info list of tags
      * @return List sorteddata
      */
-    public List<SortedData> getFromSorted(HashSet<Tag> info) {
+    public synchronized List<SortedData> getFromSortedData(HashSet<Tag> info) {
         List<SortedData> sorted = new ArrayList();
         HashSet<Integer> numbers = new HashSet<Integer>();
 
@@ -195,19 +248,19 @@ public class DataDBManager extends BaseDBManager {
         }
 
         try {
-            String query = "SELECT ID FROM " + SORTEDDATATAGS_TABLE;
+            String query = "SELECT ID FROM dbi294542.`SORTEDDATABASE.SORTEDDATATAGS` ";
             int sizeList = info.size();
             Iterator it = info.iterator();
-            int amount = 1;
+            int aantal = 1;
             while (it.hasNext()) {
                 // Get element
                 Object element = it.next();
-                if (amount == 1) {
+                if (aantal == 1) {
                     query += "WHERE TAGNAME = '" + element.toString() + "' ";
-                    amount++;
+                    aantal++;
                 } else {
-                    query += "AND ID IN (SELECT ID FROM "
-                            + SORTEDDATATAGS_TABLE + " WHERE  TAGNAME = '"
+                    query += "AND ID IN (SELECT ID FROM"
+                            + " dbi294542.`SORTEDDATABASE.SORTEDDATATAGS` WHERE  TAGNAME = '"
                             + element.toString() + "' ";
                 }
             }
@@ -229,8 +282,7 @@ public class DataDBManager extends BaseDBManager {
                 // Get element
                 Object element = it2.next();
                 if (sorted.size() < 50) {
-                    update = "SELECT * FROM " + SORTEDDATA_TABLE + " WHERE ID = "
-                            + element.toString();
+                    update = "SELECT * FROM dbi294542.`SORTEDDATABASE.SORTEDDATA` WHERE ID = " + element.toString();
                     PreparedStatement updateData = conn.prepareStatement(update);
                     ResultSet resultTag = updateData.executeQuery();
                     while (resultTag.next()) {
@@ -243,7 +295,7 @@ public class DataDBManager extends BaseDBManager {
                         reliability = resultTag.getInt("RELIABILITY");
                         quality = resultTag.getInt("QUALITY");
 
-                        String getTags = "Select TAGNAME From " + SORTEDDATATAGS_TABLE + " WHERE "
+                        String getTags = "Select TAGNAME From dbi294542.`SORTEDDATABASE.SORTEDDATATAGS` WHERE "
                                 + "ID = " + id;
                         PreparedStatement getTagsData = conn.prepareStatement(getTags);
                         ResultSet tagsData = getTagsData.executeQuery();
@@ -252,16 +304,7 @@ public class DataDBManager extends BaseDBManager {
                             newTags.add(tag);
                         }
 
-                        sorted.add(new SortedData(
-                                id,
-                                title,
-                                description,
-                                location,
-                                source,
-                                relevance,
-                                reliability,
-                                quality,
-                                newTags));
+                        sorted.add(new SortedData(id, title, description, location, source, relevance, reliability, quality, newTags));
                         System.out.println("Getting sorted object  succeed");
 
                     }
@@ -281,7 +324,7 @@ public class DataDBManager extends BaseDBManager {
      * @param data list of unsorteddata
      * @return succeed reset status unsorted data
      */
-    public boolean resetUnsorted(List<IData> data) {
+    public synchronized boolean resetUnsortedData(List<IData> data) {
         if (!openConnection()) {
             return false;
         }
@@ -290,7 +333,7 @@ public class DataDBManager extends BaseDBManager {
 
         try {
             for (IData x : data) {
-                String query = "UPDATE " + UNSORTEDDATA_TABLE + " SET STATUS = '"
+                String query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET STATUS = '"
                         + Status.NONE.toString() + "' WHERE id = " + x.getId();
                 PreparedStatement reset = conn.prepareStatement(query);
 
@@ -312,14 +355,14 @@ public class DataDBManager extends BaseDBManager {
      * @param data object of unsorteddata
      * @return succeed reset status unsorted data to Completed
      */
-    public boolean updateStatusUnsorted(IData data) {
+    public synchronized boolean updateStatusUnsortedData(IData data) {
         if (!openConnection()) {
             return false;
         }
 
         boolean succeed = false;
         try {
-            String query = "UPDATE " + UNSORTEDDATA_TABLE + " SET STATUS = '"
+            String query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET STATUS = '"
                     + Status.COMPLETED.toString() + "' WHERE id = " + data.getId();
 
             PreparedStatement update = conn.prepareStatement(query);
@@ -344,19 +387,19 @@ public class DataDBManager extends BaseDBManager {
      * @param iData
      * @return false if id not found
      */
-    public boolean updateUnsorted(IData iData) {
+    public synchronized boolean updateUnsortedData(IData iData) {
         if (!openConnection()) {
             return false;
         }
 
         boolean succeed = false;
         try {
-            String query = "UPDATE " + UNSORTEDDATA_TABLE + " SET TITLE = '"
-                    + iData.getTitle() + "', DESCRIPTION = '"
-                    + iData.getDescription() + "', LOCATION = '"
-                    + iData.getLocation() + "', SOURCE = '"
+            String query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET TITLE = '" 
+                    + iData.getTitle() + "', DESCRIPTION = '" 
+                    + iData.getDescription() + "', LOCATION = '" 
+                    +iData.getLocation() + "', SOURCE = '" 
                     + iData.getSource() + "', STATUS = '"
-                    + Status.NONE + "' WHERE ID=" + iData.getId();
+                    +Status.NONE+ "' WHERE ID=" + iData.getId();
 
             PreparedStatement update = conn.prepareStatement(query);
 
@@ -377,14 +420,14 @@ public class DataDBManager extends BaseDBManager {
      * @param iData object of unsorteddata
      * @return succeed reset status unsorted data to Discard
      */
-    public boolean discardUnsorted(IData iData) {
+    public synchronized boolean discardUnsortedData(IData iData) {
         if (!openConnection()) {
             return false;
         }
 
         boolean succeed = false;
         try {
-            String query = "UPDATE " + UNSORTEDDATA_TABLE + " SET STATUS = '"
+            String query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET STATUS = '"
                     + Status.DISCARDED.toString() + "' WHERE id = " + iData.getId();
 
             PreparedStatement update = conn.prepareStatement(query);
@@ -406,7 +449,7 @@ public class DataDBManager extends BaseDBManager {
      * @param data object of datarequest
      * @return succeed if succeeded
      */
-    public boolean insertRequest(IDataRequest data) {
+    public synchronized boolean insertDataRequest(IDataRequest data) {
         if (!openConnection()) {
             return false;
         }
@@ -415,7 +458,7 @@ public class DataDBManager extends BaseDBManager {
         try {
             Set<Tag> tags = data.getTags();
             //insert to sorteddata
-            String query = "INSERT INTO " + REQUESTS_TABLE + " VALUES (ID,?,?,?,?,?)";
+            String query = "INSERT INTO dbi294542.`REQUESTDATABASE.SORTEDDATA` VALUES (ID,?,?,?,?,?)";
             PreparedStatement requestData = conn.prepareStatement(query);
             requestData.setString(1, data.getTitle());
             requestData.setString(2, data.getDescription());
@@ -423,10 +466,10 @@ public class DataDBManager extends BaseDBManager {
             requestData.setString(4, data.getSource());
             requestData.setInt(5, data.getRequestId());
             requestData.execute();
-
+            
             //Find id from this object
             int id = 0;
-            query = "SELECT MAX(ID) FROM " + REQUESTS_TABLE;
+            query = "SELECT MAX(ID) FROM dbi294542.`REQUESTDATABASE.SORTEDDATA`";
             PreparedStatement readData = conn.prepareStatement(query);
             ResultSet result = readData.executeQuery();
 
@@ -442,7 +485,7 @@ public class DataDBManager extends BaseDBManager {
                 Object element = it.next();
 
                 //insert into requesttag database
-                query = "INSERT INTO " + REQUESTTAGS_TABLE + " VALUES (?,?) ";
+                query = "INSERT INTO dbi294542.`REQUESTDATABASE.SORTEDDATATAGS` VALUES (?,?) ";
                 requestData = conn.prepareStatement(query);
                 requestData.setInt(1, id);
                 requestData.setString(2, element.toString());
@@ -463,7 +506,7 @@ public class DataDBManager extends BaseDBManager {
      * @param tags list of tags
      * @return succeed if succeeded
      */
-    public List<IDataRequest> getRequests(HashSet tags) {
+    public synchronized List<IDataRequest> getUpdateRequests(HashSet tags) {
         if (!openConnection()) {
             return null;
         }
@@ -482,7 +525,7 @@ public class DataDBManager extends BaseDBManager {
 
         try {
             //build a string with all tha tags
-            String query = "SELECT ID FROM " + REQUESTTAGS_TABLE;
+            String query = "SELECT ID FROM dbi294542.`REQUESTDATABASE.SORTEDDATATAGS` ";
             int sizeList = tags.size();
             Iterator it = tags.iterator();
             int aantal = 1;
@@ -490,11 +533,11 @@ public class DataDBManager extends BaseDBManager {
                 // Get element
                 Object element = it.next();
                 if (aantal == 1) {
-                    query += " WHERE TAGNAME = '" + element.toString() + "' ";
+                    query += "WHERE TAGNAME = '" + element.toString() + "' ";
                     aantal++;
                 } else {
-                    query += "AND ID IN (SELECT ID FROM " + REQUESTTAGS_TABLE
-                            + " WHERE  TAGNAME ='" + element.toString() + "' ";
+                    query += "AND ID IN (SELECT ID FROM dbi294542.`REQUESTDATABASE."
+                            + "SORTEDDATATAGS` WHERE  TAGNAME ='" + element.toString() + "' ";
                 }
             }
             for (int x = 1; x < sizeList; x++) {
@@ -515,7 +558,7 @@ public class DataDBManager extends BaseDBManager {
                 // Get element
                 Object element = it2.next();
                 if (request.size() < 50) {
-                    update = "SELECT * FROM " + REQUESTS_TABLE + " WHERE ID = "
+                    update = "SELECT * FROM dbi294542.`REQUESTDATABASE.SORTEDDATA` WHERE ID = " 
                             + element.toString();
                     PreparedStatement updateData = conn.prepareStatement(update);
                     ResultSet resultTag = updateData.executeQuery();
@@ -527,8 +570,8 @@ public class DataDBManager extends BaseDBManager {
                         source = resultTag.getString("SOURCE");
                         requestId = resultTag.getInt("REQUESTID");
 
-                        String getTags = "Select TAGNAME From "
-                                + SORTEDDATATAGS_TABLE + " WHERE ID = " + id;
+                        String getTags = "Select TAGNAME From dbi294542.`REQUESTDATABASE.SORTEDDATATAGS` WHERE "
+                                + "ID = " + id;
                         PreparedStatement getTagsData = conn.prepareStatement(getTags);
                         ResultSet tagsData = getTagsData.executeQuery();
                         while (tagsData.next()) {
@@ -536,14 +579,7 @@ public class DataDBManager extends BaseDBManager {
                             newTags.add(tag);
                         }
 
-                        request.add(new DataRequest(
-                                        id,
-                                        title,
-                                        description,
-                                        location,
-                                        source,
-                                        requestId,
-                                        tags));
+                        request.add(new DataRequest(id, title, description, location, source, requestId, tags));
                     }
                     System.out.println("getUpdateRequests object succeed");
                 }
@@ -562,7 +598,7 @@ public class DataDBManager extends BaseDBManager {
      * @param id of object
      * @return unsorted-object with correct id
      */
-    public IData getUnsortedItem(int id) {
+    public synchronized IData getDataItem(int id) {
         if (!openConnection()) {
             return null;
         }
@@ -578,7 +614,7 @@ public class DataDBManager extends BaseDBManager {
         }
 
         try {
-            String query = "SELECT * FROM " + UNSORTEDDATA_TABLE + " WHERE ID = " + id;
+            String query = "SELECT * FROM dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` WHERE ID = " + id;
             PreparedStatement readData = conn.prepareStatement(query);
             ResultSet result = readData.executeQuery();
 
@@ -605,7 +641,7 @@ public class DataDBManager extends BaseDBManager {
      * @param source of object
      * @return list unsorted-objects with correct source
      */
-    public List<IData> getSent(String source) {
+    public synchronized List<IData> getSentData(String source) {
         if (!openConnection()) {
             return null;
         }
@@ -622,11 +658,11 @@ public class DataDBManager extends BaseDBManager {
         }
 
         try {
-            String query = "SELECT * FROM " + UNSORTEDDATA_TABLE;
+            String query = "SELECT * FROM dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` ";
             if (!source.isEmpty()) {
-                query += " WHERE SOURCE = '" + source + "'";
+                query += "WHERE SOURCE = '" + source + "' ";
             }
-            query += " ORDER BY ID";
+            query += "ORDER BY ID";
             PreparedStatement readData = conn.prepareStatement(query);
             ResultSet result = readData.executeQuery();
 
@@ -652,4 +688,41 @@ public class DataDBManager extends BaseDBManager {
         return unsorted;
     }
 
+    /**
+     * open connection
+     */
+    private boolean openConnection() {
+        try {
+            System.setProperty("jdbc.drivers", props.getProperty("driver"));
+            this.conn = DriverManager.getConnection(
+                    (String) props.get("url"),
+                    (String) props.get("username"),
+                    (String) props.get("password"));
+            System.out.println("Connection open succeeded");
+            return true;
+        } catch (Exception ex) {
+            System.out.println("Connection open failed: " + ex);
+            closeConnection();
+            return false;
+        }
+    }
+
+    /**
+     * closing connection
+     */
+    private void closeConnection() {
+        if (conn == null) {
+            return;
+        }
+
+        try {
+            conn.close();
+            System.out.println("Connection close succeeded");
+        } catch (SQLException ex) {
+            System.out.println("Connection close failed: " + ex);
+        } finally {
+            conn = null;
+        }
+
+    }
 }

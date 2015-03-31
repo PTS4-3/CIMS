@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-import ServerApp.Database.DatabaseManager;
+import ServerApp.DatabaseManager;
 import Shared.Data.DataRequest;
 import Shared.Data.IData;
 import Shared.Data.IDataRequest;
