@@ -10,12 +10,14 @@ import Shared.Connection.ConnClientBase;
 import Shared.Data.IData;
 import Shared.Data.IDataRequest;
 import Shared.Data.ISortedData;
+import Shared.Tasks.IPlan;
+import Shared.Tasks.ITask;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  *
- * @author Kargathia
+ * @author Kargathia + Alexander
  */
 class Connection extends ConnClientBase {
 
@@ -91,5 +93,20 @@ class Connection extends ConnClientBase {
     protected void requestUpdate(IDataRequest data) {
         super.booleanCommand(ConnCommand.UPDATE_REQUEST_SEND, new Object[]{data});
     }
-
+    
+    /**
+     * Sends the new given task to the server
+     * @param task
+     */
+    protected void sendNewTask(ITask task) {
+        super.booleanCommand(ConnCommand.TASK_SEND_NEW, new Object[]{task});
+    }
+    
+    /**
+     * Sends the new given plan to the server
+     * @param plan 
+     */
+    protected void sendNewPlan(IPlan plan) {
+        super.booleanCommand(ConnCommand.PLAN_SEND_NEW, new Object[]{plan});
+    }
 }

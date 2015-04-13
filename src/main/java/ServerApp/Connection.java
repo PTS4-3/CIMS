@@ -12,6 +12,8 @@ import Shared.Connection.ConnCommand;
 import Shared.Data.IData;
 import Shared.Data.IDataRequest;
 import Shared.Data.ISortedData;
+import Shared.Tasks.IPlan;
+import Shared.Tasks.ITask;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -25,7 +27,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Kargathia
+ * @author Kargathia + Alexander
  */
 public class Connection implements Runnable {
 
@@ -72,7 +74,7 @@ public class Connection implements Runnable {
      * @param result
      * @throws java.io.IOException
      */
-    private void writeOutput(boolean result) throws IOException {
+    private void writeResult(boolean result) throws IOException {
         if (result) {
             out.writeObject(ConnState.COMMAND_SUCCESS);
         } else {
@@ -179,6 +181,12 @@ public class Connection implements Runnable {
                             case UNSORTED_UNSUBSCRIBE:
                                 this.unsubscribeUnsorted();
                                 break;
+                            case TASK_SEND_NEW:
+                                this.saveNewTask();
+                                break;
+                            case PLAN_SEND_NEW:
+                                this.saveNewPlan();
+                                break;
                         }
                     }
                 }
@@ -252,7 +260,7 @@ public class Connection implements Runnable {
         if (output) {
             getBuffer().addSorted(data);
         }
-        writeOutput(output);
+        writeResult(output);
     }
 
     /**
@@ -274,7 +282,7 @@ public class Connection implements Runnable {
         if (output) {
             getBuffer().addUnsorted(data);
         }
-        writeOutput(output);
+        writeResult(output);
     }
 
     /**
@@ -293,7 +301,7 @@ public class Connection implements Runnable {
             List list = (List) inObject;
             if (!list.isEmpty() && (list.get(0) instanceof IData)) {
                 synchronized (LOCK) {
-                    writeOutput(ServerMain.databaseManager.resetUnsortedData((List<IData>) list));
+                    writeResult(ServerMain.databaseManager.resetUnsortedData((List<IData>) list));
                 }
             }
         } else {
@@ -315,7 +323,7 @@ public class Connection implements Runnable {
             return;
         }
         synchronized (LOCK) {
-            writeOutput(ServerMain.databaseManager.updateUnsortedData((IData) inObject));
+            writeResult(ServerMain.databaseManager.updateUnsortedData((IData) inObject));
         }
     }
 
@@ -332,7 +340,7 @@ public class Connection implements Runnable {
             return;
         }
         synchronized (LOCK) {
-            writeOutput(ServerMain.databaseManager.discardUnsortedData((IData) inObject));
+            writeResult(ServerMain.databaseManager.discardUnsortedData((IData) inObject));
         }
     }
 
@@ -354,7 +362,7 @@ public class Connection implements Runnable {
         if (output) {
             getBuffer().addRequest(data);
         }
-        writeOutput(output);
+        writeResult(output);
     }
 
     /**
@@ -434,7 +442,7 @@ public class Connection implements Runnable {
         if (inObject instanceof Integer) {
             writeOutput(getBuffer().collectSorted((int) inObject));
         } else {
-            writeOutput(false);
+            writeResult(false);
         }
     }
 
@@ -450,9 +458,9 @@ public class Connection implements Runnable {
         if (inObject instanceof Integer) {
 //            System.out.println("clientID subscribing sorted: " + (int)inObject);
             getBuffer().subscribeSorted((int) inObject);
-            writeOutput(true);
+            writeResult(true);
         } else {
-            writeOutput(false);
+            writeResult(false);
         }
     }
 
@@ -467,7 +475,7 @@ public class Connection implements Runnable {
         if (inObject instanceof Integer) {
             writeOutput(getBuffer().collectRequests((int) inObject));
         } else {
-            writeOutput(false);
+            writeResult(false);
         }
     }
 
@@ -482,9 +490,9 @@ public class Connection implements Runnable {
         if (inObject instanceof Integer) {
 //            System.out.println("clientID subscribing requests: " + (int)inObject);
             getBuffer().subscribeRequests((int) inObject);
-            writeOutput(true);
+            writeResult(true);
         } else {
-            writeOutput(false);
+            writeResult(false);
         }
     }
 
@@ -498,9 +506,9 @@ public class Connection implements Runnable {
         Object inObject = in.readObject();
         if (inObject instanceof Integer) {
             getBuffer().unsubscribeRequests((int) inObject);
-            writeOutput(true);
+            writeResult(true);
         } else {
-            writeOutput(false);
+            writeResult(false);
         }
     }
 
@@ -514,9 +522,9 @@ public class Connection implements Runnable {
         Object inObject = in.readObject();
         if (inObject instanceof Integer) {
             getBuffer().unsubscribeSorted((int) inObject);
-            writeOutput(true);
+            writeResult(true);
         } else {
-            writeOutput(false);
+            writeResult(false);
         }
     }
 
@@ -531,7 +539,7 @@ public class Connection implements Runnable {
         if (inObject instanceof Integer) {
             writeOutput(getBuffer().collectUnsorted((int) inObject));
         } else {
-            writeOutput(false);
+            writeResult(false);
         }
     }
 
@@ -545,9 +553,9 @@ public class Connection implements Runnable {
         Object inObject = in.readObject();
         if (inObject instanceof Integer) {
             getBuffer().subscribeUnsorted((int) inObject);
-            writeOutput(true);
+            writeResult(true);
         } else {
-            writeOutput(false);
+            writeResult(false);
         }
     }
 
@@ -561,10 +569,53 @@ public class Connection implements Runnable {
         Object inObject = in.readObject();
         if (inObject instanceof Integer) {
             getBuffer().unsubscribeUnsorted((int) inObject);
-            writeOutput(true);
+            writeResult(true);
         } else {
-            writeOutput(false);
+            writeResult(false);
         }
     }
-
+    
+    /**
+     * Saves a new task
+     * @throws IOException
+     * @throws ClassNotFoundException 
+     */
+    private void saveNewTask() throws IOException, ClassNotFoundException {
+        Object inObject = in.readObject();
+        if(inObject == null || !(inObject instanceof ITask)) {
+            out.writeObject(ConnState.COMMAND_ERROR);
+            return;
+        }
+        
+        ITask newTask = (ITask) inObject;
+        boolean success = false;
+        
+        synchronized(LOCK) {
+            success = ServerMain.databaseManager.insertNewTask(newTask);
+        }
+        //TODO add to buffer
+        this.writeResult(success);
+    }
+    
+    /**
+     * Saves a new plan
+     * @throws IOException
+     * @throws ClassNotFoundException 
+     */
+    private void saveNewPlan() throws IOException, ClassNotFoundException {
+        Object inObject = in.readObject();
+        if(inObject == null || !(inObject instanceof IPlan)) {
+            out.writeObject(ConnState.COMMAND_ERROR);
+            return;
+        }
+        
+        IPlan plan = (IPlan) inObject;
+        boolean success = false;
+        
+        synchronized(LOCK) {
+            success = ServerMain.databaseManager.insertNewPlan(plan);
+        }
+        //TODO add to buffer
+        this.writeResult(success);
+    }
 }

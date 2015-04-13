@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Kargathia
+ * @author Kargathia + Alexander
  */
 public class ConnClientBase {
 
@@ -288,6 +288,12 @@ public class ConnClientBase {
                 break;
             case UPDATE_REQUEST_UNSUBSCRIBE:
                 output = "unsubscribing from new update requests";
+                break;
+            case TASK_SEND_NEW:
+                output = "sending new task";
+                break;
+            case PLAN_SEND_NEW:
+                output = "sending new plan";
                 break;
         }
         return output;

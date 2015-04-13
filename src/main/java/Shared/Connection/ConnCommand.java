@@ -7,10 +7,9 @@ package Shared.Connection;
 
 /**
  *
- * @author Kargathia
+ * @author Kargathia + Alexander
  */
 public enum ConnCommand {
-
     CLIENT_ID_GET,
     SORTED_SEND,
     SORTED_GET,
@@ -32,6 +31,8 @@ public enum ConnCommand {
     UPDATE_REQUEST_GET_NEW,
     UPDATE_REQUEST_SUBSCRIBE,
     UPDATE_REQUEST_UNSUBSCRIBE,
+    TASK_SEND_NEW,
+    PLAN_SEND_NEW;
 }
 
 /*
@@ -101,6 +102,12 @@ public enum ConnCommand {
  Option 22 - Client: ConnCommand.UNSORTED_GET_NEW
  -> Client: int clientID
  -> Server: List<IData>
+ Option 23 - Client: ConnCommand.TASK_SEND_NEW
+ -> Client: ITask task
+ -> Server: ConnState.COMMAND_<success y/n>
+ Option 24 - Client: ConnCommand.PLAN_SEND_NEW
+ -> Client: IPlan plan
+ -> Server: ConnState.COMMAND_<success y/n>
  -----
  Return to start, except on closed conn
  */

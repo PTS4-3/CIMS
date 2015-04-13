@@ -6,14 +6,9 @@
 package HeadquartersApp.Connection;
 
 import HeadquartersApp.UI.HeadquartersController;
-import Shared.Data.DataRequest;
-import Shared.Data.IData;
-import Shared.Data.IDataRequest;
-import Shared.Data.ISortedData;
-import Shared.Data.SortedData;
-import Shared.Data.Status;
+import Shared.Data.*;
 import Shared.Tag;
-import Shared.Data.UnsortedData;
+import Shared.Tasks.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -22,7 +17,7 @@ import java.util.concurrent.Executors;
 
 /**
  *
- * @author Kargathia
+ * @author Kargathia + Alexander
  */
 public class ConnectionManager {
 
@@ -39,7 +34,7 @@ public class ConnectionManager {
         this.defaultIP = defaultIP;
         this.defaultPort = DEFAULT_PORT;
         this.guiController = guiController;
-        //this.testMethods();
+        this.testMethods();
     }
 
     /**
@@ -56,6 +51,8 @@ public class ConnectionManager {
         ArrayList<IData> data = new ArrayList<>();
         data.add(new UnsortedData(3, "resetTitle", "resetDesc", "resetLoc", "resetSource", Status.NONE));
         this.stopWorkingOnData(data);
+        this.sendNewTask(new Task());
+        this.sendNewPlan(new Plan());
     }
     
     public void setDefaultPort(int port){
@@ -143,5 +140,43 @@ public class ConnectionManager {
             new Connection(defaultIP, defaultPort).requestUpdate(data);
         });
         
+    }
+    
+    /**
+     * Sends the new given task to the server
+     * @param task cannot be null
+     */
+    public void sendNewTask(ITask task) {
+        if(task == null) {
+            throw new IllegalArgumentException("Voer een nieuwe taak in");
+        }
+        
+        pool.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                new Connection(defaultIP, defaultPort).sendNewTask(task);
+            }
+            
+        });
+    }
+    
+    /**
+     * Sends the new given plan to the server
+     * @param plan cannot be null
+     */
+    protected void sendNewPlan(IPlan plan) {
+        if(plan == null) {
+            throw new IllegalArgumentException("Voer een nieuw plan in"); 
+        }
+        
+        pool.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                new Connection(defaultIP, defaultPort).sendNewPlan(plan);
+            }
+            
+        });
     }
 }

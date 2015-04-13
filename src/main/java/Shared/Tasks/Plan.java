@@ -9,6 +9,6 @@ package Shared.Tasks;
  *
  * @author Kargathia
  */
-public class Plan {
+public class Plan implements IPlan {
 
 }

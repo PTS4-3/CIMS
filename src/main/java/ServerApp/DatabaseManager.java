@@ -13,6 +13,8 @@ import Shared.Data.SortedData;
 import Shared.Data.Status;
 import Shared.Tag;
 import Shared.Data.UnsortedData;
+import Shared.Tasks.IPlan;
+import Shared.Tasks.ITask;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -724,5 +726,15 @@ public class DatabaseManager {
             conn = null;
         }
 
+    }
+
+    public boolean insertNewTask(ITask newTask) {
+        //TODO
+        return true;
+    }
+
+    public boolean insertNewPlan(IPlan plan) {
+        //TODO
+        return true;
     }
 }

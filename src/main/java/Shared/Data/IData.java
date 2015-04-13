@@ -11,7 +11,7 @@ import java.io.Serializable;
  *
  * @author Alexander
  */
-public interface IData extends Serializable{
+public interface IData extends Serializable {
     int getId();
     String getTitle();
     String getDescription();

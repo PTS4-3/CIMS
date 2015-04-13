@@ -5,10 +5,12 @@
  */
 package Shared.Tasks;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Kargathia
  */
-public interface ITask {
+public interface ITask extends Serializable {
 
 }
