@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ServerApp;
+package ServerApp.Database;
 
 import Shared.Data.DataRequest;
 import Shared.Data.IData;

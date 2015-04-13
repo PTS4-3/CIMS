@@ -5,6 +5,8 @@
  */
 package ServerApp;
 
+import ServerApp.Database.DatabaseManager;
+
 /**
  *
  * @author Kargathia
