@@ -20,7 +20,7 @@ public class ServerMain{
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-       databaseManager = new DatabaseManager();
+       databaseManager = new DatabaseManager("database.properties");
        connectionManager = new ConnectionManager();
     }
 }

@@ -36,23 +36,26 @@ import java.util.Set;
  * @author Linda
  */
 public class DatabaseManager {
-    
-    private Connection conn;
+
+    protected Connection conn;
     private Properties props;
+    
 
     /**
      *
+     * @param fileName
      */
-    public DatabaseManager() {
-        this.configure();
+    public DatabaseManager(String fileName) {
+        // todo changes
+        this.configure(fileName);
     }
 
     /**
      * configureproperties
+     * @param fileName
      */
-    private void configure() {
-        this.props = new Properties();
-        try (FileInputStream in = new FileInputStream("database.properties")) {
+    private void configure(String fileName) {
+        try (FileInputStream in = new FileInputStream(fileName)) {
             props.load(in);
 
         } catch (FileNotFoundException ex) {
@@ -62,7 +65,10 @@ public class DatabaseManager {
         }
 
         try {
-            this.initConnection();
+//            this.initConnection();          
+            if (!openConnection() || conn == null || conn.isClosed()) {
+                throw new SQLException("Connection was null or closed");
+            }
         } catch (SQLException ex) {
             System.out.println("failed to init connection: " + ex.getMessage());
         }
@@ -71,7 +77,8 @@ public class DatabaseManager {
     /**
      * test properties
      */
-    private void initConnection() throws SQLException {
+    @Deprecated
+    protected  void initConnection() throws SQLException {
         String url = (String) props.get("url");
         String username = (String) props.get("username");
         String password = (String) props.get("password");
@@ -231,6 +238,10 @@ public class DatabaseManager {
      * @return List sorteddata
      */
     public synchronized List<SortedData> getFromSortedData(HashSet<Tag> info) {
+        if (!openConnection()) {
+            return null;
+        }
+
         List<SortedData> sorted = new ArrayList();
         HashSet<Integer> numbers = new HashSet<Integer>();
 
@@ -244,10 +255,6 @@ public class DatabaseManager {
         int reliability;
         int quality;
         HashSet<Tag> newTags = new HashSet<Tag>();
-
-        if (!openConnection()) {
-            return null;
-        }
 
         try {
             String query = "SELECT ID FROM dbi294542.`SORTEDDATABASE.SORTEDDATATAGS` ";
@@ -396,12 +403,12 @@ public class DatabaseManager {
 
         boolean succeed = false;
         try {
-            String query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET TITLE = '" 
-                    + iData.getTitle() + "', DESCRIPTION = '" 
-                    + iData.getDescription() + "', LOCATION = '" 
-                    +iData.getLocation() + "', SOURCE = '" 
+            String query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET TITLE = '"
+                    + iData.getTitle() + "', DESCRIPTION = '"
+                    + iData.getDescription() + "', LOCATION = '"
+                    + iData.getLocation() + "', SOURCE = '"
                     + iData.getSource() + "', STATUS = '"
-                    +Status.NONE+ "' WHERE ID=" + iData.getId();
+                    + Status.NONE + "' WHERE ID=" + iData.getId();
 
             PreparedStatement update = conn.prepareStatement(query);
 
@@ -468,7 +475,7 @@ public class DatabaseManager {
             requestData.setString(4, data.getSource());
             requestData.setInt(5, data.getRequestId());
             requestData.execute();
-            
+
             //Find id from this object
             int id = 0;
             query = "SELECT MAX(ID) FROM dbi294542.`REQUESTDATABASE.SORTEDDATA`";
@@ -560,7 +567,7 @@ public class DatabaseManager {
                 // Get element
                 Object element = it2.next();
                 if (request.size() < 50) {
-                    update = "SELECT * FROM dbi294542.`REQUESTDATABASE.SORTEDDATA` WHERE ID = " 
+                    update = "SELECT * FROM dbi294542.`REQUESTDATABASE.SORTEDDATA` WHERE ID = "
                             + element.toString();
                     PreparedStatement updateData = conn.prepareStatement(update);
                     ResultSet resultTag = updateData.executeQuery();
@@ -611,10 +618,6 @@ public class DatabaseManager {
         String location;
         String source;
 
-        if (!openConnection()) {
-            return null;
-        }
-
         try {
             String query = "SELECT * FROM dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` WHERE ID = " + id;
             PreparedStatement readData = conn.prepareStatement(query);
@@ -655,10 +658,6 @@ public class DatabaseManager {
         String location;
         String realSource;
 
-        if (!openConnection()) {
-            return null;
-        }
-
         try {
             String query = "SELECT * FROM dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` ";
             if (!source.isEmpty()) {
@@ -692,8 +691,10 @@ public class DatabaseManager {
 
     /**
      * open connection
+     *
+     * @return
      */
-    private boolean openConnection() {
+    protected boolean openConnection() {
         try {
             System.setProperty("jdbc.drivers", props.getProperty("driver"));
             this.conn = DriverManager.getConnection(
@@ -712,7 +713,7 @@ public class DatabaseManager {
     /**
      * closing connection
      */
-    private void closeConnection() {
+    protected void closeConnection() {
         if (conn == null) {
             return;
         }

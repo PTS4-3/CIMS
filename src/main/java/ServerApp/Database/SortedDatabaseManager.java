@@ -5,10 +5,17 @@
  */
 package ServerApp.Database;
 
+import java.sql.Connection;
+import java.util.Properties;
+
 /**
  *
  * @author Kargathia
  */
 public class SortedDatabaseManager extends DatabaseManager {
+    
+    public SortedDatabaseManager(String propsFileName){
+        super(propsFileName);
+    }
 
 }

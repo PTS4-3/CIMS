@@ -10,5 +10,9 @@ package ServerApp.Database;
  * @author Kargathia
  */
 public class UnsortedDatabaseManager extends DatabaseManager {
+    
+    public UnsortedDatabaseManager(String propsFileName){
+        super(propsFileName);
+    }
 
 }
