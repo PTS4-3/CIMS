@@ -35,7 +35,8 @@ public class ConnectionManager {
     private int defaultPort = DEFAULT_PORT;
     private String defaultIP;
     private int clientID;
-    private ServicesController guiController;
+    private ServicesController servicesController = null;
+    private ServicesLogInController loginController = null;
     private AtomicBoolean
             isRegisteredRequests,
             isRegisteredSorted,
@@ -43,11 +44,11 @@ public class ConnectionManager {
 
     /**
      * Starts a new ConnectionManager, responsible for
-     * @param guiController
+     * @param loginController
      * @param defaultIP
      */
-    public ConnectionManager(ServicesController guiController, String defaultIP) {
-        this.guiController = guiController;
+    public ConnectionManager(ServicesLogInController loginController, String defaultIP) {
+        this.loginController = loginController;
         this.defaultIP = defaultIP;
         this.getID();
         this.isRegisteredSorted = new AtomicBoolean(false);
@@ -55,6 +56,10 @@ public class ConnectionManager {
         this.isRegisteredUnsorted = new AtomicBoolean(false);
         this.startCollectTask();
         //this.testMethods();
+    }
+    
+    public void setServicesController(ServicesController servicesController) {
+        this.servicesController = servicesController;
     }
 
     /**
@@ -179,19 +184,21 @@ public class ConnectionManager {
      * @param tags
      */
     public void getSortedData(HashSet<Tag> tags) {
-        if (tags == null) {
-            System.err.println("Null parameter in getSortedData");
-            return;
-        }
-        pool.execute(() -> {
-            List<ISortedData> output = null;
-            output = new Connection(defaultIP, defaultPort).getSortedData(tags);
-            if (output != null) {
-                guiController.displaySortedData(output);
-            } else {
-                System.err.println("Unable to retrieve sorted data from server");
+        if(this.servicesController != null) {
+            if (tags == null) {
+                System.err.println("Null parameter in getSortedData");
+                return;
             }
-        });
+            pool.execute(() -> {
+                List<ISortedData> output = null;
+                output = new Connection(defaultIP, defaultPort).getSortedData(tags);
+                if (output != null) {
+                    servicesController.displaySortedData(output);
+                } else {
+                    System.err.println("Unable to retrieve sorted data from server");
+                }
+            });
+        }
     }
 
     /**
@@ -201,19 +208,21 @@ public class ConnectionManager {
      * @param tags
      */
     public void getRequests(HashSet<Tag> tags) {
-        if (tags == null) {
-            System.err.println("Null parameter in getRequests");
-            return;
-        }
-        pool.execute(() -> {
-            List<IDataRequest> output = null;
-            output = new Connection(defaultIP, defaultPort).getDataRequests(tags);
-            if (output != null) {
-                guiController.displayRequests(output);
-            } else {
-                System.err.println("Unable to retrieve requests from server.");
+        if(this.servicesController != null) {
+            if (tags == null) {
+                System.err.println("Null parameter in getRequests");
+                return;
             }
-        });
+            pool.execute(() -> {
+                List<IDataRequest> output = null;
+                output = new Connection(defaultIP, defaultPort).getDataRequests(tags);
+                if (output != null) {
+                    servicesController.displayRequests(output);
+                } else {
+                    System.err.println("Unable to retrieve requests from server.");
+                }
+            });
+        }
     }
 
     /**
@@ -236,19 +245,21 @@ public class ConnectionManager {
      * @param source
      */
     public void getSentData(String source) {
-        if (source == null) {
-            System.err.println("Null parameter in getSentData");
-            return;
-        }
-        pool.execute(() -> {
-            List<IData> output = null;
-            output = new Connection(defaultIP, defaultPort).getSentData(source);
-            if (output != null) {
-                guiController.displaySentData(output);
-            } else {
-                System.err.println("Unable to retrieve sent data from server.");
+        if(this.servicesController != null) {
+            if (source == null) {
+                System.err.println("Null parameter in getSentData");
+                return;
             }
-        });
+            pool.execute(() -> {
+                List<IData> output = null;
+                output = new Connection(defaultIP, defaultPort).getSentData(source);
+                if (output != null) {
+                    servicesController.displaySentData(output);
+                } else {
+                    System.err.println("Unable to retrieve sent data from server.");
+                }
+            });
+        }
     }
 
     /**
@@ -258,15 +269,17 @@ public class ConnectionManager {
      * @param id
      */
     public void getDataItem(int id) {
-        pool.execute(() -> {
-            IData output = null;
-            output = new Connection(defaultIP, defaultPort).getDataItem(id);
-            if (output != null) {
-                guiController.displayDataItem(output);
-            } else {
-                System.err.println("Unable to retrieve specific data item from server.");
-            }
-        });
+        if(this.servicesController != null) {
+            pool.execute(() -> {
+                IData output = null;
+                output = new Connection(defaultIP, defaultPort).getDataItem(id);
+                if (output != null) {
+                    servicesController.displayDataItem(output);
+                } else {
+                    System.err.println("Unable to retrieve specific data item from server.");
+                }
+            });
+        }
     }
 
     /**
@@ -398,6 +411,9 @@ public class ConnectionManager {
      * transmitted to server.
      */
     public boolean getNewSorted() {
+        if(this.servicesController != null) {
+            return false;
+        }
         if (!this.isRegisteredSorted.get()) {
             return false;
         }
@@ -405,7 +421,7 @@ public class ConnectionManager {
             List<ISortedData> output
                     = new Connection(defaultIP, defaultPort).getNewSorted(this.clientID);
             if (output != null) {
-                this.guiController.displaySortedData(output);
+                this.servicesController.displaySortedData(output);
             } else {
                 System.err.println("Unable to retrieve new Sorted Data from "
                         + "buffer in server.");
@@ -423,6 +439,9 @@ public class ConnectionManager {
      * transmitted to server.
      */
     public boolean getNewRequests() {
+        if(this.servicesController == null) {
+            return false; 
+        }
         if (!this.isRegisteredRequests.get()) {
             return false;
         }
@@ -430,7 +449,7 @@ public class ConnectionManager {
             List<IDataRequest> output
                     = new Connection(defaultIP, defaultPort).getNewRequests(this.clientID);
             if (output != null) {
-                this.guiController.displayRequests(output);
+                this.servicesController.displayRequests(output);
             } else {
                 System.err.println("Unable to retrieve new Requests from buffer in server.");
             }
@@ -447,6 +466,9 @@ public class ConnectionManager {
      * transmitted to server.
      */
     public boolean getNewUnsorted() {
+        if(this.servicesController == null) {
+            return false; 
+        }
         if (!this.isRegisteredUnsorted.get()) {
             return false;
         }
@@ -454,13 +476,13 @@ public class ConnectionManager {
             List<IData> output
                     = new Connection(defaultIP, defaultPort).getNewUnsorted(this.clientID);
             if (output != null) {
-                this.guiController.displaySentData(output);
+                this.servicesController.displaySentData(output);
             } else {
                 System.err.println("Unable to retrieve new Unsorted Data from "
                         + "buffer in server.");
             }
         });
-        return true;
+        return true;        
     }
 
 }

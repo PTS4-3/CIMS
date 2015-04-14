@@ -28,17 +28,22 @@ public class ConnectionManager {
     public static final int DEFAULT_PORT = 8189;
     
     private static final ExecutorService pool = Executors.newCachedThreadPool();
-    private HeadquartersController guiController = null;
+    private HeadquartersController hqController = null;
+    private HeadquartersLogInContoller loginController = null;
     private String defaultIP = "127.0.0.1";
     private int defaultPort;
 
-    public ConnectionManager(HeadquartersController guiController,
+    public ConnectionManager(HeadquartersLogInController loginController,
             String defaultIP) {
 
         this.defaultIP = defaultIP;
         this.defaultPort = DEFAULT_PORT;
-        this.guiController = guiController;
+        this.loginController = loginController;
         this.testMethods();
+    }
+    
+    public void setHQController(HeadquartersController hqController) {
+        this.hqController = hqController;
     }
 
     /**
@@ -96,15 +101,17 @@ public class ConnectionManager {
      * completion
      */
     public void getData() {
-        pool.execute(() -> {
-            List<IData> output;
-            output = new Connection(defaultIP, defaultPort).getData();
-            if(output != null){
-                guiController.displayData(output);
-            } else {
-                System.err.println("Unable to retrieve Unsorted Data from server.");              
-            }
-        });       
+        if(this.hqController != null) {
+            pool.execute(() -> {
+                List<IData> output;
+                output = new Connection(defaultIP, defaultPort).getData();
+                if(output != null){
+                    hqController.displayData(output);
+                } else {
+                    System.err.println("Unable to retrieve Unsorted Data from server.");              
+                }
+            });   
+        }
     }
 
     /**
