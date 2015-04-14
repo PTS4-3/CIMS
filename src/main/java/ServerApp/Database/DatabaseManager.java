@@ -18,11 +18,13 @@ import Shared.Tasks.ITask;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -30,6 +32,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -69,6 +73,28 @@ class DatabaseManager {
             }
         } catch (SQLException ex) {
             System.out.println("failed to init connection: " + ex.getMessage());
+        }
+    }
+
+    /**
+     * Resets database to dummy data state
+     * @return
+     */
+    protected boolean resetDatabase(){
+        if(!openConnection()){
+            return false;
+        }
+
+        try {
+            CallableStatement cs = this.conn.prepareCall("{call ResetDatabase()}");
+            cs.executeQuery();
+            return true;
+        } catch (SQLException ex) {
+            System.out.println("Failed to reset database: " + ex.getMessage());
+            Logger.getLogger(DatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        } finally {
+            closeConnection();
         }
     }
 

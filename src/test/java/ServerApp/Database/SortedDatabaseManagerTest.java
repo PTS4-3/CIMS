@@ -9,14 +9,26 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.BeforeClass;
+import ServerApp.ServerMain;
 
 /**
  *
  * @author Kargathia
  */
 public class SortedDatabaseManagerTest {
+    
+    private SortedDatabaseManager myDB;
+
 
     public SortedDatabaseManagerTest() {
+    }
+
+    @BeforeClass
+    public void setUpTests(){
+        ServerMain.main(null);
+        myDB = ServerMain.sortedDatabaseManager;
+        myDB.resetDatabase();
     }
 
     @Before

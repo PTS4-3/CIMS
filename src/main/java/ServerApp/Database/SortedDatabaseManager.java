@@ -45,7 +45,7 @@ public class SortedDatabaseManager extends DatabaseManager {
      * @param sorted object sorteddata
      * @return succeed on attempting to insert sorted data.
      */
-    public synchronized boolean insertToSortedData(ISortedData sorted) {
+    public boolean insertToSortedData(ISortedData sorted) {
         if (!openConnection()) {
             return false;
         }
@@ -97,7 +97,7 @@ public class SortedDatabaseManager extends DatabaseManager {
      * @param info list of tags
      * @return List sorteddata
      */
-    public synchronized List<SortedData> getFromSortedData(HashSet<Tag> info) {
+    public List<SortedData> getFromSortedData(HashSet<Tag> info) {
         if (!openConnection()) {
             return null;
         }
@@ -196,7 +196,7 @@ public class SortedDatabaseManager extends DatabaseManager {
      * @param data object of datarequest
      * @return succeed if succeeded
      */
-    public synchronized boolean insertDataRequest(IDataRequest data) {
+    public boolean insertDataRequest(IDataRequest data) {
         if (!openConnection()) {
             return false;
         }
@@ -253,7 +253,7 @@ public class SortedDatabaseManager extends DatabaseManager {
      * @param tags list of tags
      * @return succeed if succeeded
      */
-    public synchronized List<IDataRequest> getUpdateRequests(HashSet tags) {
+    public List<IDataRequest> getUpdateRequests(HashSet tags) {
         if (!openConnection()) {
             return null;
         }
