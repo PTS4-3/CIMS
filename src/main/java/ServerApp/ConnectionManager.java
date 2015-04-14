@@ -24,6 +24,7 @@ public class ConnectionManager {
 
     private final ExecutorService pool;
     private static PushBuffer buffer = new PushBuffer();
+    private static PlanExecutorHandler planExecutorHandler = new PlanExecutorHandler();
     private static int nextID = 0;
 
     private int defaultPort = 8189;
@@ -48,6 +49,10 @@ public class ConnectionManager {
 
     protected static PushBuffer getBuffer(){
         return buffer;
+    }
+    
+    protected static PlanExecutorHandler getPlanExecutorHandler() {
+        return planExecutorHandler;
     }
 
     /**

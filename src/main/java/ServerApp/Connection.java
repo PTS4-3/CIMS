@@ -7,6 +7,7 @@ package ServerApp;
 
 import static ServerApp.ConnectionManager.LOCK;
 import static ServerApp.ConnectionManager.getBuffer;
+import static ServerApp.ConnectionManager.getPlanExecutorHandler;
 import Shared.Connection.ConnState;
 import Shared.Connection.ConnCommand;
 import Shared.Data.IData;
@@ -684,6 +685,8 @@ public class Connection implements Runnable {
             success = ServerMain.dummyDatabaseManager.insertNewPlan(plan);
         }
         
+        getPlanExecutorHandler().addPlanExecutor(plan);
         
+        this.writeResult(success);
     }
 }
