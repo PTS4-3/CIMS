@@ -5,14 +5,14 @@
  */
 package HeadquartersApp.UI;
 
-import Shared.Data.SortedData;
-import Shared.Data.ISortedData;
-import Shared.Data.IDataRequest;
-import Shared.Data.IData;
-import Shared.Data.DataRequest;
 import HeadquartersApp.*;
 import HeadquartersApp.Connection.ConnectionManager;
 import Shared.*;
+import Shared.Data.DataRequest;
+import Shared.Data.IData;
+import Shared.Data.IDataRequest;
+import Shared.Data.ISortedData;
+import Shared.Data.SortedData;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -28,6 +28,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
@@ -65,7 +66,40 @@ public class HeadquartersController implements Initializable {
     @FXML TextField tfrSource;
     @FXML TextField tfrLocation;
     @FXML AnchorPane aprPane;
-    @FXML CheckComboBox ccrTags;    
+    @FXML CheckComboBox ccrTags; 
+    
+    // ProcessSortedData
+    @FXML Tab tabProcessSortedData;
+    @FXML ListView lvsSortedData;
+    @FXML TextField tfsSortedDataTitle;
+    @FXML TextArea tasSortedDataDescription;
+    @FXML TextField tfsSource;
+    @FXML TextField tfsLocation;
+    @FXML ListView lvsTasks;
+    @FXML TextField tfsTaskTitle;
+    @FXML TextArea tasTaskDescription;
+    @FXML ComboBox cbsExecutor;
+    
+    // SendPlan
+    @FXML Tab tabSendPlan;
+    @FXML TextField tfpPlanTitle;
+    @FXML TextField tapPlanDescription;
+    @FXML TextArea tapKeyWords;
+    @FXML ListView lvpTasks;
+    @FXML TextField tfpTaskTitle;
+    @FXML TextArea tapTaskDescription;
+    @FXML TextField tfpCondition;
+    
+    // ApplyPlan
+    @FXML Tab tabApplyPlan;
+    @FXML TextField tfaPlanTitle;
+    @FXML TextArea taaPlanDescription;
+    @FXML TextField tfaSearch;
+    @FXML ListView lvaPlans;
+    @FXML ListView lvaTasks;
+    @FXML TextField tfaTaskTitle;
+    @FXML TextArea tfaTaskDescription;
+    @FXML ComboBox cbaExecuter;
     
     private IData requestData;
     
@@ -374,6 +408,20 @@ public class HeadquartersController implements Initializable {
         tfrSource.clear();
         tfrLocation.clear();
         ccrTags.getCheckModel().clearChecks();
+    }
+    
+    /**
+     *  Adds a temporary task to the list of tasks in a plan
+     */
+    public void addTempTask(){
+        
+    }
+    
+    /**
+     * Sends a plan to the server
+     */
+    public void sendPlan(){
+        
     }
     
     public void showDialog(String title, String melding, boolean warning)
