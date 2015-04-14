@@ -5,6 +5,7 @@
  */
 package ServerApp.Database;
 
+import ServerApp.ServerMain;
 import Shared.Data.DataRequest;
 import Shared.Data.IDataRequest;
 import Shared.Data.ISortedData;
@@ -27,6 +28,14 @@ import java.util.Set;
  * @author Kargathia
  */
 public class SortedDatabaseManager extends DatabaseManager {
+
+    private final String
+            sortedDataTable = "dbi294542.`SORTEDDATABASE.SORTEDDATA`",
+            sortedDataTagsTable = "dbi294542.`SORTEDDATABASE.SORTEDDATATAGS`",
+            requestsTable = "dbi294542.`REQUESTDATABASE.SORTEDDATA`",
+            requestTagsTable = "dbi294542.`REQUESTDATABASE.SORTEDDATATAGS`";
+
+
     
     public SortedDatabaseManager(String propsFileName){
         super(propsFileName);
@@ -44,7 +53,7 @@ public class SortedDatabaseManager extends DatabaseManager {
         boolean succeed = false;
         try {
             //insert to sorteddata
-            String query = "INSERT INTO dbi294542.`SORTEDDATABASE.SORTEDDATA` VALUES (?,?,?,?,?,?,?,?)";
+            String query = "INSERT INTO " + sortedDataTable + " VALUES (?,?,?,?,?,?,?,?)";
             PreparedStatement sortedData = conn.prepareStatement(query);
             sortedData.setInt(1, sorted.getId());
             sortedData.setString(2, sorted.getTitle());
@@ -64,18 +73,14 @@ public class SortedDatabaseManager extends DatabaseManager {
                 Object element = it.next();
 
                 //insert into sorteddatatags database
-                query = "INSERT INTO dbi294542.`SORTEDDATABASE.SORTEDDATATAGS` VALUES (?,?) ";
+                query = "INSERT INTO " + sortedDataTagsTable + " VALUES (?,?) ";
                 sortedData = conn.prepareStatement(query);
                 sortedData.setInt(1, sorted.getId());
                 sortedData.setString(2, element.toString());
                 sortedData.execute();
             }
 
-            //delete from unsorteddata
-            query = "UPDATE dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA` SET STATUS = '"
-                    + Status.COMPLETED.toString() + "' WHERE id = " + sorted.getId();
-            PreparedStatement unsortedData = conn.prepareStatement(query);
-            unsortedData.execute();
+            ServerMain.unsortedDatabaseManager.updateStatusUnsortedData(sorted);
 
             System.out.println("insertToSortedData succeeded");
 
@@ -112,7 +117,7 @@ public class SortedDatabaseManager extends DatabaseManager {
         HashSet<Tag> newTags = new HashSet<Tag>();
 
         try {
-            String query = "SELECT ID FROM dbi294542.`SORTEDDATABASE.SORTEDDATATAGS` ";
+            String query = "SELECT ID FROM " + sortedDataTagsTable + " ";
             int sizeList = info.size();
             Iterator it = info.iterator();
             int aantal = 1;
@@ -124,7 +129,7 @@ public class SortedDatabaseManager extends DatabaseManager {
                     aantal++;
                 } else {
                     query += "AND ID IN (SELECT ID FROM"
-                            + " dbi294542.`SORTEDDATABASE.SORTEDDATATAGS` WHERE  TAGNAME = '"
+                            + " " + sortedDataTagsTable + " WHERE  TAGNAME = '"
                             + element.toString() + "' ";
                 }
             }
@@ -146,7 +151,7 @@ public class SortedDatabaseManager extends DatabaseManager {
                 // Get element
                 Object element = it2.next();
                 if (sorted.size() < 50) {
-                    update = "SELECT * FROM dbi294542.`SORTEDDATABASE.SORTEDDATA` WHERE ID = " + element.toString();
+                    update = "SELECT * FROM " + sortedDataTable + " WHERE ID = " + element.toString();
                     PreparedStatement updateData = conn.prepareStatement(update);
                     ResultSet resultTag = updateData.executeQuery();
                     while (resultTag.next()) {
@@ -159,7 +164,8 @@ public class SortedDatabaseManager extends DatabaseManager {
                         reliability = resultTag.getInt("RELIABILITY");
                         quality = resultTag.getInt("QUALITY");
 
-                        String getTags = "Select TAGNAME From dbi294542.`SORTEDDATABASE.SORTEDDATATAGS` WHERE "
+                        String getTags = "Select TAGNAME From " + sortedDataTagsTable
+                                + " WHERE "
                                 + "ID = " + id;
                         PreparedStatement getTagsData = conn.prepareStatement(getTags);
                         ResultSet tagsData = getTagsData.executeQuery();
@@ -168,7 +174,9 @@ public class SortedDatabaseManager extends DatabaseManager {
                             newTags.add(tag);
                         }
 
-                        sorted.add(new SortedData(id, title, description, location, source, relevance, reliability, quality, newTags));
+                        sorted.add(new SortedData(id, title, description, 
+                                location, source, relevance,
+                                reliability, quality, newTags));
                         System.out.println("Getting sorted object  succeed");
 
                     }
@@ -197,7 +205,7 @@ public class SortedDatabaseManager extends DatabaseManager {
         try {
             Set<Tag> tags = data.getTags();
             //insert to sorteddata
-            String query = "INSERT INTO dbi294542.`REQUESTDATABASE.SORTEDDATA` VALUES (ID,?,?,?,?,?)";
+            String query = "INSERT INTO " + requestsTable + " VALUES (ID,?,?,?,?,?)";
             PreparedStatement requestData = conn.prepareStatement(query);
             requestData.setString(1, data.getTitle());
             requestData.setString(2, data.getDescription());
@@ -208,7 +216,7 @@ public class SortedDatabaseManager extends DatabaseManager {
 
             //Find id from this object
             int id = 0;
-            query = "SELECT MAX(ID) FROM dbi294542.`REQUESTDATABASE.SORTEDDATA`";
+            query = "SELECT MAX(ID) FROM " + requestsTable;
             PreparedStatement readData = conn.prepareStatement(query);
             ResultSet result = readData.executeQuery();
 
@@ -224,7 +232,7 @@ public class SortedDatabaseManager extends DatabaseManager {
                 Object element = it.next();
 
                 //insert into requesttag database
-                query = "INSERT INTO dbi294542.`REQUESTDATABASE.SORTEDDATATAGS` VALUES (?,?) ";
+                query = "INSERT INTO " + requestTagsTable + " VALUES (?,?) ";
                 requestData = conn.prepareStatement(query);
                 requestData.setInt(1, id);
                 requestData.setString(2, element.toString());
@@ -264,7 +272,7 @@ public class SortedDatabaseManager extends DatabaseManager {
 
         try {
             //build a string with all tha tags
-            String query = "SELECT ID FROM dbi294542.`REQUESTDATABASE.SORTEDDATATAGS` ";
+            String query = "SELECT ID FROM " + requestTagsTable + " ";
             int sizeList = tags.size();
             Iterator it = tags.iterator();
             int aantal = 1;
@@ -275,8 +283,8 @@ public class SortedDatabaseManager extends DatabaseManager {
                     query += "WHERE TAGNAME = '" + element.toString() + "' ";
                     aantal++;
                 } else {
-                    query += "AND ID IN (SELECT ID FROM dbi294542.`REQUESTDATABASE."
-                            + "SORTEDDATATAGS` WHERE  TAGNAME ='" + element.toString() + "' ";
+                    query += "AND ID IN (SELECT ID FROM " + requestTagsTable +
+                            " WHERE  TAGNAME ='" + element.toString() + "' ";
                 }
             }
             for (int x = 1; x < sizeList; x++) {
@@ -297,7 +305,7 @@ public class SortedDatabaseManager extends DatabaseManager {
                 // Get element
                 Object element = it2.next();
                 if (request.size() < 50) {
-                    update = "SELECT * FROM dbi294542.`REQUESTDATABASE.SORTEDDATA` WHERE ID = "
+                    update = "SELECT * FROM " + requestsTable + " WHERE ID = "
                             + element.toString();
                     PreparedStatement updateData = conn.prepareStatement(update);
                     ResultSet resultTag = updateData.executeQuery();
@@ -309,7 +317,8 @@ public class SortedDatabaseManager extends DatabaseManager {
                         source = resultTag.getString("SOURCE");
                         requestId = resultTag.getInt("REQUESTID");
 
-                        String getTags = "Select TAGNAME From dbi294542.`REQUESTDATABASE.SORTEDDATATAGS` WHERE "
+                        String getTags = "Select TAGNAME From "
+                                + requestTagsTable + " WHERE "
                                 + "ID = " + id;
                         PreparedStatement getTagsData = conn.prepareStatement(getTags);
                         ResultSet tagsData = getTagsData.executeQuery();

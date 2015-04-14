@@ -14,6 +14,8 @@ import Shared.Tasks.ITask;
  */
 public class TasksDatabaseManager extends DatabaseManager{
 
+    private final String tasksTable = "";
+
     public TasksDatabaseManager(String fileName) {
         super(fileName);
     }
