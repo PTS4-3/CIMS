@@ -6,6 +6,8 @@ package ServicesApp.UI;
  * and open the template in the editor.
  */
 
+import ServicesApp.Connection.ConnectionManager;
+import Shared.Users.IUser;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.Initializable;
@@ -17,12 +19,24 @@ import javafx.fxml.Initializable;
  */
 public class ServicesLogInController implements Initializable {
 
+    private ConnectionManager connectionManager;
+    private IUser user;
+
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
-    }    
-    
+
+    }
+
+    /**
+     * Configures connectionManager
+     *
+     * @param ipAdressServer
+     */
+    public void configure(String ipAdressServer) {
+        this.connectionManager = new ConnectionManager(this, ipAdressServer);
+    }   
 }

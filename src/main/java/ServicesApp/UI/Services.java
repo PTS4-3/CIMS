@@ -5,6 +5,8 @@
  */
 package ServicesApp.UI;
 
+import ServicesApp.Connection.ConnectionManager;
+import Shared.Users.IUser;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,15 +18,37 @@ import javafx.stage.Stage;
  * @author Alexander
  */
 public class Services extends Application {
-    private ServicesController controller;
+    private ServicesLogInController controller;
+    private ServicesController servicesController;
 
     @Override
     public void start(Stage stage) throws Exception {
+        this.goToLogIn(stage);
+    }
+    
+    public void goToLogIn(Stage stage) throws Exception
+    {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("ServicesApp/ServicesFX.fxml"));
         Parent root = (Parent) loader.load();
-        controller = (ServicesController) loader.getController();
+        controller = (ServicesLogInController) loader.getController();
 
         this.configure();
+
+        Scene scene = new Scene(root);
+
+        stage.setScene(scene);
+        stage.setTitle("Services CIMS");
+        stage.show();
+    }
+    
+    public void goToServices(Stage stage, ConnectionManager manager, IUser user)
+            throws Exception
+    {
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("ServicesApp/ServicesFX.fxml"));
+        Parent root = (Parent) loader.load();
+        servicesController = (ServicesController) loader.getController();
+
+        servicesController.configure(manager, user);
 
         Scene scene = new Scene(root);
 
@@ -44,12 +68,6 @@ public class Services extends Application {
         //int portnumber = 8189;
 
         controller.configure(ipAdressServer);
-    }
-
-    @Override
-    public void stop() throws Exception {
-        controller.close();
-        super.stop();
     }
 
     /**

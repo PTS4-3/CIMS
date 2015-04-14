@@ -17,6 +17,7 @@ import Shared.Tasks.IStep;
 import Shared.Tasks.Plan;
 import Shared.Tasks.Step;
 import Shared.Tasks.Task;
+import Shared.Tasks.TaskStatus;
 import Shared.Users.IServiceUser;
 import Shared.Users.IUser;
 import Shared.Users.ServiceUser;
