@@ -7,11 +7,18 @@ package HeadquartersApp.UI;
 
 import HeadquartersApp.Connection.ConnectionManager;
 import Shared.Users.IUser;
+import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 /**
@@ -23,12 +30,26 @@ public class Headquarters extends Application {
     private HeadquartersLogInController controller;
     private HeadquartersController hqController;
 
+    private Stage stage;
+
     @Override
     public void start(Stage stage) throws Exception {
-        goToLogIn(stage);
+        try {
+            this.stage = stage;
+            this.stage.setTitle("Headquarters CIMS");
+            this.stage.setMinWidth(100);
+            this.stage.setMinHeight(100);
+            goToLogIn();
+            
+
+            this.stage.show();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        this.goToLogIn();
     }
     
-    public void goToLogIn(Stage stage) throws Exception
+    public void goToLogIn() throws Exception
     {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader()
                 .getResource("HeadquartersApp/HeadquartersLogInController.fxml"));
@@ -44,7 +65,7 @@ public class Headquarters extends Application {
         stage.show();
     }
     
-    public void goToHeadquarters(Stage stage, ConnectionManager manager, 
+    public void goToHeadquarters(ConnectionManager manager, 
             IUser user) throws Exception
     {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader()
@@ -86,4 +107,5 @@ public class Headquarters extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
 }

@@ -116,6 +116,12 @@ public class HeadquartersController implements Initializable {
     private ConnectionManager connectionManager;
     private Timer timer;
     private IUser user = null;
+    private Headquarters main;
+    
+    public void setApp(Headquarters application)
+    {
+        this.main = application;
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {

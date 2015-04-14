@@ -85,6 +85,13 @@ public class ServicesController implements Initializable {
     private boolean showingDataItem;
     private IDataRequest answeredRequest;
     private IUser user = null;
+    
+    private Services main;
+    
+    public void setApp(Services application)
+    {
+        this.main = application;
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {

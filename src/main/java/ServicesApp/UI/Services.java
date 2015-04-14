@@ -20,13 +20,15 @@ import javafx.stage.Stage;
 public class Services extends Application {
     private ServicesLogInController controller;
     private ServicesController servicesController;
+    private Stage stage;
 
     @Override
     public void start(Stage stage) throws Exception {
-        this.goToLogIn(stage);
+        this.stage = stage;
+        this.goToLogIn();
     }
     
-    public void goToLogIn(Stage stage) throws Exception
+    public void goToLogIn() throws Exception
     {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("ServicesApp/ServicesFX.fxml"));
         Parent root = (Parent) loader.load();
@@ -41,7 +43,7 @@ public class Services extends Application {
         stage.show();
     }
     
-    public void goToServices(Stage stage, ConnectionManager manager, IUser user)
+    public void goToServices(ConnectionManager manager, IUser user)
             throws Exception
     {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("ServicesApp/ServicesFX.fxml"));

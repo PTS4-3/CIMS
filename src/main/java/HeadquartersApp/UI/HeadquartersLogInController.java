@@ -36,7 +36,14 @@ public class HeadquartersLogInController implements Initializable {
     Button btnLogIn;
 
     private ConnectionManager connectionManager;
-    private IUser user;
+    private IUser user = null;
+    
+    private Headquarters main;
+    
+    public void setApp(Headquarters application)
+    {
+        this.main = application;
+    }
 
     /**
      * Initializes the controller class.
@@ -69,7 +76,11 @@ public class HeadquartersLogInController implements Initializable {
             //USername password, controleren
             //user opvragen
             //doorsturen naar nieuw scherm
-            
+            try{
+        this.main.goToHeadquarters(connectionManager, user);
+        } catch (Exception ex) {
+            Logger.getLogger(HeadquartersLogInController.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         } catch (NetworkException ex) {
             Logger.getLogger(HeadquartersLogInController.class.getName()).log(Level.SEVERE, null, ex);
