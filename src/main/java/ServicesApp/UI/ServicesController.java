@@ -73,6 +73,13 @@ public class ServicesController implements Initializable {
     @FXML TextField tfsLocation;
     @FXML Button btnAnswerRequest;
     
+    // TaskInfo
+    @FXML Tab tabTaskInfo;
+    @FXML ListView lvtTasks;
+    @FXML TextField tftTaskTitle;
+    @FXML TextArea tatDescription;
+    @FXML TextField tftCondition;
+    
     private ConnectionManager connectionManager;
     private boolean showingDataItem;
     private IDataRequest answeredRequest;
