@@ -6,6 +6,7 @@
 package ServicesApp.Connection;
 
 import ServicesApp.UI.ServicesController;
+import ServicesApp.UI.ServicesLogInController;
 import Shared.Connection.ConnCommand;
 import Shared.Data.IData;
 import Shared.Data.IDataRequest;
