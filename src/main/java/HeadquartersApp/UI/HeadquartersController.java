@@ -5,7 +5,6 @@
  */
 package HeadquartersApp.UI;
 
-import HeadquartersApp.*;
 import HeadquartersApp.Connection.ConnectionManager;
 import Shared.*;
 import Shared.Data.DataRequest;
@@ -13,6 +12,7 @@ import Shared.Data.IData;
 import Shared.Data.IDataRequest;
 import Shared.Data.ISortedData;
 import Shared.Data.SortedData;
+import Shared.Tasks.IPlan;
 import Shared.Tasks.IStep;
 import Shared.Tasks.Plan;
 import Shared.Tasks.Step;
@@ -105,10 +105,10 @@ public class HeadquartersController implements Initializable {
     @FXML TextArea taaPlanDescription;
     @FXML TextField tfaSearch;
     @FXML ListView lvaPlans;
-    @FXML ListView lvaTasks;
+    @FXML ListView lvaSteps;
     @FXML TextField tfaTaskTitle;
     @FXML TextArea tfaTaskDescription;
-    @FXML ComboBox cbaExecuter;
+    @FXML ComboBox cbaExecutor;
     
     private IData requestData;
     private List<IStep> tempSteps;
@@ -454,6 +454,11 @@ public class HeadquartersController implements Initializable {
                 if(cbsExecutor.getSelectionModel().getSelectedItem() == null) {
                     cbsExecutor.getSelectionModel().selectFirst();
                 }
+                
+                cbaExecutor.getItems().addAll(serviceUsers);
+                if(cbaExecutor.getSelectionModel().getSelectedItem() == null) {
+                    cbaExecutor.getSelectionModel().selectFirst();
+                }
             }
             
         });
@@ -560,6 +565,46 @@ public class HeadquartersController implements Initializable {
         } catch (NetworkException nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
+    }
+    
+    public void displayPlans(List<IPlan> plans){
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                lvaPlans.getItems().addAll(plans);
+                if(lvaPlans.getSelectionModel().getSelectedItem() == null) {
+                    lvaPlans.getSelectionModel().selectFirst();
+                }
+            }
+            
+        });
+    }
+    
+    public void displaySteps(){
+        Platform.runLater(new Runnable() {
+            IPlan p = (IPlan) lvaPlans.getSelectionModel().getSelectedItem();
+            List<IStep> steps = null;
+            
+            @Override
+            public void run() {                
+                for(IStep s : p.getSteps()){
+                    steps.add(s);
+                }
+                lvaSteps.getItems().addAll(steps);
+                if(lvaSteps.getSelectionModel().getSelectedItem() == null) {
+                    lvaSteps.getSelectionModel().selectFirst();
+                }
+            }
+            
+        });
+    }
+    
+    public void selectStep(){
+        IStep step = (IStep) lvaSteps.getSelectionModel().getSelectedItem();
+        
+        tfaTaskTitle.setText(step.getTitle());
+        tfaTaskDescription.setText(step.getDescription());
     }
     
     public void showDialog(String title, String melding, boolean warning)
