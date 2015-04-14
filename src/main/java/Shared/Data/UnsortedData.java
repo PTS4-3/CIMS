@@ -23,7 +23,7 @@ public class UnsortedData implements IUnsortedData {
      * @param title cannot be null or empty
      * @param description
      * @param location
-     * @param source cannot be null or empty
+     * @param source the username of the source, cannot be null or empty
      * @param status 
      */
     public UnsortedData(int id, String title, String description, 

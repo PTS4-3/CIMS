@@ -5,10 +5,12 @@
  */
 package Shared.Users;
 
+import Shared.Tag;
+
 /**
  *
- * @author Kargathia
+ * @author Alexander
  */
-public interface IServiceUser {
-
+public interface IServiceUser extends IUser {
+    Tag getType();
 }

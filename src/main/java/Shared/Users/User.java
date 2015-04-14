@@ -7,8 +7,36 @@ package Shared.Users;
 
 /**
  *
- * @author Kargathia
+ * @author Alexander
  */
-public class User {
+public class User implements IUser {
+    private String username;
+    private String name;
+    
+    /**
+     * 
+     * @param username cannot be null or empty
+     * @param name cannot be null or empty
+     */
+    public User(String username, String name) {
+        if(username == null || username.isEmpty()) {
+            throw new IllegalArgumentException("Voer een gebruikersnaam in");
+        }
+        if(name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("Voer een naam in");
+        }
+        this.username = username;
+        this.name = name;
+    }
+    
+    @Override
+    public String getUsername() {
+        return this.username;
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
+    }
 
 }

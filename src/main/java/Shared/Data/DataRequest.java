@@ -16,7 +16,6 @@ import java.util.Set;
  * @author Alexander
  */
 public class DataRequest implements IDataRequest {
-
     private int id;
     private String title;
     private String description;
@@ -31,7 +30,7 @@ public class DataRequest implements IDataRequest {
      * @param title cannot be null or empty
      * @param description
      * @param location
-     * @param source cannot be null or empty
+     * @param source the username of the source, cannot be null or empty
      * @param requestId id of the data this is a request of, otherwise -1
      * @param tags cannot be null, empty list means all tags
      */

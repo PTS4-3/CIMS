@@ -6,11 +6,17 @@
 package Shared.Tasks;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.SortedSet;
 
 /**
  *
- * @author Kargathia
+ * @author Alexander
  */
 public interface IPlan extends Serializable {
-
+    int getId();
+    String getTitle();
+    String getDescription();
+    HashSet<String> getKeywords();
+    SortedSet<IStep> getSteps();
 }

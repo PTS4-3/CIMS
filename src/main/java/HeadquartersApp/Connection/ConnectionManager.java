@@ -9,9 +9,13 @@ import HeadquartersApp.UI.HeadquartersController;
 import Shared.Data.*;
 import Shared.Tag;
 import Shared.Tasks.*;
+import Shared.Users.IServiceUser;
+import Shared.Users.ServiceUser;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -47,12 +51,20 @@ public class ConnectionManager {
         tags.add(Tag.POLICE);
         this.requestUpdate(new DataRequest(1, "requestTitle", "reqDesc", "recLoc", "recSource", 2, tags));
         tags.add(Tag.AMBULANCE);
-        this.sendSortedData(new SortedData(2, "sortTitle", "sortDesc", "sortLoc", "sortSource", 3, 2, 1, tags));
+        ISortedData sortedData = new SortedData(2, "sortTitle", "sortDesc", "sortLoc", "sortSource", 3, 2, 1, tags);
+        this.sendSortedData(sortedData);
         ArrayList<IData> data = new ArrayList<>();
         data.add(new UnsortedData(3, "resetTitle", "resetDesc", "resetLoc", "resetSource", Status.NONE));
         this.stopWorkingOnData(data);
-        this.sendNewTask(new Task());
-        this.sendNewPlan(new Plan());
+        
+        TreeSet<IStep> steps = new TreeSet<>();
+        ITask task = new Task(-1, "newTaskTitle", "newTaskDesc", TaskStatus.INPROCESS, null, Tag.POLICE, null);
+        steps.add(new Step(task.getId(), task.getTitle(), task.getDescription(), task.getStatus(), task.getSortedData(), task.getTargetExecutor(), task.getExecutor(), 1, ""));
+        
+        this.sendNewTask(task);
+        HashSet<String> keywords = new HashSet<>();
+        keywords.add("Brand");
+        this.sendNewPlan(new Plan(-1, "newPlanTitle", "newPlanDesc", keywords, steps));
     }
     
     public void setDefaultPort(int port){

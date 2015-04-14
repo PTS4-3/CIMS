@@ -5,12 +5,21 @@
  */
 package Shared.Tasks;
 
+import Shared.Data.ISortedData;
+import Shared.Tag;
+import Shared.Users.IServiceUser;
 import java.io.Serializable;
 
 /**
  *
- * @author Kargathia
+ * @author Alexander
  */
 public interface ITask extends Serializable {
-
+    int getId();
+    String getTitle();
+    String getDescription();
+    TaskStatus getStatus();
+    ISortedData getSortedData();
+    Tag getTargetExecutor();
+    IServiceUser getExecutor();
 }

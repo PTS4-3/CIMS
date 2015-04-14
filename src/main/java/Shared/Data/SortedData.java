@@ -32,7 +32,7 @@ public class SortedData implements ISortedData {
      * @param title cannot be null or empty
      * @param description
      * @param location
-     * @param source cannot be null or empty
+     * @param source the username of the source, cannot be null or empty
      * @param relevance has to be between 1 and 5
      * @param reliability has to be between 1 and 5
      * @param quality has to be between 1 and 5

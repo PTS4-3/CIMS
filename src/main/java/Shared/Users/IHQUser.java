@@ -7,8 +7,8 @@ package Shared.Users;
 
 /**
  *
- * @author Kargathia
+ * @author Alexander
  */
-public interface IHQUser {
-
+public interface IHQUser extends IUser {
+    
 }

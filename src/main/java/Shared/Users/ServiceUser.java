@@ -5,10 +5,32 @@
  */
 package Shared.Users;
 
+import Shared.Tag;
+
 /**
  *
- * @author Kargathia
+ * @author Alexander
  */
-public class ServiceUser {
+public class ServiceUser extends User implements IServiceUser {
+    private Tag type;
+    
+    /**
+     * 
+     * @param username cannot be null or empty
+     * @param name cannot be null or empty
+     * @param type the kind of ServiceUser, cannot be null
+     */
+    public ServiceUser(String username, String name, Tag type) {
+        super(username, name);
+        if(type == null) {
+            throw new IllegalArgumentException("Voer een type in");
+        }
+        this.type = type;
+    }
+    
+    @Override
+    public Tag getType() {
+        return this.type;
+    }
 
 }

@@ -7,8 +7,12 @@ package Shared.Tasks;
 
 /**
  *
- * @author Kargathia
+ * @author Alexander
  */
 public enum TaskStatus {
-
+    REFUSED,
+    SUCCEEDED,
+    FAILED,
+    INPROCESS,
+    SENT
 }

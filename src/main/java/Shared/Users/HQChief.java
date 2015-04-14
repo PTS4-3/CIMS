@@ -7,8 +7,16 @@ package Shared.Users;
 
 /**
  *
- * @author Kargathia
+ * @author Alexander
  */
-public class HQChief {
-
+public class HQChief extends HQUser implements IHQChief {
+    
+    /**
+     * 
+     * @param username cannot be null or empty
+     * @param name cannot be null or empty
+     */
+    public HQChief(String username, String name) {
+        super(username, name);
+    }
 }
