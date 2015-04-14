@@ -1,4 +1,4 @@
-package HeadquartersApp.UI;
+package ServicesApp.UI;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -15,7 +15,7 @@ import javafx.fxml.Initializable;
  *
  * @author Linda
  */
-public class HeadquartersLogInFXController implements Initializable {
+public class ServicesLogInController implements Initializable {
 
     /**
      * Initializes the controller class.
