@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="556.0" prefWidth="796.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="ServicesApp.UI.ServicesController">
+<AnchorPane id="AnchorPane" prefHeight="556.0" prefWidth="796.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ServicesApp.UI.ServicesController">
   <children>
     <TabPane fx:id="tabPane" layoutX="0.0" layoutY="0.0" prefHeight="556.0" prefWidth="796.0" tabClosingPolicy="UNAVAILABLE">
       <tabs>
@@ -88,13 +88,13 @@
             <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
               <children>
                 <Label font="$x1" layoutX="14.0" layoutY="14.0" text="Taken" underline="false" />
-                <ListView id="lvSortedData" layoutX="14.0" layoutY="48.0" prefHeight="453.0" prefWidth="341.0" />
+                <ListView id="lvSortedData" fx:id="lvtTasks" layoutX="14.0" layoutY="48.0" prefHeight="453.0" prefWidth="341.0" />
                 <Label layoutX="398.0" layoutY="57.0" text="Titel" />
                 <Label layoutX="398.0" layoutY="87.0" text="Beschrijving" />
                 <Label layoutX="398.0" layoutY="275.0" text="Pre-Conditie" />
-                <TextField fx:id="tfsTitleTask" layoutX="525.0" layoutY="54.0" prefWidth="235.0" />
-                <TextArea fx:id="tasDescriptionTask" layoutX="525.0" layoutY="87.0" prefWidth="235.0" wrapText="true" />
-                <TextArea fx:id="tasConditionTask" layoutX="525.0" layoutY="275.0" prefHeight="66.0" prefWidth="235.0" wrapText="true" />
+                <TextField fx:id="tftTaskTitle" layoutX="525.0" layoutY="54.0" prefWidth="235.0" />
+                <TextArea fx:id="tatDescription" layoutX="525.0" layoutY="87.0" prefWidth="235.0" wrapText="true" />
+                <TextArea fx:id="tatCondition" layoutX="525.0" layoutY="275.0" prefHeight="66.0" prefWidth="235.0" wrapText="true" />
                 <Button fx:id="btnDismissTask" layoutX="606.0" layoutY="373.0" mnemonicParsing="false" prefWidth="154.0" styleClass="ButtonDismiss" text="Weigeren">
                   <stylesheets>
                     <URL value="@../Style.css" />

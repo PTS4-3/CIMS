@@ -18,9 +18,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.Timer;
-import java.util.TimerTask;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -36,6 +35,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
 
@@ -154,9 +154,9 @@ public class ServicesController implements Initializable {
             }
             
             // Subscribe
-            this.connectionManager.subscribeRequests();
-            this.connectionManager.subscribeSorted();
-            this.connectionManager.subscribeUnsorted();
+            this.connectionManager.subscribeRequests("");
+            this.connectionManager.subscribeSorted("");
+            this.connectionManager.subscribeUnsorted("");
             
             // Get initial values
             if (chbsRequests.isSelected()) {
@@ -260,9 +260,9 @@ public class ServicesController implements Initializable {
      */
     public void close() {
         if(this.connectionManager != null) {
-            this.connectionManager.unsubscribeRequests();
-            this.connectionManager.unsubscribeSorted();
-            this.connectionManager.unsubscribeUnsorted();
+            this.connectionManager.unsubscribeRequests("");
+            this.connectionManager.unsubscribeSorted("");
+            this.connectionManager.unsubscribeUnsorted("");
             this.connectionManager.closeConnection();
         }
     }
@@ -529,5 +529,18 @@ public class ServicesController implements Initializable {
         
         alert.setContentText(melding);
         alert.showAndWait();
+    }
+    
+    public String showArgumentDialog(){
+        TextInputDialog dialog = new TextInputDialog("Argument");
+        dialog.setTitle("Argument");
+        dialog.setContentText("Voer een argument in:");
+
+        // Traditional way to get the response value.
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent())
+            return result.get();
+        else
+            return null;
     }
 }
