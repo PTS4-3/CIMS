@@ -28,9 +28,9 @@ public class ServerMain{
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-       sortedDatabaseManager = new SortedDatabaseManager("database.properties");
-       unsortedDatabaseManager = new UnsortedDatabaseManager("database.properties");
-       tasksDatabaseManager = new TasksDatabaseManager("database.properties");
+       sortedDatabaseManager = new SortedDatabaseManager("sorteddatabase.properties");
+       unsortedDatabaseManager = new UnsortedDatabaseManager("unsorteddatabase.properties");
+       tasksDatabaseManager = new TasksDatabaseManager("taskdatabase.properties");
        connectionManager = new ConnectionManager();
 
        dummyDatabaseManager = new DummyDatabaseManager();
