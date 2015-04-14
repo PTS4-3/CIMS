@@ -5,10 +5,13 @@
  */
 package ServerApp.Database;
 
+import ServerApp.ServerMain;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.BeforeClass;
 
 /**
  *
@@ -16,7 +19,21 @@ import static org.junit.Assert.*;
  */
 public class UnsortedDatabaseManagerTest {
 
+    private static UnsortedDatabaseManager myDB;
+
     public UnsortedDatabaseManagerTest() {
+    }
+
+    @BeforeClass
+    public static void setUpClass(){
+        ServerMain.startDatabases();
+        myDB = ServerMain.unsortedDatabaseManager;
+        myDB.resetDatabase();
+    }
+
+    @AfterClass
+    public static void tearDownClass(){
+        myDB.resetDatabase();
     }
 
     @Before

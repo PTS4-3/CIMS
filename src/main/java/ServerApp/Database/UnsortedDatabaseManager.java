@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  */
 public class UnsortedDatabaseManager extends DatabaseManager {
 
-    private final String unsortedDataTable = "dbi294542.`UNSORTEDDATABASE.UNSORTEDDATA`";
+    private final String unsortedDataTable = "UNSORTEDDATA";
 
     public UnsortedDatabaseManager(String propsFileName) {
         super(propsFileName);

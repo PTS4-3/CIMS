@@ -58,6 +58,7 @@ class DatabaseManager {
      * @param fileName
      */
     private void configure(String fileName) {
+        props = new Properties();
         try (FileInputStream in = new FileInputStream(fileName)) {
             props.load(in);
 
@@ -73,6 +74,8 @@ class DatabaseManager {
             }
         } catch (SQLException ex) {
             System.out.println("failed to init connection: " + ex.getMessage());
+        } finally {
+            closeConnection();
         }
     }
 
@@ -110,7 +113,7 @@ class DatabaseManager {
                     (String) props.get("url"),
                     (String) props.get("username"),
                     (String) props.get("password"));
-            System.out.println("Connection open succeeded");
+//            System.out.println("Connection open succeeded");
             return true;
         } catch (Exception ex) {
             System.out.println("Connection open failed: " + ex);
@@ -129,7 +132,7 @@ class DatabaseManager {
 
         try {
             conn.close();
-            System.out.println("Connection close succeeded");
+//            System.out.println("Connection close succeeded");
         } catch (SQLException ex) {
             System.out.println("Connection close failed: " + ex);
         } finally {

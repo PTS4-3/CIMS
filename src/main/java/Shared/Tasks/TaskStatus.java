@@ -14,5 +14,6 @@ public enum TaskStatus {
     SUCCEEDED,
     FAILED,
     INPROCESS,
-    SENT
+    SENT, 
+    UNASSIGNED,
 }

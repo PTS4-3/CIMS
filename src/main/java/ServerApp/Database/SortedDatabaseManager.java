@@ -30,10 +30,10 @@ import java.util.Set;
 public class SortedDatabaseManager extends DatabaseManager {
 
     private final String
-            sortedDataTable = "dbi294542.`SORTEDDATABASE.SORTEDDATA`",
-            sortedDataTagsTable = "dbi294542.`SORTEDDATABASE.SORTEDDATATAGS`",
-            requestsTable = "dbi294542.`REQUESTDATABASE.SORTEDDATA`",
-            requestTagsTable = "dbi294542.`REQUESTDATABASE.SORTEDDATATAGS`";
+            sortedDataTable = "SORTEDDATA",
+            sortedDataTagsTable = "SORTEDDATATAGS",
+            requestsTable = "REQUEST",
+            requestTagsTable = "REQUESTTAGS";
 
 
     
@@ -87,6 +87,7 @@ public class SortedDatabaseManager extends DatabaseManager {
             succeed = true;
         } catch (SQLException ex) {
             System.out.println("insertToSortedData failed: " + ex);
+            succeed = false;
         } finally {
             closeConnection();
         }
@@ -117,7 +118,7 @@ public class SortedDatabaseManager extends DatabaseManager {
         HashSet<Tag> newTags = new HashSet<Tag>();
 
         try {
-            String query = "SELECT ID FROM " + sortedDataTagsTable + " ";
+            String query = "SELECT DATAID FROM " + sortedDataTagsTable + " ";
             int sizeList = info.size();
             Iterator it = info.iterator();
             int aantal = 1;
@@ -128,7 +129,7 @@ public class SortedDatabaseManager extends DatabaseManager {
                     query += "WHERE TAGNAME = '" + element.toString() + "' ";
                     aantal++;
                 } else {
-                    query += "AND ID IN (SELECT ID FROM"
+                    query += "AND DATAID IN (SELECT ID FROM"
                             + " " + sortedDataTagsTable + " WHERE  TAGNAME = '"
                             + element.toString() + "' ";
                 }
@@ -186,6 +187,7 @@ public class SortedDatabaseManager extends DatabaseManager {
             System.out.println("Getting sorted object getFromSortedData succeed");
         } catch (SQLException ex) {
             System.out.println("getFromSortedData failed: " + ex);
+            return null;
         } finally {
             closeConnection();
         }
@@ -272,18 +274,18 @@ public class SortedDatabaseManager extends DatabaseManager {
 
         try {
             //build a string with all tha tags
-            String query = "SELECT ID FROM " + requestTagsTable + " ";
+            String query = "SELECT REQUESTID FROM " + requestTagsTable + " ";
             int sizeList = tags.size();
             Iterator it = tags.iterator();
-            int aantal = 1;
+            int amount = 1;
             while (it.hasNext()) {
                 // Get element
                 Object element = it.next();
-                if (aantal == 1) {
+                if (amount == 1) {
                     query += "WHERE TAGNAME = '" + element.toString() + "' ";
-                    aantal++;
+                    amount++;
                 } else {
-                    query += "AND ID IN (SELECT ID FROM " + requestTagsTable +
+                    query += "AND REQUESTID IN (SELECT REQUESTID FROM " + requestTagsTable +
                             " WHERE  TAGNAME ='" + element.toString() + "' ";
                 }
             }
