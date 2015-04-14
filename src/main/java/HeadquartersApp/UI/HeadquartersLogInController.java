@@ -5,7 +5,6 @@ package HeadquartersApp.UI;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 import HeadquartersApp.Connection.ConnectionManager;
 import Shared.NetworkException;
 import Shared.Users.IUser;
@@ -27,51 +26,54 @@ import javafx.scene.layout.Pane;
  */
 public class HeadquartersLogInController implements Initializable {
 
-    @FXML Pane pane;
-    @FXML TextField tfsUsername;
-    @FXML TextField tfsPassword;
-    @FXML Button btnLogIn;
-    
+    @FXML
+    Pane pane;
+    @FXML
+    TextField tfsUsername;
+    @FXML
+    TextField tfsPassword;
+    @FXML
+    Button btnLogIn;
+
     private ConnectionManager connectionManager;
     private IUser user;
-    
+
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
-        
-    }    
-    
+
+    }
+
     /**
      * Configures connectionManager
-     * @param ipAdressServer 
+     *
+     * @param ipAdressServer
      */
-    public void configure(String ipAdressServer){
+    public void configure(String ipAdressServer) {
         this.connectionManager = new ConnectionManager(this, ipAdressServer);
     }
-    
-    public void onClick(){
+
+    public void onClick() {
         try {
-            if(this.connectionManager == null) {
+            if (this.connectionManager == null) {
                 throw new NetworkException("Kon data niet wegschrijven");
             }
             String username = tfsUsername.getText();
             String password = tfsPassword.getText();
-            
-            user = null; //this.connectionManager.LogIn();
-            
-            
-        }
-       catch (NetworkException ex) {
+
+            user = null;
+
+        } catch (NetworkException ex) {
             Logger.getLogger(HeadquartersLogInController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        } 
-    public void close()
-    {
-         if(this.connectionManager != null){
+
+    }
+
+    public void close() {
+        if (this.connectionManager != null) {
             this.connectionManager.close();
         }
     }
