@@ -5,6 +5,8 @@
  */
 package HeadquartersApp.UI;
 
+import HeadquartersApp.Connection.ConnectionManager;
+import Shared.Users.IUser;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.fxml.FXMLLoader;
@@ -19,15 +21,38 @@ import javafx.stage.Stage;
 public class Headquarters extends Application {
 
     private HeadquartersLogInController controller;
+    private HeadquartersController hqController;
 
     @Override
     public void start(Stage stage) throws Exception {
+        goToLogIn(stage);
+    }
+    
+    public void goToLogIn(Stage stage) throws Exception
+    {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader()
-                .getResource("HeadquartersApp/HeadquartersLogInFX.fxml"));
+                .getResource("HeadquartersApp/HeadquartersLogInController.fxml"));
         Parent root = (Parent) loader.load();
         controller = (HeadquartersLogInController) loader.getController();
 
         this.configure();
+
+        Scene scene = new Scene(root);
+
+        stage.setScene(scene);
+        stage.setTitle("Headquarters CIMS");
+        stage.show();
+    }
+    
+    public void goToHeadquarters(Stage stage, ConnectionManager manager, 
+            IUser user) throws Exception
+    {
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader()
+                .getResource("HeadquartersApp/HeadquartersController.fxml"));
+        Parent root = (Parent) loader.load();
+        hqController = (HeadquartersController) loader.getController();
+
+        hqController.configure(manager, user);
 
         Scene scene = new Scene(root);
 

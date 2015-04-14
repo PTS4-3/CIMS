@@ -18,6 +18,7 @@ import Shared.Tasks.Plan;
 import Shared.Tasks.Step;
 import Shared.Tasks.Task;
 import Shared.Users.IServiceUser;
+import Shared.Users.IUser;
 import Shared.Users.ServiceUser;
 import java.net.URL;
 import java.util.ArrayList;
@@ -113,6 +114,7 @@ public class HeadquartersController implements Initializable {
     
     private ConnectionManager connectionManager;
     private Timer timer;
+    private IUser user = null;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -134,8 +136,10 @@ public class HeadquartersController implements Initializable {
      * Configures connectionManager and fills GUI with initial values
      * @param ipAdressServer 
      */
-    public void configure(String ipAdressServer) {
-        this.connectionManager = new ConnectionManager(this, ipAdressServer);
+    public void configure(ConnectionManager manager, IUser user) {
+        this.connectionManager = manager;
+        this.connectionManager.setHQController(this);
+        this.user = user;
 
         // Fill GUI with initial values        
         ccuTags = new CheckComboBox(FXCollections.observableArrayList(Tag.values()));
