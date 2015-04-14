@@ -14,6 +14,7 @@ import Shared.NetworkException;
 import Shared.Data.Status;
 import Shared.Tag;
 import Shared.Data.UnsortedData;
+import Shared.Users.IUser;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -83,6 +84,7 @@ public class ServicesController implements Initializable {
     private ConnectionManager connectionManager;
     private boolean showingDataItem;
     private IDataRequest answeredRequest;
+    private IUser user = null;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -144,8 +146,10 @@ public class ServicesController implements Initializable {
      *
      * @param ipAdressServer
      */
-    public void configure(String ipAdressServer) {
-        this.connectionManager = new ConnectionManager(this, ipAdressServer);
+    public void configure(ConnectionManager manager, IUser user) {
+        this.connectionManager = manager;
+        this.user = user;
+        this.connectionManager.setServicesController(this);
 
         // Fill GUI with initial values
         try {
