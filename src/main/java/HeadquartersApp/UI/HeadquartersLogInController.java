@@ -39,11 +39,6 @@ public class HeadquartersLogInController implements Initializable {
     private IUser user = null;
     
     private Headquarters main;
-    
-    public void setApp(Headquarters application)
-    {
-        this.main = application;
-    }
 
     /**
      * Initializes the controller class.
@@ -59,11 +54,12 @@ public class HeadquartersLogInController implements Initializable {
      *
      * @param ipAdressServer
      */
-    public void configure(String ipAdressServer) {
+    public void configure(Headquarters main, String ipAdressServer) {
+        this.main = main;
         this.connectionManager = new ConnectionManager(this, ipAdressServer);
     }
 
-    public void onClick() {
+    public void onClickLogIn() {
         try {
             if (this.connectionManager == null) {
                 throw new NetworkException("Kon data niet wegschrijven");

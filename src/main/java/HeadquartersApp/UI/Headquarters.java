@@ -40,9 +40,6 @@ public class Headquarters extends Application {
             this.stage.setMinWidth(100);
             this.stage.setMinHeight(100);
             goToLogIn();
-            
-
-            this.stage.show();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -52,7 +49,7 @@ public class Headquarters extends Application {
     public void goToLogIn() throws Exception
     {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader()
-                .getResource("HeadquartersApp/HeadquartersLogInController.fxml"));
+                .getResource("HeadquartersApp/HeadquartersLogInFX.fxml"));
         Parent root = (Parent) loader.load();
         controller = (HeadquartersLogInController) loader.getController();
 
@@ -69,7 +66,7 @@ public class Headquarters extends Application {
             IUser user) throws Exception
     {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader()
-                .getResource("HeadquartersApp/HeadquartersController.fxml"));
+                .getResource("HeadquartersApp/HeadquartersFX.fxml"));
         Parent root = (Parent) loader.load();
         hqController = (HeadquartersController) loader.getController();
 
@@ -92,7 +89,7 @@ public class Headquarters extends Application {
         //int portnumber = input.nextInt();
         //int portnumber = 8189;
 
-        controller.configure(ipAdressServer);
+        controller.configure(this, ipAdressServer);
     }
 
     @Override

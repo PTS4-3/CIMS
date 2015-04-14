@@ -69,7 +69,7 @@ public class Services extends Application {
         //int portnumber = input.nextInt();
         //int portnumber = 8189;
 
-        controller.configure(ipAdressServer);
+        controller.configure(this, ipAdressServer);
     }
 
     /**

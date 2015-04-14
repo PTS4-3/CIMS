@@ -6,6 +6,7 @@ package ServicesApp.UI;
  * and open the template in the editor.
  */
 
+import HeadquartersApp.UI.Headquarters;
 import ServicesApp.Connection.ConnectionManager;
 import Shared.NetworkException;
 import Shared.Users.IUser;
@@ -39,10 +40,6 @@ public class ServicesLogInController implements Initializable {
 
     private Services main;
     
-    public void setApp(Services application)
-    {
-        this.main = application;
-    }
     /**
      * Initializes the controller class.
      */
@@ -56,12 +53,13 @@ public class ServicesLogInController implements Initializable {
      *
      * @param ipAdressServer
      */
-    public void configure(String ipAdressServer) {
+    public void configure(Services main, String ipAdressServer) {
+        this.main = main;
         this.connectionManager = new ConnectionManager(this, ipAdressServer);
         
     }   
     
-    public void onClick() throws NetworkException
+    public void onClickLogIn() throws NetworkException
     {
         if (this.connectionManager == null) {
                 throw new NetworkException("Kon data niet wegschrijven");
