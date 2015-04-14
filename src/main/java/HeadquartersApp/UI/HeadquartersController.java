@@ -112,6 +112,7 @@ public class HeadquartersController implements Initializable {
     
     private IData requestData;
     private List<IStep> tempSteps;
+    private IPlan tempPlan;
     
     private ConnectionManager connectionManager;
     private Timer timer;
@@ -573,6 +574,20 @@ public class HeadquartersController implements Initializable {
         }
     }
     
+    
+    public void resetApplyPlan(){
+        tempPlan = null;
+        tfaPlanTitle.clear();
+        taaPlanDescription.clear();
+        tfaSearch.clear();
+        tfaTaskTitle.clear();
+        tfaTaskDescription.clear();
+    }
+    
+    /**
+     * Fill the ListView with plans
+     * @param plans 
+     */
     public void displayPlans(List<IPlan> plans){
         Platform.runLater(new Runnable() {
 
@@ -587,6 +602,9 @@ public class HeadquartersController implements Initializable {
         });
     }
     
+    /**
+     * Fill the ListView with Steps
+     */
     public void displaySteps(){
         Platform.runLater(new Runnable() {
             IPlan p = (IPlan) lvaPlans.getSelectionModel().getSelectedItem();
@@ -606,11 +624,31 @@ public class HeadquartersController implements Initializable {
         });
     }
     
+    /**
+     * Fill GUI with Step properties
+     */
     public void selectStep(){
         IStep step = (IStep) lvaSteps.getSelectionModel().getSelectedItem();
         
         tfaTaskTitle.setText(step.getTitle());
         tfaTaskDescription.setText(step.getDescription());
+        lvaSteps.getSelectionModel().selectFirst();
+    }
+    
+    /**
+     * Apply step to a service user and plan
+     */
+    public void applyStep(){
+        IStep s = (IStep) lvaSteps.getSelectionModel().getSelectedItem();
+        s.setExecutor((IServiceUser) cbaExecutor.getSelectionModel().getSelectedItem());        
+        tempPlan.getSteps().add(s);
+    }
+    
+    /**
+     * Remove step from plan
+     */
+    public void refuseStep(){
+        
     }
     
     public void showDialog(String title, String melding, boolean warning)

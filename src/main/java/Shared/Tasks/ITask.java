@@ -22,4 +22,5 @@ public interface ITask extends Serializable {
     ISortedData getSortedData();
     Tag getTargetExecutor();
     IServiceUser getExecutor();
+    void setExecutor(IServiceUser serviceUser);
 }

@@ -81,4 +81,9 @@ public class Task implements ITask {
     public IServiceUser getExecutor() {
         return this.executor;
     }
+
+    @Override
+    public void setExecutor(IServiceUser serviceUser) {
+        this.executor = serviceUser;
+    }
 }
