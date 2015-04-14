@@ -68,9 +68,9 @@ public class ConnectionManager {
         this.getSentData("sourceInput");
         tags.add(Tag.FIREDEPARTMENT);
         this.getSortedData(tags);
-        this.subscribeRequests();
-        this.subscribeSorted();
-        this.subscribeUnsorted();
+        this.subscribeRequests("firefighter01");
+        this.subscribeSorted("firefighter01");
+        this.subscribeUnsorted("firefighter01");
         this.sendUnsortedData(new UnsortedData(-1, "servicesTitle", "desc", "loc", "source", Status.NONE));
         this.updateUnsortedData(new UnsortedData(5, "updateTitle", "updateDesc", "updateLoc", "updateSource", Status.NONE));
         this.getNewRequests();
@@ -277,12 +277,12 @@ public class ConnectionManager {
      * return type does not guarantee the command is executed, merely that it is
      * transmitted to server.
      */
-    public boolean subscribeSorted() {
+    public boolean subscribeSorted(String username) {
         if (this.isRegisteredSorted.get()) {
             return false;
         }
         pool.execute(() -> {
-            if(new Connection(defaultIP, defaultPort).subscribeSorted(this.clientID)){
+            if(new Connection(defaultIP, defaultPort).subscribeSorted(username, this.clientID)){
                 this.notifyCommandDone(ConnCommand.SORTED_SUBSCRIBE);
             }
         });
@@ -297,12 +297,12 @@ public class ConnectionManager {
      * return type does not guarantee the command is executed, merely that it is
      * transmitted to server.
      */
-    public boolean unsubscribeSorted() {
+    public boolean unsubscribeSorted(String username) {
         if (!this.isRegisteredSorted.get()) {
             return false;
         }
         pool.execute(() -> {
-            if(new Connection(defaultIP, defaultPort).unsubscribeSorted(this.clientID)){
+            if(new Connection(defaultIP, defaultPort).unsubscribeSorted(username, this.clientID)){
                 this.notifyCommandDone(ConnCommand.SORTED_UNSUBSCRIBE);
             }
         });
@@ -317,12 +317,12 @@ public class ConnectionManager {
      * return type does not guarantee the command is executed, merely that it is
      * transmitted to server.
      */
-    public boolean subscribeRequests() {
+    public boolean subscribeRequests(String username) {
         if (this.isRegisteredRequests.get()) {
             return false;
         }
         pool.execute(() -> {
-            if(new Connection(defaultIP, defaultPort).subscribeRequests(this.clientID)){
+            if(new Connection(defaultIP, defaultPort).subscribeRequests(username, this.clientID)){
                 this.notifyCommandDone(ConnCommand.UPDATE_REQUEST_SUBSCRIBE);
             }
         });
@@ -337,12 +337,12 @@ public class ConnectionManager {
      * return type does not guarantee the command is executed, merely that it is
      * transmitted to server.
      */
-    public boolean unsubscribeRequests() {
+    public boolean unsubscribeRequests(String username) {
         if (!this.isRegisteredRequests.get()) {
             return false;
         }
         pool.execute(() -> {
-            if(new Connection(defaultIP, defaultPort).unsubscribeRequests(this.clientID)){
+            if(new Connection(defaultIP, defaultPort).unsubscribeRequests(username, this.clientID)){
                 this.notifyCommandDone(ConnCommand.UPDATE_REQUEST_UNSUBSCRIBE);
             }
         });
@@ -357,12 +357,12 @@ public class ConnectionManager {
      * return type does not guarantee the command is executed, merely that it is
      * transmitted to server.
      */
-    public boolean subscribeUnsorted() {
+    public boolean subscribeUnsorted(String username) {
         if (this.isRegisteredUnsorted.get()) {
             return false;
         }
         pool.execute(() -> {
-            if(new Connection(defaultIP, defaultPort).subscribeUnsorted(this.clientID)){
+            if(new Connection(defaultIP, defaultPort).subscribeUnsorted(username, this.clientID)){
                 this.notifyCommandDone(ConnCommand.UNSORTED_SUBSCRIBE);
             }
         });
@@ -377,12 +377,12 @@ public class ConnectionManager {
      * return type does not guarantee the command is executed, merely that it is
      * transmitted to server.
      */
-    public boolean unsubscribeUnsorted() {
+    public boolean unsubscribeUnsorted(String username) {
         if (!this.isRegisteredUnsorted.get()) {
             return false;
         }
         pool.execute(() -> {
-            if(new Connection(defaultIP, defaultPort).unsubscribeUnsorted(this.clientID)){
+            if(new Connection(defaultIP, defaultPort).unsubscribeUnsorted(username, this.clientID)){
                 this.notifyCommandDone(ConnCommand.UNSORTED_UNSUBSCRIBE);
             }
         });

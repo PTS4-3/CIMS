@@ -454,14 +454,21 @@ public class Connection implements Runnable {
      * @throws ClassNotFoundException
      */
     private void subscribeSorted() throws IOException, ClassNotFoundException {
-        Object inObject = in.readObject();
-        if (inObject instanceof Integer) {
-//            System.out.println("clientID subscribing sorted: " + (int)inObject);
-            getBuffer().subscribeSorted((int) inObject);
-            writeResult(true);
-        } else {
-            writeResult(false);
+        Object par1 = in.readObject();
+        Object par2 = in.readObject();
+        
+        if (par1 == null || !(par1 instanceof String)) {
+            out.writeObject(ConnState.COMMAND_ERROR);
         }
+        if (par2 == null || !(par2 instanceof Integer)) {
+            out.writeObject(ConnState.COMMAND_ERROR);
+        }
+        
+        String username = (String) par1;
+        int clientID = (Integer) par2;
+        
+        getBuffer().subscribeSorted(username, clientID);
+        this.writeResult(true);
     }
 
     /**
@@ -486,14 +493,21 @@ public class Connection implements Runnable {
      * @throws ClassNotFoundException
      */
     private void subscribeRequest() throws IOException, ClassNotFoundException {
-        Object inObject = in.readObject();
-        if (inObject instanceof Integer) {
-//            System.out.println("clientID subscribing requests: " + (int)inObject);
-            getBuffer().subscribeRequests((int) inObject);
-            writeResult(true);
-        } else {
-            writeResult(false);
+        Object par1 = in.readObject();
+        Object par2 = in.readObject();
+        
+        if (par1 == null || !(par1 instanceof String)) {
+            out.writeObject(ConnState.COMMAND_ERROR);
         }
+        if (par2 == null || !(par2 instanceof Integer)) {
+            out.writeObject(ConnState.COMMAND_ERROR);
+        }
+        
+        String username = (String) par1;
+        int clientID = (Integer) par2;
+        
+        getBuffer().subscribeRequests(username, clientID);
+        this.writeResult(true);
     }
 
     /**
@@ -503,13 +517,21 @@ public class Connection implements Runnable {
      * @throws ClassNotFoundException
      */
     private void unsubscribeRequest() throws IOException, ClassNotFoundException {
-        Object inObject = in.readObject();
-        if (inObject instanceof Integer) {
-            getBuffer().unsubscribeRequests((int) inObject);
-            writeResult(true);
-        } else {
-            writeResult(false);
+        Object par1 = in.readObject();
+        Object par2 = in.readObject();
+        
+        if (par1 == null || !(par1 instanceof String)) {
+            out.writeObject(ConnState.COMMAND_ERROR);
         }
+        if (par2 == null || !(par2 instanceof Integer)) {
+            out.writeObject(ConnState.COMMAND_ERROR);
+        }
+        
+        String username = (String) par1;
+        int clientID = (Integer) par2;
+        
+        getBuffer().unsubscribeRequests(username, clientID);
+        this.writeResult(true);
     }
 
     /**
@@ -519,13 +541,21 @@ public class Connection implements Runnable {
      * @throws ClassNotFoundException
      */
     private void unsubscribeSorted() throws IOException, ClassNotFoundException {
-        Object inObject = in.readObject();
-        if (inObject instanceof Integer) {
-            getBuffer().unsubscribeSorted((int) inObject);
-            writeResult(true);
-        } else {
-            writeResult(false);
+        Object par1 = in.readObject();
+        Object par2 = in.readObject();
+        
+        if (par1 == null || !(par1 instanceof String)) {
+            out.writeObject(ConnState.COMMAND_ERROR);
         }
+        if (par2 == null || !(par2 instanceof Integer)) {
+            out.writeObject(ConnState.COMMAND_ERROR);
+        }
+        
+        String username = (String) par1;
+        int clientID = (Integer) par2;
+        
+        getBuffer().unsubscribeSorted(username, clientID);
+        this.writeResult(true);
     }
 
     /**
@@ -550,13 +580,21 @@ public class Connection implements Runnable {
      * @throws ClassNotFoundException
      */
     private void subscribeUnsorted() throws IOException, ClassNotFoundException {
-        Object inObject = in.readObject();
-        if (inObject instanceof Integer) {
-            getBuffer().subscribeUnsorted((int) inObject);
-            writeResult(true);
-        } else {
-            writeResult(false);
+        Object par1 = in.readObject();
+        Object par2 = in.readObject();
+        
+        if (par1 == null || !(par1 instanceof String)) {
+            out.writeObject(ConnState.COMMAND_ERROR);
         }
+        if (par2 == null || !(par2 instanceof Integer)) {
+            out.writeObject(ConnState.COMMAND_ERROR);
+        }
+        
+        String username = (String) par1;
+        int clientID = (Integer) par2;
+        
+        getBuffer().subscribeUnsorted(username, clientID);
+        this.writeResult(true);
     }
 
     /**
@@ -566,13 +604,21 @@ public class Connection implements Runnable {
      * @throws ClassNotFoundException
      */
     private void unsubscribeUnsorted() throws IOException, ClassNotFoundException {
-        Object inObject = in.readObject();
-        if (inObject instanceof Integer) {
-            getBuffer().unsubscribeUnsorted((int) inObject);
-            writeResult(true);
-        } else {
-            writeResult(false);
+        Object par1 = in.readObject();
+        Object par2 = in.readObject();
+        
+        if (par1 == null || !(par1 instanceof String)) {
+            out.writeObject(ConnState.COMMAND_ERROR);
         }
+        if (par2 == null || !(par2 instanceof Integer)) {
+            out.writeObject(ConnState.COMMAND_ERROR);
+        }
+        
+        String username = (String) par1;
+        int clientID = (Integer) par2;
+        
+        getBuffer().unsubscribeUnsorted(username, clientID);
+        this.writeResult(true);
     }
     
     /**
@@ -630,6 +676,14 @@ public class Connection implements Runnable {
             out.writeObject(ConnState.COMMAND_ERROR);
         }
         
+        IPlan plan = (IPlan) inObject;
         
+        boolean success = false;
+        
+        synchronized(LOCK) {
+            success = ServerMain.dummyDatabaseManager.insertNewPlan(plan);
+        }
+        
+        //TODO
     }
 }

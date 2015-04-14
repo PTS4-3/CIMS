@@ -8,8 +8,10 @@ package ServerApp;
 import Shared.Data.IData;
 import Shared.Data.IDataRequest;
 import Shared.Data.ISortedData;
+import Shared.Tasks.IStep;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -29,50 +31,79 @@ public class PushBuffer {
     private HashMap<Integer, List<IDataRequest>> requestBuffer;
     // key: ClientID, Value: sentData
     private HashMap<Integer, List<IData>> unsortedDataBuffer;
+    // key: username, Value: ClientIDs
+    private HashMap<String, HashSet<Integer>> clientIDs;
 
     public PushBuffer() {
         sortedDataBuffer = new HashMap<>();
         requestBuffer = new HashMap<>();
         unsortedDataBuffer = new HashMap<>();
+        this.clientIDs = new HashMap<>();
+    }
+    
+    private synchronized void addClientID(String username, int clientID) {
+        if(this.clientIDs.get(username) == null) {
+            this.clientIDs.put(username, new HashSet<>());
+        }
+        this.clientIDs.get(username).add(clientID);
+    }
+    
+    private synchronized void removeClientID(String username, int clientID) {
+        if(this.sortedDataBuffer.get(clientID) == null &&
+                this.unsortedDataBuffer.get(clientID) == null &&
+                this.requestBuffer.get(clientID) == null) {
+            this.clientIDs.get(username).remove(clientID);
+            
+            if(this.clientIDs.get(username).isEmpty()) {
+                this.clientIDs.remove(username);
+            }
+        }
     }
 
-    public void subscribeSorted(int clientID) {
+    public void subscribeSorted(String username, int clientID) {
+        this.addClientID(username, clientID);
         synchronized (LOCK_SORTED) {
             sortedDataBuffer.put(clientID, new ArrayList<>());
         }
     }
 
-    public void subscribeRequests(int clientID) {
+    public void subscribeRequests(String username, int clientID) {
+        this.addClientID(username, clientID);
         synchronized (LOCK_REQUESTS) {
             requestBuffer.put(clientID, new ArrayList<>());
         }
     }
 
-    public void subscribeUnsorted(int clientID){
+    public void subscribeUnsorted(String username, int clientID){
+        this.addClientID(username, clientID);
         synchronized(LOCK_UNSORTED){
             unsortedDataBuffer.put(clientID, new ArrayList<>());
         }
     }
 
-    public void unsubscribeSorted(int clientID) {
+    public void unsubscribeSorted(String username, int clientID) {
         synchronized (LOCK_SORTED) {
             sortedDataBuffer.remove(clientID);
         }
+        this.removeClientID(username, clientID);
     }
 
-    public void unsubscribeRequests(int clientID) {
+    public void unsubscribeRequests(String username, int clientID) {
         synchronized (LOCK_REQUESTS) {
             requestBuffer.remove(clientID);
         }
+        this.removeClientID(username, clientID);
     }
 
-    public void unsubscribeUnsorted(int clientID){
+    public void unsubscribeUnsorted(String username, int clientID){
         synchronized(LOCK_UNSORTED){
             unsortedDataBuffer.remove(clientID);
         }
+        this.removeClientID(username, clientID);
     }
 
     public void addSorted(ISortedData data) {
+        //TODO
         synchronized (LOCK_SORTED) {
             for (int client : sortedDataBuffer.keySet()) {
                 sortedDataBuffer.get(client).add(data);
@@ -81,6 +112,7 @@ public class PushBuffer {
     }
 
     public void addRequest(IDataRequest request) {
+        //TODO
         synchronized (LOCK_REQUESTS) {
             for (int client : requestBuffer.keySet()) {
                 requestBuffer.get(client).add(request);
@@ -89,11 +121,18 @@ public class PushBuffer {
     }
 
     public void addUnsorted(IData data){
+        //TODO
         synchronized(LOCK_UNSORTED){
             for(int client : unsortedDataBuffer.keySet()){
                 unsortedDataBuffer.get(client).add(data);
             }
         }
+    }
+    
+    public void addStep(IStep step) {
+        //TODO
+        //Op basis van executor toevoegen bij juiste clientIDs
+        //Collect daarvoor schrijven
     }
 
     public List<ISortedData> collectSorted(int clientID) {

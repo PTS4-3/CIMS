@@ -182,9 +182,9 @@ class Connection extends ConnClientBase {
      *
      * @param clientID
      */
-    boolean subscribeSorted(int clientID) {
+    boolean subscribeSorted(String username, int clientID) {
         return super.booleanCommand(
-                ConnCommand.SORTED_SUBSCRIBE, new Object[]{clientID});
+                ConnCommand.SORTED_SUBSCRIBE, new Object[]{username, clientID});
     }
 
     /**
@@ -192,9 +192,9 @@ class Connection extends ConnClientBase {
      *
      * @param clientID
      */
-    boolean subscribeRequests(int clientID) {
+    boolean subscribeRequests(String username, int clientID) {
         return super.booleanCommand(
-                ConnCommand.UPDATE_REQUEST_SUBSCRIBE, new Object[]{clientID});
+                ConnCommand.UPDATE_REQUEST_SUBSCRIBE, new Object[]{username, clientID});
     }
 
     /**
@@ -240,9 +240,9 @@ class Connection extends ConnClientBase {
      *
      * @param clientID
      */
-    boolean unsubscribeSorted(int clientID) {
+    boolean unsubscribeSorted(String username, int clientID) {
         return super.booleanCommand(
-                ConnCommand.SORTED_UNSUBSCRIBE, new Object[]{clientID});
+                ConnCommand.SORTED_UNSUBSCRIBE, new Object[]{username, clientID});
     }
 
     /**
@@ -250,9 +250,9 @@ class Connection extends ConnClientBase {
      *
      * @param clientID
      */
-    boolean unsubscribeRequests(int clientID) {
+    boolean unsubscribeRequests(String username, int clientID) {
         return super.booleanCommand(
-                ConnCommand.UPDATE_REQUEST_UNSUBSCRIBE, new Object[]{clientID});
+                ConnCommand.UPDATE_REQUEST_UNSUBSCRIBE, new Object[]{username, clientID});
     }
 
     /**
@@ -261,9 +261,9 @@ class Connection extends ConnClientBase {
      * @param clientID
      * @return
      */
-    boolean subscribeUnsorted(int clientID) {
+    boolean subscribeUnsorted(String username, int clientID) {
         return super.booleanCommand(
-                ConnCommand.UNSORTED_SUBSCRIBE, new Object[]{clientID});
+                ConnCommand.UNSORTED_SUBSCRIBE, new Object[]{username, clientID});
     }
 
     /**
@@ -272,9 +272,9 @@ class Connection extends ConnClientBase {
      * @param clientID
      * @return
      */
-    boolean unsubscribeUnsorted(int clientID) {
+    boolean unsubscribeUnsorted(String username, int clientID) {
         return super.booleanCommand(
-                ConnCommand.UNSORTED_UNSUBSCRIBE, new Object[]{clientID});
+                ConnCommand.UNSORTED_UNSUBSCRIBE, new Object[]{username, clientID});
     }
 
     /**
