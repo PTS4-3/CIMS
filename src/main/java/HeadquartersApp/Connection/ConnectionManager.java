@@ -6,6 +6,7 @@
 package HeadquartersApp.Connection;
 
 import HeadquartersApp.UI.HeadquartersController;
+import HeadquartersApp.UI.HeadquartersLogInController;
 import Shared.Data.*;
 import Shared.Tag;
 import Shared.Tasks.*;
@@ -29,7 +30,7 @@ public class ConnectionManager {
     
     private static final ExecutorService pool = Executors.newCachedThreadPool();
     private HeadquartersController hqController = null;
-    private HeadquartersLogInContoller loginController = null;
+    private HeadquartersLogInController loginController = null;
     private String defaultIP = "127.0.0.1";
     private int defaultPort;
 
@@ -184,7 +185,7 @@ public class ConnectionManager {
      * Sends the new given plan to the server
      * @param plan cannot be null
      */
-    protected void sendNewPlan(IPlan plan) {
+    public void sendNewPlan(IPlan plan) {
         if(plan == null) {
             throw new IllegalArgumentException("Voer een nieuw plan in"); 
         }
@@ -203,7 +204,7 @@ public class ConnectionManager {
      * Applies a plan and send its steps to the executors
      * @param plan cannot be null
      */
-    protected void applyPlan(IPlan plan) {
+    public void applyPlan(IPlan plan) {
         if(plan == null) {
             throw new IllegalArgumentException("Voer een plan in");
         }
