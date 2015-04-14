@@ -25,6 +25,7 @@ public class TasksDatabaseManager extends DatabaseManager{
      * @param newTask
      * @return
      */
+    @Deprecated
     public boolean insertNewTask(ITask newTask) {
         //TODO
         return true;
@@ -35,6 +36,7 @@ public class TasksDatabaseManager extends DatabaseManager{
      * @param plan
      * @return
      */
+    @Deprecated
     public boolean insertNewPlan(IPlan plan) {
         //TODO
         return true;

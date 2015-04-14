@@ -46,7 +46,6 @@ class DatabaseManager {
      * @param fileName
      */
     public DatabaseManager(String fileName) {
-        // todo changes
         this.configure(fileName);
     }
 
@@ -64,29 +63,12 @@ class DatabaseManager {
             System.out.println("IOException in database configure: " + ex.getMessage());
         }
 
-        try {
-//            this.initConnection();          
+        try {         
             if (!openConnection() || conn == null || conn.isClosed()) {
                 throw new SQLException("Connection was null or closed");
             }
         } catch (SQLException ex) {
             System.out.println("failed to init connection: " + ex.getMessage());
-        }
-    }
-
-    /**
-     * test properties
-     */
-    @Deprecated
-    protected  void initConnection() throws SQLException {
-        String url = (String) props.get("url");
-        String username = (String) props.get("username");
-        String password = (String) props.get("password");
-
-        this.conn = DriverManager.getConnection(url, username, password);
-        if (!conn.isClosed()) {
-            System.out.println("test connection succeed");
-            this.conn.close();
         }
     }
 
