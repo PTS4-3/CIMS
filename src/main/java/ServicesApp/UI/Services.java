@@ -30,7 +30,7 @@ public class Services extends Application {
     
     public void goToLogIn() throws Exception
     {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("ServicesApp/ServicesFX.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("ServicesApp/ServicesLogInFX.fxml"));
         Parent root = (Parent) loader.load();
         controller = (ServicesLogInController) loader.getController();
 
