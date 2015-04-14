@@ -61,10 +61,10 @@ public class ConnectionManager {
         ITask task = new Task(-1, "newTaskTitle", "newTaskDesc", TaskStatus.INPROCESS, null, Tag.POLICE, null);
         steps.add(new Step(task.getId(), task.getTitle(), task.getDescription(), task.getStatus(), task.getSortedData(), task.getTargetExecutor(), task.getExecutor(), 1, ""));
         
-        this.sendNewTask(task);
+        this.sendTask(task);
         HashSet<String> keywords = new HashSet<>();
         keywords.add("Brand");
-        this.sendNewPlan(new Plan(-1, "newPlanTitle", "newPlanDesc", keywords, steps));
+        this.sendNewPlan(new Plan(-1, "newPlanTitle", "newPlanDesc", keywords, steps, true));
     }
     
     public void setDefaultPort(int port){
@@ -155,19 +155,19 @@ public class ConnectionManager {
     }
     
     /**
-     * Sends the new given task to the server
+     * Sends the given task to the server
      * @param task cannot be null
      */
-    public void sendNewTask(ITask task) {
+    public void sendTask(ITask task) {
         if(task == null) {
-            throw new IllegalArgumentException("Voer een nieuwe taak in");
+            throw new IllegalArgumentException("Voer een taak in");
         }
         
         pool.execute(new Runnable() {
 
             @Override
             public void run() {
-                new Connection(defaultIP, defaultPort).sendNewTask(task);
+                new Connection(defaultIP, defaultPort).sendTask(task);
             }
             
         });
@@ -187,6 +187,25 @@ public class ConnectionManager {
             @Override
             public void run() {
                 new Connection(defaultIP, defaultPort).sendNewPlan(plan);
+            }
+            
+        });
+    }
+    
+    /**
+     * Applies a plan and send its steps to the executors
+     * @param plan cannot be null
+     */
+    protected void applyPlan(IPlan plan) {
+        if(plan == null) {
+            throw new IllegalArgumentException("Voer een plan in");
+        }
+        
+        pool.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                new Connection(defaultIP, defaultPort).applyPlan(plan);
             }
             
         });

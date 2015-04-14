@@ -14,7 +14,7 @@ import Shared.Tasks.ITask;
  */
 public class DummyDatabaseManager {
 
-    public boolean insertNewTask(ITask newTask) {
+    public boolean insertTask(ITask newTask) {
         //TODO
         return true;
     }

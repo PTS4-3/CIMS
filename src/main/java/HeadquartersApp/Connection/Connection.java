@@ -95,11 +95,11 @@ class Connection extends ConnClientBase {
     }
     
     /**
-     * Sends the new given task to the server
+     * Sends the given task to the server
      * @param task
      */
-    protected void sendNewTask(ITask task) {
-        super.booleanCommand(ConnCommand.TASK_SEND_NEW, new Object[]{task});
+    protected void sendTask(ITask task) {
+        super.booleanCommand(ConnCommand.TASK_SEND, new Object[]{task});
     }
     
     /**
@@ -108,5 +108,13 @@ class Connection extends ConnClientBase {
      */
     protected void sendNewPlan(IPlan plan) {
         super.booleanCommand(ConnCommand.PLAN_SEND_NEW, new Object[]{plan});
+    }
+    
+    /**
+     * Applies a plan and send its steps to the executors
+     * @param plan cannot be null
+     */
+    protected void applyPlan(IPlan plan) {
+        super.booleanCommand(ConnCommand.PLAN_APPLY, new Object[]{plan});
     }
 }

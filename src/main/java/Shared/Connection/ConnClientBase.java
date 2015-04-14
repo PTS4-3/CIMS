@@ -289,11 +289,14 @@ public class ConnClientBase {
             case UPDATE_REQUEST_UNSUBSCRIBE:
                 output = "unsubscribing from new update requests";
                 break;
-            case TASK_SEND_NEW:
-                output = "sending new task";
+            case TASK_SEND:
+                output = "sending task";
                 break;
             case PLAN_SEND_NEW:
                 output = "sending new plan";
+                break;
+            case PLAN_APPLY:
+                output = "apply a plan";
                 break;
         }
         return output;

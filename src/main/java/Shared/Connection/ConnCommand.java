@@ -31,8 +31,9 @@ public enum ConnCommand {
     UPDATE_REQUEST_GET_NEW,
     UPDATE_REQUEST_SUBSCRIBE,
     UPDATE_REQUEST_UNSUBSCRIBE,
-    TASK_SEND_NEW,
-    PLAN_SEND_NEW;
+    TASK_SEND,
+    PLAN_SEND_NEW,
+    PLAN_APPLY
 }
 
 /*
@@ -102,12 +103,17 @@ public enum ConnCommand {
  Option 22 - Client: ConnCommand.UNSORTED_GET_NEW
  -> Client: int clientID
  -> Server: List<IData>
- Option 23 - Client: ConnCommand.TASK_SEND_NEW
+ Option 23 - Client: ConnCommand.TASK_SEND
  -> Client: ITask task
  -> Server: ConnState.COMMAND_<success y/n>
  Option 24 - Client: ConnCommand.PLAN_SEND_NEW
  -> Client: IPlan plan
  -> Server: ConnState.COMMAND_<success y/n>
+ Option 25 - Client: ConnComman.PLAN_APPLY
+ -> HQ: IPlan plan
+ -> Server: First step to executor (Services) + Save to db
+ -> Services: IStep step
+ -> Server: Next step or step back to HQ
  -----
  Return to start, except on closed conn
  */

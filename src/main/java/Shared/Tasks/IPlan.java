@@ -19,4 +19,5 @@ public interface IPlan extends Serializable {
     String getDescription();
     HashSet<String> getKeywords();
     SortedSet<IStep> getSteps();
+    boolean isTemplate();
 }

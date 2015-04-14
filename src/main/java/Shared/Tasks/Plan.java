@@ -19,6 +19,7 @@ public class Plan implements IPlan {
     private String description;
     private HashSet<String> keywords;
     private TreeSet<IStep> steps;
+    private boolean template;
     
     /**
      * 
@@ -27,9 +28,10 @@ public class Plan implements IPlan {
      * @param description
      * @param keywords has to be a size of at least 1
      * @param steps has to be a size of at least 1
+     * @param template
      */
     public Plan(int id, String title, String description, 
-            HashSet<String> keywords, TreeSet<IStep> steps) {
+            HashSet<String> keywords, TreeSet<IStep> steps, boolean template) {
         if(title == null || title.isEmpty()) {
             throw new IllegalArgumentException("Voer een titel in");
         }
@@ -44,6 +46,7 @@ public class Plan implements IPlan {
         this.description = description;
         this.keywords = keywords;
         this.steps = steps;
+        this.template = template;
     }
     
     @Override
@@ -71,4 +74,8 @@ public class Plan implements IPlan {
         return this.steps;
     }
     
+    @Override
+    public boolean isTemplate() {
+        return this.template;
+    }
 }

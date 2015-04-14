@@ -6,7 +6,6 @@
 package Shared.Tasks;
 
 import Shared.Data.ISortedData;
-import Shared.Data.SortedData;
 import Shared.Tag;
 import Shared.Users.IServiceUser;
 
