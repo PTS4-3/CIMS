@@ -5,7 +5,11 @@
  */
 package ServerApp;
 
-import ServerApp.Database.DatabaseManager;
+import ServerApp.Database.DummyDatabaseManager;
+import ServerApp.Database.SortedDatabaseManager;
+import ServerApp.Database.TasksDatabaseManager;
+import ServerApp.Database.UnsortedDatabaseManager;
+import ServerApp.Database.UnsortedDatabaseManager;
 
 /**
  *
@@ -13,14 +17,22 @@ import ServerApp.Database.DatabaseManager;
  */
 public class ServerMain{
 
-    public static DatabaseManager databaseManager = null;
+    public static SortedDatabaseManager sortedDatabaseManager = null;
+    public static UnsortedDatabaseManager unsortedDatabaseManager = null;
+    public static TasksDatabaseManager tasksDatabaseManager = null;
     public static ConnectionManager connectionManager = null;
+
+    public static DummyDatabaseManager dummyDatabaseManager = null;
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-       databaseManager = new DatabaseManager("database.properties");
+       sortedDatabaseManager = new SortedDatabaseManager("database.properties");
+       unsortedDatabaseManager = new UnsortedDatabaseManager("database.properties");
+       tasksDatabaseManager = new TasksDatabaseManager("database.properties");
        connectionManager = new ConnectionManager();
+
+       dummyDatabaseManager = new DummyDatabaseManager();
     }
 }
