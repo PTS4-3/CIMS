@@ -4,7 +4,6 @@
  * and open the template in the editor.
  */
 
-import ServerApp.Database.DatabaseManager;
 import Shared.Data.DataRequest;
 import Shared.Data.IData;
 import Shared.Data.IDataRequest;
@@ -27,15 +26,15 @@ import org.junit.Test;
  */
 public class TestDatabase {
     
-    private DatabaseManager database;
-    private IData unsorted;
-    private ISortedData sorted;
-    private IDataRequest request;
-    private HashSet<Tag> tag = new HashSet();
-    private List<IData> unsortedData;
-    private List<UnsortedData> unsorteddata;
-    private String source;
-    private int ID = 580;
+//    private DatabaseManager database;
+//    private IData unsorted;
+//    private ISortedData sorted;
+//    private IDataRequest request;
+//    private HashSet<Tag> tag = new HashSet();
+//    private List<IData> unsortedData;
+//    private List<UnsortedData> unsorteddata;
+//    private String source;
+//    private int ID = 580;
     
     public TestDatabase() {
     }
