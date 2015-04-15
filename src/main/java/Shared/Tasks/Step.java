@@ -54,4 +54,9 @@ public class Step extends Task implements IStep {
     public int compareTo(IStep o) {
         return Integer.compare(this.stepnr, o.getStepnr());
     }
+
+    @Override
+    public void setId(int Id) {
+        super.setId(Id);
+    }
 }

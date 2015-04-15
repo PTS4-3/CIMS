@@ -14,11 +14,19 @@ import Shared.Tasks.ITask;
  */
 public class DummyDatabaseManager {
 
+    /**
+     * Database works
+     * @param newTask
+     * @return
+     * @deprecated
+     */
+    @Deprecated
     public boolean insertTask(ITask newTask) {
         //TODO
         return true;
     }
 
+    @Deprecated
     public boolean insertNewPlan(IPlan plan) {
         //TODO
         return true;

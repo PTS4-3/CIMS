@@ -38,6 +38,9 @@ public class Task implements ITask {
         if(title == null || title.isEmpty()) {
             throw new IllegalArgumentException("Voer een titel in");
         }
+        if(status == null){
+            throw new IllegalArgumentException("Null status niet toegestaan");
+        }
         this.id = id;
         this.title = title;
         this.description = description;
@@ -50,6 +53,11 @@ public class Task implements ITask {
     @Override
     public int getId() {
         return this.id;
+    }
+
+    @Override
+    public void setId(int input){
+        this.id = input;
     }
 
     @Override

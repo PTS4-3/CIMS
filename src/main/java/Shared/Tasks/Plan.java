@@ -55,6 +55,11 @@ public class Plan implements IPlan {
     }
 
     @Override
+    public void setId(int input){
+        this.id = input;
+    }
+
+    @Override
     public String getTitle() {
         return this.title;
     }

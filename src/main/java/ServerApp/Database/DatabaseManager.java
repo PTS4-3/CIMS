@@ -5,16 +5,6 @@
  */
 package ServerApp.Database;
 
-import Shared.Data.DataRequest;
-import Shared.Data.IData;
-import Shared.Data.IDataRequest;
-import Shared.Data.ISortedData;
-import Shared.Data.SortedData;
-import Shared.Data.Status;
-import Shared.Tag;
-import Shared.Data.UnsortedData;
-import Shared.Tasks.IPlan;
-import Shared.Tasks.ITask;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -24,14 +14,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,7 +26,6 @@ class DatabaseManager {
 
     protected Connection conn;
     private Properties props;
-    
 
     /**
      *
@@ -55,6 +37,7 @@ class DatabaseManager {
 
     /**
      * configureproperties
+     *
      * @param fileName
      */
     private void configure(String fileName) {
@@ -68,7 +51,7 @@ class DatabaseManager {
             System.out.println("IOException in database configure: " + ex.getMessage());
         }
 
-        try {         
+        try {
             if (!openConnection() || conn == null || conn.isClosed()) {
                 throw new SQLException("Connection was null or closed");
             }
@@ -81,10 +64,11 @@ class DatabaseManager {
 
     /**
      * Resets database to dummy data state
+     *
      * @return
      */
-    protected boolean resetDatabase(){
-        if(!openConnection()){
+    protected boolean resetDatabase() {
+        if (!openConnection()) {
             return false;
         }
 
@@ -138,8 +122,24 @@ class DatabaseManager {
         } finally {
             conn = null;
         }
-
     }
 
-    
+    /**
+     * gets max ID from given table. Does not open its own connection.
+     * @param tableName
+     * @return
+     * @throws SQLException
+     */
+    protected int getMaxID(String tableName) throws SQLException {
+        int output = -1;
+        // Gets assigned ID. Throws Exception if not found
+        String query = "SELECT MAX(ID) FROM " + tableName;
+        PreparedStatement prepStat = conn.prepareStatement(query);
+        ResultSet rs = prepStat.executeQuery();
+        while (rs.next()) {
+            output = rs.getInt(1);
+        }
+        return output;
+    }
+
 }

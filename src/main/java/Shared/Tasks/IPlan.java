@@ -15,6 +15,7 @@ import java.util.SortedSet;
  */
 public interface IPlan extends Serializable {
     int getId();
+    void setId(int Id);
     String getTitle();
     String getDescription();
     HashSet<String> getKeywords();

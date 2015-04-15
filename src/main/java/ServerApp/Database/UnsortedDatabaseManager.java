@@ -63,8 +63,8 @@ public class UnsortedDatabaseManager extends DatabaseManager {
      * @return List unsorteddata first get information from database second
      * change status to INPROCESS
      */
-    public List<UnsortedData> getFromUnsortedData() {
-        List<UnsortedData> unsorted = new ArrayList();
+    public List<IData> getFromUnsortedData() {
+        List<IData> unsorted = new ArrayList();
 
         int id;
         String title;
@@ -98,7 +98,7 @@ public class UnsortedDatabaseManager extends DatabaseManager {
             }
 
             //update data
-            for (UnsortedData x : unsorted) {
+            for (IData x : unsorted) {
                 String update = "UPDATE " + unsortedDataTable + " SET STATUS = '"
                         + Status.INPROCESS.toString() + "' WHERE ID = " + x.getId();
                 PreparedStatement updateData = conn.prepareStatement(update);
@@ -133,10 +133,10 @@ public class UnsortedDatabaseManager extends DatabaseManager {
                 PreparedStatement reset = conn.prepareStatement(query);
 
                 reset.execute();
-                System.out.println("Resetting object succeed");
+//                System.out.println("Resetting object succeed");
             }
 
-            System.out.println("resetUnsortedData succeeded");
+//            System.out.println("resetUnsortedData succeeded");
             succeed = true;
         } catch (SQLException ex) {
             System.out.println("resetUnsortedData failed: " + ex);

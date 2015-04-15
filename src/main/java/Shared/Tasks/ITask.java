@@ -16,6 +16,7 @@ import java.io.Serializable;
  */
 public interface ITask extends Serializable {
     int getId();
+    void setId(int Id);
     String getTitle();
     String getDescription();
     TaskStatus getStatus();

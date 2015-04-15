@@ -129,7 +129,7 @@ public class SortedDatabaseManager extends DatabaseManager {
                     query += "WHERE TAGNAME = '" + element.toString() + "' ";
                     aantal++;
                 } else {
-                    query += "AND DATAID IN (SELECT ID FROM"
+                    query += "AND DATAID IN (SELECT DATAID FROM"
                             + " " + sortedDataTagsTable + " WHERE  TAGNAME = '"
                             + element.toString() + "' ";
                 }
@@ -142,7 +142,7 @@ public class SortedDatabaseManager extends DatabaseManager {
             ResultSet result = readData.executeQuery();
 
             while (result.next()) {
-                numbers.add(result.getInt("ID"));
+                numbers.add(result.getInt("DATAID"));
             }
 
             //make list of object with correct id's
@@ -167,7 +167,7 @@ public class SortedDatabaseManager extends DatabaseManager {
 
                         String getTags = "Select TAGNAME From " + sortedDataTagsTable
                                 + " WHERE "
-                                + "ID = " + id;
+                                + "DATAID = " + id;
                         PreparedStatement getTagsData = conn.prepareStatement(getTags);
                         ResultSet tagsData = getTagsData.executeQuery();
                         while (tagsData.next()) {
@@ -244,6 +244,7 @@ public class SortedDatabaseManager extends DatabaseManager {
             succeed = true;
         } catch (SQLException ex) {
             System.out.println("insertDataRequest failed: " + ex);
+            succeed = false;
         } finally {
             closeConnection();
         }
@@ -269,7 +270,7 @@ public class SortedDatabaseManager extends DatabaseManager {
         String description;
         String location;
         String source;
-        int requestId;
+        int dataID;
         HashSet<Tag> newTags = new HashSet<Tag>();
 
         try {
@@ -297,7 +298,7 @@ public class SortedDatabaseManager extends DatabaseManager {
             ResultSet result = readData.executeQuery();
 
             while (result.next()) {
-                numbers.add(result.getInt("ID"));
+                numbers.add(result.getInt("REQUESTID"));
             }
 
             //Get request data from database with correct id's
@@ -317,11 +318,11 @@ public class SortedDatabaseManager extends DatabaseManager {
                         description = resultTag.getString("DESCRIPTION");
                         location = resultTag.getString("LOCATION");
                         source = resultTag.getString("SOURCE");
-                        requestId = resultTag.getInt("REQUESTID");
+                        dataID = resultTag.getInt("DATAID");
 
                         String getTags = "Select TAGNAME From "
                                 + requestTagsTable + " WHERE "
-                                + "ID = " + id;
+                                + "REQUESTID = " + id;
                         PreparedStatement getTagsData = conn.prepareStatement(getTags);
                         ResultSet tagsData = getTagsData.executeQuery();
                         while (tagsData.next()) {
@@ -329,7 +330,7 @@ public class SortedDatabaseManager extends DatabaseManager {
                             newTags.add(tag);
                         }
 
-                        request.add(new DataRequest(id, title, description, location, source, requestId, tags));
+                        request.add(new DataRequest(id, title, description, location, source, dataID, tags));
                     }
                     System.out.println("getUpdateRequests object succeed");
                 }
@@ -337,6 +338,7 @@ public class SortedDatabaseManager extends DatabaseManager {
             succeed = true;
         } catch (SQLException ex) {
             System.out.println("getUpdateRequests failed: " + ex);
+            return null;
         } finally {
             closeConnection();
         }
