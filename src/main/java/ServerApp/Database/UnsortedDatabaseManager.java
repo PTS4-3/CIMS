@@ -49,7 +49,7 @@ public class UnsortedDatabaseManager extends DatabaseManager {
             unsortedData.setString(5, Status.NONE.toString());
             unsortedData.execute();
 
-            System.out.println("insertToUnsortedData succeeded");
+//            System.out.println("insertToUnsortedData succeeded");
             succeed = true;
         } catch (SQLException ex) {
             System.out.println("insertToUnsortedData failed: " + ex);
@@ -106,7 +106,7 @@ public class UnsortedDatabaseManager extends DatabaseManager {
                 System.out.println("Updating unsorted status succeed");
             }
 
-            System.out.println("getFromUnsortedData succeed");
+//            System.out.println("getFromUnsortedData succeed");
         } catch (SQLException ex) {
             System.out.println("getFromUnsortedData failed: " + ex);
         } finally {
@@ -165,7 +165,7 @@ public class UnsortedDatabaseManager extends DatabaseManager {
 
             update.execute();
 
-            System.out.println("updateStatusUnsortedData succeeded");
+//            System.out.println("updateStatusUnsortedData succeeded");
             succeed = true;
         } catch (SQLException ex) {
             System.out.println("updateStatusUnsortedData failed: " + ex);
@@ -201,7 +201,7 @@ public class UnsortedDatabaseManager extends DatabaseManager {
 
             update.execute();
 
-            System.out.println("updateUnsortedData succeeded");
+//            System.out.println("updateUnsortedData succeeded");
             succeed = true;
         } catch (SQLException ex) {
             System.out.println("updateUnsortedData failed: " + ex);
@@ -230,7 +230,7 @@ public class UnsortedDatabaseManager extends DatabaseManager {
 
             update.execute();
 
-            System.out.println("discardUnsortedData succeeded");
+//            System.out.println("discardUnsortedData succeeded");
             succeed = true;
         } catch (SQLException ex) {
             System.out.println("discardUnsortedData failed: " + ex);
@@ -270,7 +270,7 @@ public class UnsortedDatabaseManager extends DatabaseManager {
                 Status status = Status.valueOf(result.getString("STATUS"));
 
                 unsorted = new UnsortedData(id, title, description, location, source, status);
-                System.out.println("Getting object getDataItem succeed");
+//                System.out.println("Getting object getDataItem succeed");
             }
         } catch (SQLException ex) {
             System.out.println("getDataItem failed: " + ex);
@@ -316,7 +316,7 @@ public class UnsortedDatabaseManager extends DatabaseManager {
 
                 // TODO Status uitlezen uit database
                 unsorted.add(new UnsortedData(id, title, description, location, realSource, status));
-                System.out.println("Getting object getSentData succeed");
+//                System.out.println("Getting object getSentData succeed");
             }
 
         } catch (SQLException ex) {

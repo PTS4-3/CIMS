@@ -65,7 +65,7 @@ public class SortedDatabaseManager extends DatabaseManager {
             sortedData.setInt(8, sorted.getQuality());
             sortedData.execute();
 
-            System.out.println("Insert sortedData succeeded");
+//            System.out.println("Insert sortedData succeeded");
 
             Iterator it = tags.iterator();
             while (it.hasNext()) {
@@ -82,7 +82,7 @@ public class SortedDatabaseManager extends DatabaseManager {
 
             ServerMain.unsortedDatabaseManager.updateStatusUnsortedData(sorted);
 
-            System.out.println("insertToSortedData succeeded");
+//            System.out.println("insertToSortedData succeeded");
 
             succeed = true;
         } catch (SQLException ex) {
@@ -178,13 +178,13 @@ public class SortedDatabaseManager extends DatabaseManager {
                         sorted.add(new SortedData(id, title, description, 
                                 location, source, relevance,
                                 reliability, quality, newTags));
-                        System.out.println("Getting sorted object  succeed");
+//                        System.out.println("Getting sorted object  succeed");
 
                     }
                 }
 
             }
-            System.out.println("Getting sorted object getFromSortedData succeed");
+//            System.out.println("Getting sorted object getFromSortedData succeed");
         } catch (SQLException ex) {
             System.out.println("getFromSortedData failed: " + ex);
             return null;
@@ -227,7 +227,7 @@ public class SortedDatabaseManager extends DatabaseManager {
                 id = result.getInt(1);
             }
 
-            System.out.println("insertDataRequest object insert");
+//            System.out.println("insertDataRequest object insert");
             Iterator it = tags.iterator();
             while (it.hasNext()) {
                 // Get tagid
@@ -240,7 +240,7 @@ public class SortedDatabaseManager extends DatabaseManager {
                 requestData.setString(2, element.toString());
                 requestData.execute();
             }
-            System.out.println("insertDataRequest succeeded");
+//            System.out.println("insertDataRequest succeeded");
             succeed = true;
         } catch (SQLException ex) {
             System.out.println("insertDataRequest failed: " + ex);
@@ -332,7 +332,7 @@ public class SortedDatabaseManager extends DatabaseManager {
 
                         request.add(new DataRequest(id, title, description, location, source, dataID, tags));
                     }
-                    System.out.println("getUpdateRequests object succeed");
+//                    System.out.println("getUpdateRequests object succeed");
                 }
             }
             succeed = true;
