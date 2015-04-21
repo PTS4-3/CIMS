@@ -217,6 +217,11 @@ public class HeadquartersController implements Initializable {
                 throw new NetworkException("Kon geen data ophalen");
             }
             this.connectionManager.getData();
+            this.connectionManager.getSortedData();
+            this.connectionManager.getServiceUsers();
+            
+            this.connectionManager.subscribeSortedData(this.user.getUsername());
+            
             this.startTimer();        
         } catch (NetworkException nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
@@ -356,6 +361,7 @@ public class HeadquartersController implements Initializable {
      */
     public void close() {        
         if(this.connectionManager != null){
+            this.connectionManager.unsubscribeSortedData(this.user.getUsername());
             this.connectionManager.stopWorkingOnData(
                     new ArrayList<>(lvuUnsortedData.getItems()));
             this.connectionManager.close();
