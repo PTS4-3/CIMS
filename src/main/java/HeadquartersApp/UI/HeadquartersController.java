@@ -494,7 +494,7 @@ public class HeadquartersController implements Initializable {
     }
     
     /**
-     * Fills the ComboBox with service users and selects the first value
+     * Fills the ComboBoxes with service users and selects the first value
      * @param serviceUsers 
      */
     public void displayServiceUsers(List<IServiceUser> serviceUsers){
@@ -578,7 +578,6 @@ public class HeadquartersController implements Initializable {
      * Go to tabApplyPlan tab
      */
     public void goToApplyPlan() {
-        //TODO
         try {
             // Load values from GUI
             IData data = 
@@ -617,6 +616,12 @@ public class HeadquartersController implements Initializable {
      */
     public void selectTask(){
         //TODO
+        ITask task =
+                (ITask) lvsTasks.getSelectionModel().getSelectedItem();
+        if(task != null){
+            tfsTaskTitle.setText(task.getTitle());
+            tasTaskDescription.setText(task.getDescription());
+        }
     }
     
     /**
@@ -661,17 +666,8 @@ public class HeadquartersController implements Initializable {
                     steps.add(s);
                 }
                 
-                String s = tapKeyWords.getText()
-                .replace("\n", " ")
-                .replace(",", " ")
-                .replace(".", " ")
-                .replace("!", " ")
-                .replace("?", " ")
-                .replace("  ", " ")
-                .toLowerCase()
-                .replace("é", "e");
-                
-                String[] array = s.split(" ");
+                String s = tapKeyWords.getText();
+                String[] array = uniformString(s).split(" ");
                 for(String word : array){
                     keywords.add(word);
                 }
@@ -755,6 +751,15 @@ public class HeadquartersController implements Initializable {
      */
     public void searchPlan(){
         //TODO
+        HashSet<String> keywords = null;
+        
+        String s = tapKeyWords.getText();
+        String[] array = uniformString(s).split(" ");
+        for(String word : array){
+            keywords.add(word);
+        }
+        
+        
     }
     
     /**
@@ -833,5 +838,24 @@ public class HeadquartersController implements Initializable {
         
         alert.setContentText(melding);
         alert.showAndWait();
+    }
+    
+    /**
+     * Replaces every punctuation mark with a space. 
+     * Sets everything to lowercase.
+     * @param s
+     * @return 
+     */
+    public String uniformString(String s){
+        s.replace("\n", " ")
+        .replace(",", " ")
+        .replace(".", " ")
+        .replace("!", " ")
+        .replace("?", " ")
+        .replace("  ", " ")
+        .toLowerCase()
+        .replace("é", "e");
+        
+        return s;
     }
 }

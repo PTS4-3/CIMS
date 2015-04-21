@@ -461,9 +461,11 @@ public class Connection implements Runnable {
         
         if (par1 == null || !(par1 instanceof String)) {
             out.writeObject(ConnState.COMMAND_ERROR);
+            return;
         }
         if (par2 == null || !(par2 instanceof Integer)) {
             out.writeObject(ConnState.COMMAND_ERROR);
+            return;
         }
         
         String username = (String) par1;
@@ -500,9 +502,11 @@ public class Connection implements Runnable {
         
         if (par1 == null || !(par1 instanceof String)) {
             out.writeObject(ConnState.COMMAND_ERROR);
+            return;
         }
         if (par2 == null || !(par2 instanceof Integer)) {
             out.writeObject(ConnState.COMMAND_ERROR);
+            return;
         }
         
         String username = (String) par1;
@@ -524,9 +528,11 @@ public class Connection implements Runnable {
         
         if (par1 == null || !(par1 instanceof String)) {
             out.writeObject(ConnState.COMMAND_ERROR);
+            return;
         }
         if (par2 == null || !(par2 instanceof Integer)) {
             out.writeObject(ConnState.COMMAND_ERROR);
+            return;
         }
         
         String username = (String) par1;
@@ -548,9 +554,11 @@ public class Connection implements Runnable {
         
         if (par1 == null || !(par1 instanceof String)) {
             out.writeObject(ConnState.COMMAND_ERROR);
+            return;
         }
         if (par2 == null || !(par2 instanceof Integer)) {
             out.writeObject(ConnState.COMMAND_ERROR);
+            return;
         }
         
         String username = (String) par1;
@@ -587,9 +595,11 @@ public class Connection implements Runnable {
         
         if (par1 == null || !(par1 instanceof String)) {
             out.writeObject(ConnState.COMMAND_ERROR);
+            return;
         }
         if (par2 == null || !(par2 instanceof Integer)) {
             out.writeObject(ConnState.COMMAND_ERROR);
+            return;
         }
         
         String username = (String) par1;
@@ -611,15 +621,84 @@ public class Connection implements Runnable {
         
         if (par1 == null || !(par1 instanceof String)) {
             out.writeObject(ConnState.COMMAND_ERROR);
+            return;
         }
         if (par2 == null || !(par2 instanceof Integer)) {
             out.writeObject(ConnState.COMMAND_ERROR);
+            return;
         }
         
         String username = (String) par1;
         int clientID = (Integer) par2;
         
         getBuffer().unsubscribeUnsorted(username, clientID);
+        this.writeResult(true);
+    }
+    
+    /**
+     * Sends newly submitted data tasks since last method call.
+     *
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private void sendNewTasks() throws IOException, ClassNotFoundException {
+        Object inObject = in.readObject();
+        if (inObject instanceof Integer) {
+            writeOutput(getBuffer().collectTasks((int) inObject));
+        } else {
+            writeResult(false);
+        }
+    }
+
+    /**
+     * Subscribes client with given id for his own buffer of Tasks.
+     *
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private void subscribeTasks() throws IOException, ClassNotFoundException {
+        Object par1 = in.readObject();
+        Object par2 = in.readObject();
+        
+        if (par1 == null || !(par1 instanceof String)) {
+            out.writeObject(ConnState.COMMAND_ERROR);
+            return;
+        }
+        if (par2 == null || !(par2 instanceof Integer)) {
+            out.writeObject(ConnState.COMMAND_ERROR);
+            return;
+        }
+        
+        String username = (String) par1;
+        int clientID = (Integer) par2;
+        
+        getBuffer().subscribeTasks(username, clientID);
+        this.writeResult(true);
+    }
+
+    /**
+     * Unsubscribes client with given ID from his personal buffer.
+     *
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private void unsubscribeTasks() throws IOException, ClassNotFoundException {
+        Object par1 = in.readObject();
+        Object par2 = in.readObject();
+        
+        if (par1 == null || !(par1 instanceof String)) {
+            out.writeObject(ConnState.COMMAND_ERROR);
+            return;
+        }
+        if (par2 == null || !(par2 instanceof Integer)) {
+            out.writeObject(ConnState.COMMAND_ERROR);
+            return;
+        }
+        
+        String username = (String) par1;
+        int clientID = (Integer) par2;
+        
+        getBuffer().unsubscribeTasks(username, clientID);
         this.writeResult(true);
     }
     
@@ -641,8 +720,9 @@ public class Connection implements Runnable {
         synchronized(LOCK) {
             task = ServerMain.tasksDatabaseManager.insertNewTask(task);
         }
-        //TODO add to buffer
-        //TODO send task to executor
+        
+        getBuffer().addTask(task);
+        
         this.writeResult(success);
     }
     

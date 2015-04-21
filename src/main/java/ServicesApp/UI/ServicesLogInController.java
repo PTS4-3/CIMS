@@ -39,6 +39,7 @@ public class ServicesLogInController implements Initializable {
     Button btnLogIn;
 
     private ConnectionManager connectionManager;
+    private IUser user;
 
     private Services main;
 
@@ -69,6 +70,7 @@ public class ServicesLogInController implements Initializable {
         String password = tfsPassword.getText();
         
         this.connectionManager.getSigninUser(username, password);
+
     }
 
     public void logIn(IUser user) {
