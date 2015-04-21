@@ -63,27 +63,29 @@ public class ServicesLogInController implements Initializable {
     }
 
     public void onClickLogIn() throws NetworkException {
-        if (this.connectionManager == null) {
-            throw new NetworkException("Kon data niet wegschrijven");
-        }
-        String username = tfsUsername.getText();
-        String password = tfsPassword.getText();
-        
-        this.connectionManager.getSigninUser(username, password);
+        try {
+            if (this.connectionManager == null) {
+                throw new NetworkException("Kon data niet wegschrijven");
+            }
+            String username = tfsUsername.getText();
+            String password = tfsPassword.getText();
 
+            this.connectionManager.getSigninUser(username, password);
+        } catch (NetworkException ex) {
+            Logger.getLogger(ServicesLogInController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void logIn(IUser user) {
         System.out.println("User inloggen");
         try {
             if (user == null) {
-                showDialog("Log in fout", "De combinatie van wachtwoord en "+
-                        "gebruikersnaam is onjuist", true);
-            }else if(user instanceof IHQChief || user instanceof IHQUser) {
-                showDialog("Log in fout", "Je mag hier niet inloggen met deze"+
-                        "gegevens", true);
-            }
-            else {
+                showDialog("Log in fout", "De combinatie van wachtwoord en "
+                        + "gebruikersnaam is onjuist", true);
+            } else if (user instanceof IHQChief || user instanceof IHQUser) {
+                showDialog("Log in fout", "Je mag hier niet inloggen met deze"
+                        + "gegevens", true);
+            } else {
                 this.main.goToServices(connectionManager, user);
                 System.out.println("User ingelogd");
             }
@@ -91,7 +93,7 @@ public class ServicesLogInController implements Initializable {
             Logger.getLogger(ServicesLogInController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     private void showDialog(String title, String melding, boolean warning) {
         Alert alert = null;
 
