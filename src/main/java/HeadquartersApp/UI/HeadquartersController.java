@@ -344,9 +344,6 @@ public class HeadquartersController implements Initializable {
             // Update ListView
             this.updateLvuUnsortedData(unsortedData);
             
-            // Bevestiging tonen
-            showDialog("Verzenden geslaagd", "Het verzenden van de gesorteerde " +
-                    "data is geslaagd", false);
         } catch (IllegalArgumentException iaEx) {
             showDialog("", iaEx.getMessage(), false);
         } catch (NetworkException nEx) {
@@ -391,9 +388,6 @@ public class HeadquartersController implements Initializable {
             // Update ListView
             this.updateLvuUnsortedData(unsortedData);
             
-            // Bevestiging tonen
-            showDialog("Verwijderen geslaagd", "Het verwijderen van de ongesorteerde " +
-                    "data is geslaagd", false);
         } catch (IllegalArgumentException iaEx) {
             showDialog("", iaEx.getMessage(), false);
         } catch (NetworkException nEx) {
@@ -453,9 +447,6 @@ public class HeadquartersController implements Initializable {
             // Reset tab
             resetRequest();
             
-            // Bevestiging tonen
-            showDialog("Verzenden geslaagd", "Het verzenden van de aanvraag " +
-                    "is geslaagd", false);
         } catch (IllegalArgumentException iaEx) {
             showDialog("Invoer onjuist", iaEx.getMessage(), true);
         } catch (NetworkException nEx) {
@@ -589,8 +580,10 @@ public class HeadquartersController implements Initializable {
                 executor = (ServiceUser)cbsExecutor.getValue();
                 
             connectionManager.sendTask(new Task(1, title, description, TaskStatus.UNASSIGNED, (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem(), executor.getType(), executor));
-            List<ITask> tasks = (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem().getTasks();
+            ISortedData data = (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem();
+            List<ITask> tasks = data.getTasks();
             displaySortedDataTasks(tasks);
+            
         } catch (IllegalArgumentException iaEx) {
             showDialog("", iaEx.getMessage(), false);
         } catch (NetworkException nEx) {
