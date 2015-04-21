@@ -6,6 +6,7 @@
 package Shared.Tasks;
 
 import Shared.Data.ISortedData;
+import Shared.Data.SortedData;
 import Shared.Tag;
 import Shared.Users.IServiceUser;
 
@@ -58,5 +59,10 @@ public class Step extends Task implements IStep {
     @Override
     public void setId(int Id) {
         super.setId(Id);
+    }
+
+    @Override
+    public void setSortedData(SortedData data) {
+        super.setSortedData(data);
     }
 }

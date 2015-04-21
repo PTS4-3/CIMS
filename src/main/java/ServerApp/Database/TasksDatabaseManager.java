@@ -13,8 +13,12 @@ import Shared.Tasks.IStep;
 import Shared.Tasks.ITask;
 import Shared.Tasks.Task;
 import Shared.Tasks.TaskStatus;
+import Shared.Users.HQChief;
+import Shared.Users.HQUser;
 import Shared.Users.IServiceUser;
 import Shared.Users.IUser;
+import Shared.Users.ServiceUser;
+import Shared.Users.UserRole;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,12 +34,13 @@ import java.util.logging.Logger;
  */
 public class TasksDatabaseManager extends DatabaseManager {
 
-    private final String taskTable = "TASK",
+    private final String
+            taskTable = "TASK",
             userTaskTable = "USERTASK",
-            taskStatusTable = "TASKSTATUS",
             planTable = "PLAN",
             keywordTable = "KEYWORD",
-            stepTable = "STEP";
+            stepTable = "STEP",
+            userTable = "'USER'";
 
     public TasksDatabaseManager(String fileName) {
         super(fileName);
@@ -58,10 +63,24 @@ public class TasksDatabaseManager extends DatabaseManager {
 
         try {
             // Inserts Task object
-            query = "INSERT INTO " + taskTable + " VALUES (ID,?,?)";
+            query = "INSERT INTO " + taskTable
+                    + " (ID, TITLE, DESCRIPTION, TAG, DATAID, STATUS, REASON)"
+                    + " VALUES (ID,?,?,?,?,?,?)";
             prepStat = conn.prepareStatement(query);
             prepStat.setString(1, newTask.getTitle());
             prepStat.setString(2, newTask.getDescription());
+            prepStat.setString(3, newTask.getTargetExecutor().toString());
+            if(newTask.getSortedData() == null){
+                prepStat.setInt(4, -1);
+            } else {
+                prepStat.setInt(4, newTask.getSortedData().getId());
+            }
+            prepStat.setString(5, newTask.getStatus().toString());
+            if(newTask.getDeclineReason() == null){
+                prepStat.setString(6, "");
+            } else {
+                prepStat.setString(6, newTask.getDeclineReason());
+            }
             prepStat.execute();
 
             // Gets assigned ID. Throws Exception if not found
@@ -79,14 +98,6 @@ public class TasksDatabaseManager extends DatabaseManager {
                 prepStat.execute();
             }
             output = newTask;
-
-            // Sets task status if it was not Unassigned
-            if (newTask.getStatus() != TaskStatus.UNASSIGNED
-                    && newTask.getStatus() != null) {
-                if (!setTaskStatus(newTask)) {
-                    output = null;
-                }
-            }
 
         } catch (SQLException ex) {
             System.out.println("failed to execute insertNewTask: " + ex.getMessage());
@@ -191,10 +202,10 @@ public class TasksDatabaseManager extends DatabaseManager {
 
         try {
             // overwrites if existing, inserts if not
-            query = "REPLACE INTO " + taskStatusTable
-                    + " SET TASKID = " + input.getId()
-                    + ", STATUS = " + input.getStatus().toString();
+            query = "UPDATE " + taskTable + " SET STATUS = ? WHERE ID = ?";
             prepStat = conn.prepareStatement(query);
+            prepStat.setString(1, input.getStatus().toString());
+            prepStat.setInt(2, input.getId());
             prepStat.execute();
             result = true;
         } catch (SQLException ex) {
@@ -224,8 +235,9 @@ public class TasksDatabaseManager extends DatabaseManager {
 
         try{
             query = "SELECT * FROM " + taskTable +
-                    " WHERE ID = " + ID;
+                    " WHERE ID = ?";
             prepStat = conn.prepareStatement(query);
+            prepStat.setInt(1, ID);
             rs = prepStat.executeQuery();
 
             int outputDataID = -1;
@@ -331,6 +343,7 @@ public class TasksDatabaseManager extends DatabaseManager {
         return output;
     }
 
+    @Deprecated
     public IUser getUser(String userName){
         return null;
     }
@@ -340,6 +353,7 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @param execFilter if null, return all tasks
      * @return
      */
+    @Deprecated
     public List<ITask> getTasks(IServiceUser execFilter){
         return null;
     }
@@ -351,7 +365,51 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @return null if not found
      */
     public IUser loginUser(String userName, String password){
-        return null;
+        if (!openConnection() || (userName == null) || (password == null)) {
+            return null;
+        }
+        IUser output = null;
+        String query;
+        PreparedStatement prepStat;
+        ResultSet rs;
+
+        try {
+            query = "SELECT * FROM " + userTable + " WHERE USERNAME = ? AND PASSWORD = ?";
+            prepStat = conn.prepareStatement(query);
+            prepStat.setString(1, userName);
+            prepStat.setString(2, password);
+            rs = prepStat.executeQuery();
+
+            while(rs.next()){
+                String outputUserName = rs.getString("USERNAME");
+                String outputName = rs.getString("NAME");
+                UserRole outputRole = UserRole.valueOf(rs.getString("ROLE"));
+                Tag outputTag = Tag.valueOf(rs.getString("TAG"));
+
+                switch(outputRole){
+                    case SERVICE:
+                        output = new ServiceUser(outputUserName, outputName, outputTag);
+                        break;
+                    case HQ:
+                        output = new HQUser(outputUserName, outputName);
+                        break;
+                    case CHIEF:
+                        output = new HQChief(outputUserName, outputName);
+                        break;
+                    default:
+                        output = null;
+                        break;
+                }
+            }
+        } catch (SQLException ex) {
+            System.out.println("failed login attempt for " + userName
+                    + ": " + ex.getMessage());
+            Logger.getLogger(TasksDatabaseManager.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        } finally {
+            closeConnection();
+        }
+        return output;
     }
 
     /**
@@ -359,6 +417,7 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @param keywords
      * @return
      */
+    @Deprecated
     public List<IPlan> getPlans(HashSet<String> keywords){
         return null;
     }
