@@ -103,8 +103,8 @@ public class HeadquartersController implements Initializable {
     
     // ApplyPlan
     @FXML Tab tabApplyPlan;
-    @FXML TextField tfaPlanTitle;
-    @FXML TextArea taaPlanDescription;
+    @FXML TextField tfaDataTitle;
+    @FXML TextArea taaDataDescription;
     @FXML TextField tfaSearch;
     @FXML ListView lvaPlans;
     @FXML ListView lvaSteps;
@@ -588,6 +588,8 @@ public class HeadquartersController implements Initializable {
             }
             // Load values into tabApplyPlan
             this.sortedData = data;
+            tfaDataTitle.setText(data.getTitle());
+            taaDataDescription.setText(data.getDescription());
             tabPane.getSelectionModel().select(tabApplyPlan);
         } catch (IllegalArgumentException iaEx) {
             showDialog("", iaEx.getMessage(), false);
@@ -658,10 +660,31 @@ public class HeadquartersController implements Initializable {
                 for(IStep s : tempSteps){
                     steps.add(s);
                 }
-
-                connectionManager.sendNewPlan(new Plan(1, title, description, keywords, steps, false));
-                tfpPlanTitle.clear();
-                tapPlanDescription.clear();
+                
+                String s = tapKeyWords.getText()
+                .replace("\n", " ")
+                .replace(",", " ")
+                .replace(".", " ")
+                .replace("!", " ")
+                .replace("?", " ")
+                .replace("  ", " ")
+                .toLowerCase()
+                .replace("é", "e");
+                
+                String[] array = s.split(" ");
+                for(String word : array){
+                    keywords.add(word);
+                }
+                
+                if(title != null) {
+                    connectionManager.sendNewPlan(new Plan(1, title, description, keywords, steps, false));
+                    tfpPlanTitle.clear();
+                    tapPlanDescription.clear();
+                } else {
+                    showDialog("Foutmelding", "Voer een titel voor het stappenplan in", true);
+                }
+            } else {
+                showDialog("Foutmelding", "Voeg stappen aan het stappenplan toe", true);
             }
         } catch (IllegalArgumentException iaEx) {
             showDialog("", iaEx.getMessage(), false);
@@ -677,8 +700,8 @@ public class HeadquartersController implements Initializable {
      */
     public void resetApplyPlan(){
         tempPlan = null;
-        tfaPlanTitle.clear();
-        taaPlanDescription.clear();
+        tfaDataTitle.clear();
+        taaDataDescription.clear();
         tfaSearch.clear();
         tfaTaskTitle.clear();
         tfaTaskDescription.clear();
