@@ -67,6 +67,8 @@ public class HeadquartersLogInController implements Initializable {
             }
             String username = tfsUsername.getText();
             String password = tfsPassword.getText();
+            
+            connectionManager.getSigninUser(username, password);
 
         } catch (NetworkException ex) {
             Logger.getLogger(HeadquartersLogInController.class.getName()).log(Level.SEVERE, null, ex);
