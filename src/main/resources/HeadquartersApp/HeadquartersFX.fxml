@@ -107,8 +107,8 @@
                     </FXCollections>
                   </items>
                 </ComboBox>
-                <Button layoutX="1029.0" layoutY="424.0" mnemonicParsing="false" prefWidth="157.0" text="Stappenplan toepassen" />
-                <Button layoutX="882.0" layoutY="424.0" mnemonicParsing="false" prefWidth="138.0" text="Taak toekennen" />
+                <Button fx:id="btnAddRoadMap" layoutX="1029.0" layoutY="424.0" mnemonicParsing="false" prefWidth="157.0" text="Stappenplan toepassen" />
+                <Button id="btnAddTask" fx:id="btnAddSortedTask" layoutX="882.0" layoutY="424.0" mnemonicParsing="false" prefWidth="138.0" text="Taak toekennen" />
               </children>
             </AnchorPane>
           </content>
@@ -121,10 +121,10 @@
                 <Label layoutX="34.0" layoutY="65.0" text="Titel" />
                 <TextField id="tfuTitle" fx:id="tfTitleRoadmap" layoutX="178.0" layoutY="62.0" prefWidth="333.0" />
                 <Label layoutX="36.0" layoutY="108.0" text="Beschrijving" />
-                <TextArea id="tauDescription" fx:id="tfDescriptionRoadmap" layoutX="178.0" layoutY="100.0" prefHeight="221.0" prefWidth="333.0" wrapText="true" />
+                <TextArea id="tauDescription" fx:id="tfDescriptionRoadmap" layoutX="178.0" layoutY="100.0" prefHeight="199.0" prefWidth="333.0" wrapText="true" />
                 <Label layoutX="36.0" layoutY="344.0" text="Keywoorden" />
                 <Label font="$x1" layoutX="34.0" layoutY="26.0" text="Stappenplan informatie" underline="false" />
-                <TextArea id="tauDescription" fx:id="tfKeywordsRoadmap" layoutX="178.0" layoutY="335.0" prefHeight="110.0" prefWidth="333.0" wrapText="true" />
+                <TextArea id="tauDescription" fx:id="tfKeywordsRoadmap" layoutX="178.0" layoutY="310.0" prefHeight="110.0" prefWidth="333.0" wrapText="true" />
                 <ListView fx:id="lvTaskRoadmap" layoutX="575.0" layoutY="62.0" prefHeight="157.0" prefWidth="597.0" />
                 <Label font="$x1" layoutX="575.0" layoutY="26.0" text="Stappenplan taken" underline="false" />
                 <Label layoutX="573.0" layoutY="240.0" text="Titel" />
@@ -135,6 +135,7 @@
                 <TextField id="tfuTitle" fx:id="tfConditionsTaskRoadmap" layoutX="717.0" layoutY="398.0" prefWidth="455.0" />
                 <Button id="btnAcceptTask" fx:id="btnAddTask" layoutX="985.0" layoutY="431.0" mnemonicParsing="false" prefWidth="187.0" text="Taak toevoegen" />
                 <Button fx:id="btnDeleteTask" layoutX="788.0" layoutY="431.0" mnemonicParsing="false" prefWidth="187.0" text="Taak verwijderen" />
+                <Button id="btn" fx:id="btnRoadMapAdd" layoutX="364.0" layoutY="431.0" mnemonicParsing="false" text="Stappenplan toevoegen" />
               </children>
             </AnchorPane>
           </content>
