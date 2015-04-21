@@ -40,10 +40,11 @@ public class TasksDatabaseManager extends DatabaseManager {
             planTable = "PLAN",
             keywordTable = "KEYWORD",
             stepTable = "STEP",
-            userTable = "'USER'";
+            userTable = "USER";
 
     public TasksDatabaseManager(String fileName) {
         super(fileName);
+//        System.out.println("checking testlogin: " + (this.loginUser("chief01", "chief01") instanceof HQChief));
     }
 
     /**
@@ -384,11 +385,11 @@ public class TasksDatabaseManager extends DatabaseManager {
                 String outputUserName = rs.getString("USERNAME");
                 String outputName = rs.getString("NAME");
                 UserRole outputRole = UserRole.valueOf(rs.getString("ROLE"));
-                Tag outputTag = Tag.valueOf(rs.getString("TAG"));
+                String outputTagString = rs.getString("TAG");
 
                 switch(outputRole){
                     case SERVICE:
-                        output = new ServiceUser(outputUserName, outputName, outputTag);
+                        output = new ServiceUser(outputUserName, outputName, Tag.valueOf(outputTagString));
                         break;
                     case HQ:
                         output = new HQUser(outputUserName, outputName);

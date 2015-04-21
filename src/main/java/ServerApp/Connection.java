@@ -746,7 +746,7 @@ public class Connection implements Runnable {
         synchronized(LOCK) {
             plan = ServerMain.tasksDatabaseManager.insertNewPlan(plan);
         }
-        //TODO add to buffer
+        
         this.writeResult(success);
     }
     

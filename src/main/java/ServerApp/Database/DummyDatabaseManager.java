@@ -56,6 +56,7 @@ public class DummyDatabaseManager {
      * @param password
      * @return null if not found
      */
+    @Deprecated
     public IUser loginUser(String userName, String password){
         return null;
     }

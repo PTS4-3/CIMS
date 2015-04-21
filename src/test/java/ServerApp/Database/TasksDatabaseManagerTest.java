@@ -13,7 +13,9 @@ import Shared.Tasks.Plan;
 import Shared.Tasks.Step;
 import Shared.Tasks.Task;
 import Shared.Tasks.TaskStatus;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.TreeSet;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -36,7 +38,7 @@ public class TasksDatabaseManagerTest {
         HashSet<String> keywords = new HashSet<>();
         keywords.add("keyword");
 
-        TreeSet<IStep> steps = new TreeSet<>();
+        List<IStep> steps = new ArrayList<>();
         steps.add(new Step(-1, "title", "desc", TaskStatus.UNASSIGNED,
                 null, Tag.POLICE, null, 1, "condition"));
 

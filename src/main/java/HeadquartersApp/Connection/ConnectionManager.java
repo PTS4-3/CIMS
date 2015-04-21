@@ -41,7 +41,7 @@ public class ConnectionManager {
         this.defaultIP = defaultIP;
         this.defaultPort = DEFAULT_PORT;
         this.loginController = loginController;
-        this.testMethods();
+        //this.testMethods();
     }
     
     public void setHQController(HeadquartersController hqController) {
@@ -64,7 +64,7 @@ public class ConnectionManager {
         data.add(new UnsortedData(3, "resetTitle", "resetDesc", "resetLoc", "resetSource", Status.NONE));
         this.stopWorkingOnData(data);
         
-        TreeSet<IStep> steps = new TreeSet<>();
+        List<IStep> steps = new ArrayList<>();
         ITask task = new Task(-1, "newTaskTitle", "newTaskDesc", TaskStatus.INPROCESS, null, Tag.POLICE, null);
         steps.add(new Step(task.getId(), task.getTitle(), task.getDescription(), task.getStatus(), task.getSortedData(), task.getTargetExecutor(), task.getExecutor(), 1, ""));
         

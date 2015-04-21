@@ -62,6 +62,7 @@ public class HeadquartersLogInController implements Initializable {
 
     public void onClickLogIn() {
         try {
+            System.out.println("starting inlog");
             if (this.connectionManager == null) {
                 throw new NetworkException("Kon data niet wegschrijven");
             }

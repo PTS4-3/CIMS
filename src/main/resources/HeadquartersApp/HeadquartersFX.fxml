@@ -9,9 +9,9 @@
 <?import javafx.scene.text.*?>
 <?import org.controlsfx.control.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="500.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="HeadquartersApp.UI.HeadquartersController">
+<AnchorPane id="AnchorPane" prefHeight="524.0" prefWidth="1200.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="HeadquartersApp.UI.HeadquartersController">
   <children>
-    <TabPane fx:id="tabPane" layoutX="0.0" layoutY="0.0" prefHeight="500.0" prefWidth="1200.0" tabClosingPolicy="UNAVAILABLE">
+    <TabPane fx:id="tabPane" layoutX="0.0" layoutY="24.0" prefHeight="500.0" prefWidth="1200.0" tabClosingPolicy="UNAVAILABLE">
       <tabs>
         <Tab fx:id="tabProcessInfo" text="Informatie verwerken">
           <content>
@@ -151,7 +151,7 @@
                 <TextArea id="tauDescription" fx:id="taaDataDescription" layoutX="158.0" layoutY="99.0" prefHeight="221.0" prefWidth="225.0" wrapText="true" />
                 <Label font="$x1" layoutX="14.0" layoutY="25.0" text="Situatie informatie" underline="false" />
                 <Separator layoutX="824.0" layoutY="14.0" orientation="VERTICAL" prefHeight="431.0" />
-                <ListView fx:id="lvaPlans" layoutX="437.0" layoutY="99.0" prefHeight="346.0" prefWidth="368.0" />
+                <ListView fx:id="lvaPlans" layoutX="437.0" layoutY="99.0" prefHeight="323.0" prefWidth="368.0" />
                 <Label layoutX="437.0" layoutY="63.0" text="Zoeken" />
                 <TextField id="tfuTitle" fx:id="tfaSearch" layoutX="497.0" layoutY="60.0" prefWidth="204.0" />
                 <Button fx:id="btnSearchRoadmap" layoutX="712.0" layoutY="61.0" mnemonicParsing="false" onAction="#searchPlan" prefWidth="93.0" text="Zoeken" />
@@ -174,11 +174,31 @@
                 </ComboBox>
                 <Button fx:id="btnCancelTask" layoutX="1030.0" layoutY="435.0" mnemonicParsing="false" onAction="#refuseStep" prefWidth="157.0" text="Taak annuleren" />
                 <Button fx:id="btnApplyTask" layoutX="883.0" layoutY="435.0" mnemonicParsing="false" onAction="#applyStep" prefWidth="138.0" text="Taak toekennen" />
+                <Button id="btnApplyTask" fx:id="btnApplyRoadMap" layoutX="667.0" layoutY="435.0" mnemonicParsing="false" onAction="#applyStep" prefWidth="138.0" text="Stappenplan kiezen" />
               </children>
             </AnchorPane>
           </content>
         </Tab>
       </tabs>
     </TabPane>
+    <MenuBar fx:id="menuHQ" layoutX="0.0" layoutY="0.0" prefWidth="1200.0">
+      <menus>
+        <Menu mnemonicParsing="false" text="File">
+          <items>
+            <MenuItem mnemonicParsing="false" text="Close" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Edit">
+          <items>
+            <MenuItem mnemonicParsing="false" text="Delete" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Help">
+          <items>
+            <MenuItem mnemonicParsing="false" text="About" />
+          </items>
+        </Menu>
+      </menus>
+    </MenuBar>
   </children>
 </AnchorPane>

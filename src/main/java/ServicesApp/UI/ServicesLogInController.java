@@ -8,6 +8,8 @@ package ServicesApp.UI;
 import HeadquartersApp.UI.Headquarters;
 import ServicesApp.Connection.ConnectionManager;
 import Shared.NetworkException;
+import Shared.Users.IHQChief;
+import Shared.Users.IHQUser;
 import Shared.Users.IUser;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -33,8 +35,6 @@ public class ServicesLogInController implements Initializable {
     TextField tfsUsername;
     @FXML
     TextField tfsPassword;
-    @FXML
-    Button btnLogIn;
 
     private ConnectionManager connectionManager;
     private IUser user;
@@ -60,30 +60,39 @@ public class ServicesLogInController implements Initializable {
 
     }
 
-    public void onClickLogIn() throws NetworkException {
-        if (this.connectionManager == null) {
-            throw new NetworkException("Kon data niet wegschrijven");
+    public void onClickLogIn() {
+        try {
+            System.out.println("starting inlog");
+            if (this.connectionManager == null) {
+                throw new NetworkException("Kon data niet wegschrijven");
+            }
+            String username = tfsUsername.getText();
+            String password = tfsPassword.getText();
+
+            this.connectionManager.getSigninUser(username, password);
+        } catch (NetworkException ex) {
+            Logger.getLogger(ServicesLogInController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        String username = tfsUsername.getText();
-        String password = tfsPassword.getText();
-        
-        connectionManager.getSigninUser(username, password);
     }
 
     public void logIn(IUser user) {
-
+        System.out.println("User inloggen");
         try {
             if (user == null) {
-                showDialog("Log in fout", "De combinatie van wachtwoord en "+
-                        "gebruikersnaam is onjuist", true);
+                showDialog("Log in fout", "De combinatie van wachtwoord en "
+                        + "gebruikersnaam is onjuist", true);
+            } else if (user instanceof IHQChief || user instanceof IHQUser) {
+                showDialog("Log in fout", "Je mag hier niet inloggen met deze"
+                        + "gegevens", true);
             } else {
                 this.main.goToServices(connectionManager, user);
+                System.out.println("User ingelogd");
             }
         } catch (Exception ex) {
             Logger.getLogger(ServicesLogInController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     private void showDialog(String title, String melding, boolean warning) {
         Alert alert = null;
 
