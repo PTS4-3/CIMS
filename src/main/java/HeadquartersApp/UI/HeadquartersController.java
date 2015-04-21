@@ -19,7 +19,7 @@ import Shared.Tasks.Plan;
 import Shared.Tasks.Step;
 import Shared.Tasks.Task;
 import Shared.Tasks.TaskStatus;
-import Shared.Users.IHQUser;
+import Shared.Users.IHQChief;
 import Shared.Users.IServiceUser;
 import Shared.Users.IUser;
 import Shared.Users.ServiceUser;
@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.TreeSet;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -203,10 +202,14 @@ public class HeadquartersController implements Initializable {
         ccrTags.setMaxSize(395, 25);
         aprPane.getChildren().add(ccrTags);
         
-        if(user instanceof IHQUser){
-            tabProcessSortedData.setDisable(true);
-            tabSendPlan.setDisable(true);
-            tabApplyPlan.setDisable(true);
+        tabProcessSortedData.setDisable(true);
+        tabSendPlan.setDisable(true);
+        tabApplyPlan.setDisable(true);
+        
+        if(user instanceof IHQChief){
+            tabProcessSortedData.setDisable(false);
+            tabSendPlan.setDisable(false);
+            tabApplyPlan.setDisable(false);
         }
         
         try {
@@ -528,6 +531,7 @@ public class HeadquartersController implements Initializable {
             tasSortedDataDescription.setText(sortedData.getDescription());
             tfsSource.setText(sortedData.getSource());
             tfsLocation.setText(sortedData.getLocation());
+            
         } else {
             // Clear GUI
             tfuTitle.clear();
@@ -660,11 +664,6 @@ public class HeadquartersController implements Initializable {
                 String title = tfpPlanTitle.getText();
                 String description = tapPlanDescription.getText();
                 HashSet<String> keywords = null;
-                TreeSet<IStep> steps = null;
-
-                for(IStep s : tempSteps){
-                    steps.add(s);
-                }
                 
                 String s = tapKeyWords.getText();
                 String[] array = uniformString(s).split(" ");
@@ -673,7 +672,7 @@ public class HeadquartersController implements Initializable {
                 }
                 
                 if(title != null) {
-                    connectionManager.sendNewPlan(new Plan(1, title, description, keywords, steps, false));
+                    connectionManager.sendNewPlan(new Plan(1, title, description, keywords, tempSteps, false));
                     tfpPlanTitle.clear();
                     tapPlanDescription.clear();
                 } else {
