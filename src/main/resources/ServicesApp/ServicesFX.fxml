@@ -8,9 +8,9 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="556.0" prefWidth="796.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="ServicesApp.UI.ServicesController">
+<AnchorPane id="AnchorPane" prefHeight="580.0" prefWidth="796.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="ServicesApp.UI.ServicesController">
   <children>
-    <TabPane fx:id="tabPane" layoutX="0.0" layoutY="0.0" prefHeight="556.0" prefWidth="796.0" tabClosingPolicy="UNAVAILABLE">
+    <TabPane fx:id="tabPane" layoutX="0.0" layoutY="24.0" prefHeight="556.0" prefWidth="796.0" tabClosingPolicy="UNAVAILABLE">
       <tabs>
         <Tab fx:id="tabSendInfo" text="Informatie versturen">
           <content>
@@ -121,5 +121,24 @@
         </Tab>
       </tabs>
     </TabPane>
+    <MenuBar fx:id="menuServices" layoutX="0.0" layoutY="0.0" prefWidth="796.0">
+      <menus>
+        <Menu mnemonicParsing="false" text="File">
+          <items>
+            <MenuItem mnemonicParsing="false" text="Close" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Edit">
+          <items>
+            <MenuItem mnemonicParsing="false" text="Delete" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Help">
+          <items>
+            <MenuItem mnemonicParsing="false" text="About" />
+          </items>
+        </Menu>
+      </menus>
+    </MenuBar>
   </children>
 </AnchorPane>
