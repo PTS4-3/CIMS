@@ -23,7 +23,8 @@ public class PushBuffer {
     private final Object
             LOCK_SORTED = "",
             LOCK_REQUESTS = "",
-            LOCK_UNSORTED = "";
+            LOCK_UNSORTED = "",
+            LOCK_STEPS = "";
 
     // key: ClientID, Value: sortedData
     private HashMap<Integer, List<ISortedData>> sortedDataBuffer;
@@ -31,8 +32,8 @@ public class PushBuffer {
     private HashMap<Integer, List<IDataRequest>> requestBuffer;
     // key: ClientID, Value: sentData
     private HashMap<Integer, List<IData>> unsortedDataBuffer;
-    
-    //TODO stepbuffer
+    // key: ClientID, Value: steps
+    private HashMap<Integer, List<IStep>> stepsBuffer;
     
     // key: username, Value: ClientIDs
     private HashMap<String, HashSet<Integer>> clientIDs;
@@ -41,6 +42,7 @@ public class PushBuffer {
         sortedDataBuffer = new HashMap<>();
         requestBuffer = new HashMap<>();
         unsortedDataBuffer = new HashMap<>();
+        this.stepsBuffer = new HashMap<>();
         this.clientIDs = new HashMap<>();
     }
     
@@ -83,6 +85,13 @@ public class PushBuffer {
             unsortedDataBuffer.put(clientID, new ArrayList<>());
         }
     }
+    
+    public void subscribeSteps(String username, int clientID){
+        this.addClientID(username, clientID);
+        synchronized(LOCK_STEPS){
+            stepsBuffer.put(clientID, new ArrayList<>());
+        }
+    }
 
     public void unsubscribeSorted(String username, int clientID) {
         synchronized (LOCK_SORTED) {
@@ -101,6 +110,13 @@ public class PushBuffer {
     public void unsubscribeUnsorted(String username, int clientID){
         synchronized(LOCK_UNSORTED){
             unsortedDataBuffer.remove(clientID);
+        }
+        this.removeClientID(username, clientID);
+    }
+    
+    public void unsubscribeSteps(String username, int clientID){
+        synchronized(LOCK_STEPS){
+            stepsBuffer.remove(clientID);
         }
         this.removeClientID(username, clientID);
     }
@@ -133,9 +149,11 @@ public class PushBuffer {
     }
     
     public void addStep(IStep step) {
-        //TODO
-        //Op basis van executor toevoegen bij juiste clientIDs
-        //Collect daarvoor schrijven
+        synchronized(LOCK_STEPS) {
+            for(int client : clientIDs.get(step.getExecutor().getUsername())) {
+                stepsBuffer.get(client).add(step);
+            }
+        }
     }
 
     public List<ISortedData> collectSorted(int clientID) {
@@ -176,5 +194,14 @@ public class PushBuffer {
             return output;
         }
     }
-
+    
+    public List<IStep> collectSteps(int clientID) {
+        synchronized(LOCK_STEPS) {
+            List<IStep> output = new ArrayList<>();
+            List<IStep> buffer = stepsBuffer.get(clientID);
+            output.addAll(buffer);
+            buffer.clear();
+            return output;
+        }
+    }
 }
