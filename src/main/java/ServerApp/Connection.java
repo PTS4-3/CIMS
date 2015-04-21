@@ -15,6 +15,7 @@ import Shared.Data.IDataRequest;
 import Shared.Data.ISortedData;
 import Shared.Tasks.IPlan;
 import Shared.Tasks.ITask;
+import Shared.Users.IUser;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -692,5 +693,31 @@ public class Connection implements Runnable {
         }
         
         this.writeResult(success);
+    }
+    
+    /**
+     * Files a request for an update to given piece of info.
+     */
+    private void getSigninUser() throws IOException, ClassNotFoundException {
+        Object par1 = in.readObject();
+        Object par2 = in.readObject();
+        
+        if (par1 == null || !(par1 instanceof String)) {
+            out.writeObject(ConnState.COMMAND_ERROR);
+            return;
+        }
+        if (par2 == null || !(par2 instanceof String)) {
+            out.writeObject(ConnState.COMMAND_ERROR);
+            return;
+        }
+        
+        String username = (String) par1;
+        String password = (String) par2;
+
+        IUser output = null;        
+        synchronized (LOCK) {
+            output = ServerMain.tasksDatabaseManager.loginUser(username, password);
+        }        
+        writeOutput(output);
     }
 }
