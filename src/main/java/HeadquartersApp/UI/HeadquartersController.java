@@ -632,12 +632,12 @@ public class HeadquartersController implements Initializable {
      * Fills the GUI with information of the selected task
      */
     public void selectTask(){
-        //TODO
         ITask task =
                 (ITask) lvsTasks.getSelectionModel().getSelectedItem();
         if(task != null){
             tfsTaskTitle.setText(task.getTitle());
             tasTaskDescription.setText(task.getDescription());
+            cbsExecutor.getSelectionModel().select(task.getExecutor());
         }
     }
     
@@ -749,14 +749,15 @@ public class HeadquartersController implements Initializable {
      * Search for plans with similar keywords and display them in the listview.
      */
     public void searchPlan(){
-        //TODO
-        HashSet<String> keywords = null;
+        HashSet<String> keywords = new HashSet();
         
         String s = tapKeyWords.getText();
         String[] array = uniformString(s).split(" ");
         for(String word : array){
             keywords.add(word);
-        }        
+        }
+        
+        connectionManager.searchPlans(keywords);
     }
     
     /**
