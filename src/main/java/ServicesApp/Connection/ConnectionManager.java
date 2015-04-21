@@ -565,7 +565,7 @@ public class ConnectionManager {
                 List<ITask> newTasks = 
                         new Connection(defaultIP, defaultPort).getNewTasks(clientID);
                 if(newTasks != null) {
-                    servicesController.displayTaskData(newTasks);
+                    servicesController.displayTasks(newTasks);
                 } else {
                     System.err.println("Unable to retrieve new Tasks from "
                         + "buffer in server.");
@@ -597,5 +597,23 @@ public class ConnectionManager {
                 }
             });  
         }
+    }
+    
+    /**
+     * Gets the tasks from the serviceUser with the given username
+     * Sends returnvalue to servicesController.displayTasks()
+     * @param username cannot be null
+     */
+    public void getTasks(String username) {
+        //TODO
+    }
+    
+    /**
+     * Update the status of a task
+     * No returnvalue
+     * @param task cannot be null
+     */
+    public void updateTask(ITask task) {
+        //TODO
     }
 }

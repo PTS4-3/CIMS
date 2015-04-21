@@ -6,9 +6,11 @@
 package Shared.Data;
 
 import Shared.Tag;
+import Shared.Tasks.ITask;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -25,6 +27,7 @@ public class SortedData implements ISortedData {
     private int reliability;
     private int quality;
     private HashSet<Tag> tags;
+    private List<ITask> tasks;
     
     /**
      * 
@@ -120,6 +123,16 @@ public class SortedData implements ISortedData {
     @Override
     public Set<Tag> getTags() {
         return Collections.unmodifiableSet(tags);
+    }
+    
+    @Override
+    public List<ITask> getTasks() {
+        return this.tasks;
+    }
+    
+    @Override
+    public void setTasks(List<ITask> tasks) {
+        this.tasks = tasks;
     }
     
     @Override

@@ -189,6 +189,15 @@ public class Connection implements Runnable {
                             case PLAN_SEND_NEW:
                                 this.saveNewPlan();
                                 break;
+                            case TASKS_GET_NEW:
+                                this.sendNewTasks();
+                                break;
+                            case TASKS_SUBSCRIBE:
+                                this.subscribeTasks();
+                                break;
+                            case TASKS_UNSUBSCRIBE:
+                                this.unsubscribeTasks();
+                                break;
                         }
                     }
                 }

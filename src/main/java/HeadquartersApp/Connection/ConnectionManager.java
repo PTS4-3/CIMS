@@ -241,4 +241,52 @@ public class ConnectionManager {
             });  
         }
     }
+    
+    /**
+     * Search for plans with the given keywords
+     * Sends returnvalue to hqController.displayPlans()
+     * @param keywords if hashSet is empty, get all plans
+     */
+    public void searchPlans(HashSet<String> keywords) {
+        
+    }
+    
+    /**
+     * Gets all sorted data 
+     * Sends returnvalue to hqController.displaySortedData()
+     */
+    public void getSortedData() {
+        
+    }
+    
+    /**
+     * Gets all serviceUsers
+     * Sends returnvalue to hqController.displayServiceUsers()
+     */
+    public void getServiceUsers() {
+        
+    }
+        
+    /**
+     * Subscribes to get updates for sortedData
+     * @param username
+     */
+    public void subscribeSortedData(String username) {
+        
+    }
+    
+    /**
+     * Unsubscribes to get updates for sortedData
+     * @param username 
+     */
+    public void unsubscribeSortedData(String username) {
+        
+    }
+    
+    /**
+     * Get updates for sorted data
+     */
+    private void getNewSortedData() {
+        
+    }
 }

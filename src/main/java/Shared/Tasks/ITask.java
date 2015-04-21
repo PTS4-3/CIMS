@@ -23,6 +23,7 @@ public interface ITask extends Serializable {
     String getDeclineReason();
     void setDeclineReason(String reason);
     TaskStatus getStatus();
+    void setStatus(TaskStatus status);
     ISortedData getSortedData();
     void setSortedData(SortedData data);
     Tag getTargetExecutor();

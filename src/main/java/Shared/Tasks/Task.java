@@ -75,6 +75,11 @@ public class Task implements ITask {
     public TaskStatus getStatus() {
         return this.status;
     }
+    
+    @Override
+    public void setStatus(TaskStatus status) {
+        this.status = status;
+    }
 
     @Override
     public String getDeclineReason(){

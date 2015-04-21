@@ -6,6 +6,8 @@
 package Shared.Data;
 
 import Shared.Tag;
+import Shared.Tasks.ITask;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -17,4 +19,6 @@ public interface ISortedData extends IData {
     public int getReliability();
     public int getQuality();
     public Set<Tag> getTags();
+    public List<ITask> getTasks();
+    public void setTasks(List<ITask> tasks);
 }
