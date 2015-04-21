@@ -132,6 +132,7 @@ public class ServicesController implements Initializable {
     private ConnectionManager connectionManager;
     private boolean showingDataItem;
     private IDataRequest answeredRequest;
+    private ITask selectedTask = null;
     private IUser user = null;
 
     private Services main;
@@ -164,7 +165,7 @@ public class ServicesController implements Initializable {
                         selectData();
                     }
                 });
-        
+
         lvtTasks.getSelectionModel().selectedItemProperty().addListener(
                 new ChangeListener() {
                     @Override
@@ -219,9 +220,10 @@ public class ServicesController implements Initializable {
             }
 
             // Subscribe
-            this.connectionManager.subscribeRequests("");
-            this.connectionManager.subscribeSorted("");
-            this.connectionManager.subscribeUnsorted("");
+            this.connectionManager.subscribeRequests(user.getUsername());
+            this.connectionManager.subscribeSorted(user.getUsername());
+            this.connectionManager.subscribeUnsorted(user.getUsername());
+            //this.connectionManager.subscribeTasks(user.getUsername());
 
             // Get initial values
             if (chbsRequests.isSelected()) {
@@ -232,6 +234,7 @@ public class ServicesController implements Initializable {
             }
             //TODO source
             this.connectionManager.getSentData("");
+            //this.connectionManager.getTaskData(user.getUsername());
         } catch (NetworkException nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
@@ -270,7 +273,7 @@ public class ServicesController implements Initializable {
             public void run() {
                 if (!showingDataItem) {
                     lvtTasks.getItems().addAll(tasks);
-                    
+
                     if (lvtTasks.getSelectionModel().getSelectedItem() == null) {
                         lvtTasks.getSelectionModel().selectFirst();
                     }
@@ -278,7 +281,7 @@ public class ServicesController implements Initializable {
             }
         });
     }
-    
+
     /**
      * Displays the requests that came from connectionManager.getRequests and
      * updates
@@ -342,9 +345,6 @@ public class ServicesController implements Initializable {
 
         });
     }
-    
-     
-    
 
     /**
      * Unsubscribe to the information from the connectionManager
@@ -526,16 +526,16 @@ public class ServicesController implements Initializable {
         btnFailed.setVisible(false);
         btnSucceed.setVisible(false);
         btnNotDone.setVisible(false);
-        
+
         if (data != null) {
-            if(data instanceof IStep){
+            this.selectedTask = data;
+            if (data instanceof IStep) {
                 IStep step = (IStep) data;
-            // Fill GUI with information
-            tftTaskTitle.setText(step.getTitle());
-            tatDescription.setText(step.getDescription());
-            tftCondition.setText(step.getCondition());
-            }
-            else{
+                // Fill GUI with information
+                tftTaskTitle.setText(step.getTitle());
+                tatDescription.setText(step.getDescription());
+                tftCondition.setText(step.getCondition());
+            } else {
                 tftTaskTitle.setText(data.getTitle());
                 tatDescription.setText(data.getDescription());
             }
@@ -553,6 +553,7 @@ public class ServicesController implements Initializable {
             }
         } else {
             // Clear GUI
+            this.selectedTask = null;
             tftTaskTitle.clear();
             tatDescription.clear();
             tftCondition.clear();
@@ -640,19 +641,45 @@ public class ServicesController implements Initializable {
 
     public void acceptTask() {
 
+        try {
+
+            if (selectedTask != null) {
+                //this.connectionManager.AcceptTask(selectedTask);
+            } else {
+                showDialog("Taak selectie", "Geen taak geselecteerd", false);
+            }
+            //dismiss task succeed message
+            lblMessageTask.setText("Het accepteren van de taak is gelukt.");
+        } catch (Exception ex)
+        {
+        }
+//        catch(NetworkException nEx) {
+//            showDialog("Geen verbinding met server", nEx.getMessage(), true);
+//        }
     }
 
     public void dismissTask() {
         try {
             String argument = showArgumentDialog();
             if (argument.isEmpty() || argument.equals(" ")) {
-                showDialog("Argument", "Er moet een argument ingevuld worden", false);
+                showDialog("Argument", "Er moet een argument ingevuld worden", true);
             } else {
-
+                if (selectedTask != null) {
+                    //this.connectionManager.dismissTask(selectedTask);
+                } else {
+                    showDialog("Taak selectie", "Geen taak geselecteerd", false);
+                }
+                //dismiss task succeed message
+                lblMessageTask.setText("Het wijgeren van de taak is gelukt.");
             }
-        } catch (Exception ex) {
-
         }
+        catch(Exception ex)
+        {
+            
+        }
+//        } catch (NetworkException nEx) {
+//            showDialog("Geen verbinding met server", nEx.getMessage(), true);
+//        }
     }
 
     public void notDoneTask() {
