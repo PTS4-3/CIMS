@@ -9,6 +9,7 @@ import Shared.Data.IData;
 import Shared.Data.IDataRequest;
 import Shared.Data.ISortedData;
 import Shared.Tasks.IStep;
+import Shared.Tasks.ITask;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,7 +34,7 @@ public class PushBuffer {
     // key: ClientID, Value: sentData
     private HashMap<Integer, List<IData>> unsortedDataBuffer;
     // key: ClientID, Value: steps
-    private HashMap<Integer, List<IStep>> stepsBuffer;
+    private HashMap<Integer, List<ITask>> tasksBuffer;
     
     // key: username, Value: ClientIDs
     private HashMap<String, HashSet<Integer>> clientIDs;
@@ -42,7 +43,7 @@ public class PushBuffer {
         sortedDataBuffer = new HashMap<>();
         requestBuffer = new HashMap<>();
         unsortedDataBuffer = new HashMap<>();
-        this.stepsBuffer = new HashMap<>();
+        this.tasksBuffer = new HashMap<>();
         this.clientIDs = new HashMap<>();
     }
     
@@ -86,10 +87,10 @@ public class PushBuffer {
         }
     }
     
-    public void subscribeSteps(String username, int clientID){
+    public void subscribeTasks(String username, int clientID){
         this.addClientID(username, clientID);
         synchronized(LOCK_STEPS){
-            stepsBuffer.put(clientID, new ArrayList<>());
+            tasksBuffer.put(clientID, new ArrayList<>());
         }
     }
 
@@ -114,9 +115,9 @@ public class PushBuffer {
         this.removeClientID(username, clientID);
     }
     
-    public void unsubscribeSteps(String username, int clientID){
+    public void unsubscribeTasks(String username, int clientID){
         synchronized(LOCK_STEPS){
-            stepsBuffer.remove(clientID);
+            tasksBuffer.remove(clientID);
         }
         this.removeClientID(username, clientID);
     }
@@ -148,10 +149,10 @@ public class PushBuffer {
         }
     }
     
-    public void addStep(IStep step) {
+    public void addTask(ITask task) {
         synchronized(LOCK_STEPS) {
-            for(int client : clientIDs.get(step.getExecutor().getUsername())) {
-                stepsBuffer.get(client).add(step);
+            for(int client : clientIDs.get(task.getExecutor().getUsername())) {
+                tasksBuffer.get(client).add(task);
             }
         }
     }
@@ -195,10 +196,10 @@ public class PushBuffer {
         }
     }
     
-    public List<IStep> collectSteps(int clientID) {
+    public List<ITask> collectTasks(int clientID) {
         synchronized(LOCK_STEPS) {
-            List<IStep> output = new ArrayList<>();
-            List<IStep> buffer = stepsBuffer.get(clientID);
+            List<ITask> output = new ArrayList<>();
+            List<ITask> buffer = tasksBuffer.get(clientID);
             output.addAll(buffer);
             buffer.clear();
             return output;

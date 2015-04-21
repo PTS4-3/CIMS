@@ -13,6 +13,7 @@ import Shared.Data.IData;
 import Shared.Data.IDataRequest;
 import Shared.Data.ISortedData;
 import Shared.Tag;
+import Shared.Tasks.ITask;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,7 +23,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Kargathia
+ * @author Kargathia + Alexander
  */
 class Connection extends ConnClientBase {
 
@@ -196,6 +197,17 @@ class Connection extends ConnClientBase {
         return super.booleanCommand(
                 ConnCommand.UPDATE_REQUEST_SUBSCRIBE, new Object[]{username, clientID});
     }
+    
+    /**
+     * Subscribes to buffer on server.
+     * @param username
+     * @param clientID
+     * @return 
+     */
+    boolean subscribeTasks(String username, int clientID) {
+        return super.booleanCommand(
+                ConnCommand.TASKS_SUBSCRIBE, new Object[]{username, clientID});
+    }
 
     /**
      *
@@ -234,6 +246,26 @@ class Connection extends ConnClientBase {
 
         return output;
     }
+    
+    /**
+     * 
+     * @param clientID
+     * @return the tasks from the buffer in the server
+     */
+    List<ITask> getNewTasks(int clientID) {
+        List<ITask> newTasks = new ArrayList<>();
+        Object inObject = super.objectCommand(
+                ConnCommand.TASKS_GET_NEW, new Object[]{clientID});
+        
+        if(inObject instanceof List) {
+            newTasks = (List<ITask>) inObject;
+        } else {
+            System.err.println("Unexpected output from "
+                    + super.getCommandDescription(ConnCommand.TASKS_GET_NEW));
+        }
+        
+        return newTasks;
+    }
 
     /**
      * Unsubscribes from server. Does nothing if not subscribed.
@@ -253,6 +285,17 @@ class Connection extends ConnClientBase {
     boolean unsubscribeRequests(String username, int clientID) {
         return super.booleanCommand(
                 ConnCommand.UPDATE_REQUEST_UNSUBSCRIBE, new Object[]{username, clientID});
+    }
+    
+    /**
+     * Unsubscribes from server buffer. Does nothing if not subscribed.
+     * @param username
+     * @param clientID
+     * @return 
+     */
+    boolean unsubscribeTasks(String username, int clientID) {
+        return super.booleanCommand(
+                ConnCommand.TASKS_UNSUBSCRIBE, new Object[]{username, clientID});
     }
 
     /**

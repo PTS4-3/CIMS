@@ -5,6 +5,7 @@
  */
 package ServerApp;
 
+import static ServerApp.ConnectionManager.getBuffer;
 import static ServerApp.ConnectionManager.getPlanExecutorHandler;
 import Shared.Tasks.IPlan;
 
@@ -34,7 +35,7 @@ public class PlanExecutor {
     
     public void executeNextStep() {
         if(this.nextStep > 0 && this.nextStep <= this.plan.getSteps().size()) {
-            //TODO execute next step
+            //getBuffer().addTask(this.plan.getSteps());
         } else {
             getPlanExecutorHandler().removePlanExecutor(this.plan);
         }

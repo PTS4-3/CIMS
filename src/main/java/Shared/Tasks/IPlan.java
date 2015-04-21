@@ -7,6 +7,7 @@ package Shared.Tasks;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.SortedSet;
 
 /**
@@ -19,6 +20,6 @@ public interface IPlan extends Serializable {
     String getTitle();
     String getDescription();
     HashSet<String> getKeywords();
-    SortedSet<IStep> getSteps();
+    List<IStep> getSteps();
     boolean isTemplate();
 }
