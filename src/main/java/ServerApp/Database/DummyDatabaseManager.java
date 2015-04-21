@@ -7,6 +7,10 @@ package ServerApp.Database;
 
 import Shared.Tasks.IPlan;
 import Shared.Tasks.ITask;
+import Shared.Users.IServiceUser;
+import Shared.Users.IUser;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  *
@@ -30,6 +34,38 @@ public class DummyDatabaseManager {
     public boolean insertNewPlan(IPlan plan) {
         //TODO
         return true;
+    }
+
+    public ITask updateTask(ITask input){
+        return null;
+    }
+
+    /**
+     *
+     * @param execFilter if null, return all tasks
+     * @return
+     */
+    public List<ITask> getTasks(IServiceUser execFilter){
+        return null;
+    }
+
+    /**
+     * Returns specific type of user
+     * @param userName
+     * @param password
+     * @return null if not found
+     */
+    public IUser loginUser(String userName, String password){
+        return null;
+    }
+
+    /**
+     *
+     * @param keywords
+     * @return
+     */
+    public List<IPlan> getPlans(HashSet<String> keywords){
+        return null;
     }
 
 }
