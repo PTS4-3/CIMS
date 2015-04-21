@@ -14,6 +14,9 @@ import Shared.NetworkException;
 import Shared.Data.Status;
 import Shared.Tag;
 import Shared.Data.UnsortedData;
+import Shared.Tasks.IStep;
+import Shared.Tasks.ITask;
+import Shared.Tasks.TaskStatus;
 import Shared.Users.IUser;
 import java.net.URL;
 import java.util.ArrayList;
@@ -30,6 +33,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
@@ -46,50 +50,93 @@ import javafx.util.Callback;
  */
 public class ServicesController implements Initializable {
 
-    @FXML TabPane tabPane;
+    @FXML
+    TabPane tabPane;
 
     // SendInfo
-    @FXML Tab tabSendInfo;
-    @FXML TextField tfnTitle;
-    @FXML TextArea tanDescription;
-    @FXML TextField tfnSource;
-    @FXML TextField tfnLocation;
+    @FXML
+    Tab tabSendInfo;
+    @FXML
+    TextField tfnTitle;
+    @FXML
+    TextArea tanDescription;
+    @FXML
+    TextField tfnSource;
+    @FXML
+    TextField tfnLocation;
 
     // UpdateInfo
-    @FXML Tab tabUpdateInfo;
-    @FXML ListView lvuSentData;
-    @FXML TextField tfuTitle;
-    @FXML TextArea tauDescription;
-    @FXML TextField tfuSource;
-    @FXML TextField tfuLocation;
+    @FXML
+    Tab tabUpdateInfo;
+    @FXML
+    ListView lvuSentData;
+    @FXML
+    TextField tfuTitle;
+    @FXML
+    TextArea tauDescription;
+    @FXML
+    TextField tfuSource;
+    @FXML
+    TextField tfuLocation;
 
     // ReadSortedData
-    @FXML Tab tabReadSortedData;
-    @FXML ListView lvsSortedData;
-    @FXML CheckBox chbsData;
-    @FXML CheckBox chbsRequests;
-    @FXML TextField tfsTitle;
-    @FXML TextArea tasDescription;
-    @FXML TextField tfsSource;
-    @FXML TextField tfsLocation;
-    @FXML Button btnAnswerRequest;
-    
+    @FXML
+    Tab tabReadSortedData;
+    @FXML
+    ListView lvsSortedData;
+    @FXML
+    CheckBox chbsData;
+    @FXML
+    CheckBox chbsRequests;
+    @FXML
+    TextField tfsTitle;
+    @FXML
+    TextArea tasDescription;
+    @FXML
+    TextField tfsSource;
+    @FXML
+    TextField tfsLocation;
+    @FXML
+    Button btnAnswerRequest;
+
     // TaskInfo
-    @FXML Tab tabTaskInfo;
-    @FXML ListView lvtTasks;
-    @FXML TextField tftTaskTitle;
-    @FXML TextArea tatDescription;
-    @FXML TextField tftCondition;
-    
+    @FXML
+    Tab tabReadTask;
+    @FXML
+    ListView lvtTasks;
+    @FXML
+    TextField tftTaskTitle;
+    @FXML
+    TextArea tatDescription;
+    @FXML
+    TextField tftCondition;
+    @FXML
+    Button btnAcceptTask;
+    @FXML
+    Button btnDismissTask;
+    @FXML
+    Button btnNotDone;
+    @FXML
+    Button btnFailed;
+    @FXML
+    Button btnSucceed;
+
+    //report message label
+    @FXML
+    Label lblMessageUpdate;
+    @FXML
+    Label lblMessageTask;
+    @FXML
+    Label lblMessageSend;
+
     private ConnectionManager connectionManager;
     private boolean showingDataItem;
     private IDataRequest answeredRequest;
     private IUser user = null;
-    
+
     private Services main;
-    
-    public void setApp(Services application)
-    {
+
+    public void setApp(Services application) {
         this.main = application;
     }
 
@@ -97,9 +144,8 @@ public class ServicesController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         this.showingDataItem = false;
         this.answeredRequest = null;
-        
+
         //System.setErr();
-        
         // Add Change Listeners
         lvuSentData.getSelectionModel().selectedItemProperty().addListener(
                 new ChangeListener() {
@@ -116,6 +162,14 @@ public class ServicesController implements Initializable {
                     @Override
                     public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                         selectData();
+                    }
+                });
+        
+        lvtTasks.getSelectionModel().selectedItemProperty().addListener(
+                new ChangeListener() {
+                    @Override
+                    public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                        selectTask();
                     }
                 });
 
@@ -139,8 +193,8 @@ public class ServicesController implements Initializable {
                                 setTextFill(Color.BLACK);
                             }
                         } else {
-                           setItem(null);
-                           setText("");
+                            setItem(null);
+                            setText("");
                         }
                     }
                 };
@@ -163,12 +217,12 @@ public class ServicesController implements Initializable {
             if (this.connectionManager == null) {
                 throw new NetworkException("Kon geen data ophalen");
             }
-            
+
             // Subscribe
             this.connectionManager.subscribeRequests("");
             this.connectionManager.subscribeSorted("");
             this.connectionManager.subscribeUnsorted("");
-            
+
             // Get initial values
             if (chbsRequests.isSelected()) {
                 this.connectionManager.getRequests(new HashSet<Tag>());
@@ -184,8 +238,9 @@ public class ServicesController implements Initializable {
     }
 
     /**
-     * Displays the sentData that came from connectionManager.getSentData
-     * and updates
+     * Displays the sentData that came from connectionManager.getSentData and
+     * updates
+     *
      * @param sentData
      */
     public void displaySentData(List<IData> sentData) {
@@ -193,20 +248,41 @@ public class ServicesController implements Initializable {
 
             @Override
             public void run() {
-                if(!showingDataItem) {
+                if (!showingDataItem) {
                     lvuSentData.getItems().addAll(sentData);
-                    if(lvuSentData.getSelectionModel().getSelectedItem() == null) {
+                    if (lvuSentData.getSelectionModel().getSelectedItem() == null) {
                         lvuSentData.getSelectionModel().selectFirst();
                     }
                 }
             }
-
         });
     }
 
     /**
-     * Displays the requests that came from connectionManager.getRequests
-     * and updates
+     * Displays the task that came from connectionManager.getTasks
+     *
+     * @param tasks
+     */
+    public void displayTaskData(List<ITask> tasks) {
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                if (!showingDataItem) {
+                    lvtTasks.getItems().addAll(tasks);
+                    
+                    if (lvtTasks.getSelectionModel().getSelectedItem() == null) {
+                        lvtTasks.getSelectionModel().selectFirst();
+                    }
+                }
+            }
+        });
+    }
+    
+    /**
+     * Displays the requests that came from connectionManager.getRequests and
+     * updates
+     *
      * @param requests
      */
     public void displayRequests(List<IDataRequest> requests) {
@@ -214,9 +290,9 @@ public class ServicesController implements Initializable {
 
             @Override
             public void run() {
-                if(chbsRequests.isSelected()) {
+                if (chbsRequests.isSelected()) {
                     lvsSortedData.getItems().addAll(requests);
-                    if(lvsSortedData.getSelectionModel().getSelectedItem() == null) {
+                    if (lvsSortedData.getSelectionModel().getSelectedItem() == null) {
                         lvsSortedData.getSelectionModel().selectFirst();
                     }
                 }
@@ -228,6 +304,7 @@ public class ServicesController implements Initializable {
     /**
      * Displays the sortedData that came from connectionManager.getSortedData
      * and updates
+     *
      * @param sortedData
      */
     public void displaySortedData(List<ISortedData> sortedData) {
@@ -235,9 +312,9 @@ public class ServicesController implements Initializable {
 
             @Override
             public void run() {
-                if(chbsData.isSelected()) {
+                if (chbsData.isSelected()) {
                     lvsSortedData.getItems().addAll(sortedData);
-                    if(lvsSortedData.getSelectionModel().getSelectedItem() == null) {
+                    if (lvsSortedData.getSelectionModel().getSelectedItem() == null) {
                         lvsSortedData.getSelectionModel().selectFirst();
                     }
                 }
@@ -256,7 +333,7 @@ public class ServicesController implements Initializable {
 
             @Override
             public void run() {
-                if(showingDataItem) {
+                if (showingDataItem) {
                     lvuSentData.getItems().clear();
                     lvuSentData.getItems().add(dataItem);
                     lvuSentData.getSelectionModel().selectFirst();
@@ -265,12 +342,15 @@ public class ServicesController implements Initializable {
 
         });
     }
+    
+     
+    
 
     /**
      * Unsubscribe to the information from the connectionManager
      */
     public void close() {
-        if(this.connectionManager != null) {
+        if (this.connectionManager != null) {
             this.connectionManager.unsubscribeRequests("");
             this.connectionManager.unsubscribeSorted("");
             this.connectionManager.unsubscribeUnsorted("");
@@ -300,12 +380,12 @@ public class ServicesController implements Initializable {
 
             // Clear tab
             this.clearSendInfo();
-            
+
             this.removeAnsweredRequest();
-            
+
             // Bevestiging tonen
-            showDialog("Verzenden geslaagd", "Het verzenden van de ongesorteerde " +
-                    "data is geslaagd", false);
+            lblMessageSend.setText("Verzenden van ongesorteerde data is"
+                    + " geslaagd");
         } catch (IllegalArgumentException iaEx) {
             showDialog("Invoer onjuist", iaEx.getMessage(), true);
         } catch (NetworkException nEx) {
@@ -322,12 +402,12 @@ public class ServicesController implements Initializable {
         tfnSource.clear();
         tfnLocation.clear();
     }
-    
+
     /**
      * Removes the request that the user just answered
      */
     private void removeAnsweredRequest() {
-        if(this.answeredRequest != null) {
+        if (this.answeredRequest != null) {
             lvsSortedData.getItems().remove(this.answeredRequest);
             this.answeredRequest = null;
         }
@@ -373,15 +453,15 @@ public class ServicesController implements Initializable {
             this.connectionManager.updateUnsortedData(update);
 
             this.removeAnsweredRequest();
-            
+
             // Reset SentData
-            if(this.showingDataItem) {
+            if (this.showingDataItem) {
                 this.resetSentData();
             }
 
             // Bevestiging tonen
-            showDialog("Verzenden geslaagd", "Het verzenden van de aanvraag " +
-                    "voor een update is geslaagd", false);
+            lblMessageUpdate.setText("Het verzenden van de aanvraag voor"
+                    + "een update is geslaagd");
         } catch (IllegalArgumentException iaEx) {
             showDialog("Invoer onjuist", iaEx.getMessage(), true);
         } catch (NetworkException nEx) {
@@ -397,10 +477,10 @@ public class ServicesController implements Initializable {
             if (this.connectionManager == null) {
                 throw new NetworkException("Kon geen data ophalen");
             }
-     
+
             this.showingDataItem = false;
             this.answeredRequest = null;
-            
+
             // Clear sentData
             lvuSentData.getItems().clear();
 
@@ -432,6 +512,50 @@ public class ServicesController implements Initializable {
             tfsSource.clear();
             tfsLocation.clear();
             btnAnswerRequest.setVisible(false);
+        }
+    }
+
+    /**
+     * Fills the GUI with the information of the tasks
+     */
+    public void selectTask() {
+        ITask data = (ITask) lvtTasks.getSelectionModel().getSelectedItem();
+        //all buttons onvisible
+        btnAcceptTask.setVisible(false);
+        btnDismissTask.setVisible(false);
+        btnFailed.setVisible(false);
+        btnSucceed.setVisible(false);
+        btnNotDone.setVisible(false);
+        
+        if (data != null) {
+            if(data instanceof IStep){
+                IStep step = (IStep) data;
+            // Fill GUI with information
+            tftTaskTitle.setText(step.getTitle());
+            tatDescription.setText(step.getDescription());
+            tftCondition.setText(step.getCondition());
+            }
+            else{
+                tftTaskTitle.setText(data.getTitle());
+                tatDescription.setText(data.getDescription());
+            }
+
+            // Determine visibility button requests
+            //if status is sent -- accept and dismiss button
+            //if status is accept -- failed, notdone and succeed button
+            if (data.getStatus().equals(TaskStatus.SENT)) {
+                btnAcceptTask.setVisible(true);
+                btnDismissTask.setVisible(true);
+            } else if (data.getStatus().equals(TaskStatus.INPROCESS)) {
+                btnFailed.setVisible(true);
+                btnSucceed.setVisible(true);
+                btnNotDone.setVisible(true);
+            }
+        } else {
+            // Clear GUI
+            tftTaskTitle.clear();
+            tatDescription.clear();
+            tftCondition.clear();
         }
     }
 
@@ -502,7 +626,7 @@ public class ServicesController implements Initializable {
                     if (this.connectionManager == null) {
                         throw new NetworkException("Kon geen data ophalen");
                     }
-                    
+
                     this.showingDataItem = true;
 
                     this.connectionManager.getDataItem(request.getRequestId());
@@ -513,45 +637,68 @@ public class ServicesController implements Initializable {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
     }
-    
-    public void showDialog(String title, String melding, boolean warning)
-    {
+
+    public void acceptTask() {
+
+    }
+
+    public void dismissTask() {
+        try {
+            String argument = showArgumentDialog();
+            if (argument.isEmpty() || argument.equals(" ")) {
+                showDialog("Argument", "Er moet een argument ingevuld worden", false);
+            } else {
+
+            }
+        } catch (Exception ex) {
+
+        }
+    }
+
+    public void notDoneTask() {
+
+    }
+
+    public void failedTask() {
+
+    }
+
+    public void succeedTask() {
+
+    }
+
+    public void showDialog(String title, String melding, boolean warning) {
         Alert alert = null;
-        
-        if (warning)
-        {
+
+        if (warning) {
             alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Foutmelding");
-        }
-        else
-        {
+        } else {
             alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Melding");            
-        }     
-        
-        if (!title.isEmpty())
-        {
-            alert.setHeaderText(title);
+            alert.setTitle("Melding");
         }
-        else
-        {
+
+        if (!title.isEmpty()) {
+            alert.setHeaderText(title);
+        } else {
             alert.setHeaderText(null);
         }
-        
+
         alert.setContentText(melding);
         alert.showAndWait();
     }
-    
-    public String showArgumentDialog(){
+
+    public String showArgumentDialog() {
         TextInputDialog dialog = new TextInputDialog("Argument");
         dialog.setTitle("Argument");
         dialog.setContentText("Voer een argument in:");
 
         // Traditional way to get the response value.
         Optional<String> result = dialog.showAndWait();
-        if (result.isPresent())
+        if (result.isPresent()) {
             return result.get();
-        else
+        } else {
             return null;
+        }
     }
 }
