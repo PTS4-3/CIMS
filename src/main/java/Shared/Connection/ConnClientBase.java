@@ -194,7 +194,11 @@ public class ConnClientBase {
         try {
             out.writeObject(command);
             for (Object arg : arguments) {
-                out.writeObject(arg);
+                if(arg != null) {
+                    out.writeObject(arg);
+                } else {
+                    return null;
+                }
             }
             out.flush();
 
@@ -319,6 +323,14 @@ public class ConnClientBase {
             case PLAN_APPLY:
                 output = "apply a plan";
                 break;
+            case TASKS_GET_NEW:
+                output = "get new tasks";
+                break;
+            case TASKS_SUBSCRIBE:
+                output = "subscribe to get updates for tasks";
+                break;
+            case TASKS_UNSUBSCRIBE:
+                output = "unsubscribe to get updates for tasks";
             case SIGN_IN:
                 output = "retrieving user";
                 break;

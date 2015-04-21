@@ -14,6 +14,7 @@ import Shared.Data.ISortedData;
 import Shared.Data.Status;
 import Shared.Tag;
 import Shared.Data.UnsortedData;
+import Shared.Tasks.ITask;
 import Shared.Users.IUser;
 import java.util.HashSet;
 import java.util.List;
@@ -43,7 +44,7 @@ public class ConnectionManager {
             isRegisteredRequests,
             isRegisteredSorted,
             isRegisteredUnsorted,
-            isRegistered;
+            isRegisteredTasks;
 
     /**
      * Starts a new ConnectionManager, responsible for
@@ -57,6 +58,7 @@ public class ConnectionManager {
         this.isRegisteredSorted = new AtomicBoolean(false);
         this.isRegisteredRequests = new AtomicBoolean(false);
         this.isRegisteredUnsorted = new AtomicBoolean(false);
+        this.isRegisteredTasks = new AtomicBoolean(false);
         this.startCollectTask();
         //this.testMethods();
     }
@@ -94,6 +96,7 @@ public class ConnectionManager {
             this.getNewRequests();
             this.getNewSorted();
             this.getNewUnsorted();
+            this.getNewTasks();
         };
 
         this.collectFuture = pool.scheduleWithFixedDelay(
@@ -160,6 +163,12 @@ public class ConnectionManager {
                 break;
             case UNSORTED_UNSUBSCRIBE:
                 this.isRegisteredUnsorted.set(false);
+                break;
+            case TASKS_SUBSCRIBE:
+                this.isRegisteredTasks.set(true);
+                break;
+            case TASKS_UNSUBSCRIBE:
+                this.isRegisteredTasks.set(false);
                 break;
         };
 
@@ -344,6 +353,29 @@ public class ConnectionManager {
         });
         return true;
     }
+    
+    /**
+     * Subscribes this client to updates of all new tasks submitted to
+     * server. Call getNewTasks to collect.
+     *
+     * @return Whether it was able to execute this command right now. A true
+     * return type does not guarantee the command is executed, merely that it is
+     * transmitted to server.
+     */
+    public boolean subscribeTasks(String username) {
+        if (this.isRegisteredTasks.get()) {
+            return false;
+        }
+        pool.execute(new Runnable() {
+            @Override
+            public void run() {
+                if(new Connection(defaultIP, defaultPort).subscribeTasks(username, clientID)){
+                    notifyCommandDone(ConnCommand.TASKS_SUBSCRIBE);
+                }
+            }
+        });
+        return true;
+    }
 
     /**
      * Unsubscribes this client from updates. Does nothing if client wasn't
@@ -401,6 +433,31 @@ public class ConnectionManager {
             if(new Connection(defaultIP, defaultPort).unsubscribeUnsorted(username, this.clientID)){
                 this.notifyCommandDone(ConnCommand.UNSORTED_UNSUBSCRIBE);
             }
+        });
+        return true;
+    }
+    
+    /**
+     * Unsubscribes this client from updates. Does nothing if client wasn't
+     * subscribed.
+     *
+     * @return Whether it was able to execute this command right now. A true
+     * return type does not guarantee the command is executed, merely that it is
+     * transmitted to server.
+     */
+    public boolean unsubscribeTasks(String username) {
+        if (!this.isRegisteredTasks.get()) {
+            return false;
+        }
+        pool.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                if(new Connection(defaultIP, defaultPort).unsubscribeTasks(username, clientID)) {
+                    notifyCommandDone(ConnCommand.TASKS_UNSUBSCRIBE);
+                }
+            }
+            
         });
         return true;
     }
@@ -489,6 +546,38 @@ public class ConnectionManager {
     }
     
     /**
+     * Collects all new tasks collected on server since last call. Client
+     * needs to have called subscribeTasks() for this to do anything.
+     *
+     * @return Whether it was able to execute this command right now. A true
+     * return type does not guarantee the command is executed, merely that it is
+     * transmitted to server.
+     */
+    public boolean getNewTasks() {
+        if(this.servicesController == null || !this.isRegisteredTasks.get()) {
+            return false; 
+        }
+        
+        pool.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                List<ITask> newTasks = 
+                        new Connection(defaultIP, defaultPort).getNewTasks(clientID);
+                if(newTasks != null) {
+                    servicesController.displayTaskData(newTasks);
+                } else {
+                    System.err.println("Unable to retrieve new Tasks from "
+                        + "buffer in server.");
+                }
+            }
+            
+        });
+        
+        return true;    
+    }
+    
+    /*
      * Get IUser from server with given username and password. Gives IUser to
      * servicesController.
      * 

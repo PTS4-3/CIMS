@@ -6,6 +6,7 @@
 package Shared.Tasks;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -18,7 +19,7 @@ public class Plan implements IPlan {
     private String title;
     private String description;
     private HashSet<String> keywords;
-    private TreeSet<IStep> steps;
+    private List<IStep> steps;
     private boolean template;
     
     /**
@@ -31,7 +32,7 @@ public class Plan implements IPlan {
      * @param template
      */
     public Plan(int id, String title, String description, 
-            HashSet<String> keywords, TreeSet<IStep> steps, boolean template) {
+            HashSet<String> keywords, List<IStep> steps, boolean template) {
         if(title == null || title.isEmpty()) {
             throw new IllegalArgumentException("Voer een titel in");
         }
@@ -47,6 +48,7 @@ public class Plan implements IPlan {
         this.keywords = keywords;
         this.steps = steps;
         this.template = template;
+        this.steps.sort(null);
     }
     
     @Override
@@ -75,7 +77,7 @@ public class Plan implements IPlan {
     }
 
     @Override
-    public TreeSet<IStep> getSteps() {
+    public List<IStep> getSteps() {
         return this.steps;
     }
     
