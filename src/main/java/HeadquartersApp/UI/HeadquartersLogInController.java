@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -61,6 +62,7 @@ public class HeadquartersLogInController implements Initializable {
     }
 
     public void onClickLogIn() {
+        
         try {
             System.out.println("starting inlog");
             if (this.connectionManager == null) {
@@ -77,23 +79,25 @@ public class HeadquartersLogInController implements Initializable {
 
     }
     
-    public void logIn(IUser user) {
-        try {
-            if (user == null) {
-                showDialog("Log in fout", "De combinatie van wachtwoord en "+
-                        "gebruikersnaam is onjuist", true);
-            } else {
-                this.main.goToHeadquarters(connectionManager, user);
-            }
-        } catch (Exception ex) {
-            Logger.getLogger(HeadquartersLogInController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+    public void logIn(IUser user) {       
+        Platform.runLater(new Runnable(){
 
-    public void close() {
-        if (this.connectionManager != null) {
-            this.connectionManager.close();
-        }
+            @Override
+            public void run() {
+                try {
+                    if (user == null) {
+                        System.out.println("user null");
+                        showDialog("Log in fout", "De combinatie van wachtwoord en "+
+                                "gebruikersnaam is onjuist", true);
+                    } else {
+                        System.out.println("go to");
+                        main.goToHeadquarters(connectionManager, user);
+                    }
+                } catch (Exception ex) {
+                    Logger.getLogger(HeadquartersLogInController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }        
+        });        
     }
     
     public void showDialog(String title, String melding, boolean warning)

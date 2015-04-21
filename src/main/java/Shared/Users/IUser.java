@@ -5,11 +5,13 @@
  */
 package Shared.Users;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Alexander
  */
-public interface IUser {
+public interface IUser extends Serializable {
     String getUsername();
     String getName();
 }

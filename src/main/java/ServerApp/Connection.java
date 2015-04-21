@@ -189,6 +189,9 @@ public class Connection implements Runnable {
                             case PLAN_SEND_NEW:
                                 this.saveNewPlan();
                                 break;
+                            case SIGN_IN:
+                                this.getSigninUser();
+                                break;
                         }
                     }
                 }
