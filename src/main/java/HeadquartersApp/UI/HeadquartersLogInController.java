@@ -7,9 +7,9 @@ package HeadquartersApp.UI;
  */
 import HeadquartersApp.Connection.ConnectionManager;
 import Shared.NetworkException;
+import Shared.Users.IServiceUser;
 import Shared.Users.IUser;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -89,7 +89,10 @@ public class HeadquartersLogInController implements Initializable {
                         System.out.println("user null");
                         showDialog("Log in fout", "De combinatie van wachtwoord en "+
                                 "gebruikersnaam is onjuist", true);
-                    } else {
+                    } else if (user instanceof IServiceUser) {
+                        showDialog("Log in fout", "Je mag hier niet inloggen met deze"
+                                + "gegevens", true);
+                    }else {
                         System.out.println("go to");
                         main.goToHeadquarters(connectionManager, user);
                     }
