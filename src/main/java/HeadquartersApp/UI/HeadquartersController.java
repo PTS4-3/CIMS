@@ -497,6 +497,24 @@ public class HeadquartersController implements Initializable {
     }
     
     /**
+     * Fills the ListView with sorted data and selects the first value
+     * @param sortedData 
+     */
+    public void displaySortedDataTasks(List<ITask> tasks){
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                lvsTasks.getItems().addAll(tasks);
+                if(lvsTasks.getSelectionModel().getSelectedItem() == null) {
+                    lvsTasks.getSelectionModel().selectFirst();
+                }
+            }
+            
+        });
+    }
+    
+    /**
      * Fills the ComboBoxes with service users and selects the first value
      * @param serviceUsers 
      */
@@ -531,6 +549,7 @@ public class HeadquartersController implements Initializable {
             tasSortedDataDescription.setText(sortedData.getDescription());
             tfsSource.setText(sortedData.getSource());
             tfsLocation.setText(sortedData.getLocation());
+            displaySortedDataTasks(sortedData.getTasks());
             
         } else {
             // Clear GUI
@@ -604,7 +623,7 @@ public class HeadquartersController implements Initializable {
     /**
      * Resets the tabPlanInfo
      */
-    public void resetPlan(){
+    public void resetPlanInfo(){
         lvpTasks.getItems().remove(tempSteps);
         this.tempSteps = null;        
         tfpPlanTitle.clear();
@@ -673,8 +692,7 @@ public class HeadquartersController implements Initializable {
                 
                 if(title != null) {
                     connectionManager.sendNewPlan(new Plan(1, title, description, keywords, tempSteps, false));
-                    tfpPlanTitle.clear();
-                    tapPlanDescription.clear();
+                    resetPlanInfo();
                 } else {
                     showDialog("Foutmelding", "Voer een titel voor het stappenplan in", true);
                 }
@@ -689,18 +707,6 @@ public class HeadquartersController implements Initializable {
     }
     
     // ApplyPlan----------------------------------------------------------------
-    
-    /**
-     * Resets the tabApplyPlan
-     */
-    public void resetApplyPlan(){
-        tempPlan = null;
-        tfaDataTitle.clear();
-        taaDataDescription.clear();
-        tfaSearch.clear();
-        tfaTaskTitle.clear();
-        tfaTaskDescription.clear();
-    }
     
     /**
      * Fill the ListView with plans
@@ -756,9 +762,7 @@ public class HeadquartersController implements Initializable {
         String[] array = uniformString(s).split(" ");
         for(String word : array){
             keywords.add(word);
-        }
-        
-        
+        }        
     }
     
     /**
@@ -770,6 +774,25 @@ public class HeadquartersController implements Initializable {
         if(plan != null){
             displaySteps();            
         }
+    }
+    
+    public void applyPlan(){
+        List<IStep> steps = tempPlan.getSteps();
+        if(steps != null){
+            boolean done = true;
+            
+            for(IStep s : steps){
+                if(s.getExecutor() == null)
+                    done = false;
+            }
+            
+            if(done)
+                connectionManager.applyPlan(tempPlan);
+            else
+                showDialog("Foutmelding", "Niet alle stappen hebben een uitvoerder", true);
+        }
+        else
+            showDialog("Foutmelding", "Het plan heeft geen stappen", true);
     }
     
     /**
