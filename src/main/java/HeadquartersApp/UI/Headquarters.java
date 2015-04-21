@@ -17,6 +17,7 @@ import javafx.fxml.Initializable;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -65,18 +66,22 @@ public class Headquarters extends Application {
     public void goToHeadquarters(ConnectionManager manager, 
             IUser user) throws Exception
     {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader()
-                .getResource("HeadquartersApp/HeadquartersFX.fxml"));
-        Parent root = (Parent) loader.load();
-        hqController = (HeadquartersController) loader.getController();
+        if(user != null){
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader()
+                    .getResource("HeadquartersApp/HeadquartersFX.fxml"));
+            Parent root = (Parent) loader.load();
+            hqController = (HeadquartersController) loader.getController();
 
-        hqController.configure(manager, user);
+            hqController.configure(manager, user);
 
-        Scene scene = new Scene(root);
+            Scene scene = new Scene(root);
 
-        stage.setScene(scene);
-        stage.setTitle("Headquarters CIMS");
-        stage.show();
+            stage.setScene(scene);
+            stage.setTitle("Headquarters CIMS");
+            stage.show();
+        } else {
+            showDialog("Foutmelding", "User bestaat niet", true);
+        }
     }
 
     private void configure() {
@@ -104,5 +109,32 @@ public class Headquarters extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-
+    
+    public void showDialog(String title, String melding, boolean warning)
+    {
+        Alert alert = null;
+        
+        if (warning)
+        {
+            alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("FoutMelding");
+        }
+        else
+        {
+            alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Melding");            
+        }     
+        
+        if (!title.isEmpty())
+        {
+            alert.setHeaderText(title);
+        }
+        else
+        {
+            alert.setHeaderText(null);
+        }
+        
+        alert.setContentText(melding);
+        alert.showAndWait();
+    }
 }

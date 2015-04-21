@@ -36,7 +36,8 @@ public enum ConnCommand {
     PLAN_APPLY,
     STEPS_GET_NEW,
     STEPS_SUBSCRIBE,
-    STEPS_UNSUBSCRIBE
+    STEPS_UNSUBSCRIBE,
+    SIGN_IN
 }
 
 /*
@@ -124,6 +125,9 @@ public enum ConnCommand {
  -> Client: int clientID
  Option 28 - Client: ConnCommand.STEPS_UNSUBSCRIBE
  -> Client: int clientID
+ Option 29 - Client: ConnCommand.SIGN_IN
+ -> Client: int clientID
+ -> Server: IUser
  -----
  Return to start, except on closed conn
  */

@@ -14,10 +14,12 @@ import Shared.Data.ISortedData;
 import Shared.Data.SortedData;
 import Shared.Tasks.IPlan;
 import Shared.Tasks.IStep;
+import Shared.Tasks.ITask;
 import Shared.Tasks.Plan;
 import Shared.Tasks.Step;
 import Shared.Tasks.Task;
 import Shared.Tasks.TaskStatus;
+import Shared.Users.IHQUser;
 import Shared.Users.IServiceUser;
 import Shared.Users.IUser;
 import Shared.Users.ServiceUser;
@@ -111,6 +113,7 @@ public class HeadquartersController implements Initializable {
     @FXML ComboBox cbaExecutor;
     
     private IData requestData;
+    private IData sortedData;
     private List<IStep> tempSteps;
     private IPlan tempPlan;
     
@@ -122,16 +125,55 @@ public class HeadquartersController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         this.requestData = null;
+        this.sortedData = null;
         
         // Add ChangeListeners
         lvuUnsortedData.getSelectionModel().selectedItemProperty().addListener(
             new ChangeListener() {
-
-            @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                selectUnsortedData();
-            }
-                
+                @Override
+                public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                    selectUnsortedData();
+                }                
+            });
+        
+        lvsSortedData.getSelectionModel().selectedItemProperty().addListener(
+            new ChangeListener() {
+                @Override
+                public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                    selectSortedData();
+                }                
+            });
+        
+        lvsTasks.getSelectionModel().selectedItemProperty().addListener(
+            new ChangeListener() {
+                @Override
+                public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                    selectSortedTask();
+                }                
+            });
+        
+        lvpTasks.getSelectionModel().selectedItemProperty().addListener(
+            new ChangeListener() {
+                @Override
+                public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                    selectTask();
+                }                
+            });
+        
+        lvaPlans.getSelectionModel().selectedItemProperty().addListener(
+            new ChangeListener() {
+                @Override
+                public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                    selectPlan();
+                }                
+            });
+        
+        lvaSteps.getSelectionModel().selectedItemProperty().addListener(
+            new ChangeListener() {
+                @Override
+                public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                    selectStep();
+                }                
             });
     }
     
@@ -160,6 +202,12 @@ public class HeadquartersController implements Initializable {
         ccrTags.prefHeight(25);
         ccrTags.setMaxSize(395, 25);
         aprPane.getChildren().add(ccrTags);
+        
+        if(user instanceof IHQUser){
+            tabProcessSortedData.setDisable(true);
+            tabSendPlan.setDisable(true);
+            tabApplyPlan.setDisable(true);
+        }
         
         try {
             if(this.connectionManager == null) {
@@ -425,6 +473,8 @@ public class HeadquartersController implements Initializable {
         ccrTags.getCheckModel().clearChecks();
     }
     
+    // ProcessSortedData--------------------------------------------------------
+    
     /**
      * Fills the ListView with sorted data and selects the first value
      * @param sortedData 
@@ -488,6 +538,18 @@ public class HeadquartersController implements Initializable {
     }
     
     /**
+     * Fills the GUI with information of the selected task
+     */
+    public void selectSortedTask(){
+        ITask task =
+                (ITask) lvsTasks.getSelectionModel().getSelectedItem();
+        if(task != null) {
+            tfsTaskTitle.setText(task.getTitle());
+            tasTaskDescription.setText(task.getDescription());
+        }
+    }
+    
+    /**
      * Send individual task to server
      */
     public void sendTask(){
@@ -513,6 +575,28 @@ public class HeadquartersController implements Initializable {
     }
     
     /**
+     * Go to tabApplyPlan tab
+     */
+    public void goToApplyPlan() {
+        //TODO
+        try {
+            // Load values from GUI
+            IData data = 
+                (IData) lvsSortedData.getSelectionModel().getSelectedItem();
+            if(data == null) {
+                showDialog("Foutmelding", "Selecteer eerst een gesorteerd bericht", true);
+            }
+            // Load values into tabApplyPlan
+            this.sortedData = data;
+            tabPane.getSelectionModel().select(tabApplyPlan);
+        } catch (IllegalArgumentException iaEx) {
+            showDialog("", iaEx.getMessage(), false);
+        }
+    }
+    
+    // SendPlan-----------------------------------------------------------------
+    
+    /**
      * Resets the tabPlanInfo
      */
     public void resetPlan(){
@@ -524,6 +608,13 @@ public class HeadquartersController implements Initializable {
         tfpTaskTitle.clear();
         tapTaskDescription.clear();
         tfpCondition.clear();
+    }
+    
+    /**
+     * Fills the GUI with information of the selected task
+     */
+    public void selectTask(){
+        //TODO
     }
     
     /**
@@ -540,7 +631,13 @@ public class HeadquartersController implements Initializable {
         else
             step = 1;
         
-        tempSteps.add(new Step(step, title, description, TaskStatus.UNASSIGNED, null, null, null, step, condition));
+        if(title != ""){
+            tempSteps.add(new Step(step, title, description, TaskStatus.UNASSIGNED, null, null, null, step, condition));
+            tfpTaskTitle.clear();
+            tapTaskDescription.clear();
+            tfpCondition.clear();
+        } else
+            showDialog("Foutmelding", "Vul een titel in.", true);
     }
     
     /**
@@ -552,16 +649,20 @@ public class HeadquartersController implements Initializable {
                 throw new NetworkException("Kon data niet wegschrijven");
             }
         
-            String title = tfpPlanTitle.getText();
-            String description = tapPlanDescription.getText();
-            HashSet<String> keywords = null;
-            TreeSet<IStep> steps = null;
+            if(tempSteps != null){
+                String title = tfpPlanTitle.getText();
+                String description = tapPlanDescription.getText();
+                HashSet<String> keywords = null;
+                TreeSet<IStep> steps = null;
 
-            for(IStep s : tempSteps){
-                steps.add(s);
+                for(IStep s : tempSteps){
+                    steps.add(s);
+                }
+
+                connectionManager.sendNewPlan(new Plan(1, title, description, keywords, steps, false));
+                tfpPlanTitle.clear();
+                tapPlanDescription.clear();
             }
-
-            connectionManager.sendNewPlan(new Plan(1, title, description, keywords, steps, false));
         } catch (IllegalArgumentException iaEx) {
             showDialog("", iaEx.getMessage(), false);
         } catch (NetworkException nEx) {
@@ -569,7 +670,11 @@ public class HeadquartersController implements Initializable {
         }
     }
     
+    // ApplyPlan----------------------------------------------------------------
     
+    /**
+     * Resets the tabApplyPlan
+     */
     public void resetApplyPlan(){
         tempPlan = null;
         tfaPlanTitle.clear();
@@ -601,33 +706,57 @@ public class HeadquartersController implements Initializable {
      * Fill the ListView with Steps
      */
     public void displaySteps(){
-        Platform.runLater(new Runnable() {
-            IPlan p = (IPlan) lvaPlans.getSelectionModel().getSelectedItem();
-            List<IStep> steps = null;
-            
-            @Override
-            public void run() {                
-                for(IStep s : p.getSteps()){
-                    steps.add(s);
+        tempPlan = (IPlan) lvaPlans.getSelectionModel().getSelectedItem();
+        if(tempPlan != null){
+            Platform.runLater(new Runnable() {
+                IPlan p = (IPlan) lvaPlans.getSelectionModel().getSelectedItem();
+                List<IStep> steps = null;
+
+                @Override
+                public void run() {                
+                    for(IStep s : p.getSteps()){
+                        steps.add(s);
+                    }
+                    lvaSteps.getItems().addAll(steps);
+                    if(lvaSteps.getSelectionModel().getSelectedItem() == null) {
+                        lvaSteps.getSelectionModel().selectFirst();
+                    }
                 }
-                lvaSteps.getItems().addAll(steps);
-                if(lvaSteps.getSelectionModel().getSelectedItem() == null) {
-                    lvaSteps.getSelectionModel().selectFirst();
-                }
-            }
-            
-        });
+                
+            });
+        }
+    }
+    
+    /**
+     * Search for plans with similar keywords and display them in the listview.
+     */
+    public void searchPlan(){
+        //TODO
+    }
+    
+    /**
+     * Fills the GUI with information of the selected plan
+     */
+    public void selectPlan(){
+        IPlan plan =
+                (IPlan) lvaPlans.getSelectionModel().getSelectedItem();
+        if(plan != null){
+            displaySteps();            
+        }
     }
     
     /**
      * Fill GUI with Step properties
      */
     public void selectStep(){
-        IStep step = (IStep) lvaSteps.getSelectionModel().getSelectedItem();
-        
-        tfaTaskTitle.setText(step.getTitle());
-        tfaTaskDescription.setText(step.getDescription());
-        lvaSteps.getSelectionModel().selectFirst();
+        IStep s = (IStep) lvaSteps.getSelectionModel().getSelectedItem();
+        if(s != null){
+            tfaTaskTitle.setText(s.getTitle());
+            tfaTaskDescription.setText(s.getDescription());
+        } else {
+            tfaTaskTitle.clear();
+            tfaTaskDescription.clear();
+        }
     }
     
     /**
@@ -635,15 +764,24 @@ public class HeadquartersController implements Initializable {
      */
     public void applyStep(){
         IStep s = (IStep) lvaSteps.getSelectionModel().getSelectedItem();
-        s.setExecutor((IServiceUser) cbaExecutor.getSelectionModel().getSelectedItem());        
-        tempPlan.getSteps().add(s);
+        if(s != null){
+            s.setExecutor((IServiceUser) cbaExecutor.getSelectionModel().getSelectedItem());        
+            tempPlan.getSteps().add(s);
+        } else {
+            showDialog("Foutmelding", "Selecteer een stap voor je een stap toekent.", true);
+        }
     }
     
     /**
      * Remove step from plan
      */
     public void refuseStep(){
-        
+        IStep s = (IStep) lvaSteps.getSelectionModel().getSelectedItem();
+        if(s != null){
+            tempPlan.getSteps().remove(s);
+        } else {
+            showDialog("Foutmelding", "Selecteer een stap voor je een stap verwijderd.", true);
+        }
     }
     
     public void showDialog(String title, String melding, boolean warning)
