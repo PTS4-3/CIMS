@@ -13,6 +13,7 @@ import Shared.Data.IData;
 import Shared.Data.IDataRequest;
 import Shared.Data.ISortedData;
 import Shared.Tag;
+import Shared.Users.IUser;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -295,5 +296,24 @@ class Connection extends ConnClientBase {
             }
         return output;
     }
-
+    
+    /**
+     * Gets IUser from server
+     * 
+     * @param username
+     * @param password
+     * @return IUser
+     */
+    IUser getSigninUser(String username, String password) {
+        IUser output = null;
+            Object inObject = super.objectCommand(
+                    ConnCommand.SIGN_IN, new Object[]{username, password});
+            if (inObject instanceof List) {
+                output = (IUser) inObject;
+            } else {
+                System.err.println("Unexpected output from "
+                    + super.getCommandDescription(ConnCommand.SIGN_IN));
+            }
+        return output;
+    }
 }
