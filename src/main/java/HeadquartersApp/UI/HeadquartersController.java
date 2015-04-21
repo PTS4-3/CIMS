@@ -660,7 +660,7 @@ public class HeadquartersController implements Initializable {
                 String title = tfpPlanTitle.getText();
                 String description = tapPlanDescription.getText();
                 HashSet<String> keywords = null;
-                TreeSet<IStep> steps = null;
+                List<IStep> steps = null;
 
                 for(IStep s : tempSteps){
                     steps.add(s);
