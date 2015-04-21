@@ -5,7 +5,6 @@ package ServicesApp.UI;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 import HeadquartersApp.UI.Headquarters;
 import ServicesApp.Connection.ConnectionManager;
 import Shared.NetworkException;
@@ -16,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
@@ -26,6 +26,7 @@ import javafx.scene.layout.Pane;
  * @author Linda
  */
 public class ServicesLogInController implements Initializable {
+
     @FXML
     Pane pane;
     @FXML
@@ -39,7 +40,7 @@ public class ServicesLogInController implements Initializable {
     private IUser user;
 
     private Services main;
-    
+
     /**
      * Initializes the controller class.
      */
@@ -56,20 +57,49 @@ public class ServicesLogInController implements Initializable {
     public void configure(Services main, String ipAdressServer) {
         this.main = main;
         this.connectionManager = new ConnectionManager(this, ipAdressServer);
-        
-    }   
-    
-    public void onClickLogIn() throws NetworkException
-    {
+
+    }
+
+    public void onClickLogIn() throws NetworkException {
         if (this.connectionManager == null) {
-                throw new NetworkException("Kon data niet wegschrijven");
+            throw new NetworkException("Kon data niet wegschrijven");
+        }
+        String username = tfsUsername.getText();
+        String password = tfsPassword.getText();
+    }
+
+    public void logIn(IUser user) {
+
+        try {
+            if (user == null) {
+                showDialog("Log in fout", "De combinatie van wachtwoord en "+
+                        "gebruikersnaam is onjuist", true);
+            } else {
+                this.main.goToServices(connectionManager, user);
             }
-            String username = tfsUsername.getText();
-            String password = tfsPassword.getText();
-        try{
-        this.main.goToServices(connectionManager, user);
         } catch (Exception ex) {
             Logger.getLogger(ServicesLogInController.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    private void showDialog(String title, String melding, boolean warning) {
+        Alert alert = null;
+
+        if (warning) {
+            alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Foutmelding");
+        } else {
+            alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Melding");
+        }
+
+        if (!title.isEmpty()) {
+            alert.setHeaderText(title);
+        } else {
+            alert.setHeaderText(null);
+        }
+
+        alert.setContentText(melding);
+        alert.showAndWait();
     }
 }

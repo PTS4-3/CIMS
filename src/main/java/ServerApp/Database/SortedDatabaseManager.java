@@ -346,4 +346,9 @@ public class SortedDatabaseManager extends DatabaseManager {
         return request;
     }
 
+    @Deprecated
+    SortedData getFromSortedData(int outputDataID) {
+        return null;
+    }
+
 }

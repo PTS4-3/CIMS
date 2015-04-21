@@ -22,6 +22,7 @@ public class Task implements ITask {
     private ISortedData sortedData;
     private Tag targetExecutor;
     private IServiceUser executor;
+    private String declineReason;
     
     /**
      * 
@@ -76,6 +77,16 @@ public class Task implements ITask {
     }
 
     @Override
+    public String getDeclineReason(){
+        return this.declineReason;
+    }
+
+    @Override
+    public void setDeclineReason(String reason){
+        this.declineReason = reason;
+    }
+
+    @Override
     public ISortedData getSortedData() {
         return this.sortedData;
     }
@@ -93,5 +104,10 @@ public class Task implements ITask {
     @Override
     public void setExecutor(IServiceUser serviceUser) {
         this.executor = serviceUser;
+    }
+
+    @Override
+    public void setSortedData(SortedData data) {
+        this.sortedData = data;
     }
 }

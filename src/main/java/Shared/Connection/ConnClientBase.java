@@ -5,6 +5,7 @@
  */
 package Shared.Connection;
 
+import Shared.Users.IUser;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -221,6 +222,26 @@ public class ConnClientBase {
         }
         return output;
     }
+    
+    /**
+     * Gets IUser from server
+     * 
+     * @param username
+     * @param password
+     * @return IUser
+     */
+    protected IUser getSigninUser(String username, String password) {
+        IUser output = null;
+            Object inObject = objectCommand(
+                    ConnCommand.SIGN_IN, new Object[]{username, password});
+            if (inObject instanceof IUser || inObject == null) {
+                output = (IUser) inObject;
+            } else {
+                System.err.println("Unexpected output from "
+                    + getCommandDescription(ConnCommand.SIGN_IN));
+            }
+        return output;
+    }
 
     /**
      * Translates ConnCommands into human-readable text.
@@ -310,6 +331,8 @@ public class ConnClientBase {
                 break;
             case TASKS_UNSUBSCRIBE:
                 output = "unsubscribe to get updates for tasks";
+            case SIGN_IN:
+                output = "retrieving user";
                 break;
         }
         return output;

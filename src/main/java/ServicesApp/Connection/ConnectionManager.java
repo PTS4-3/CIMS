@@ -15,6 +15,7 @@ import Shared.Data.Status;
 import Shared.Tag;
 import Shared.Data.UnsortedData;
 import Shared.Tasks.ITask;
+import Shared.Users.IUser;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -575,5 +576,26 @@ public class ConnectionManager {
         
         return true;    
     }
-
+    
+    /*
+     * Get IUser from server with given username and password. Gives IUser to
+     * servicesController.
+     * 
+     * @param username
+     * @param password 
+     */
+    public void getSigninUser(String username, String password) {
+        if(this.loginController != null) {
+            pool.execute(() -> {
+                IUser output
+                        = new Connection(defaultIP, defaultPort).getSigninUser(username, password);
+                if (output != null) {
+                    this.loginController.logIn(output);
+                } else {
+                    System.err.println("Unable to retrieve IUser from "
+                            + "buffer in server.");
+                }
+            });  
+        }
+    }
 }
