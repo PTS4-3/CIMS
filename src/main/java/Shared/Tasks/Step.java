@@ -45,6 +45,11 @@ public class Step extends Task implements IStep {
     public int getStepnr() {
         return this.stepnr;
     }
+    
+    @Override
+    public void setStepnr(int nr) {
+        this.stepnr = nr;
+    }
 
     @Override
     public String getCondition() {

@@ -99,7 +99,7 @@ public class Headquarters extends Application {
 
     @Override
     public void stop() throws Exception {
-        controller.close();
+        hqController.close();
         super.stop();
     }
 

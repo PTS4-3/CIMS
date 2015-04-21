@@ -19,7 +19,7 @@ import Shared.Tasks.Plan;
 import Shared.Tasks.Step;
 import Shared.Tasks.Task;
 import Shared.Tasks.TaskStatus;
-import Shared.Users.IHQUser;
+import Shared.Users.IHQChief;
 import Shared.Users.IServiceUser;
 import Shared.Users.IUser;
 import Shared.Users.ServiceUser;
@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.TreeSet;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -94,7 +93,7 @@ public class HeadquartersController implements Initializable {
     // SendPlan
     @FXML Tab tabSendPlan;
     @FXML TextField tfpPlanTitle;
-    @FXML TextField tapPlanDescription;
+    @FXML TextArea tapPlanDescription;
     @FXML TextArea tapKeyWords;
     @FXML ListView lvpTasks;
     @FXML TextField tfpTaskTitle;
@@ -203,10 +202,14 @@ public class HeadquartersController implements Initializable {
         ccrTags.setMaxSize(395, 25);
         aprPane.getChildren().add(ccrTags);
         
-        if(user instanceof IHQUser){
-            tabProcessSortedData.setDisable(true);
-            tabSendPlan.setDisable(true);
-            tabApplyPlan.setDisable(true);
+        tabProcessSortedData.setDisable(true);
+        tabSendPlan.setDisable(true);
+        tabApplyPlan.setDisable(true);
+        
+        if(user instanceof IHQChief){
+            tabProcessSortedData.setDisable(false);
+            tabSendPlan.setDisable(false);
+            tabApplyPlan.setDisable(false);
         }
         
         try {
@@ -214,6 +217,11 @@ public class HeadquartersController implements Initializable {
                 throw new NetworkException("Kon geen data ophalen");
             }
             this.connectionManager.getData();
+            this.connectionManager.getSortedData();
+            this.connectionManager.getServiceUsers();
+            
+            this.connectionManager.subscribeSortedData(this.user.getUsername());
+            
             this.startTimer();        
         } catch (NetworkException nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
@@ -341,9 +349,6 @@ public class HeadquartersController implements Initializable {
             // Update ListView
             this.updateLvuUnsortedData(unsortedData);
             
-            // Bevestiging tonen
-            showDialog("Verzenden geslaagd", "Het verzenden van de gesorteerde " +
-                    "data is geslaagd", false);
         } catch (IllegalArgumentException iaEx) {
             showDialog("", iaEx.getMessage(), false);
         } catch (NetworkException nEx) {
@@ -354,8 +359,9 @@ public class HeadquartersController implements Initializable {
     /**
      * Set status current data back to none
      */
-    public void close() {
+    public void close() {        
         if(this.connectionManager != null){
+            this.connectionManager.unsubscribeSortedData(this.user.getUsername());
             this.connectionManager.stopWorkingOnData(
                     new ArrayList<>(lvuUnsortedData.getItems()));
             this.connectionManager.close();
@@ -388,9 +394,6 @@ public class HeadquartersController implements Initializable {
             // Update ListView
             this.updateLvuUnsortedData(unsortedData);
             
-            // Bevestiging tonen
-            showDialog("Verwijderen geslaagd", "Het verwijderen van de ongesorteerde " +
-                    "data is geslaagd", false);
         } catch (IllegalArgumentException iaEx) {
             showDialog("", iaEx.getMessage(), false);
         } catch (NetworkException nEx) {
@@ -450,9 +453,6 @@ public class HeadquartersController implements Initializable {
             // Reset tab
             resetRequest();
             
-            // Bevestiging tonen
-            showDialog("Verzenden geslaagd", "Het verzenden van de aanvraag " +
-                    "is geslaagd", false);
         } catch (IllegalArgumentException iaEx) {
             showDialog("Invoer onjuist", iaEx.getMessage(), true);
         } catch (NetworkException nEx) {
@@ -494,6 +494,24 @@ public class HeadquartersController implements Initializable {
     }
     
     /**
+     * Fills the ListView with sorted data and selects the first value
+     * @param sortedData 
+     */
+    public void displaySortedDataTasks(List<ITask> tasks){
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                lvsTasks.getItems().addAll(tasks);
+                if(lvsTasks.getSelectionModel().getSelectedItem() == null) {
+                    lvsTasks.getSelectionModel().selectFirst();
+                }
+            }
+            
+        });
+    }
+    
+    /**
      * Fills the ComboBoxes with service users and selects the first value
      * @param serviceUsers 
      */
@@ -520,14 +538,16 @@ public class HeadquartersController implements Initializable {
      * Fills the GUI with information of the selected sorted data
      */
     public void selectSortedData() {
-        IData sortedData = 
-                (IData) lvsSortedData.getSelectionModel().getSelectedItem();
+        ISortedData sortedData = 
+                (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem();
         if(sortedData != null) {
             // Fill GUI with information
             tfsSortedDataTitle.setText(sortedData.getTitle());
             tasSortedDataDescription.setText(sortedData.getDescription());
             tfsSource.setText(sortedData.getSource());
             tfsLocation.setText(sortedData.getLocation());
+            displaySortedDataTasks(sortedData.getTasks());
+            
         } else {
             // Clear GUI
             tfuTitle.clear();
@@ -565,8 +585,11 @@ public class HeadquartersController implements Initializable {
             if(cbsExecutor.getValue() != null)
                 executor = (ServiceUser)cbsExecutor.getValue();
                 
-
             connectionManager.sendTask(new Task(1, title, description, TaskStatus.UNASSIGNED, (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem(), executor.getType(), executor));
+            ISortedData data = (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem();
+            List<ITask> tasks = data.getTasks();
+            displaySortedDataTasks(tasks);
+            
         } catch (IllegalArgumentException iaEx) {
             showDialog("", iaEx.getMessage(), false);
         } catch (NetworkException nEx) {
@@ -600,7 +623,7 @@ public class HeadquartersController implements Initializable {
     /**
      * Resets the tabPlanInfo
      */
-    public void resetPlan(){
+    public void resetPlanInfo(){
         lvpTasks.getItems().remove(tempSteps);
         this.tempSteps = null;        
         tfpPlanTitle.clear();
@@ -615,12 +638,12 @@ public class HeadquartersController implements Initializable {
      * Fills the GUI with information of the selected task
      */
     public void selectTask(){
-        //TODO
         ITask task =
                 (ITask) lvsTasks.getSelectionModel().getSelectedItem();
         if(task != null){
             tfsTaskTitle.setText(task.getTitle());
             tasTaskDescription.setText(task.getDescription());
+            cbsExecutor.getSelectionModel().select(task.getExecutor());
         }
     }
     
@@ -660,11 +683,6 @@ public class HeadquartersController implements Initializable {
                 String title = tfpPlanTitle.getText();
                 String description = tapPlanDescription.getText();
                 HashSet<String> keywords = null;
-                List<IStep> steps = null;
-
-                for(IStep s : tempSteps){
-                    steps.add(s);
-                }
                 
                 String s = tapKeyWords.getText();
                 String[] array = uniformString(s).split(" ");
@@ -673,9 +691,8 @@ public class HeadquartersController implements Initializable {
                 }
                 
                 if(title != null) {
-                    connectionManager.sendNewPlan(new Plan(1, title, description, keywords, steps, false));
-                    tfpPlanTitle.clear();
-                    tapPlanDescription.clear();
+                    connectionManager.sendNewPlan(new Plan(1, title, description, keywords, tempSteps, false));
+                    resetPlanInfo();
                 } else {
                     showDialog("Foutmelding", "Voer een titel voor het stappenplan in", true);
                 }
@@ -690,18 +707,6 @@ public class HeadquartersController implements Initializable {
     }
     
     // ApplyPlan----------------------------------------------------------------
-    
-    /**
-     * Resets the tabApplyPlan
-     */
-    public void resetApplyPlan(){
-        tempPlan = null;
-        tfaDataTitle.clear();
-        taaDataDescription.clear();
-        tfaSearch.clear();
-        tfaTaskTitle.clear();
-        tfaTaskDescription.clear();
-    }
     
     /**
      * Fill the ListView with plans
@@ -750,8 +755,7 @@ public class HeadquartersController implements Initializable {
      * Search for plans with similar keywords and display them in the listview.
      */
     public void searchPlan(){
-        //TODO
-        HashSet<String> keywords = null;
+        HashSet<String> keywords = new HashSet();
         
         String s = tapKeyWords.getText();
         String[] array = uniformString(s).split(" ");
@@ -759,7 +763,7 @@ public class HeadquartersController implements Initializable {
             keywords.add(word);
         }
         
-        
+        connectionManager.searchPlans(keywords);
     }
     
     /**
@@ -771,6 +775,29 @@ public class HeadquartersController implements Initializable {
         if(plan != null){
             displaySteps();            
         }
+    }
+    
+    public void applyPlan(){
+        List<IStep> steps = tempPlan.getSteps();
+        if(steps != null){
+            boolean done = true;
+            int step = 1;
+            
+            for(IStep s : steps){
+                s.setStepnr(step);
+                step++;
+                if(s.getExecutor() == null)
+                    done = false;
+            }
+            
+            if(done){
+                connectionManager.applyPlan(tempPlan);
+            }
+            else
+                showDialog("Foutmelding", "Niet alle stappen hebben een uitvoerder", true);
+        }
+        else
+            showDialog("Foutmelding", "Het plan heeft geen stappen", true);
     }
     
     /**

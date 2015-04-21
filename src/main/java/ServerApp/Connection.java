@@ -197,6 +197,8 @@ public class Connection implements Runnable {
                                 break;
                             case TASKS_UNSUBSCRIBE:
                                 this.unsubscribeTasks();
+                            case SIGN_IN:
+                                this.getSigninUser();
                                 break;
                         }
                     }
