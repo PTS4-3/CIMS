@@ -541,8 +541,8 @@ public class HeadquartersController implements Initializable {
      * Fills the GUI with information of the selected sorted data
      */
     public void selectSortedData() {
-        IData sortedData = 
-                (IData) lvsSortedData.getSelectionModel().getSelectedItem();
+        ISortedData sortedData = 
+                (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem();
         if(sortedData != null) {
             // Fill GUI with information
             tfsSortedDataTitle.setText(sortedData.getTitle());
@@ -588,8 +588,9 @@ public class HeadquartersController implements Initializable {
             if(cbsExecutor.getValue() != null)
                 executor = (ServiceUser)cbsExecutor.getValue();
                 
-
             connectionManager.sendTask(new Task(1, title, description, TaskStatus.UNASSIGNED, (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem(), executor.getType(), executor));
+            List<ITask> tasks = (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem().getTasks();
+            displaySortedDataTasks(tasks);
         } catch (IllegalArgumentException iaEx) {
             showDialog("", iaEx.getMessage(), false);
         } catch (NetworkException nEx) {
@@ -780,14 +781,18 @@ public class HeadquartersController implements Initializable {
         List<IStep> steps = tempPlan.getSteps();
         if(steps != null){
             boolean done = true;
+            int step = 1;
             
             for(IStep s : steps){
+                s.setStepnr(step);
+                step++;
                 if(s.getExecutor() == null)
                     done = false;
             }
             
-            if(done)
+            if(done){
                 connectionManager.applyPlan(tempPlan);
+            }
             else
                 showDialog("Foutmelding", "Niet alle stappen hebben een uitvoerder", true);
         }
