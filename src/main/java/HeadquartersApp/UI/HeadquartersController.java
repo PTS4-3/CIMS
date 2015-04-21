@@ -93,7 +93,7 @@ public class HeadquartersController implements Initializable {
     // SendPlan
     @FXML Tab tabSendPlan;
     @FXML TextField tfpPlanTitle;
-    @FXML TextField tapPlanDescription;
+    @FXML TextArea tapPlanDescription;
     @FXML TextArea tapKeyWords;
     @FXML ListView lvpTasks;
     @FXML TextField tfpTaskTitle;
@@ -357,7 +357,7 @@ public class HeadquartersController implements Initializable {
     /**
      * Set status current data back to none
      */
-    public void close() {
+    public void close() {        
         if(this.connectionManager != null){
             this.connectionManager.stopWorkingOnData(
                     new ArrayList<>(lvuUnsortedData.getItems()));
