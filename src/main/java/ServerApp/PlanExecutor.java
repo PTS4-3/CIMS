@@ -35,7 +35,8 @@ public class PlanExecutor {
     
     public void executeNextStep() {
         if(this.nextStep > 0 && this.nextStep <= this.plan.getSteps().size()) {
-            //getBuffer().addTask(this.plan.getSteps());
+            getBuffer().addTask(this.plan.getSteps().get(nextStep - 1));
+            this.nextStep++;
         } else {
             getPlanExecutorHandler().removePlanExecutor(this.plan);
         }
