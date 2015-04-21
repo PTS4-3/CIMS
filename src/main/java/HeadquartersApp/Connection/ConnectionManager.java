@@ -41,7 +41,7 @@ public class ConnectionManager {
         this.defaultIP = defaultIP;
         this.defaultPort = DEFAULT_PORT;
         this.loginController = loginController;
-        this.testMethods();
+        //this.testMethods();
     }
     
     public void setHQController(HeadquartersController hqController) {
