@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  *
- * @author Kargathia
+ * @author Kargathia + Alexander
  */
 public class ConnectionManager {
 
@@ -41,7 +41,8 @@ public class ConnectionManager {
     private AtomicBoolean
             isRegisteredRequests,
             isRegisteredSorted,
-            isRegisteredUnsorted;
+            isRegisteredUnsorted,
+            isRegistered;
 
     /**
      * Starts a new ConnectionManager, responsible for

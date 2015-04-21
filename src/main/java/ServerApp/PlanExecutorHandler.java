@@ -30,6 +30,14 @@ public class PlanExecutorHandler {
      */
     public synchronized void addPlanExecutor(IPlan plan) {
         this.executors.put(plan.getId(), new PlanExecutor(plan));
+        this.pool.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                executors.get(plan.getId()).executeNextStep();
+            }
+            
+        });
     }
     
     /**

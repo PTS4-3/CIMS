@@ -638,12 +638,14 @@ public class Connection implements Runnable {
         boolean success = false;
         
         synchronized(LOCK) {
-            success = ServerMain.dummyDatabaseManager.insertTask(task);
+            task = ServerMain.tasksDatabaseManager.insertNewTask(task);
         }
         //TODO add to buffer
         //TODO send task to executor
         this.writeResult(success);
     }
+    
+    //TODO get Tasks bij services
     
     /**
      * Saves a new plan
@@ -661,7 +663,7 @@ public class Connection implements Runnable {
         boolean success = false;
         
         synchronized(LOCK) {
-            success = ServerMain.dummyDatabaseManager.insertNewPlan(plan);
+            plan = ServerMain.tasksDatabaseManager.insertNewPlan(plan);
         }
         //TODO add to buffer
         this.writeResult(success);
@@ -682,10 +684,12 @@ public class Connection implements Runnable {
         boolean success = false;
         
         synchronized(LOCK) {
-            success = ServerMain.dummyDatabaseManager.insertNewPlan(plan);
+            plan = ServerMain.tasksDatabaseManager.insertNewPlan(plan);
         }
         
-        getPlanExecutorHandler().addPlanExecutor(plan);
+        if(plan != null) {
+            getPlanExecutorHandler().addPlanExecutor(plan);
+        }
         
         this.writeResult(success);
     }
