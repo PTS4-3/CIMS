@@ -12,6 +12,7 @@ import Shared.Data.IDataRequest;
 import Shared.Data.ISortedData;
 import Shared.Tasks.IPlan;
 import Shared.Tasks.ITask;
+import Shared.Users.IUser;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -116,5 +117,16 @@ class Connection extends ConnClientBase {
      */
     protected void applyPlan(IPlan plan) {
         super.booleanCommand(ConnCommand.PLAN_APPLY, new Object[]{plan});
+    }
+    
+    /**
+     * Gets IUser from server
+     * 
+     * @param username
+     * @param password
+     * @return IUser
+     */
+    protected IUser getSigninUser(String username, String password) {
+        return super.getSigninUser(username, password);
     }
 }

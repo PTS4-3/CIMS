@@ -496,7 +496,7 @@ public class ConnectionManager {
      * @param password 
      */
     public void getSigninUser(String username, String password) {
-        if(this.servicesController != null) {
+        if(this.loginController != null) {
             pool.execute(() -> {
                 IUser output
                         = new Connection(defaultIP, defaultPort).getSigninUser(username, password);

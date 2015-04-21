@@ -164,7 +164,7 @@ class Connection extends ConnClientBase {
      *
      * @return ClientID. -1 if anything went wrong.
      */
-    int getClientID() {
+    protected int getClientID() {
         int output = -1;
         Object inObject = super.objectCommand(
                 ConnCommand.CLIENT_ID_GET, new Object[]{});
@@ -183,7 +183,7 @@ class Connection extends ConnClientBase {
      *
      * @param clientID
      */
-    boolean subscribeSorted(String username, int clientID) {
+    protected boolean subscribeSorted(String username, int clientID) {
         return super.booleanCommand(
                 ConnCommand.SORTED_SUBSCRIBE, new Object[]{username, clientID});
     }
@@ -193,7 +193,7 @@ class Connection extends ConnClientBase {
      *
      * @param clientID
      */
-    boolean subscribeRequests(String username, int clientID) {
+    protected boolean subscribeRequests(String username, int clientID) {
         return super.booleanCommand(
                 ConnCommand.UPDATE_REQUEST_SUBSCRIBE, new Object[]{username, clientID});
     }
@@ -203,7 +203,7 @@ class Connection extends ConnClientBase {
      * @param clientID
      * @return newly submitted sorted data since last call.
      */
-    List<ISortedData> getNewSorted(int clientID) {
+    protected List<ISortedData> getNewSorted(int clientID) {
         List<ISortedData> output = null;
         Object inObject = super.objectCommand(
                 ConnCommand.SORTED_GET_NEW, new Object[]{clientID});
@@ -222,7 +222,7 @@ class Connection extends ConnClientBase {
      * @param clientID
      * @return newly submitted requests since last call.
      */
-    List<IDataRequest> getNewRequests(int clientID) {
+    protected List<IDataRequest> getNewRequests(int clientID) {
         List<IDataRequest> output = null;
         Object inObject = super.objectCommand(
                 ConnCommand.UPDATE_REQUEST_GET_NEW, new Object[]{clientID});
@@ -241,7 +241,7 @@ class Connection extends ConnClientBase {
      *
      * @param clientID
      */
-    boolean unsubscribeSorted(String username, int clientID) {
+    protected boolean unsubscribeSorted(String username, int clientID) {
         return super.booleanCommand(
                 ConnCommand.SORTED_UNSUBSCRIBE, new Object[]{username, clientID});
     }
@@ -251,7 +251,7 @@ class Connection extends ConnClientBase {
      *
      * @param clientID
      */
-    boolean unsubscribeRequests(String username, int clientID) {
+    protected boolean unsubscribeRequests(String username, int clientID) {
         return super.booleanCommand(
                 ConnCommand.UPDATE_REQUEST_UNSUBSCRIBE, new Object[]{username, clientID});
     }
@@ -262,7 +262,7 @@ class Connection extends ConnClientBase {
      * @param clientID
      * @return
      */
-    boolean subscribeUnsorted(String username, int clientID) {
+    protected boolean subscribeUnsorted(String username, int clientID) {
         return super.booleanCommand(
                 ConnCommand.UNSORTED_SUBSCRIBE, new Object[]{username, clientID});
     }
@@ -273,7 +273,7 @@ class Connection extends ConnClientBase {
      * @param clientID
      * @return
      */
-    boolean unsubscribeUnsorted(String username, int clientID) {
+    protected boolean unsubscribeUnsorted(String username, int clientID) {
         return super.booleanCommand(
                 ConnCommand.UNSORTED_UNSUBSCRIBE, new Object[]{username, clientID});
     }
@@ -284,7 +284,7 @@ class Connection extends ConnClientBase {
      * @param clientID
      * @return
      */
-    List<IData> getNewUnsorted(int clientID) {
+    protected List<IData> getNewUnsorted(int clientID) {
         List<IData> output = null;
             Object inObject = super.objectCommand(
                     ConnCommand.UNSORTED_GET_NEW, new Object[]{clientID});
@@ -297,6 +297,7 @@ class Connection extends ConnClientBase {
         return output;
     }
     
+        
     /**
      * Gets IUser from server
      * 
@@ -304,16 +305,7 @@ class Connection extends ConnClientBase {
      * @param password
      * @return IUser
      */
-    IUser getSigninUser(String username, String password) {
-        IUser output = null;
-            Object inObject = super.objectCommand(
-                    ConnCommand.SIGN_IN, new Object[]{username, password});
-            if (inObject instanceof List) {
-                output = (IUser) inObject;
-            } else {
-                System.err.println("Unexpected output from "
-                    + super.getCommandDescription(ConnCommand.SIGN_IN));
-            }
-        return output;
+    protected IUser getSigninUser(String username, String password) {
+        return super.getSigninUser(username, password);
     }
 }
