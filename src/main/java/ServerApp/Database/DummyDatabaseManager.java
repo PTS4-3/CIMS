@@ -36,6 +36,7 @@ public class DummyDatabaseManager {
         return true;
     }
 
+    @Deprecated
     public ITask updateTask(ITask input){
         return null;
     }
@@ -65,6 +66,20 @@ public class DummyDatabaseManager {
      * @return
      */
     public List<IPlan> getPlans(HashSet<String> keywords){
+        return null;
+    }
+
+    /**
+     *
+     * @param ID
+     * @return null if not found
+     */
+    @Deprecated
+    public ITask getTask(int ID){
+        return null;
+    }
+
+    public IUser getUser(String userName){
         return null;
     }
 
