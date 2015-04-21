@@ -501,7 +501,7 @@ public class ConnectionManager {
                 IUser output
                         = new Connection(defaultIP, defaultPort).getSigninUser(username, password);
                 if (output != null) {
-                    //this.loginController. (output);
+                    this.loginController.logIn(output);
                 } else {
                     System.err.println("Unable to retrieve IUser from "
                             + "buffer in server.");
