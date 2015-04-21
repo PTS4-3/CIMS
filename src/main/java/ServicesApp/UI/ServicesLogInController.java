@@ -66,6 +66,8 @@ public class ServicesLogInController implements Initializable {
         }
         String username = tfsUsername.getText();
         String password = tfsPassword.getText();
+        
+        connectionManager.getSigninUser(username, password);
     }
 
     public void logIn(IUser user) {
