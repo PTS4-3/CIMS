@@ -35,8 +35,6 @@ public class ServicesLogInController implements Initializable {
     TextField tfsUsername;
     @FXML
     TextField tfsPassword;
-    @FXML
-    Button btnLogIn;
 
     private ConnectionManager connectionManager;
     private IUser user;
@@ -62,7 +60,7 @@ public class ServicesLogInController implements Initializable {
 
     }
 
-    public void onClickLogIn() throws NetworkException {
+    public void onClickLogIn() {
         try {
             System.out.println("starting inlog");
             if (this.connectionManager == null) {
