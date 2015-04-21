@@ -68,26 +68,23 @@ public class HeadquartersLogInController implements Initializable {
             String username = tfsUsername.getText();
             String password = tfsPassword.getText();
 
-            user = null;
-            //TODO
-            //USername password, controleren
-            //user opvragen
-            //doorsturen naar nieuw scherm
-            
-            if(user != null) {
-                try{
-                    this.main.goToHeadquarters(connectionManager, user);
-                } catch (Exception ex) {
-                    Logger.getLogger(HeadquartersLogInController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            } else {
-                showDialog("Foutmelding", "User bestaat niet", true);
-            }
-
         } catch (NetworkException ex) {
             Logger.getLogger(HeadquartersLogInController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+    }
+    
+    public void logIn(IUser user) {
+        try {
+            if (user == null) {
+                showDialog("Log in fout", "De combinatie van wachtwoord en "+
+                        "gebruikersnaam is onjuist", true);
+            } else {
+                this.main.goToHeadquarters(connectionManager, user);
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(HeadquartersLogInController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void close() {
