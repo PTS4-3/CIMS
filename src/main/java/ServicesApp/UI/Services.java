@@ -8,6 +8,8 @@ package ServicesApp.UI;
 import ServicesApp.Connection.ConnectionManager;
 import Shared.Users.IUser;
 import javafx.application.Application;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -25,6 +27,13 @@ public class Services extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         this.stage = stage;
+        this.stage.setOnCloseRequest(new EventHandler() {
+
+            @Override
+            public void handle(Event event) {
+                close();
+            }
+        });
         this.goToLogIn();
     }
     
@@ -49,7 +58,7 @@ public class Services extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("ServicesApp/ServicesFX.fxml"));
         Parent root = (Parent) loader.load();
         servicesController = (ServicesController) loader.getController();
-
+        servicesController.setApp(this);
         servicesController.configure(manager, user);
 
         Scene scene = new Scene(root);
@@ -70,6 +79,10 @@ public class Services extends Application {
         //int portnumber = 8189;
 
         controller.configure(this, ipAdressServer);
+    }
+    
+    public void close(){
+        this.stage.close();
     }
 
     /**

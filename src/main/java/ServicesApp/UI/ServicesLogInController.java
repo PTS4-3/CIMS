@@ -100,6 +100,11 @@ public class ServicesLogInController implements Initializable {
         
         });        
     }
+    
+    public void close(){
+        System.out.println("Close inlog services");
+         this.connectionManager.closeConnection();
+    }
 
     private void showDialog(String title, String melding, boolean warning) {
         Alert alert = null;
