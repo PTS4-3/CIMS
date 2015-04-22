@@ -14,7 +14,9 @@ import Shared.Data.IData;
 import Shared.Data.IDataRequest;
 import Shared.Data.ISortedData;
 import Shared.Tasks.IPlan;
+import Shared.Tasks.IStep;
 import Shared.Tasks.ITask;
+import Shared.Tasks.TaskStatus;
 import Shared.Users.IUser;
 import java.io.IOException;
 import java.io.InputStream;
@@ -189,6 +191,9 @@ public class Connection implements Runnable {
                             case PLAN_SEND_NEW:
                                 this.saveNewPlan();
                                 break;
+                            case PLAN_APPLY:
+                                this.applyPlan();
+                                break;
                             case TASKS_GET_NEW:
                                 this.sendNewTasks();
                                 break;
@@ -199,6 +204,9 @@ public class Connection implements Runnable {
                                 this.unsubscribeTasks();
                             case SIGN_IN:
                                 this.getSigninUser();
+                                break;
+                            case TASK_UPDATE:
+                                this.updateTask();
                                 break;
                         }
                     }
@@ -810,5 +818,38 @@ public class Connection implements Runnable {
             output = ServerMain.tasksDatabaseManager.loginUser(username, password);
         }        
         writeOutput(output);
+    }
+    
+    /**
+     * Updates the task in the database
+     * Adds the updated task to the buffer for the HQChief
+     * Handles the task if it is a step
+     */
+    private void updateTask() throws IOException, ClassNotFoundException {
+        Object inObject = in.readObject();
+        
+        if(inObject == null || !(inObject instanceof ITask)) {
+            out.writeObject(ConnState.COMMAND_ERROR);
+            return;
+        }
+        
+        ITask task = (ITask) inObject;
+        boolean success = false;
+        
+        synchronized(LOCK) {
+            success = ServerMain.dummyDatabaseManager.updateTask(task);
+        }
+        
+        if(task.getStatus() != TaskStatus.READ) {
+            // Add to buffer of HQChief
+            getBuffer().addTaskForChief(task);
+        }
+        
+        if(task.getStatus() == TaskStatus.SUCCEEDED && task instanceof IStep) {
+            // Execute next step
+            //TODO
+        }
+        
+        this.writeResult(success);
     }
 }

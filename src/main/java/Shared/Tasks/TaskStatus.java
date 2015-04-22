@@ -34,4 +34,8 @@ public enum TaskStatus {
      * Task is not assigned yet
      */
     UNASSIGNED,
+    /**
+     * Result of task is read by the chief and there is no need to show it anymore
+     */
+    READ,
 }

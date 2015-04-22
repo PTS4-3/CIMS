@@ -614,6 +614,17 @@ public class ConnectionManager {
      * @param task cannot be null
      */
     public void updateTask(ITask task) {
-        //TODO
+        if(task == null) {
+            throw new IllegalArgumentException("Voer een taak in");
+        }
+        
+        pool.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                new Connection(defaultIP, defaultPort).updateTask(task);
+            }
+            
+        });
     }
 }

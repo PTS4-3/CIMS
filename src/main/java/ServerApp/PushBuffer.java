@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  *
- * @author Kargathia
+ * @author Kargathia + Alexander
  */
 public class PushBuffer {
 
@@ -25,7 +25,7 @@ public class PushBuffer {
             LOCK_SORTED = "",
             LOCK_REQUESTS = "",
             LOCK_UNSORTED = "",
-            LOCK_STEPS = "";
+            LOCK_TASKS = "";
 
     // key: ClientID, Value: sortedData
     private HashMap<Integer, List<ISortedData>> sortedDataBuffer;
@@ -47,14 +47,36 @@ public class PushBuffer {
         this.clientIDs = new HashMap<>();
     }
     
+    /**
+     * Adds the given clientID to the given username in clientIDs
+     * @param username cannot be null or empty
+     * @param clientID has to be zero or greater
+     */
     private synchronized void addClientID(String username, int clientID) {
+        if(username == null || username.isEmpty()) {
+            throw new IllegalArgumentException("username cannot be null or empty");
+        }
+        if(clientID < 0) {
+            throw new IllegalArgumentException("clientID has to be zero or greater");
+        }
         if(this.clientIDs.get(username) == null) {
             this.clientIDs.put(username, new HashSet<>());
         }
         this.clientIDs.get(username).add(clientID);
     }
     
+    /**
+     * Removes the given clientID from the given username in clientIDs
+     * @param username cannot be null or empty
+     * @param clientID has to be zero or greater
+     */
     private synchronized void removeClientID(String username, int clientID) {
+        if(username == null || username.isEmpty()) {
+            throw new IllegalArgumentException("username cannot be null or empty");
+        }        
+        if(clientID < 0) {
+            throw new IllegalArgumentException("clientID has to be zero or greater");
+        }
         if(this.sortedDataBuffer.get(clientID) == null &&
                 this.unsortedDataBuffer.get(clientID) == null &&
                 this.requestBuffer.get(clientID) == null) {
@@ -66,6 +88,11 @@ public class PushBuffer {
         }
     }
 
+    /**
+     * Subscribe to get updates for sorted data
+     * @param username
+     * @param clientID 
+     */
     public void subscribeSorted(String username, int clientID) {
         this.addClientID(username, clientID);
         synchronized (LOCK_SORTED) {
@@ -73,6 +100,11 @@ public class PushBuffer {
         }
     }
 
+    /**
+     * Subscribe to get updates for DataRequests
+     * @param username
+     * @param clientID 
+     */
     public void subscribeRequests(String username, int clientID) {
         this.addClientID(username, clientID);
         synchronized (LOCK_REQUESTS) {
@@ -80,6 +112,11 @@ public class PushBuffer {
         }
     }
 
+    /**
+     * Subscribe to get updates for UnsortedData
+     * @param username
+     * @param clientID 
+     */
     public void subscribeUnsorted(String username, int clientID){
         this.addClientID(username, clientID);
         synchronized(LOCK_UNSORTED){
@@ -87,13 +124,23 @@ public class PushBuffer {
         }
     }
     
+    /**
+     * Subscribe to get updates for Tasks
+     * @param username
+     * @param clientID 
+     */
     public void subscribeTasks(String username, int clientID){
         this.addClientID(username, clientID);
-        synchronized(LOCK_STEPS){
+        synchronized(LOCK_TASKS){
             tasksBuffer.put(clientID, new ArrayList<>());
         }
     }
 
+    /**
+     * Unsubscribe to get updates for SortedData
+     * @param username
+     * @param clientID 
+     */
     public void unsubscribeSorted(String username, int clientID) {
         synchronized (LOCK_SORTED) {
             sortedDataBuffer.remove(clientID);
@@ -101,6 +148,11 @@ public class PushBuffer {
         this.removeClientID(username, clientID);
     }
 
+    /**
+     * Unsubscribe to get updates for DataRequests
+     * @param username
+     * @param clientID 
+     */
     public void unsubscribeRequests(String username, int clientID) {
         synchronized (LOCK_REQUESTS) {
             requestBuffer.remove(clientID);
@@ -108,6 +160,11 @@ public class PushBuffer {
         this.removeClientID(username, clientID);
     }
 
+    /**
+     * Unsubscribe to get updates for UnsortedData
+     * @param username
+     * @param clientID 
+     */
     public void unsubscribeUnsorted(String username, int clientID){
         synchronized(LOCK_UNSORTED){
             unsortedDataBuffer.remove(clientID);
@@ -115,13 +172,22 @@ public class PushBuffer {
         this.removeClientID(username, clientID);
     }
     
+    /**
+     * Unsubscribe to get updates for Tasks
+     * @param username
+     * @param clientID 
+     */
     public void unsubscribeTasks(String username, int clientID){
-        synchronized(LOCK_STEPS){
+        synchronized(LOCK_TASKS){
             tasksBuffer.remove(clientID);
         }
         this.removeClientID(username, clientID);
     }
 
+    /**
+     * Add the given sortedData to the buffer for all subscribed clients TODO
+     * @param data 
+     */
     public void addSorted(ISortedData data) {
         //TODO
         synchronized (LOCK_SORTED) {
@@ -131,6 +197,10 @@ public class PushBuffer {
         }
     }
 
+    /**
+     * Add the given request to the buffer for all subscribed clients TODO
+     * @param request 
+     */
     public void addRequest(IDataRequest request) {
         //TODO
         synchronized (LOCK_REQUESTS) {
@@ -140,6 +210,10 @@ public class PushBuffer {
         }
     }
 
+    /**
+     * Adds the given unsorted data to the buffer for all subscribed clients TODO
+     * @param data 
+     */
     public void addUnsorted(IData data){
         //TODO
         synchronized(LOCK_UNSORTED){
@@ -149,14 +223,35 @@ public class PushBuffer {
         }
     }
     
+    /**
+     * Adds the given task to the buffer of the executor of the given task
+     * @param task 
+     */
     public void addTask(ITask task) {
-        synchronized(LOCK_STEPS) {
+        synchronized(LOCK_TASKS) {
             for(int client : clientIDs.get(task.getExecutor().getUsername())) {
                 tasksBuffer.get(client).add(task);
             }
         }
     }
+    
+    /**
+     * Adds the given task to the buffer of the HQChief
+     * @param task 
+     */
+    public void addTaskForChief(ITask task) {
+        synchronized(LOCK_TASKS) {
+            for(int client : clientIDs.get("HQChief")) {
+                tasksBuffer.get(client).add(task);
+            }
+        }
+    }
 
+    /**
+     * Collect the sortedData in the buffer of the given clientID
+     * @param clientID
+     * @return 
+     */
     public List<ISortedData> collectSorted(int clientID) {
         synchronized (LOCK_SORTED) {
             if (sortedDataBuffer.get(clientID) == null) {
@@ -170,6 +265,11 @@ public class PushBuffer {
         }
     }
 
+    /**
+     * Collect the dataRequests in the buffer of the given clientID
+     * @param clientID
+     * @return 
+     */
     public List<IDataRequest> collectRequests(int clientID) {
         synchronized (LOCK_REQUESTS) {
             if (requestBuffer.get(clientID) == null) {
@@ -183,6 +283,11 @@ public class PushBuffer {
         }
     }
 
+    /**
+     * Collect the unsortedData in the buffer of the given clientID
+     * @param clientID
+     * @return 
+     */
     public List<IData> collectUnsorted(int clientID) {
         synchronized (LOCK_UNSORTED) {
             if (unsortedDataBuffer.get(clientID) == null) {
@@ -196,8 +301,13 @@ public class PushBuffer {
         }
     }
     
+    /**
+     * Collect the tasks in the buffer of the given clientID
+     * @param clientID
+     * @return 
+     */
     public List<ITask> collectTasks(int clientID) {
-        synchronized(LOCK_STEPS) {
+        synchronized(LOCK_TASKS) {
             List<ITask> output = new ArrayList<>();
             List<ITask> buffer = tasksBuffer.get(clientID);
             output.addAll(buffer);

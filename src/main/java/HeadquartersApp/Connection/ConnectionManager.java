@@ -289,4 +289,35 @@ public class ConnectionManager {
     private void getNewSortedData() {
         
     }
+    
+    /**
+     * Subscribes to get updates for the status of tasks for HQChief
+     */
+    public void subscribeTasks() {
+        String username = "HQChief";
+    }
+    
+    /**
+     * Unsubscribes to get updates for the status of tasks for HQChief
+     */
+    public void unsubscribeTasks() {
+        String username = "HQChief";
+    }
+    
+    /**
+     * Get updates for the status of tasks
+     */
+    private void getNewTasks() {
+        
+    }
+    
+    /**
+     * Updates the status of the task
+     * Used to update the status to TaskStatus.READ
+     * No returnvalue
+     * @param task 
+     */
+    public void updateTask(ITask task) {
+        
+    }
 }

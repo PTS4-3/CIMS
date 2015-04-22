@@ -351,4 +351,13 @@ class Connection extends ConnClientBase {
     protected IUser getSigninUser(String username, String password) {
         return super.getSigninUser(username, password);
     }
+    
+    /**
+     * Updates the status of the given task
+     * @param task
+     * @return 
+     */
+    protected boolean updateTask(ITask task) {
+        return super.booleanCommand(ConnCommand.TASK_UPDATE, new Object[]{task});
+    }
 }

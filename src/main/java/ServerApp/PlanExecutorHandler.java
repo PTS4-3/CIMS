@@ -15,12 +15,10 @@ import java.util.concurrent.Executors;
  * @author Alexander
  */
 public class PlanExecutorHandler {
-    private final ExecutorService pool;
     // key: IPlan.id, Value: PlanExecutor
     private HashMap<Integer, PlanExecutor> executors;
     
     public PlanExecutorHandler() {
-        this.pool = Executors.newCachedThreadPool();
         this.executors = new HashMap<>();
     }
     
@@ -30,14 +28,7 @@ public class PlanExecutorHandler {
      */
     public synchronized void addPlanExecutor(IPlan plan) {
         this.executors.put(plan.getId(), new PlanExecutor(plan));
-        this.pool.execute(new Runnable() {
-
-            @Override
-            public void run() {
-                executors.get(plan.getId()).executeNextStep();
-            }
-            
-        });
+        executors.get(plan.getId()).executeNextStep();
     }
     
     /**

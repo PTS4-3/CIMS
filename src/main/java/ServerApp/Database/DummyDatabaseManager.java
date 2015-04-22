@@ -37,8 +37,8 @@ public class DummyDatabaseManager {
     }
 
     @Deprecated
-    public ITask updateTask(ITask input){
-        return null;
+    public boolean updateTask(ITask input){
+        return true;
     }
 
     /**
