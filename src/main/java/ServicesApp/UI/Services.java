@@ -20,14 +20,17 @@ import javafx.stage.Stage;
  * @author Alexander
  */
 public class Services extends Application {
+    private ConnectionManager connectionmanager;
     private ServicesLogInController controller;
     private ServicesController servicesController;
     private Stage stage;
+    private String ipAdressServer = "127.0.0.1";
     private boolean logIn = true;
 
     @Override
     public void start(Stage stage) throws Exception {
         this.stage = stage;
+        this.connectionmanager = new ConnectionManager(this.ipAdressServer);
         this.goToLogIn();
     }
     
@@ -37,28 +40,13 @@ public class Services extends Application {
         Parent root = (Parent) loader.load();
         controller = (ServicesLogInController) loader.getController();
 
-        this.configure();
+        this.controller.configure(this, this.connectionmanager);
 
         Scene scene = new Scene(root);
 
         stage.setScene(scene);
         stage.setTitle("Services CIMS");
         logIn = true;
-        stage.show();
-    }
-    public void goToLogIn(ConnectionManager manager) throws Exception
-    {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("ServicesApp/ServicesLogInFX.fxml"));
-        Parent root = (Parent) loader.load();
-        controller = (ServicesLogInController) loader.getController();
-
-        this.configure();
-
-        Scene scene = new Scene(root);
-
-        stage.setScene(scene);
-        stage.setTitle("Services CIMS");
-        logIn = false;
         stage.show();
     }
     
@@ -75,20 +63,8 @@ public class Services extends Application {
 
         stage.setScene(scene);
         stage.setTitle("Services CIMS");
+        logIn = false;
         stage.show();
-    }
-
-    private void configure() {
-        //Scanner input = new Scanner(System.in);
-        //System.out.print("Client: Voer IP-adres server in: ");
-        //String ipAdressServer = input.nextLine();
-        String ipAdressServer = "127.0.0.1";
-
-        //System.out.print("Client: Voer portnumber in: ");
-        //int portnumber = input.nextInt();
-        //int portnumber = 8189;
-
-        controller.configure(this, ipAdressServer);
     }
     
     @Override

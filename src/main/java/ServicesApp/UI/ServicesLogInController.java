@@ -54,12 +54,13 @@ public class ServicesLogInController implements Initializable {
     /**
      * Configures connectionManager
      *
-     * @param ipAdressServer
+     * @param main
+     * @param manager
      */
-    public void configure(Services main, String ipAdressServer) {
+    public void configure(Services main, ConnectionManager manager) {
         this.main = main;
-        this.connectionManager = new ConnectionManager(this, ipAdressServer);
-
+        this.connectionManager = manager;
+        this.connectionManager.setLogInController(this);
     }
 
     public void onClickLogIn() {
