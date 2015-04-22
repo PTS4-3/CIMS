@@ -32,7 +32,7 @@ public class ServerMain{
     }
 
     public static void startDatabases(){
-        sortedDatabaseManager = new SortedDatabaseManager("sorteddatabase.properties");
+       sortedDatabaseManager = new SortedDatabaseManager("sorteddatabase.properties");
        unsortedDatabaseManager = new UnsortedDatabaseManager("unsorteddatabase.properties");
        tasksDatabaseManager = new TasksDatabaseManager("taskdatabase.properties");
        connectionManager = new ConnectionManager();

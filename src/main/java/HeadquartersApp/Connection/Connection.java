@@ -10,6 +10,7 @@ import Shared.Connection.ConnClientBase;
 import Shared.Data.IData;
 import Shared.Data.IDataRequest;
 import Shared.Data.ISortedData;
+import Shared.NetworkException;
 import Shared.Tasks.IPlan;
 import Shared.Tasks.ITask;
 import Shared.Users.IUser;
@@ -136,5 +137,83 @@ class Connection extends ConnClientBase {
      */
     protected int getClientId() {
         return super.getClientID();
+    }
+    
+    /**
+     * Subscribes to get updates for sortedData for HQChief
+     * @param username
+     * @param clientId
+     * @return 
+     */
+    protected boolean subscribeSortedData(String username, int clientId) {
+        return super.booleanCommand(
+                ConnCommand.SORTED_SUBSCRIBE, new Object[]{username, clientId});
+    }
+    
+    /**
+     * Unsubscribes to get updates for sortedData for HQChief
+     * @param username
+     * @param clientId
+     * @return 
+     */
+    protected boolean unsubscribeSortedData(String username, int clientId) {
+        return super.booleanCommand(
+                ConnCommand.SORTED_UNSUBSCRIBE, new Object[]{username, clientId});
+    }
+    
+    /**
+     * Get updates for sorted data
+     * @param clientId
+     * @return 
+     */
+    protected List<ISortedData> getNewSortedData(int clientId) throws NetworkException {
+        Object output = super.objectCommand(
+                ConnCommand.SORTED_GET_NEW, new Object[]{clientId});
+        
+        if(!(output instanceof List)) {
+            throw new NetworkException("Unexpected result in " + 
+                    super.getCommandDescription(ConnCommand.SORTED_GET_NEW));
+        }
+        
+        return (List<ISortedData>) output;
+    }
+    
+    /**
+     * Subscribes to get updates for the status of tasks for HQChief
+     * @param username
+     * @param clientId
+     * @return 
+     */
+    protected boolean subscribeTasks(String username, int clientId) {
+        return super.booleanCommand(ConnCommand.TASKS_SUBSCRIBE, 
+                new Object[]{username, clientId});
+    }
+    
+    /**
+     * Unsubscribes to get updates for the status of tasks for HQChief
+     * @param username
+     * @param clientId
+     * @return 
+     */
+    protected boolean unsubscribeTasks(String username, int clientId) {
+        return super.booleanCommand(
+                ConnCommand.TASKS_UNSUBSCRIBE, new Object[]{username, clientId});
+    }
+    
+    /**
+     * Get updates for the status of tasks
+     * @param clientId
+     * @return 
+     */
+    protected List<ITask> getNewTasks(int clientId) throws NetworkException {
+        Object output = super.objectCommand(
+                ConnCommand.TASKS_GET_NEW, new Object[]{clientId});
+        
+        if(!(output instanceof List)) {
+            throw new NetworkException("Unexpected result in " + 
+                    super.getCommandDescription(ConnCommand.TASKS_GET_NEW));
+        }
+        
+        return (List<ITask>) output;
     }
 }

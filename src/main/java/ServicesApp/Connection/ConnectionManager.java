@@ -558,12 +558,9 @@ public class ConnectionManager {
     }
     
     /**
-     * Collects all new tasks collected on server since last call. Client
-     * needs to have called subscribeTasks() for this to do anything.
-     *
-     * @return Whether it was able to execute this command right now. A true
-     * return type does not guarantee the command is executed, merely that it is
-     * transmitted to server.
+     * Get updates of tasks from the server
+     * Returnvalue is sent to servicesController.displayTasks()
+     * @return 
      */
     public boolean getNewTasks() {
         if(this.servicesController == null || !this.isRegisteredTasks.get()) {
