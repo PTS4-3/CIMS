@@ -372,21 +372,53 @@ public class ConnectionManager {
      * Sends returnvalue to hqController.displaySortedData()
      */
     private void getNewSortedData() {
-        
+        //TODO
     }
     
     /**
      * Subscribes to get updates for the status of tasks for HQChief
+     * @return
      */
-    public void subscribeTasks() {
+    public boolean subscribeTasks() {
+        if(this.isRegisteredTasks.get()) {
+            return false;
+        }
         
+        this.pool.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                if(new Connection(defaultIP, defaultPort).
+                        subscribeTasks(HQChief, clientId)) {
+                    isRegisteredTasks.set(true);
+                }
+            }
+            
+        });
+        return true;
     }
     
     /**
      * Unsubscribes to get updates for the status of tasks for HQChief
+     * @return
      */
-    public void unsubscribeTasks() {
+    public boolean unsubscribeTasks() {
+        if(!this.isRegisteredTasks.get()) {
+            return false;
+        }
         
+        this.pool.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                if(new Connection(defaultIP, defaultPort).
+                        unsubscribeTasks(HQChief, clientId)) {
+                    isRegisteredTasks.set(false);
+                }
+            }
+            
+        });
+        return true;
     }
     
     /**
@@ -394,7 +426,7 @@ public class ConnectionManager {
      * Sends returnvalue to hqController.displayTasks()
      */
     private void getNewTasks() {
-        
+        //TODO
     }
     
     /**
