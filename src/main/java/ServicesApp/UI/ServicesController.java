@@ -24,10 +24,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -36,6 +39,9 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
@@ -128,6 +134,9 @@ public class ServicesController implements Initializable {
     Label lblMessageTask;
     @FXML
     Label lblMessageSend;
+    
+    //menuBar
+    @FXML MenuBar menuHQ;
 
     private ConnectionManager connectionManager;
     private boolean showingDataItem;
@@ -146,7 +155,7 @@ public class ServicesController implements Initializable {
         this.showingDataItem = false;
         this.answeredRequest = null;
 
-        //System.setErr();
+       //System.setErr();
         // Add Change Listeners
         lvuSentData.getSelectionModel().selectedItemProperty().addListener(
                 new ChangeListener() {
@@ -360,6 +369,15 @@ public class ServicesController implements Initializable {
             this.connectionManager.unsubscribeUnsorted(user.getUsername());
             this.connectionManager.closeConnection();
         }
+    }
+    public void logOutClick()
+    {
+        try{
+        main.goToLogIn();
+        }
+        catch (Exception ex) {
+                    Logger.getLogger(ServicesController.class.getName()).log(Level.SEVERE, null, ex);
+                }
     }
 
     /**
