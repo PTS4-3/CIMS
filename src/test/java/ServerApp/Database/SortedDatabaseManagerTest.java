@@ -42,7 +42,9 @@ public class SortedDatabaseManagerTest {
 
     @BeforeClass
     public static void setUpClass(){
-        ServerMain.startDatabases();
+        if(ServerMain.connectionManager == null){
+            ServerMain.startDatabases();
+        }
         myDB = ServerMain.sortedDatabaseManager;
         myDB.resetDatabase();
     }
@@ -64,6 +66,7 @@ public class SortedDatabaseManagerTest {
     public void testInsertToSortedData() {
         assertTrue("database failed to insert new sorted data",
                 myDB.insertToSortedData(sortedData));
+        System.out.println("Next line should be an error (Duplicate entry)");
         assertFalse("database inserted same sorted data twice",
                 myDB.insertToSortedData(sortedData));
     }
@@ -81,6 +84,7 @@ public class SortedDatabaseManagerTest {
             assertNotNull("description was null (getFromSortedData)", data.getDescription());
             assertNotNull("location was null (getFromSortedData)", data.getLocation());
             assertNotNull("source was null (getFromSortedData)", data.getSource());
+            assertNotNull("tasks was null (getFromSortedData)", data.getTasks());
 
             assertFalse("id was -1 (getFromSortedData)", data.getId() == -1);
 

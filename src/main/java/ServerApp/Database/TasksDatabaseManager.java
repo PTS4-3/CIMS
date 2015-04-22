@@ -7,6 +7,8 @@ package ServerApp.Database;
 
 import ServerApp.ServerMain;
 import static ServerApp.ServerMain.sortedDatabaseManager;
+import Shared.Data.ISortedData;
+import Shared.Data.SortedData;
 import Shared.Tag;
 import Shared.Tasks.IPlan;
 import Shared.Tasks.IStep;
@@ -22,6 +24,7 @@ import Shared.Users.UserRole;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -34,8 +37,7 @@ import java.util.logging.Logger;
  */
 public class TasksDatabaseManager extends DatabaseManager {
 
-    private final String
-            taskTable = "TASK",
+    private final String taskTable = "TASK",
             userTaskTable = "USERTASK",
             planTable = "PLAN",
             keywordTable = "KEYWORD",
@@ -44,7 +46,116 @@ public class TasksDatabaseManager extends DatabaseManager {
 
     public TasksDatabaseManager(String fileName) {
         super(fileName);
-//        System.out.println("checking testlogin: " + (this.loginUser("chief01", "chief01") instanceof HQChief));
+    }
+
+    /**
+     * Extract users from a resultset, and cast it to correct type. Does not
+     * open its own connection.
+     *
+     * @param rs
+     * @return
+     */
+    private List<IUser> extractUsers(ResultSet rs) throws SQLException {
+        List<IUser> output = new ArrayList<>();
+        while (rs.next()) {
+            String outputUserName = rs.getString("USERNAME");
+            String outputName = rs.getString("NAME");
+            String outputTagString = rs.getString("TAG");
+            UserRole outputRole = UserRole.valueOf(rs.getString("ROLE"));
+
+            switch (outputRole) {
+                case SERVICE:
+                    output.add(new ServiceUser(outputUserName, outputName,
+                            Tag.valueOf(outputTagString)));
+                    break;
+                case HQ:
+                    output.add(new HQUser(outputUserName, outputName));
+                    break;
+                case CHIEF:
+                    output.add(new HQChief(outputUserName, outputName));
+                    break;
+                default:
+                    throw new SQLException("User did not have a role defined");
+            }
+        }
+        return output;
+    }
+
+    /**
+     * Extracts tasks from a resultSet. Does not set Executor or Data. Does not
+     * open its own connection.
+     *
+     * @param rs
+     * @param data (optional) if associated SortedData for task(s) is known.
+     * Will query for it otherwise.
+     * @return
+     * @throws SQLException
+     */
+    private List<ITask> extractTasks(ResultSet rs, ISortedData data) throws SQLException {
+        List<ITask> output = new ArrayList<>();
+        while (rs.next()) {
+            int outputID = rs.getInt("ID");
+            String outputTitle = rs.getString("TITLE");
+            String outputDescription = rs.getString("DESCRIPTION");
+            TaskStatus outputStatus = TaskStatus.valueOf(rs.getString("STATUS"));
+            String outputDeclineReason = rs.getString("REASON");
+            Tag outputExecutorTag = Tag.valueOf(rs.getString("TAG"));
+            int outputDataID = rs.getInt("DATAID");
+            // gets task executor
+            IServiceUser executor = getTaskExecutor(outputID);
+            // gets data (if needs be)
+            ISortedData outputData = null;
+            if(data != null){
+                outputData = data;
+            } else if (outputDataID != -1) {
+                outputData = ServerMain.sortedDatabaseManager
+                        .getFromSortedData(outputDataID);
+            }
+
+            output.add(new Task(outputID, outputTitle, outputDescription,
+                    outputStatus, outputData, outputExecutorTag, executor));
+        }
+        return output;
+    }
+
+    /**
+     * Does not open its own connection. Can return null.
+     *
+     * @param taskID
+     * @return IServiceUser currently slated to execute given task.
+     */
+    private IServiceUser getTaskExecutor(int taskID) throws SQLException {
+        IServiceUser output = null;
+        String query;
+        PreparedStatement prepStat;
+        ResultSet rs;
+
+        // retrieve the executor name
+        String execUserName = null;
+        query = "SELECT * FROM " + userTaskTable
+                + " WHERE TASKID = " + taskID;
+        prepStat = conn.prepareStatement(query);
+        rs = prepStat.executeQuery();
+        while (rs.next()) {
+            execUserName = rs.getString("USERNAME");
+        }
+
+        // starts query for actual user
+        // uses extractUsers to read it
+        query = "SELECT * FROM " + userTable
+                + " WHERE USERNAME = ?";
+        prepStat = conn.prepareStatement(query);
+        prepStat.setString(1, execUserName);
+        rs = prepStat.executeQuery();
+
+        // Delegates extracting resultset
+        IUser executor = this.extractUsers(rs).get(0);
+        if (executor instanceof IServiceUser) {
+            output = (IServiceUser) executor;
+        } else {
+            throw new SQLException("getTaskExecutor() error: executor was not a ServiceUser");
+        }
+        return output;
     }
 
     /**
@@ -71,13 +182,13 @@ public class TasksDatabaseManager extends DatabaseManager {
             prepStat.setString(1, newTask.getTitle());
             prepStat.setString(2, newTask.getDescription());
             prepStat.setString(3, newTask.getTargetExecutor().toString());
-            if(newTask.getSortedData() == null){
+            if (newTask.getSortedData() == null) {
                 prepStat.setInt(4, -1);
             } else {
                 prepStat.setInt(4, newTask.getSortedData().getId());
             }
             prepStat.setString(5, newTask.getStatus().toString());
-            if(newTask.getDeclineReason() == null){
+            if (newTask.getDeclineReason() == null) {
                 prepStat.setString(6, "");
             } else {
                 prepStat.setString(6, newTask.getDeclineReason());
@@ -219,13 +330,13 @@ public class TasksDatabaseManager extends DatabaseManager {
 
         return result;
     }
-    
+
     /**
-     * 
+     *
      * @param ID
      * @return Task with given ID. Null if ID == -1 or no Task found.
      */
-    public ITask getTask(int ID){
+    public ITask getTask(int ID) {
         if (!openConnection() || (ID == -1)) {
             return null;
         }
@@ -234,61 +345,17 @@ public class TasksDatabaseManager extends DatabaseManager {
         PreparedStatement prepStat;
         ResultSet rs;
 
-        try{
-            query = "SELECT * FROM " + taskTable +
-                    " WHERE ID = ?";
+        try {
+            query = "SELECT * FROM " + taskTable
+                    + " WHERE ID = ?";
             prepStat = conn.prepareStatement(query);
             prepStat.setInt(1, ID);
             rs = prepStat.executeQuery();
+            // delegates actually extracting said tasks
+            output = this.extractTasks(rs, null).get(0);
 
-            int outputDataID = -1;
-            while(rs.next()){
-                int outputID = rs.getInt("ID");
-                String outputTitle = rs.getString("TITLE");
-                String outputDescription = rs.getString("DESCRIPTION");
-                TaskStatus outputStatus = TaskStatus.valueOf(rs.getString("STATUS"));
-                String outputDeclineReason = rs.getString("REASON");
-                Tag outputExecutorTag = Tag.valueOf(rs.getString("TAG"));
-                // for later query
-                outputDataID = rs.getInt("DATAID");
-
-                // sortedData and executor are null, need to be retrieved apart
-                output = new Task(outputID, outputTitle, outputDescription,
-                        outputStatus, null, outputExecutorTag, null);
-            }
-
-            // checks for associated sorteddata
-            if(outputDataID != -1){
-                output.setSortedData(
-                        sortedDatabaseManager.getFromSortedData(outputDataID));
-            }
         } catch (SQLException ex) {
             System.out.println("failed to get task with id " + ID + ": " + ex.getMessage());
-            Logger.getLogger(TasksDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
-            output = null;
-        } finally {
-            closeConnection();
-        }
-        
-        if(output == null){
-            return null;
-        }
-
-        // retrieve the executor outside open/close, as it calls for a new connection
-        try {
-            query = "SELECT * FROM " + userTaskTable +
-                    " WHERE TASKID = " + ID;
-            prepStat = conn.prepareStatement(query);
-            rs = prepStat.executeQuery();
-            IServiceUser outputExecutor = null;
-            while(rs.next()){
-               outputExecutor = (IServiceUser) this.getUser(rs.getString("USERNAME"));
-            }
-            output.setExecutor(outputExecutor);
-
-        } catch (SQLException ex) {
-            System.out.println("failed to get executor associated with task (ID = "
-                    + ID + "): " + ex.getMessage());
             Logger.getLogger(TasksDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
             output = null;
         } finally {
@@ -300,10 +367,11 @@ public class TasksDatabaseManager extends DatabaseManager {
 
     /**
      * Updates given task with all new data
+     *
      * @param input
      * @return
      */
-    public ITask updateTask(ITask input){
+    public ITask updateTask(ITask input) {
         if (!openConnection() || (input == null)) {
             return null;
         }
@@ -313,21 +381,21 @@ public class TasksDatabaseManager extends DatabaseManager {
 
         try {
             // updates task itself
-            query = "UPDATE " + taskTable +
-                    " SET TITLE = " + input.getTitle() +
-                    ", DESCRIPTION = " + input.getDescription() +
-                    ", STATUS = " + input.getStatus().toString();
-            if(input.getDeclineReason() != null){
+            query = "UPDATE " + taskTable
+                    + " SET TITLE = " + input.getTitle()
+                    + ", DESCRIPTION = " + input.getDescription()
+                    + ", STATUS = " + input.getStatus().toString();
+            if (input.getDeclineReason() != null) {
                 query += ", REASON = " + input.getDeclineReason();
             }
             query += " WHERE ID = " + input.getId();
             prepStat = conn.prepareStatement(query);
             prepStat.execute();
 
-            if(input.getExecutor() != null){
-                query = "REPLACE INTO " + userTaskTable +
-                    "SET TASKID = " + input.getId() +
-                    ", SET USERNAME = " + input.getExecutor().getUsername();
+            if (input.getExecutor() != null) {
+                query = "REPLACE INTO " + userTaskTable
+                        + "SET TASKID = " + input.getId()
+                        + ", SET USERNAME = " + input.getExecutor().getUsername();
                 prepStat = conn.prepareStatement(query);
                 prepStat.execute();
             }
@@ -344,9 +412,39 @@ public class TasksDatabaseManager extends DatabaseManager {
         return output;
     }
 
-    @Deprecated
-    public IUser getUser(String userName){
-        return null;
+    /**
+     * Should not be used for login purposes - does not check for password
+     *
+     * @param userName
+     * @return ServiceUser/HQChief/HQUser with given name
+     */
+    public IUser getUser(String userName) {
+        if (!openConnection() || (userName == null)) {
+            return null;
+        }
+        IUser output = null;
+        String query;
+        PreparedStatement prepStat;
+        ResultSet rs;
+
+        try {
+            query = "SELECT * FROM " + userTable + " WHERE USERNAME = ?";
+            prepStat = conn.prepareStatement(query);
+            prepStat.setString(1, userName);
+            rs = prepStat.executeQuery();
+
+            output = this.extractUsers(rs).get(0);
+
+        } catch (SQLException ex) {
+            System.out.println("failed to retrieve user " + userName + ": "
+                    + ex.getMessage());
+            Logger.getLogger(TasksDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+            output = null;
+        } finally {
+            closeConnection();
+        }
+
+        return output;
     }
 
     /**
@@ -355,17 +453,18 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @return
      */
     @Deprecated
-    public List<ITask> getTasks(IServiceUser execFilter){
+    public List<ITask> getTasks(IServiceUser execFilter) {
         return null;
     }
 
     /**
      * Returns specific type of user
+     *
      * @param userName
      * @param password
      * @return null if not found
      */
-    public IUser loginUser(String userName, String password){
+    public IUser loginUser(String userName, String password) {
         if (!openConnection() || (userName == null) || (password == null)) {
             return null;
         }
@@ -381,27 +480,7 @@ public class TasksDatabaseManager extends DatabaseManager {
             prepStat.setString(2, password);
             rs = prepStat.executeQuery();
 
-            while(rs.next()){
-                String outputUserName = rs.getString("USERNAME");
-                String outputName = rs.getString("NAME");
-                UserRole outputRole = UserRole.valueOf(rs.getString("ROLE"));
-                String outputTagString = rs.getString("TAG");
-
-                switch(outputRole){
-                    case SERVICE:
-                        output = new ServiceUser(outputUserName, outputName, Tag.valueOf(outputTagString));
-                        break;
-                    case HQ:
-                        output = new HQUser(outputUserName, outputName);
-                        break;
-                    case CHIEF:
-                        output = new HQChief(outputUserName, outputName);
-                        break;
-                    default:
-                        output = null;
-                        break;
-                }
-            }
+            output = this.extractUsers(rs).get(0);
         } catch (SQLException ex) {
             System.out.println("failed login attempt for " + userName
                     + ": " + ex.getMessage());
@@ -419,8 +498,45 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @return
      */
     @Deprecated
-    public List<IPlan> getPlans(HashSet<String> keywords){
+    public List<IPlan> getPlans(HashSet<String> keywords) {
         return null;
+    }
+
+    /**
+     *
+     * @param input
+     * @return tasks associated with given ISortedData
+     */
+    public List<ITask> getSortedDataTasks(ISortedData input) {
+        if (!openConnection() || (input == null)) {
+            return null;
+        }
+        List<ITask> output = null;
+        String query;
+        PreparedStatement prepStat;
+        ResultSet rs;
+
+        try {
+            query = "SELECT * FROM " + taskTable + " WHERE DATAID = ?";
+            prepStat = conn.prepareStatement(query);
+            prepStat.setInt(1, input.getId());
+            rs = prepStat.executeQuery();
+
+            // delegates actually extracting tasks
+            output = this.extractTasks(rs, input);
+
+            for (ITask task : output) {
+                task.setSortedData((SortedData) input);
+            }
+        } catch (SQLException ex) {
+            System.out.println("Failed to retrieve sorted data task IDs: " + ex.getMessage());
+            Logger.getLogger(TasksDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+            output = null;
+        } finally {
+            closeConnection();
+        }
+
+        return output;
     }
 
 }
