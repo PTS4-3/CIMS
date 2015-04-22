@@ -58,7 +58,7 @@ public class HeadquartersLogInController implements Initializable {
      */
     public void configure(Headquarters main, String ipAdressServer) {
         this.main = main;
-        this.connectionManager = new ConnectionManager(this, ipAdressServer);
+        //this.connectionManager = new ConnectionManager(this, ipAdressServer);
     }
 
     public void onClickLogIn() {

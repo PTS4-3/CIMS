@@ -216,4 +216,14 @@ class Connection extends ConnClientBase {
         
         return (List<ITask>) output;
     }
+    
+    /**
+     * Updates the status of the given task
+     * Used to update the status to TaskStatus.READ
+     * @param task
+     * @return 
+     */
+    protected boolean updateTask(ITask task) {
+        return super.booleanCommand(ConnCommand.TASK_UPDATE, new Object[]{task});
+    }
 }

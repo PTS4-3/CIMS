@@ -182,7 +182,7 @@ public class HeadquartersController implements Initializable {
      */
     public void configure(ConnectionManager manager, IUser user) {
         this.connectionManager = manager;
-        this.connectionManager.setHQController(this);
+        //this.connectionManager.setHQController(this);
         this.user = user;
 
         // Fill GUI with initial values        
@@ -220,7 +220,7 @@ public class HeadquartersController implements Initializable {
             this.connectionManager.getSortedData();
             this.connectionManager.getServiceUsers();
                         
-            this.connectionManager.subscribeSortedData(this.user.getUsername());
+            //this.connectionManager.subscribeSortedData(this.user.getUsername());
             
             if(user instanceof IHQChief){
                 connectionManager.subscribeTasks();
@@ -365,7 +365,7 @@ public class HeadquartersController implements Initializable {
      */
     public void close() {        
         if(this.connectionManager != null){
-            this.connectionManager.unsubscribeSortedData(this.user.getUsername());
+            //this.connectionManager.unsubscribeSortedData(this.user.getUsername());
             
             if(user instanceof IHQChief){
                 connectionManager.unsubscribeTasks();
@@ -899,5 +899,9 @@ public class HeadquartersController implements Initializable {
         .replace("é", "e");
         
         return s;
+    }
+
+    public void displayTasks(List<ITask> newTasks) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

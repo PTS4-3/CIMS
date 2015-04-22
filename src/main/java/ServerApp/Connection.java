@@ -846,7 +846,7 @@ public class Connection implements Runnable {
         }
         
         if(task.getStatus() == TaskStatus.SUCCEEDED && task instanceof IStep) {
-            // Execute next step
+            // Execute next step of plan
             //TODO
         }
         

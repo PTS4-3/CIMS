@@ -21,6 +21,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -372,7 +374,27 @@ public class ConnectionManager {
      * Sends returnvalue to hqController.displaySortedData()
      */
     private void getNewSortedData() {
-        //TODO
+        if(this.hqController == null || !this.isRegisteredSorted.get()) {
+            return;
+        }
+        
+        this.pool.execute(new Runnable(){
+
+            @Override
+            public void run() {
+                try {
+                    List<ISortedData> newSortedData =
+                            new Connection(defaultIP, defaultPort).getNewSortedData(clientId);
+                    
+                    if(newSortedData != null) {
+                        hqController.displaySortedData(newSortedData);
+                    }
+                } catch (NetworkException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            
+        });
     }
     
     /**
@@ -426,7 +448,27 @@ public class ConnectionManager {
      * Sends returnvalue to hqController.displayTasks()
      */
     private void getNewTasks() {
-        //TODO
+        if(this.hqController == null || !this.isRegisteredTasks.get()) {
+            return;
+        }
+        
+        this.pool.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    List<ITask> newTasks =
+                            new Connection(defaultIP, defaultPort).getNewTasks(clientId);
+                    
+                    if(newTasks != null) {
+                        hqController.displayTasks(newTasks);
+                    }
+                } catch (NetworkException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            
+        });
     }
     
     /**
@@ -436,6 +478,17 @@ public class ConnectionManager {
      * @param task 
      */
     public void updateTask(ITask task) {
+        if(task == null) {
+            throw new IllegalArgumentException("Voer een taak in");
+        }
         
+        pool.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                new Connection(defaultIP, defaultPort).updateTask(task);
+            }
+            
+        });
     }
 }
