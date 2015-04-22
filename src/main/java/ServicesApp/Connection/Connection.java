@@ -166,17 +166,7 @@ class Connection extends ConnClientBase {
      * @return ClientID. -1 if anything went wrong.
      */
     protected int getClientID() {
-        int output = -1;
-        Object inObject = super.objectCommand(
-                ConnCommand.CLIENT_ID_GET, new Object[]{});
-        if (inObject instanceof Integer) {
-            output = (Integer) inObject;
-        } else {
-            System.err.println("Unexpected output from "
-                    + super.getCommandDescription(ConnCommand.CLIENT_ID_GET));
-        }
-
-        return output;
+        return super.getClientID();
     }
 
     /**

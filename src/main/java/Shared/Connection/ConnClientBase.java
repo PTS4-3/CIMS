@@ -242,6 +242,25 @@ public class ConnClientBase {
             }
         return output;
     }
+    
+    /**
+     * Queries server for clientID.
+     *
+     * @return ClientID. -1 if anything went wrong.
+     */
+    protected int getClientID() {
+        int output = -1;
+        Object inObject = this.objectCommand(
+                ConnCommand.CLIENT_ID_GET, new Object[]{});
+        if (inObject instanceof Integer) {
+            output = (Integer) inObject;
+        } else {
+            System.err.println("Unexpected output from "
+                    + this.getCommandDescription(ConnCommand.CLIENT_ID_GET));
+        }
+
+        return output;
+    }
 
     /**
      * Translates ConnCommands into human-readable text.
@@ -331,8 +350,12 @@ public class ConnClientBase {
                 break;
             case TASKS_UNSUBSCRIBE:
                 output = "unsubscribe to get updates for tasks";
+                break;
             case SIGN_IN:
                 output = "retrieving user";
+                break;
+            case TASK_UPDATE:
+                output = "update a task";
                 break;
         }
         return output;

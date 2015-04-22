@@ -8,44 +8,95 @@ package HeadquartersApp.Connection;
 import HeadquartersApp.UI.HeadquartersController;
 import HeadquartersApp.UI.HeadquartersLogInController;
 import Shared.Data.*;
+import Shared.NetworkException;
 import Shared.Tag;
 import Shared.Tasks.*;
-import Shared.Users.IServiceUser;
 import Shared.Users.IUser;
-import Shared.Users.ServiceUser;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  *
  * @author Kargathia + Alexander
  */
 public class ConnectionManager {
-
     public static final int DEFAULT_PORT = 8189;
+    private static int collectionIntervalInMillis = 10000;
+    private static final String HQChief = "HQChief";
     
-    private static final ExecutorService pool = Executors.newCachedThreadPool();
+    private final ScheduledExecutorService pool = Executors.newScheduledThreadPool(4);
+    private ScheduledFuture collectFuture;
+    
+    private int clientId;
+    private AtomicBoolean isRegisteredSorted;
+    private AtomicBoolean isRegisteredTasks;
+    
     private HeadquartersController hqController = null;
     private HeadquartersLogInController loginController = null;
+    
     private String defaultIP = "127.0.0.1";
     private int defaultPort;
 
-    public ConnectionManager(HeadquartersLogInController loginController,
-            String defaultIP) {
-
+    public ConnectionManager(String defaultIP) {
         this.defaultIP = defaultIP;
         this.defaultPort = DEFAULT_PORT;
-        this.loginController = loginController;
+        this.isRegisteredSorted.set(false);
+        this.isRegisteredTasks.set(false);
         //this.testMethods();
     }
     
-    public void setHQController(HeadquartersController hqController) {
+    /**
+     * Sets the loginController
+     * @param loginController 
+     */
+    public void setLogInController(HeadquartersLogInController loginController) {
+        this.loginController = loginController;
+    }
+    
+    /**
+     * Sets the HQController and starts pulling if not pulling yet
+     * @param hqController
+     * @throws NetworkException if the retrieved clientId is -1
+     */
+    public void setHQController(HeadquartersController hqController) throws NetworkException {
         this.hqController = hqController;
+        if(this.collectFuture != null) {
+            this.getID();
+            this.startPulling();
+        }
+    }
+    
+    /**
+     * Gets the clientId from the server
+     * @throws NetworkException if the retrieved clientId is -1
+     */
+    private void getID() throws NetworkException {
+        this.clientId = new Connection(defaultIP, defaultPort).getClientId();
+        if(this.clientId == -1) {
+            throw new NetworkException("ClientId is -1");
+        }
+    }
+    
+    /**
+     * Starts pulling for new information
+     */
+    private void startPulling() {
+        this.collectFuture = this.pool.scheduleWithFixedDelay(new Runnable() {
+
+            @Override
+            public void run() {
+                getNewSortedData();
+                getNewTasks();
+            }
+            
+        }, collectionIntervalInMillis, collectionIntervalInMillis, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -82,6 +133,9 @@ public class ConnectionManager {
      * Terminates the active pool, in preparation for program shutdown.
      */
     public void close(){
+        if(this.collectFuture != null) {
+            this.collectFuture.cancel(false);
+        }
         pool.shutdown();
     }
 
@@ -268,18 +322,16 @@ public class ConnectionManager {
     }
         
     /**
-     * Subscribes to get updates for sortedData
-     * @param username
+     * Subscribes to get updates for sortedData for HQChief
      */
-    public void subscribeSortedData(String username) {
+    public void subscribeSortedData() {
         
     }
     
     /**
-     * Unsubscribes to get updates for sortedData
-     * @param username 
+     * Unsubscribes to get updates for sortedData for HQChief
      */
-    public void unsubscribeSortedData(String username) {
+    public void unsubscribeSortedData() {
         
     }
     
@@ -294,14 +346,14 @@ public class ConnectionManager {
      * Subscribes to get updates for the status of tasks for HQChief
      */
     public void subscribeTasks() {
-        String username = "HQChief";
+        
     }
     
     /**
      * Unsubscribes to get updates for the status of tasks for HQChief
      */
     public void unsubscribeTasks() {
-        String username = "HQChief";
+        
     }
     
     /**

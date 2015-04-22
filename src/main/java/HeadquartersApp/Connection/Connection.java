@@ -129,4 +129,12 @@ class Connection extends ConnClientBase {
     protected IUser getSigninUser(String username, String password) {
         return super.getSigninUser(username, password);
     }
+    
+    /**
+     * Gets clientId from the server
+     * @return the retrieved clientId
+     */
+    protected int getClientId() {
+        return super.getClientID();
+    }
 }

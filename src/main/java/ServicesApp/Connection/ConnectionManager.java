@@ -33,7 +33,7 @@ public class ConnectionManager {
     public static final int DEFAULT_PORT = 8189;
     private static int collectionIntervalInMillis = 10000;
 
-    private static ScheduledExecutorService pool = Executors.newScheduledThreadPool(4);
+    private final ScheduledExecutorService pool = Executors.newScheduledThreadPool(4);
     private ScheduledFuture collectFuture = null;
     private int defaultPort = DEFAULT_PORT;
     private String defaultIP;
@@ -48,23 +48,35 @@ public class ConnectionManager {
 
     /**
      * Starts a new ConnectionManager, responsible for
-     * @param loginController
      * @param defaultIP
      */
-    public ConnectionManager(ServicesLogInController loginController, String defaultIP) {
-        this.loginController = loginController;
+    public ConnectionManager(String defaultIP) {
         this.defaultIP = defaultIP;
-        this.getID();
         this.isRegisteredSorted = new AtomicBoolean(false);
         this.isRegisteredRequests = new AtomicBoolean(false);
         this.isRegisteredUnsorted = new AtomicBoolean(false);
         this.isRegisteredTasks = new AtomicBoolean(false);
-        this.startCollectTask();
         //this.testMethods();
     }
     
+    /**
+     * Sets loginController
+     * @param loginController 
+     */
+    public void setLogInController(ServicesLogInController loginController) {
+        this.loginController = loginController;
+    }
+    
+    /**
+     * Sets ServicesController and starts pulling if not pulling yet
+     * @param servicesController 
+     */
     public void setServicesController(ServicesController servicesController) {
         this.servicesController = servicesController;
+        if(this.collectFuture == null) {
+            this.getID();
+            this.startCollectTask();
+        }
     }
 
     /**
