@@ -23,6 +23,7 @@ public class Services extends Application {
     private ServicesLogInController controller;
     private ServicesController servicesController;
     private Stage stage;
+    private boolean logIn = true;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -42,6 +43,7 @@ public class Services extends Application {
 
         stage.setScene(scene);
         stage.setTitle("Services CIMS");
+        logIn = true;
         stage.show();
     }
     public void goToLogIn(ConnectionManager manager) throws Exception
@@ -56,6 +58,7 @@ public class Services extends Application {
 
         stage.setScene(scene);
         stage.setTitle("Services CIMS");
+        logIn = false;
         stage.show();
     }
     
@@ -90,9 +93,12 @@ public class Services extends Application {
     
     @Override
     public void stop() throws Exception {
+        if(logIn){
             controller.close();
+        }
+        else{
             servicesController.close(false);
-        
+        }
         super.stop();
     }
 
