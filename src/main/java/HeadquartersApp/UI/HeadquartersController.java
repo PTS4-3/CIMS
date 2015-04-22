@@ -219,8 +219,12 @@ public class HeadquartersController implements Initializable {
             this.connectionManager.getData();
             this.connectionManager.getSortedData();
             this.connectionManager.getServiceUsers();
-            
+                        
             this.connectionManager.subscribeSortedData(this.user.getUsername());
+            
+            if(user instanceof IHQChief){
+                connectionManager.subscribeTasks();
+            }
             
             this.startTimer();        
         } catch (NetworkException nEx) {
@@ -362,6 +366,11 @@ public class HeadquartersController implements Initializable {
     public void close() {        
         if(this.connectionManager != null){
             this.connectionManager.unsubscribeSortedData(this.user.getUsername());
+            
+            if(user instanceof IHQChief){
+                connectionManager.unsubscribeTasks();
+            }
+            
             this.connectionManager.stopWorkingOnData(
                     new ArrayList<>(lvuUnsortedData.getItems()));
             this.connectionManager.close();
@@ -837,6 +846,12 @@ public class HeadquartersController implements Initializable {
         } else {
             showDialog("Foutmelding", "Selecteer een stap voor je een stap verwijderd.", true);
         }
+    }
+    
+    // Tasks--------------------------------------------------------------------
+    
+    public void updateTask(){
+        //TODO
     }
     
     public void showDialog(String title, String melding, boolean warning)
