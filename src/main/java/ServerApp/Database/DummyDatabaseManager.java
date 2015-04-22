@@ -46,6 +46,7 @@ public class DummyDatabaseManager {
      * @param execFilter if null, return all tasks
      * @return
      */
+    @Deprecated
     public List<ITask> getTasks(IServiceUser execFilter){
         return null;
     }

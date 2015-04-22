@@ -105,21 +105,24 @@ public class TasksDatabaseManager extends DatabaseManager {
             IServiceUser executor = getTaskExecutor(outputID);
             // gets data (if needs be)
             ISortedData outputData = null;
-            if(data != null){
+            if (data != null) {
                 outputData = data;
             } else if (outputDataID != -1) {
                 outputData = ServerMain.sortedDatabaseManager
                         .getFromSortedData(outputDataID);
             }
+            ITask outputItem = new Task(outputID, outputTitle, outputDescription,
+                    outputStatus, outputData, outputExecutorTag, executor);
+            outputItem.setDeclineReason(outputDeclineReason);
 
-            output.add(new Task(outputID, outputTitle, outputDescription,
-                    outputStatus, outputData, outputExecutorTag, executor));
+            output.add(outputItem);
         }
         return output;
     }
 
     /**
-     * Does not open its own connection. Can return null.
+     * Does not open its own connection. Can return null without something being
+     * wrong.
      *
      * @param taskID
      * @return IServiceUser currently slated to execute given task.
@@ -294,7 +297,6 @@ public class TasksDatabaseManager extends DatabaseManager {
         } finally {
             closeConnection();
         }
-
         return output;
     }
 
@@ -327,7 +329,6 @@ public class TasksDatabaseManager extends DatabaseManager {
         } finally {
             closeConnection();
         }
-
         return result;
     }
 
@@ -361,7 +362,6 @@ public class TasksDatabaseManager extends DatabaseManager {
         } finally {
             closeConnection();
         }
-
         return output;
     }
 
@@ -394,7 +394,7 @@ public class TasksDatabaseManager extends DatabaseManager {
 
             if (input.getExecutor() != null) {
                 query = "REPLACE INTO " + userTaskTable
-                        + "SET TASKID = " + input.getId()
+                        + " SET TASKID = " + input.getId()
                         + ", SET USERNAME = " + input.getExecutor().getUsername();
                 prepStat = conn.prepareStatement(query);
                 prepStat.execute();
@@ -432,7 +432,7 @@ public class TasksDatabaseManager extends DatabaseManager {
             prepStat = conn.prepareStatement(query);
             prepStat.setString(1, userName);
             rs = prepStat.executeQuery();
-
+            // Delegates extracting users
             output = this.extractUsers(rs).get(0);
 
         } catch (SQLException ex) {
@@ -443,7 +443,47 @@ public class TasksDatabaseManager extends DatabaseManager {
         } finally {
             closeConnection();
         }
+        return output;
+    }
 
+    /**
+     *
+     * @return all ServiceUsers
+     */
+    public List<IServiceUser> getServiceUsers() {
+        if (!openConnection()) {
+            return null;
+        }
+        List<IServiceUser> output = null;
+        String query;
+        PreparedStatement prepStat;
+        ResultSet rs;
+
+        try {
+            query = "SELECT * FROM " + userTable + " WHERE ROLE = ?";
+            prepStat = conn.prepareStatement(query);
+            prepStat.setString(1, UserRole.SERVICE.toString());
+            rs = prepStat.executeQuery();
+
+            output = new ArrayList<>();
+            // Delegates extracting users, but checks them anyway
+            for (IUser user : this.extractUsers(rs)) {
+                if (user instanceof IServiceUser) {
+                    output.add((IServiceUser) user);
+                } else {
+                    throw new SQLException("Extracted user was no ServiceUser "
+                            + "(getServiceUsers)");
+                }
+            }
+        } catch (SQLException ex) {
+            System.out.println("failed to retrieve serviceUsers: "
+                    + ex.getMessage());
+            Logger.getLogger(TasksDatabaseManager.class.getName())
+                    .log(Level.SEVERE, null, ex);
+            output = null;
+        } finally {
+            closeConnection();
+        }
         return output;
     }
 
@@ -452,9 +492,41 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @param execFilter if null, return all tasks
      * @return
      */
-    @Deprecated
     public List<ITask> getTasks(IServiceUser execFilter) {
-        return null;
+        if (!openConnection()) {
+            return null;
+        }
+        List<ITask> output = null;
+        String query;
+        PreparedStatement prepStat;
+        ResultSet rs;
+
+        try {
+            query = "SELECT * FROM " + taskTable;
+            if (execFilter != null) {
+                query += " WHERE ID in "
+                        + "(SELECT TASKID FROM " + userTaskTable
+                        + " WHERE USERNAME = ?)";
+            }
+            prepStat = conn.prepareStatement(query);
+            prepStat.setString(1, execFilter.getUsername());
+            rs = prepStat.executeQuery();
+
+            // Delegates extracting tasks
+            output = this.extractTasks(rs, null);
+        } catch (SQLException ex) {
+            if (execFilter != null) {
+                System.out.print("(given IServiceUser: "
+                        + execFilter.getUsername() + ") ");
+            }
+            System.out.println("failed to retrieve tasks: " + ex.getMessage());
+            Logger.getLogger(TasksDatabaseManager.class.getName())
+                    .log(Level.SEVERE, null, ex);
+            output = null;
+        } finally {
+            closeConnection();
+        }
+        return output;
     }
 
     /**
@@ -495,7 +567,8 @@ public class TasksDatabaseManager extends DatabaseManager {
     /**
      *
      * @param keywords
-     * @return
+     * @return IPlans with <i>all</i> given keywords. <br>
+     * Will return all Plans in database if null/empty
      */
     @Deprecated
     public List<IPlan> getPlans(HashSet<String> keywords) {
@@ -535,7 +608,6 @@ public class TasksDatabaseManager extends DatabaseManager {
         } finally {
             closeConnection();
         }
-
         return output;
     }
 
