@@ -80,6 +80,7 @@ public class DummyDatabaseManager {
         return null;
     }
 
+    @Deprecated
     public IUser getUser(String userName){
         return null;
     }

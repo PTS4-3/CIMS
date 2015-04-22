@@ -174,10 +174,13 @@ public class SortedDatabaseManager extends DatabaseManager {
                             Tag tag = Tag.valueOf(tagsData.getString("TAGNAME"));
                             newTags.add(tag);
                         }
-
-                        sorted.add(new SortedData(id, title, description, 
+                        SortedData sortedItem = new SortedData(id, title, description,
                                 location, source, relevance,
-                                reliability, quality, newTags));
+                                reliability, quality, newTags);
+                        sortedItem.setTasks(ServerMain.tasksDatabaseManager
+                                .getSortedDataTasks(sortedItem));
+
+                        sorted.add(sortedItem);
 //                        System.out.println("Getting sorted object  succeed");
 
                     }
