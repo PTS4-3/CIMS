@@ -27,17 +27,24 @@ public class Services extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         this.stage = stage;
-        this.stage.setOnCloseRequest(new EventHandler() {
-
-            @Override
-            public void handle(Event event) {
-                close();
-            }
-        });
         this.goToLogIn();
     }
     
     public void goToLogIn() throws Exception
+    {
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("ServicesApp/ServicesLogInFX.fxml"));
+        Parent root = (Parent) loader.load();
+        controller = (ServicesLogInController) loader.getController();
+
+        this.configure();
+
+        Scene scene = new Scene(root);
+
+        stage.setScene(scene);
+        stage.setTitle("Services CIMS");
+        stage.show();
+    }
+    public void goToLogIn(ConnectionManager manager) throws Exception
     {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("ServicesApp/ServicesLogInFX.fxml"));
         Parent root = (Parent) loader.load();
@@ -81,8 +88,12 @@ public class Services extends Application {
         controller.configure(this, ipAdressServer);
     }
     
-    public void close(){
-        this.stage.close();
+    @Override
+    public void stop() throws Exception {
+            controller.close();
+            servicesController.close(false);
+        
+        super.stop();
     }
 
     /**
