@@ -361,19 +361,24 @@ public class ServicesController implements Initializable {
     /**
      * Unsubscribe to the information from the connectionManager
      */
-    public void close() {
+    public void close(boolean logout) {
         if (this.connectionManager != null) {
             this.connectionManager.unsubscribeRequests(user.getUsername());
             this.connectionManager.unsubscribeSorted(user.getUsername());
             this.connectionManager.unsubscribeTasks(user.getUsername());
             this.connectionManager.unsubscribeUnsorted(user.getUsername());
+        }
+        if(!logout)
+        {
             this.connectionManager.closeConnection();
         }
     }
     public void logOutClick()
     {
         try{
-        main.goToLogIn();
+            //log out connectionmanager
+            this.close(true);
+            main.goToLogIn();
         }
         catch (Exception ex) {
                     Logger.getLogger(ServicesController.class.getName()).log(Level.SEVERE, null, ex);

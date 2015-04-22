@@ -97,13 +97,11 @@ public class ServicesLogInController implements Initializable {
                     Logger.getLogger(ServicesLogInController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-        
         });        
     }
     
     public void close(){
-        System.out.println("Close inlog services");
-         this.connectionManager.closeConnection();
+        this.connectionManager.closeConnection();
     }
 
     private void showDialog(String title, String melding, boolean warning) {
