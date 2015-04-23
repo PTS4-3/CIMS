@@ -21,8 +21,8 @@
         <Label layoutX="113.0" layoutY="114.0" text="Gebruikersnaam" />
         <Label layoutX="113.0" layoutY="150.0" text="Wachtwoord" />
         <TextField fx:id="tfsUsername" layoutX="225.0" layoutY="111.0" prefWidth="133.0" />
-        <Button fx:id="btnLogIn" layoutX="225.0" layoutY="187.0" mnemonicParsing="false" onAction="#onClickLogIn" prefWidth="133.0" text="Inloggen" />
         <PasswordField fx:id="pfPassword" layoutX="225.0" layoutY="147.0" prefWidth="133.0" />
+        <Button fx:id="btnLogIn" layoutX="225.0" layoutY="187.0" mnemonicParsing="false" onAction="#onClickLogIn" prefWidth="133.0" text="Inloggen" />
       </children>
     </Pane>
   </children>
