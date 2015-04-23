@@ -49,8 +49,8 @@ public class ConnectionManager {
     public ConnectionManager(String defaultIP) {
         this.defaultIP = defaultIP;
         this.defaultPort = DEFAULT_PORT;
-        this.isRegisteredSorted.set(false);
-        this.isRegisteredTasks.set(false);
+        this.isRegisteredSorted =new AtomicBoolean(false);
+        this.isRegisteredTasks = new AtomicBoolean(false);
         //this.testMethods();
     }
     

@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -120,6 +122,10 @@ public class HeadquartersController implements Initializable {
     private Timer timer;
     private IUser user = null;
     private Headquarters main;
+    
+    public void setApp(Headquarters application) {
+        this.main = application;
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -178,11 +184,17 @@ public class HeadquartersController implements Initializable {
     
     /**
      * Configures connectionManager and fills GUI with initial values
-     * @param ipAdressServer 
+     * @param manager
+     * @param user
      */
     public void configure(ConnectionManager manager, IUser user) {
         this.connectionManager = manager;
-        //this.connectionManager.setHQController(this);
+        try{
+        this.connectionManager.setHQController(this);
+        }
+        catch(NetworkException nEx){
+            Logger.getLogger(HeadquartersController.class.getName()).log(Level.SEVERE, null, nEx);
+        }
         this.user = user;
 
         // Fill GUI with initial values        
@@ -849,6 +861,25 @@ public class HeadquartersController implements Initializable {
     }
     
     // Tasks--------------------------------------------------------------------
+    
+    public void logOutClick() {
+        try {
+            //log out connectionmanager
+            this.close(true);
+            main.goToLogIn();
+        } catch (Exception ex) {
+            Logger.getLogger(HeadquartersController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    public void close(boolean logout) {
+        if (this.connectionManager != null) {
+            this.connectionManager.unsubscribeSortedData();
+            this.connectionManager.unsubscribeTasks();
+        }
+        if (!logout) {
+            this.connectionManager.close();
+        }
+    }
     
     public void updateTask(){
         //TODO

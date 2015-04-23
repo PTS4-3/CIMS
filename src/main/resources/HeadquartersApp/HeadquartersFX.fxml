@@ -185,7 +185,7 @@
       <menus>
         <Menu mnemonicParsing="false" text="Log uit">
           <items>
-            <MenuItem mnemonicParsing="false" text="Log uit" onAction="logOutClick"  />
+            <MenuItem mnemonicParsing="false" text="Log uit" onAction="#logOutClick"  />
           </items>
         </Menu>
       </menus>

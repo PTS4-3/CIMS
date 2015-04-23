@@ -18,6 +18,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 
@@ -33,7 +34,7 @@ public class HeadquartersLogInController implements Initializable {
     @FXML
     TextField tfsUsername;
     @FXML
-    TextField tfsPassword;
+    PasswordField pfPassword;
     @FXML
     Button btnLogIn;
 
@@ -56,9 +57,10 @@ public class HeadquartersLogInController implements Initializable {
      *
      * @param ipAdressServer
      */
-    public void configure(Headquarters main, String ipAdressServer) {
+    public void configure(Headquarters main, ConnectionManager manager) {
         this.main = main;
-        //this.connectionManager = new ConnectionManager(this, ipAdressServer);
+        this.connectionManager = manager;
+        this.connectionManager.setLogInController(this);
     }
 
     public void onClickLogIn() {
@@ -69,7 +71,7 @@ public class HeadquartersLogInController implements Initializable {
                 throw new NetworkException("Kon data niet wegschrijven");
             }
             String username = tfsUsername.getText();
-            String password = tfsPassword.getText();
+            String password = pfPassword.getText();
             
             connectionManager.getSigninUser(username, password);
 

@@ -7,19 +7,12 @@ package HeadquartersApp.UI;
 
 import HeadquartersApp.Connection.ConnectionManager;
 import Shared.Users.IUser;
-import java.io.InputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
-import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.image.Image;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 /**
@@ -30,6 +23,9 @@ public class Headquarters extends Application {
 
     private HeadquartersLogInController controller;
     private HeadquartersController hqController;
+    private ConnectionManager connectionmanager;
+    private String ipAdressServer = "127.0.0.1";
+    ;
 
     private Stage stage;
 
@@ -40,39 +36,38 @@ public class Headquarters extends Application {
             this.stage.setTitle("Headquarters CIMS");
             this.stage.setMinWidth(100);
             this.stage.setMinHeight(100);
+            this.connectionmanager = new ConnectionManager(this.ipAdressServer);
             goToLogIn();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
         this.goToLogIn();
     }
-    
-    public void goToLogIn() throws Exception
-    {
+
+    public void goToLogIn() throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader()
                 .getResource("HeadquartersApp/HeadquartersLogInFX.fxml"));
         Parent root = (Parent) loader.load();
         controller = (HeadquartersLogInController) loader.getController();
 
-        this.configure();
-
+        this.controller.configure(this, this.connectionmanager);
         Scene scene = new Scene(root);
 
         stage.setScene(scene);
         stage.setTitle("Headquarters CIMS");
         stage.show();
     }
-    
-    public void goToHeadquarters(ConnectionManager manager, 
-            IUser user) throws Exception
-    {
-        if(user != null){
+
+    public void goToHeadquarters(ConnectionManager manager,
+            IUser user) throws Exception {
+        if (user != null) {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader()
                     .getResource("HeadquartersApp/HeadquartersFX.fxml"));
             Parent root = (Parent) loader.load();
             hqController = (HeadquartersController) loader.getController();
 
-            hqController.configure(manager, user);
+            this.hqController.configure(manager, user);
+            this.hqController.setApp(this);
 
             Scene scene = new Scene(root);
 
@@ -82,19 +77,6 @@ public class Headquarters extends Application {
         } else {
             showDialog("Foutmelding", "User bestaat niet", true);
         }
-    }
-
-    private void configure() {
-        //Scanner input = new Scanner(System.in);
-        //System.out.print("Client: Voer IP-adres server in: ");
-        //String ipAdressServer = input.nextLine();
-        String ipAdressServer = "127.0.0.1";
-
-        //System.out.print("Client: Voer portnumber in: ");
-        //int portnumber = input.nextInt();
-        //int portnumber = 8189;
-
-        controller.configure(this, ipAdressServer);
     }
 
     @Override
@@ -109,31 +91,24 @@ public class Headquarters extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-    
-    public void showDialog(String title, String melding, boolean warning)
-    {
+
+    public void showDialog(String title, String melding, boolean warning) {
         Alert alert = null;
-        
-        if (warning)
-        {
+
+        if (warning) {
             alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("FoutMelding");
-        }
-        else
-        {
+        } else {
             alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Melding");            
-        }     
-        
-        if (!title.isEmpty())
-        {
-            alert.setHeaderText(title);
+            alert.setTitle("Melding");
         }
-        else
-        {
+
+        if (!title.isEmpty()) {
+            alert.setHeaderText(title);
+        } else {
             alert.setHeaderText(null);
         }
-        
+
         alert.setContentText(melding);
         alert.showAndWait();
     }
