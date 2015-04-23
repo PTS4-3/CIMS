@@ -156,6 +156,10 @@ public class ServicesController implements Initializable {
         this.showingDataItem = false;
         this.answeredRequest = null;
 
+        //labels to ""
+        lblMessageUpdate.setText("");
+        lblMessageTask.setText("");
+        lblMessageSend.setText("");
         //System.setErr();
         // Add Change Listeners
         lvuSentData.getSelectionModel().selectedItemProperty().addListener(
@@ -164,6 +168,9 @@ public class ServicesController implements Initializable {
                     @Override
                     public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                         selectSentData();
+                        lblMessageUpdate.setText("");
+                        lblMessageTask.setText("");
+                        lblMessageSend.setText("");
                     }
                 });
 
@@ -173,6 +180,9 @@ public class ServicesController implements Initializable {
                     @Override
                     public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                         selectData();
+                        lblMessageUpdate.setText("");
+                        lblMessageTask.setText("");
+                        lblMessageSend.setText("");
                     }
                 });
 
@@ -181,6 +191,9 @@ public class ServicesController implements Initializable {
                     @Override
                     public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                         selectTask();
+                        lblMessageUpdate.setText("");
+                        lblMessageTask.setText("");
+                        lblMessageSend.setText("");
                     }
                 });
 
@@ -193,7 +206,9 @@ public class ServicesController implements Initializable {
                     @Override
                     protected void updateItem(IData item, boolean empty) {
                         super.updateItem(item, empty);
-
+                        lblMessageUpdate.setText("");
+                        lblMessageTask.setText("");
+                        lblMessageSend.setText("");
                         if (!empty) {
                             setItem(item);
                             setText(item.toString());
@@ -207,6 +222,7 @@ public class ServicesController implements Initializable {
                             setItem(null);
                             setText("");
                         }
+
                     }
                 };
             }
