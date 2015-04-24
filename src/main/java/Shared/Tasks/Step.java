@@ -17,6 +17,19 @@ import Shared.Users.IServiceUser;
 public class Step extends Task implements IStep {
     private int stepnr;
     private String condition;
+
+    /**
+     * Convenience constructor to expand a given task to a step.
+     *
+     * @param task throws a nullpointer if task == null
+     * @param stepNr has to be greater than 0
+     * @param condition
+     */
+    public Step(ITask task, int stepNr, String condition){
+        this(task.getId(), task.getTitle(), task.getDescription(),
+                task.getStatus(), task.getSortedData(), task.getTargetExecutor(),
+                task.getExecutor(), stepNr, condition);
+    }
     
     /**
      * 

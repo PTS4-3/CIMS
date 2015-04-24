@@ -22,6 +22,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -349,9 +351,75 @@ public class SortedDatabaseManager extends DatabaseManager {
         return request;
     }
 
-    @Deprecated
-    SortedData getFromSortedData(int outputDataID) {
-        return null;
+    /**
+     *
+     * @param ID
+     * @return SortedData with given ID. null if unknown.
+     */
+    SortedData getFromSortedData(int ID) {
+        if(!openConnection() || (ID == -1)){
+            return null;
+        }
+        
+        SortedData output = null;
+        String query;
+        PreparedStatement prepStat;
+        ResultSet rs;
+        
+        try {
+            // gets sorted data
+            query = "SELECT * FROM " + sortedDataTable + " WHERE ID = ?";
+            prepStat = conn.prepareStatement(query);
+            prepStat.setInt(1, ID);
+            rs = prepStat.executeQuery();
+            
+            int 
+                    outputID = -1, 
+                    outputRelevance = -1, 
+                    outputReliability = -1, 
+                    outputQuality = -1;
+            String 
+                    outputTitle = null, 
+                    outputDesc = null, 
+                    outputLocation = null, 
+                    outputSource = null;
+            
+            while(rs.next()){
+                outputID = rs.getInt("ID");
+                outputTitle = rs.getString("TITLE");
+                outputDesc = rs.getString("DESCRIPTION");
+                outputLocation = rs.getString("LOCATION");
+                outputSource = rs.getString("SOURCE");
+                outputRelevance = rs.getInt("RELEVANCE");
+                outputReliability = rs.getInt("RELIABILITY");
+                outputQuality = rs.getInt("QUALITY");              
+            }
+            // if no data found
+            if(outputID == -1){
+                return null;
+            }
+
+            HashSet<Tag> tags = new HashSet<>();
+            // gets tags
+            query = "SELECT * FROM " + sortedDataTagsTable + " WHERE DATAID = ?";
+            prepStat = conn.prepareStatement(query);
+            prepStat.setInt(1, outputID);
+            rs = prepStat.executeQuery();
+            
+            while (rs.next()){
+                tags.add(Tag.valueOf(rs.getString("TAGNAME")));
+            }
+            output = new SortedData(outputID, outputTitle, outputDesc,
+                    outputLocation, outputLocation, outputRelevance,
+                    outputReliability, outputQuality, tags);
+        } catch (SQLException ex) {
+            System.out.println("failed to getFromSortedData by ID: " + ex.getMessage());
+            Logger.getLogger(SortedDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+            output = null;
+        } finally {
+            closeConnection();
+        }
+        return output;
     }
 
 }

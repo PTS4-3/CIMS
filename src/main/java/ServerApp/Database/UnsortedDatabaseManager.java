@@ -93,7 +93,7 @@ public class UnsortedDatabaseManager extends DatabaseManager {
                     Status status = Status.valueOf(result.getString("STATUS"));
 
                     unsorted.add(new UnsortedData(id, title, description, location, source, status));
-                    System.out.println("Getting object" + unsorted.size() + " unsorted succeed");
+//                    System.out.println("Getting object" + unsorted.size() + " unsorted succeed");
                 }
             }
 
@@ -103,7 +103,7 @@ public class UnsortedDatabaseManager extends DatabaseManager {
                         + Status.INPROCESS.toString() + "' WHERE ID = " + x.getId();
                 PreparedStatement updateData = conn.prepareStatement(update);
                 updateData.execute();
-                System.out.println("Updating unsorted status succeed");
+//                System.out.println("Updating unsorted status succeed");
             }
 
 //            System.out.println("getFromUnsortedData succeed");

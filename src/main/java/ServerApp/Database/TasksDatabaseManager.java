@@ -138,8 +138,9 @@ public class TasksDatabaseManager extends DatabaseManager {
             }
             ITask outputItem = new Task(outputID, outputTitle, outputDescription,
                     outputStatus, outputData, outputExecutorTag, executor);
+//            if (!outputDeclineReason.isEmpty()) {
             outputItem.setDeclineReason(outputDeclineReason);
-
+//            }
             output.add(outputItem);
         }
         return output;
@@ -168,7 +169,7 @@ public class TasksDatabaseManager extends DatabaseManager {
             execUserName = rs.getString("USERNAME");
         }
         // return null if task was not matched with an executor yet.
-        if(execUserName == null){
+        if (execUserName == null) {
             return null;
         }
 
@@ -216,15 +217,13 @@ public class TasksDatabaseManager extends DatabaseManager {
             prepStat.setString(3, newTask.getTargetExecutor().toString());
             if (newTask.getSortedData() == null) {
                 prepStat.setInt(4, -1);
+            } else if (newTask.getSortedData().getId() == -1) {
+                throw new SQLException("Sorted data with -1 ID");
             } else {
                 prepStat.setInt(4, newTask.getSortedData().getId());
             }
             prepStat.setString(5, newTask.getStatus().toString());
-            if (newTask.getDeclineReason() == null) {
-                prepStat.setString(6, "");
-            } else {
-                prepStat.setString(6, newTask.getDeclineReason());
-            }
+            prepStat.setString(6, newTask.getDeclineReason());
             prepStat.execute();
 
             // Gets assigned ID. Throws Exception if not found
@@ -708,7 +707,7 @@ public class TasksDatabaseManager extends DatabaseManager {
                 }
                 rs = prepStat.executeQuery();
                 // Delegates extracting tasks, adds them to struct
-                for(ITask task : this.extractTasks(rs, null)){
+                for (ITask task : this.extractTasks(rs, null)) {
                     int stepNr = struct.stepNumbers.get(task.getId());
                     String stepCondition = struct.stepConditions.get(task.getId());
                     struct.steps.add(new Step(task, stepNr, stepCondition));
@@ -718,7 +717,7 @@ public class TasksDatabaseManager extends DatabaseManager {
             // creates plans
             // adds them to output
             output = new ArrayList<>();
-            for(PlanStruct struct : outputPlanStructs.values()){
+            for (PlanStruct struct : outputPlanStructs.values()) {
                 Plan outputItem = new Plan(struct.id, struct.title,
                         struct.description, struct.keywords, struct.steps,
                         struct.isTemplate);

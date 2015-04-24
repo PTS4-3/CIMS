@@ -67,6 +67,7 @@ public class DummyDatabaseManager {
      * @param keywords
      * @return
      */
+    @Deprecated
     public List<IPlan> getPlans(HashSet<String> keywords){
         return null;
     }
