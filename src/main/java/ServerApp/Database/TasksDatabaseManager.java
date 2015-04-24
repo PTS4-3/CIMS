@@ -13,6 +13,8 @@ import Shared.Tag;
 import Shared.Tasks.IPlan;
 import Shared.Tasks.IStep;
 import Shared.Tasks.ITask;
+import Shared.Tasks.Plan;
+import Shared.Tasks.Step;
 import Shared.Tasks.Task;
 import Shared.Tasks.TaskStatus;
 import Shared.Users.HQChief;
@@ -25,6 +27,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -43,6 +46,28 @@ public class TasksDatabaseManager extends DatabaseManager {
             keywordTable = "KEYWORD",
             stepTable = "STEP",
             userTable = "USER";
+
+    /**
+     * A data-only container for all variables needed for initiating a plan.
+     * <br>
+     * Only used by database to temporarily store variables until it has enough
+     * data to satisfy the plan constructor.
+     */
+    private class PlanStruct {
+
+        // plan table
+        int id;
+        String title, description;
+        boolean isTemplate;
+        //keyword table
+        HashSet<String> keywords = new HashSet<>();
+        //step table
+        HashSet<Integer> stepTaskIDs = new HashSet<>();
+        HashMap<Integer, Integer> stepNumbers = new HashMap<>();
+        HashMap<Integer, String> stepConditions = new HashMap<>();
+        //task + step table
+        List<IStep> steps = new ArrayList<>();
+    }
 
     public TasksDatabaseManager(String fileName) {
         super(fileName);
@@ -141,6 +166,10 @@ public class TasksDatabaseManager extends DatabaseManager {
         rs = prepStat.executeQuery();
         while (rs.next()) {
             execUserName = rs.getString("USERNAME");
+        }
+        // return null if task was not matched with an executor yet.
+        if(execUserName == null){
+            return null;
         }
 
         // starts query for actual user
@@ -568,11 +597,144 @@ public class TasksDatabaseManager extends DatabaseManager {
      *
      * @param keywords
      * @return IPlans with <i>all</i> given keywords. <br>
-     * Will return all Plans in database if null/empty
+     * Will return all Plans in database if empty
      */
-    @Deprecated
     public List<IPlan> getPlans(HashSet<String> keywords) {
-        return null;
+        if (!openConnection() || (keywords == null)) {
+            return null;
+        }
+        List<IPlan> output = null;
+        String query;
+        PreparedStatement prepStat;
+        ResultSet rs;
+
+        HashMap<Integer, PlanStruct> outputPlanStructs = new HashMap<>();
+
+        try {
+            // builds query, depending on how many keywords are provided
+            query = "SELECT * FROM " + planTable;
+            if (keywords.size() > 0) {
+                query += " WHERE ID IN "
+                        + "(SELECT PLANID FROM " + keywordTable
+                        + " WHERE WORD = ?)";
+                for (int pos = 1; pos <= keywords.size(); pos++) {
+                    query += " AND ID IN (SELECT PLANID FROM " + keywordTable
+                            + " WHERE WORD = ?)";
+                }
+            }
+            prepStat = conn.prepareStatement(query);
+            int rep = 1;
+            for (String kw : keywords) {
+                prepStat.setString(rep, kw);
+                rep++;
+            }
+            rs = prepStat.executeQuery(query);
+
+            // saves info from plan table in temporary struct
+            while (rs.next()) {
+                PlanStruct struct = new PlanStruct();
+                struct.id = rs.getInt("ID");
+                struct.description = rs.getString("DESCRIPTION");
+                struct.title = rs.getString("TITLE");
+                int isTemplateInt = rs.getInt("TEMPLATE");
+                if (isTemplateInt == 0) {
+                    struct.isTemplate = false;
+                } else if (isTemplateInt == 1) {
+                    struct.isTemplate = true;
+                } else {
+                    throw new SQLException("template int was not a recognised value");
+                }
+                outputPlanStructs.put(struct.id, struct);
+            }
+
+            // returns empty list now if no plans were found
+            if (outputPlanStructs.isEmpty()) {
+                return new ArrayList<>();
+            }
+
+            // gets keywords
+            query = "SELECT * FROM " + keywordTable + " WHERE PLANID = ?";
+            for (int pos = 1; pos < outputPlanStructs.size(); pos++) {
+                query += " OR PLANID = ?";
+            }
+            prepStat = conn.prepareStatement(query);
+            rep = 1;
+            for (PlanStruct struct : outputPlanStructs.values()) {
+                prepStat.setInt(rep, struct.id);
+                rep++;
+            }
+            rs = prepStat.executeQuery();
+
+            // updates plan structs with keywords
+            while (rs.next()) {
+                int planID = rs.getInt("PLANID");
+                outputPlanStructs.get(planID).keywords.add(rs.getString("WORD"));
+            }
+
+            // gets task IDs per plan. taskID + planID can later be used as primary key
+            query = "SELECT * FROM " + stepTable + " WHERE PLANID = ?";
+            for (int pos = 1; pos < outputPlanStructs.size(); pos++) {
+                query += " OR PLANID = ?";
+            }
+            prepStat = conn.prepareStatement(query);
+            rep = 1;
+            for (PlanStruct struct : outputPlanStructs.values()) {
+                prepStat.setInt(rep, struct.id);
+                rep++;
+            }
+            rs = prepStat.executeQuery();
+
+            // updates plan structs with task IDs from steps
+            while (rs.next()) {
+                int planID = rs.getInt("PLANID");
+                int taskID = rs.getInt("TASKID");
+                PlanStruct struct = outputPlanStructs.get(planID);
+                struct.stepTaskIDs.add(taskID);
+                struct.stepNumbers.put(taskID, rs.getInt("NUMBER"));
+                struct.stepConditions.put(taskID, rs.getString("CONDITION"));
+            }
+
+            // gets tasks per plan
+            for (PlanStruct struct : outputPlanStructs.values()) {
+                query = "SELECT * FROM " + taskTable + " WHERE ID = ?";
+                for (int pos = 1; pos < struct.stepTaskIDs.size(); pos++) {
+                    query += " OR ID = ?";
+                }
+                prepStat = conn.prepareStatement(query);
+                rep = 1;
+                for (int taskID : struct.stepTaskIDs) {
+                    prepStat.setInt(rep, taskID);
+                    rep++;
+                }
+                rs = prepStat.executeQuery();
+                // Delegates extracting tasks, adds them to struct
+                for(ITask task : this.extractTasks(rs, null)){
+                    int stepNr = struct.stepNumbers.get(task.getId());
+                    String stepCondition = struct.stepConditions.get(task.getId());
+                    struct.steps.add(new Step(task, stepNr, stepCondition));
+                }
+            }
+
+            // creates plans
+            // adds them to output
+            output = new ArrayList<>();
+            for(PlanStruct struct : outputPlanStructs.values()){
+                Plan outputItem = new Plan(struct.id, struct.title,
+                        struct.description, struct.keywords, struct.steps,
+                        struct.isTemplate);
+                output.add(outputItem);
+            }
+
+        } catch (SQLException ex) {
+            System.out.println("Error trying to retrieve plans filtered by keyword: "
+                    + ex.getMessage());
+            Logger.getLogger(TasksDatabaseManager.class.getName())
+                    .log(Level.SEVERE, null, ex);
+            output = null;
+        } finally {
+            closeConnection();
+        }
+        return output;
     }
 
     /**
