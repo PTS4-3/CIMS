@@ -456,7 +456,7 @@ public class TasksDatabaseManager extends DatabaseManager {
         ResultSet rs;
 
         try {
-            query = "SELECT * FROM " + userTable + " WHERE USERNAME = ?";
+            query = "SELECT * FROM " + userTable + " WHERE BINARY USERNAME = ?";
             prepStat = conn.prepareStatement(query);
             prepStat.setString(1, userName);
             rs = prepStat.executeQuery();
@@ -577,7 +577,8 @@ public class TasksDatabaseManager extends DatabaseManager {
         ResultSet rs;
 
         try {
-            query = "SELECT * FROM " + userTable + " WHERE USERNAME = ? AND PASSWORD = ?";
+            query = "SELECT * FROM " + userTable + 
+                    " WHERE BINARY USERNAME = ? AND BINARY PASSWORD = ?";
             prepStat = conn.prepareStatement(query);
             prepStat.setString(1, userName);
             prepStat.setString(2, password);
