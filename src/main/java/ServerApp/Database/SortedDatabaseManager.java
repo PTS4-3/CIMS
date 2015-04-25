@@ -100,12 +100,12 @@ public class SortedDatabaseManager extends DatabaseManager {
      * @param info list of tags
      * @return List sorteddata
      */
-    public List<SortedData> getFromSortedData(HashSet<Tag> info) {
+    public List<ISortedData> getFromSortedData(HashSet<Tag> info) {
         if (!openConnection()) {
             return null;
         }
 
-        List<SortedData> sorted = new ArrayList();
+        List<ISortedData> sorted = new ArrayList();
         HashSet<Integer> numbers = new HashSet<Integer>();
 
         //list of id's with correct tags
@@ -356,12 +356,12 @@ public class SortedDatabaseManager extends DatabaseManager {
      * @param ID
      * @return SortedData with given ID. null if unknown.
      */
-    SortedData getFromSortedData(int ID) {
+    ISortedData getFromSortedData(int ID) {
         if(!openConnection() || (ID == -1)){
             return null;
         }
         
-        SortedData output = null;
+        ISortedData output = null;
         String query;
         PreparedStatement prepStat;
         ResultSet rs;

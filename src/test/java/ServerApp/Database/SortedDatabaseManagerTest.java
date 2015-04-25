@@ -13,6 +13,7 @@ import org.junit.BeforeClass;
 import ServerApp.ServerMain;
 import Shared.Data.DataRequest;
 import Shared.Data.IDataRequest;
+import Shared.Data.ISortedData;
 import Shared.Data.SortedData;
 import Shared.Tag;
 import java.util.HashSet;
@@ -75,10 +76,10 @@ public class SortedDatabaseManagerTest {
     public void testGetFromSortedData() {
         HashSet<Tag> tags = new HashSet<>();
         tags.add(Tag.POLICE);
-        List<SortedData> sortedDataList = myDB.getFromSortedData(tags);
+        List<ISortedData> sortedDataList = myDB.getFromSortedData(tags);
         assertNotNull("No data found in getFromSortedData", sortedDataList);
 
-        for(SortedData data : sortedDataList){
+        for(ISortedData data : sortedDataList){
             // checks not null
             assertNotNull("title was null (getFromSortedData)", data.getTitle());
             assertNotNull("description was null (getFromSortedData)", data.getDescription());
