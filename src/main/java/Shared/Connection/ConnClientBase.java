@@ -357,6 +357,9 @@ public class ConnClientBase {
             case TASK_UPDATE:
                 output = "update a task";
                 break;
+            case TASKS_GET:
+                output = "get tasks from user";
+                break;
         }
         return output;
     }

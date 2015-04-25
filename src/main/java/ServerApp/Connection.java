@@ -208,6 +208,9 @@ public class Connection implements Runnable {
                             case TASK_UPDATE:
                                 this.updateTask();
                                 break;
+                            case TASKS_GET:
+                                this.getTasks();
+                                break;
                         }
                     }
                 }
@@ -816,6 +819,26 @@ public class Connection implements Runnable {
         IUser output = null;        
         synchronized (LOCK) {
             output = ServerMain.tasksDatabaseManager.loginUser(username, password);
+        }        
+        writeOutput(output);
+    }
+    
+    /**
+     * Get tasks from database
+     */
+    private void getTasks() throws IOException, ClassNotFoundException {
+        Object par1 = in.readObject();
+        
+        if (par1 == null || !(par1 instanceof String)) {
+            out.writeObject(ConnState.COMMAND_ERROR);
+            return;
+        }
+        
+        String username = (String) par1;
+
+        List<ITask> output = null;    
+        synchronized (LOCK) {
+            output = ServerMain.tasksDatabaseManager.getTasks(username);
         }        
         writeOutput(output);
     }

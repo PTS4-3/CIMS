@@ -39,6 +39,7 @@ public enum ConnCommand {
     TASKS_UNSUBSCRIBE,
     SIGN_IN,
     TASK_UPDATE,
+    TASKS_GET
 }
 
 /*
@@ -132,6 +133,9 @@ public enum ConnCommand {
  Option 30 - Client: ConnCommand.TASK_UPDATE
  -> ServicesClient: ITask task
  -> Server: Update in db + handle update + send to HQ
+ Option 31 - Client: ConnCommand.TASKS_GET
+ -> ServicesClient: String username
+ -> Server: List<ITask>
  -----
  Return to start, except on closed conn
  */

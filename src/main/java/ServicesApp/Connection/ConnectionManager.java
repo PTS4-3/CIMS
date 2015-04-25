@@ -614,7 +614,25 @@ public class ConnectionManager {
      * @param username cannot be null
      */
     public void getTasks(String username) {
-        //TODO
+        if(username == null) {
+            throw new IllegalArgumentException("Username is null");
+        }
+        
+        pool.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                List<ITask> tasks = 
+                        new Connection(defaultIP, defaultPort).getTasks(username);
+                if(tasks != null) {
+                    servicesController.displayTasks(tasks);
+                } else {
+                    System.err.println("Unable to retrieve Tasks from "
+                        + "buffer in server.");
+                }
+            }
+            
+        });
     }
     
     /**

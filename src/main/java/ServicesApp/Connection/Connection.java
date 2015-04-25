@@ -350,4 +350,22 @@ class Connection extends ConnClientBase {
     protected boolean updateTask(ITask task) {
         return super.booleanCommand(ConnCommand.TASK_UPDATE, new Object[]{task});
     }
+    
+    /**
+     * Gets the tasks from the serviceUser with the given username
+     * @param username
+     * @return
+     */
+    protected List<ITask> getTasks(String username) {
+        List<ITask> output = null;
+            Object inObject = super.objectCommand(
+                    ConnCommand.TASKS_GET, new Object[]{username});
+            if (inObject instanceof List) {
+                output = (List<ITask>) inObject;
+            } else {
+                System.err.println("Unexpected output from "
+                    + super.getCommandDescription(ConnCommand.TASKS_GET));
+            }
+        return output;
+    }
 }
