@@ -854,7 +854,7 @@ public class Connection implements Runnable {
         String username = (String) inObject;
 
         List<ITask> output = null;    
-        synchronized (LOCK) {
+        synchronized (TASKSLOCK) {
             output = ServerMain.tasksDatabaseManager.getTasks(username);
         }        
         writeOutput(output);
@@ -907,7 +907,7 @@ public class Connection implements Runnable {
         HashSet<String> keywords = (HashSet) inObject;
 
         List<IPlan> output = null;    
-        synchronized (LOCK) {
+        synchronized (TASKSLOCK) {
             output = ServerMain.tasksDatabaseManager.getPlans(keywords);
         }        
         writeOutput(output);
@@ -918,7 +918,7 @@ public class Connection implements Runnable {
      */
     private void getSortedData() throws IOException, ClassNotFoundException {
         List<ISortedData> output = null;    
-        synchronized (LOCK) {
+        synchronized (SORTEDLOCK) {
             output = ServerMain.sortedDatabaseManager.getFromSortedData(new HashSet<Tag>());
         }        
         writeOutput(output);
@@ -929,7 +929,7 @@ public class Connection implements Runnable {
      */
     private void getServiceUsers() throws IOException, ClassNotFoundException {
         List<IServiceUser> output = null;    
-        synchronized (LOCK) {
+        synchronized (TASKSLOCK) {
             output = ServerMain.tasksDatabaseManager.getServiceUsers();
         }        
         writeOutput(output);
