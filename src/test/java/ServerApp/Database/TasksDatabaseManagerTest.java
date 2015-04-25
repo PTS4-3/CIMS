@@ -15,7 +15,10 @@ import Shared.Tasks.Plan;
 import Shared.Tasks.Step;
 import Shared.Tasks.Task;
 import Shared.Tasks.TaskStatus;
+import Shared.Users.HQChief;
 import Shared.Users.IServiceUser;
+import Shared.Users.IUser;
+import Shared.Users.ServiceUser;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -180,7 +183,7 @@ public class TasksDatabaseManagerTest {
     }
 
     @Test
-    public void setTaskStatus() {
+    public void testSetTaskStatus() {
         HashSet<Tag> tags = new HashSet<>();
         tags.add(Tag.POLICE);
         SortedData data = new SortedData(1, "title", "description",
@@ -188,7 +191,6 @@ public class TasksDatabaseManagerTest {
         Task task = new Task(-1, "title", "desc", TaskStatus.UNASSIGNED, data,
                 Tag.AMBULANCE, null);
         task = (Task) myDB.insertNewTask(task);
-
     }
 
     @Test
@@ -237,7 +239,74 @@ public class TasksDatabaseManagerTest {
     }
 
     @Test
-    public void testLoginUser() {
+    public void testUsers() {
+        // loginUser
+        IUser chiefUser = myDB.loginUser("chief01", "chief01");
+        IUser fireUser = myDB.loginUser("firefighter01", "firefighter01");
+
+        assertNotNull("chiefUser was null", chiefUser);
+        assertNotNull("fireUser was null", fireUser);
+        assertNull("able to login on blank info",
+                myDB.loginUser("", ""));
+        assertNull("able to login on wrongly capitalised info",
+                myDB.loginUser("CHIEF01", "CHIEF01"));
+        assertNull("able to login on mixed info",
+                myDB.loginUser("chief01", "firefighter01"));
+
+        assertEquals("chiefUser had wrong name",
+                "Melanie Kwetters", chiefUser.getName());
+        assertEquals("fireUser had wrong name",
+                "Bart Bouten", fireUser.getName());
+        assertTrue("chiefUser was not a hqChief",
+                chiefUser instanceof HQChief);
+        assertTrue("fireUser was not a ServiceUser",
+                fireUser instanceof ServiceUser);
+
+        HQChief chief = (HQChief) chiefUser;
+        ServiceUser firefighter = (ServiceUser) fireUser;
+
+        assertEquals("firefighter had wrong tag",
+                Tag.FIREDEPARTMENT, firefighter.getType());
+
+        // get user
+        chiefUser = myDB.getUser("chief01");
+        fireUser = myDB.getUser("firefighter01");
+        assertNull("database returned user on blank name",
+                myDB.getUser(""));
+        assertEquals("getUser chiefUser had wrong name",
+                chief.getName(), chiefUser.getName());
+        assertEquals("getUser fireUser had wrong name",
+                firefighter.getName(), fireUser.getName());
+        assertTrue("getUser chiefUser was not a hqChief",
+                chiefUser instanceof HQChief);
+        assertTrue("getUser fireUser was not a ServiceUser",
+                fireUser instanceof ServiceUser);
+
+        // get service users
+        List<IServiceUser> serviceUsers = myDB.getServiceUsers();
+        assertTrue("not all serviceUsers were retrieved",
+                serviceUsers.size() == 3);
+
+        for(IServiceUser sUser : serviceUsers){
+            String expectedName = "????????";
+            Tag expectedTag = null;
+
+            if(sUser.getUsername().equals("firefighter01")){
+                expectedName = "Bart Bouten";
+                expectedTag = Tag.FIREDEPARTMENT;
+            } else if (sUser.getUsername().equals("paramedic01")){
+                expectedName = "Linda van Engelen";
+                expectedTag = Tag.AMBULANCE;
+            } else if (sUser.getUsername().equals("policeofficer01")){
+                expectedName = "Bob Steers";
+                expectedTag = Tag.POLICE;
+            } else {
+                fail("unexpected username: " + sUser.getUsername());
+            }
+
+            assertEquals("wrong name serviceUser", expectedName, sUser.getName());
+            assertEquals("wrong tag serviceUser", expectedTag, sUser.getType());
+        }
     }
 
     @Test
