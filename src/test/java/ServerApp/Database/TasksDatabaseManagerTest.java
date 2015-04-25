@@ -170,11 +170,11 @@ public class TasksDatabaseManagerTest {
         // get sorted data tasks
         tasks = myDB.getSortedDataTasks(data);
         assertEquals("wrong number of tasks", 1, tasks.size());
-        task = tasks.get(0);
+        task = (Task) tasks.get(0);
         assertEquals("wrong data ID", data.getId(), task.getSortedData().getId());
         assertEquals("wrong title", task2.getTitle(), task.getTitle());
         assertEquals("wrong description", task2.getDescription(), task.getDescription());
-        asertEquals("wrong decline reason", task2.getDeclineReason(), task.getDeclineReason());
+        assertEquals("wrong decline reason", task2.getDeclineReason(), task.getDeclineReason());
         assertEquals("wrong tag", task2.getTargetExecutor(), task.getTargetExecutor());
         assertEquals("wrong status", task2.getStatus(), task.getStatus());
     }
