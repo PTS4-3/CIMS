@@ -360,6 +360,15 @@ public class ConnClientBase {
             case TASKS_GET:
                 output = "get tasks from user";
                 break;
+            case PLAN_SEARCH:
+                output = "get plans with given keywords";
+                break;
+            case SORTED_GET_ALL:
+                output = "get all sorted data";
+                break;
+            case SERVICEUSERS_GET:
+                output = "get all service users";
+                break;
         }
         return output;
     }

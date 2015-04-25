@@ -15,10 +15,12 @@ import Shared.Connection.ConnCommand;
 import Shared.Data.IData;
 import Shared.Data.IDataRequest;
 import Shared.Data.ISortedData;
+import Shared.Tag;
 import Shared.Tasks.IPlan;
 import Shared.Tasks.IStep;
 import Shared.Tasks.ITask;
 import Shared.Tasks.TaskStatus;
+import Shared.Users.IServiceUser;
 import Shared.Users.IUser;
 import java.io.IOException;
 import java.io.InputStream;
@@ -212,6 +214,15 @@ public class Connection implements Runnable {
                                 break;
                             case TASKS_GET:
                                 this.getTasks();
+                                break;
+                            case PLAN_SEARCH:
+                                this.searchPlans();
+                                break;
+                            case SORTED_GET_ALL:
+                                this.getSortedData();
+                                break;
+                            case SERVICEUSERS_GET:
+                                this.getServiceUsers();
                                 break;
                         }
                     }
@@ -833,14 +844,14 @@ public class Connection implements Runnable {
      * Get tasks from database
      */
     private void getTasks() throws IOException, ClassNotFoundException {
-        Object par1 = in.readObject();
+        Object inObject = in.readObject();
         
-        if (par1 == null || !(par1 instanceof String)) {
+        if (inObject == null || !(inObject instanceof String)) {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
         }
         
-        String username = (String) par1;
+        String username = (String) inObject;
 
         List<ITask> output = null;    
         synchronized (LOCK) {
@@ -880,5 +891,47 @@ public class Connection implements Runnable {
         }
         
         this.writeResult(success);
+    }
+    
+    /**
+     * Get plans with keywords from database
+     */
+    private void searchPlans() throws IOException, ClassNotFoundException {
+        Object inObject = in.readObject();
+        
+        if (inObject == null || !(inObject instanceof HashSet)) {
+            out.writeObject(ConnState.COMMAND_ERROR);
+            return;
+        }
+        
+        HashSet<String> keywords = (HashSet) inObject;
+
+        List<IPlan> output = null;    
+        synchronized (LOCK) {
+            output = ServerMain.tasksDatabaseManager.getPlans(keywords);
+        }        
+        writeOutput(output);
+    }
+    
+    /**
+     * Get all sorted data from database
+     */
+    private void getSortedData() throws IOException, ClassNotFoundException {
+        List<ISortedData> output = null;    
+        synchronized (LOCK) {
+            output = ServerMain.sortedDatabaseManager.getFromSortedData(new HashSet<Tag>());
+        }        
+        writeOutput(output);
+    }
+      
+    /**
+     * Get all serviceusers from database
+     */
+    private void getServiceUsers() throws IOException, ClassNotFoundException {
+        List<IServiceUser> output = null;    
+        synchronized (LOCK) {
+            output = ServerMain.tasksDatabaseManager.getServiceUsers();
+        }        
+        writeOutput(output);
     }
 }

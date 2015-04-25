@@ -11,6 +11,7 @@ import Shared.Data.*;
 import Shared.NetworkException;
 import Shared.Tag;
 import Shared.Tasks.*;
+import Shared.Users.IServiceUser;
 import Shared.Users.IUser;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -304,7 +305,27 @@ public class ConnectionManager {
      * @param keywords if hashSet is empty, get all plans
      */
     public void searchPlans(HashSet<String> keywords) {
+        if(this.hqController == null || keywords == null) {
+            return;
+        }
         
+        this.pool.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    List<IPlan> plans =
+                            new Connection(defaultIP, defaultPort).searchPlans(keywords);
+
+                    if(plans != null) {
+                        hqController.displayPlans(plans);
+                    }
+                } catch (NetworkException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            
+        });
     }
     
     /**
@@ -312,7 +333,27 @@ public class ConnectionManager {
      * Sends returnvalue to hqController.displaySortedData()
      */
     public void getSortedData() {
+        if(this.hqController == null) {
+            return;
+        }
         
+        this.pool.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    List<ISortedData> data =
+                            new Connection(defaultIP, defaultPort).getSortedData();
+
+                    if(data != null) {
+                        hqController.displaySortedData(data);
+                    }
+                } catch (NetworkException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            
+        });
     }
     
     /**
@@ -320,7 +361,27 @@ public class ConnectionManager {
      * Sends returnvalue to hqController.displayServiceUsers()
      */
     public void getServiceUsers() {
+        if(this.hqController == null) {
+            return;
+        }
         
+        this.pool.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    List<IServiceUser> serviceusers =
+                            new Connection(defaultIP, defaultPort).getServiceUsers();
+
+                    if(serviceusers != null) {
+                        hqController.displayServiceUsers(serviceusers);
+                    }
+                } catch (NetworkException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            
+        });
     }
         
     /**

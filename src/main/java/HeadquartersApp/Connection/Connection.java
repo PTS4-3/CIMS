@@ -13,8 +13,11 @@ import Shared.Data.ISortedData;
 import Shared.NetworkException;
 import Shared.Tasks.IPlan;
 import Shared.Tasks.ITask;
+import Shared.Users.IServiceUser;
 import Shared.Users.IUser;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -225,5 +228,54 @@ class Connection extends ConnClientBase {
      */
     protected boolean updateTask(ITask task) {
         return super.booleanCommand(ConnCommand.TASK_UPDATE, new Object[]{task});
+    }
+    
+    /**
+     * Gets plans with given keywords
+     * @param keywords
+     * @return
+     */
+    protected List<IPlan> searchPlans(HashSet<String> keywords) throws NetworkException  {
+        Object output = super.objectCommand(
+                ConnCommand.PLAN_SEARCH, new Object[]{keywords});
+        
+        if(!(output instanceof List)) {
+            throw new NetworkException("Unexpected result in " + 
+                    super.getCommandDescription(ConnCommand.PLAN_SEARCH));
+        }
+        
+        return (List<IPlan>) output;
+    }
+    
+    /**
+     * Get all sorted data
+     * @return
+     */
+    protected List<ISortedData> getSortedData() throws NetworkException {
+        Object output = super.objectCommand(
+                ConnCommand.SORTED_GET_ALL, new Object[]{});
+        
+        if(!(output instanceof List)) {
+            throw new NetworkException("Unexpected result in " + 
+                    super.getCommandDescription(ConnCommand.SORTED_GET_ALL));
+        }
+        
+        return (List<ISortedData>) output;
+    }
+      
+    /**
+     * Get all serviceusers
+     * @return
+     */
+    protected List<IServiceUser> getServiceUsers() throws NetworkException {
+        Object output = super.objectCommand(
+                ConnCommand.SERVICEUSERS_GET, new Object[]{});
+        
+        if(!(output instanceof List)) {
+            throw new NetworkException("Unexpected result in " + 
+                    super.getCommandDescription(ConnCommand.SERVICEUSERS_GET));
+        }
+        
+        return (List<IServiceUser>) output;
     }
 }
