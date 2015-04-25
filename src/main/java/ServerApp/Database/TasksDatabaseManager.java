@@ -460,9 +460,12 @@ public class TasksDatabaseManager extends DatabaseManager {
             prepStat = conn.prepareStatement(query);
             prepStat.setString(1, userName);
             rs = prepStat.executeQuery();
-            // Delegates extracting users
-            output = this.extractUsers(rs).get(0);
 
+            // Delegates extracting users
+            List<IUser> extractedUsers = this.extractUsers(rs);
+            if (extractedUsers.size() == 1) {
+                output = extractedUsers.get(0);
+            }
         } catch (SQLException ex) {
             System.out.println("failed to retrieve user " + userName + ": "
                     + ex.getMessage());
@@ -580,12 +583,17 @@ public class TasksDatabaseManager extends DatabaseManager {
             prepStat.setString(2, password);
             rs = prepStat.executeQuery();
 
-            output = this.extractUsers(rs).get(0);
+            // delegates extracting users
+            List<IUser> extractedUsers = this.extractUsers(rs);
+            if (extractedUsers.size() == 1) {
+                output = extractedUsers.get(0);
+            }
         } catch (SQLException ex) {
             System.out.println("failed login attempt for " + userName
                     + ": " + ex.getMessage());
             Logger.getLogger(TasksDatabaseManager.class.getName())
                     .log(Level.SEVERE, null, ex);
+            output = null;
         } finally {
             closeConnection();
         }
