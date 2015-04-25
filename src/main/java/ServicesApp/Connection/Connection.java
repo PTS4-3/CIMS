@@ -290,42 +290,39 @@ class Connection extends ConnClientBase {
     }
 
     /**
-     * subscribes to updates of unsorted data
+     * subscribes to updates of sentdata
      *
      * @param clientID
      * @return
      */
-    protected boolean subscribeUnsorted(String username, int clientID) {
-        return super.booleanCommand(
-                ConnCommand.UNSORTED_SUBSCRIBE, new Object[]{username, clientID});
+    protected boolean subscribeSent(String username, int clientID) {
+        return super.booleanCommand(ConnCommand.SENT_SUBSCRIBE, new Object[]{username, clientID});
     }
 
     /**
-     * Unsubscribes to updates unsorted data
+     * Unsubscribes to updates sentdata
      *
      * @param clientID
      * @return
      */
-    protected boolean unsubscribeUnsorted(String username, int clientID) {
-        return super.booleanCommand(
-                ConnCommand.UNSORTED_UNSUBSCRIBE, new Object[]{username, clientID});
+    protected boolean unsubscribeSent(String username, int clientID) {
+        return super.booleanCommand(ConnCommand.SENT_UNSUBSCRIBE, new Object[]{username, clientID});
     }
 
     /**
-     * Gets unsorted data held at server since last call
+     * Gets sentdata held at server since last call
      *
      * @param clientID
      * @return
      */
-    protected List<IData> getNewUnsorted(int clientID) {
+    protected List<IData> getNewSent(int clientID) {
         List<IData> output = null;
-            Object inObject = super.objectCommand(
-                    ConnCommand.UNSORTED_GET_NEW, new Object[]{clientID});
+            Object inObject = super.objectCommand(ConnCommand.SENT_GET_NEW, new Object[]{clientID});
             if (inObject instanceof List) {
                 output = (List<IData>) inObject;
             } else {
                 System.err.println("Unexpected output from "
-                    + super.getCommandDescription(ConnCommand.UNSORTED_GET_NEW));
+                    + super.getCommandDescription(ConnCommand.SENT_GET_NEW));
             }
         return output;
     }

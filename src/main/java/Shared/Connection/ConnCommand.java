@@ -23,9 +23,9 @@ public enum ConnCommand {
     UNSORTED_STATUS_RESET,
     UNSORTED_UPDATE_SEND,
     UNSORTED_DISCARD,
-    UNSORTED_GET_NEW,
-    UNSORTED_SUBSCRIBE,
-    UNSORTED_UNSUBSCRIBE,
+    SENT_GET_NEW,
+    SENT_SUBSCRIBE,
+    SENT_UNSUBSCRIBE,
     UPDATE_REQUEST_SEND,
     UPDATE_REQUEST_GET,
     UPDATE_REQUEST_GET_NEW,
@@ -100,13 +100,13 @@ public enum ConnCommand {
  Option 19 - Client: ConnCommand.UPDATE_REQUEST_GET_NEW
  -> Client: int clientID
  -> Server: List<IDataRequest>
- Option 20 - Client: ConnCommand.UNSORTED_SUBSCRIBE
+ Option 20 - Client: ConnCommand.SENT_SUBSCRIBE
  -> Client: int clientID
  -> Server: ConnState.COMMAND_<success y/n>
- Option 21 - Client: ConnCommand.UNSORTED_UNSUBSCRIBE
+ Option 21 - Client: ConnCommand.SENT_UNSUBSCRIBE
  -> Client: int clientID
  -> Server: ConnState.COMMAND_<success y/n>
- Option 22 - Client: ConnCommand.UNSORTED_GET_NEW
+ Option 22 - Client: ConnCommand.SENT_GET_NEW
  -> Client: int clientID
  -> Server: List<IData>
  Option 23 - Client: ConnCommand.TASK_SEND

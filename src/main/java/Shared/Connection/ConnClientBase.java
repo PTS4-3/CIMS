@@ -309,13 +309,13 @@ public class ConnClientBase {
             case UNSORTED_DISCARD:
                 output = "discard given piece of unsorted data";
                 break;
-            case UNSORTED_GET_NEW:
+            case SENT_GET_NEW:
                 output = "retrieving new unsorted data";
                 break;
-            case UNSORTED_SUBSCRIBE:
+            case SENT_SUBSCRIBE:
                 output = "subscriving to unsorted data updates";
                 break;
-            case UNSORTED_UNSUBSCRIBE:
+            case SENT_UNSUBSCRIBE:
                 output = "unsubscribing from unsorted data updates";
                 break;
             case UPDATE_REQUEST_SEND:

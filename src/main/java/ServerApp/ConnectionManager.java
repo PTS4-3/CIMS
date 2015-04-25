@@ -20,7 +20,10 @@ import java.util.logging.Logger;
  */
 public class ConnectionManager {
 
-    public static final Object LOCK = "";
+    public static final Object 
+            SORTEDLOCK = "",
+            UNSORTEDLOCK = "",
+            TASKSLOCK = "";
 
     private final ExecutorService pool;
     private static PushBuffer buffer = new PushBuffer();

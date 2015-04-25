@@ -5,7 +5,9 @@
  */
 package ServerApp;
 
-import static ServerApp.ConnectionManager.LOCK;
+import static ServerApp.ConnectionManager.SORTEDLOCK;
+import static ServerApp.ConnectionManager.TASKSLOCK;
+import static ServerApp.ConnectionManager.UNSORTEDLOCK;
 import static ServerApp.ConnectionManager.getBuffer;
 import static ServerApp.ConnectionManager.getPlanExecutorHandler;
 import Shared.Connection.ConnState;
@@ -176,14 +178,14 @@ public class Connection implements Runnable {
                             case UPDATE_REQUEST_UNSUBSCRIBE:
                                 this.unsubscribeRequest();
                                 break;
-                            case UNSORTED_GET_NEW:
-                                this.sendNewUnsorted();
+                            case SENT_GET_NEW:
+                                this.sendNewSent();
                                 break;
-                            case UNSORTED_SUBSCRIBE:
-                                this.subscribeUnsorted();
+                            case SENT_SUBSCRIBE:
+                                this.subscribeSent();
                                 break;
-                            case UNSORTED_UNSUBSCRIBE:
-                                this.unsubscribeUnsorted();
+                            case SENT_UNSUBSCRIBE:
+                                this.unsubscribeSent();
                                 break;
                             case TASK_SEND:
                                 this.sendTask();
@@ -239,7 +241,7 @@ public class Connection implements Runnable {
      * Sends a batch of 50 items of unsorted data
      */
     private void sendUnsortedData() throws IOException {
-        synchronized (LOCK) {
+        synchronized (UNSORTEDLOCK) {
             writeOutput(ServerMain.unsortedDatabaseManager.getFromUnsortedData());
         }
         out.flush();
@@ -255,7 +257,7 @@ public class Connection implements Runnable {
         Object inObject = in.readObject();
         if (inObject instanceof HashSet) {
             HashSet tags = (HashSet) inObject;
-            synchronized (LOCK) {
+            synchronized (SORTEDLOCK) {
                 writeOutput(ServerMain.sortedDatabaseManager.getFromSortedData(tags));
             }
         } else {
@@ -278,7 +280,7 @@ public class Connection implements Runnable {
         }
         ISortedData data = (ISortedData) inObject;
         boolean output = false;
-        synchronized (LOCK) {
+        synchronized (SORTEDLOCK) {
             output = ServerMain.sortedDatabaseManager.insertToSortedData(data);
         }
         if (output) {
@@ -300,11 +302,11 @@ public class Connection implements Runnable {
         }
         IData data = (IData) inObject;
         boolean output = false;
-        synchronized (LOCK) {
+        synchronized (UNSORTEDLOCK) {
             output = ServerMain.unsortedDatabaseManager.insertToUnsortedData(data);
         }
         if (output) {
-            getBuffer().addUnsorted(data);
+            getBuffer().addSentData(data);
         }
         writeResult(output);
     }
@@ -324,7 +326,7 @@ public class Connection implements Runnable {
         if (inObject instanceof List) {
             List list = (List) inObject;
             if (!list.isEmpty() && (list.get(0) instanceof IData)) {
-                synchronized (LOCK) {
+                synchronized (UNSORTEDLOCK) {
                     writeResult(ServerMain.unsortedDatabaseManager.resetUnsortedData((List<IData>) list));
                 }
             }
@@ -346,7 +348,7 @@ public class Connection implements Runnable {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
         }
-        synchronized (LOCK) {
+        synchronized (UNSORTEDLOCK) {
             writeResult(ServerMain.unsortedDatabaseManager.updateUnsortedData((IData) inObject));
         }
     }
@@ -363,7 +365,7 @@ public class Connection implements Runnable {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
         }
-        synchronized (LOCK) {
+        synchronized (UNSORTEDLOCK) {
             writeResult(ServerMain.unsortedDatabaseManager.discardUnsortedData((IData) inObject));
         }
     }
@@ -380,7 +382,7 @@ public class Connection implements Runnable {
         }
         IDataRequest data = (IDataRequest) inObject;
         boolean output = false;
-        synchronized (LOCK) {
+        synchronized (SORTEDLOCK) {
             output = ServerMain.sortedDatabaseManager.insertDataRequest(data);
         }
         if (output) {
@@ -400,7 +402,7 @@ public class Connection implements Runnable {
         Object inObject = in.readObject();
         if (inObject instanceof HashSet) {
             HashSet tags = (HashSet) inObject;
-            synchronized (LOCK) {
+            synchronized (SORTEDLOCK) {
                 writeOutput(ServerMain.sortedDatabaseManager.getUpdateRequests(tags));
             }
         } else {
@@ -418,7 +420,7 @@ public class Connection implements Runnable {
     private void sendDataItem() throws IOException, ClassNotFoundException {
         Object inObject = in.readObject();
         if (inObject instanceof Integer) {
-            synchronized (LOCK) {
+            synchronized (UNSORTEDLOCK) {
                 writeOutput(ServerMain.unsortedDatabaseManager.getDataItem((int) inObject));
             }
         } else {
@@ -436,7 +438,7 @@ public class Connection implements Runnable {
     private void sendSentData() throws IOException, ClassNotFoundException {
         Object inObject = in.readObject();
         if (inObject instanceof String) {
-            synchronized (LOCK) {
+            synchronized (UNSORTEDLOCK) {
                 writeOutput(ServerMain.unsortedDatabaseManager.getSentData(inObject.toString()));
             }
         } else {
@@ -596,7 +598,7 @@ public class Connection implements Runnable {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    private void sendNewUnsorted() throws IOException, ClassNotFoundException {
+    private void sendNewSent() throws IOException, ClassNotFoundException {
         Object inObject = in.readObject();
         if (inObject instanceof Integer) {
             writeOutput(getBuffer().collectUnsorted((int) inObject));
@@ -611,7 +613,7 @@ public class Connection implements Runnable {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    private void subscribeUnsorted() throws IOException, ClassNotFoundException {
+    private void subscribeSent() throws IOException, ClassNotFoundException {
         Object par1 = in.readObject();
         Object par2 = in.readObject();
         
@@ -627,7 +629,7 @@ public class Connection implements Runnable {
         String username = (String) par1;
         int clientID = (Integer) par2;
         
-        getBuffer().subscribeUnsorted(username, clientID);
+        getBuffer().subscribeSent(username, clientID);
         this.writeResult(true);
     }
 
@@ -637,7 +639,7 @@ public class Connection implements Runnable {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    private void unsubscribeUnsorted() throws IOException, ClassNotFoundException {
+    private void unsubscribeSent() throws IOException, ClassNotFoundException {
         Object par1 = in.readObject();
         Object par2 = in.readObject();
         
@@ -653,7 +655,7 @@ public class Connection implements Runnable {
         String username = (String) par1;
         int clientID = (Integer) par2;
         
-        getBuffer().unsubscribeUnsorted(username, clientID);
+        getBuffer().unsubscribeSent(username, clientID);
         this.writeResult(true);
     }
     
@@ -739,7 +741,7 @@ public class Connection implements Runnable {
         ITask task = (ITask) inObject;
         boolean success = false;
         
-        synchronized(LOCK) {
+        synchronized(TASKSLOCK) {
             task = ServerMain.tasksDatabaseManager.insertNewTask(task);
         }
         
@@ -765,8 +767,12 @@ public class Connection implements Runnable {
         IPlan plan = (IPlan) inObject;
         boolean success = false;
         
-        synchronized(LOCK) {
+        synchronized(TASKSLOCK) {
             plan = ServerMain.tasksDatabaseManager.insertNewPlan(plan);
+        }
+        
+        if(plan != null) {
+            success = true;
         }
         
         this.writeResult(success);
@@ -786,7 +792,7 @@ public class Connection implements Runnable {
         
         boolean success = false;
         
-        synchronized(LOCK) {
+        synchronized(TASKSLOCK) {
             plan = ServerMain.tasksDatabaseManager.insertNewPlan(plan);
         }
         
@@ -817,7 +823,7 @@ public class Connection implements Runnable {
         String password = (String) par2;
 
         IUser output = null;        
-        synchronized (LOCK) {
+        synchronized (TASKSLOCK) {
             output = ServerMain.tasksDatabaseManager.loginUser(username, password);
         }        
         writeOutput(output);
@@ -859,7 +865,7 @@ public class Connection implements Runnable {
         ITask task = (ITask) inObject;
         boolean success = false;
         
-        synchronized(LOCK) {
+        synchronized(TASKSLOCK) {
             success = ServerMain.dummyDatabaseManager.updateTask(task);
         }
         
@@ -870,7 +876,7 @@ public class Connection implements Runnable {
         
         if(task.getStatus() == TaskStatus.SUCCEEDED && task instanceof IStep) {
             // Execute next step of plan
-            //TODO
+            getPlanExecutorHandler().executeNextStepOf((IStep) task);
         }
         
         this.writeResult(success);

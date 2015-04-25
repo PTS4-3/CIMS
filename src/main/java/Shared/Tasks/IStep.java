@@ -12,5 +12,7 @@ package Shared.Tasks;
 public interface IStep extends ITask, Comparable<IStep> {
     int getStepnr();
     void setStepnr(int nr);
+    int getPlanId();
+    void setPlanId(int planId);
     String getCondition();    
 }

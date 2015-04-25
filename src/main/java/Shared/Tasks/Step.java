@@ -15,6 +15,7 @@ import Shared.Users.IServiceUser;
  * @author Alexander
  */
 public class Step extends Task implements IStep {
+    private int planId;
     private int stepnr;
     private String condition;
 
@@ -52,6 +53,7 @@ public class Step extends Task implements IStep {
         }
         this.stepnr = stepnr;
         this.condition = condition;
+        this.planId = -1;
     }
     
     @Override
@@ -62,6 +64,16 @@ public class Step extends Task implements IStep {
     @Override
     public void setStepnr(int nr) {
         this.stepnr = nr;
+    }
+    
+    @Override
+    public int getPlanId() {
+        return this.planId;
+    }
+    
+    @Override
+    public void setPlanId(int planId) {
+        this.planId = planId;
     }
 
     @Override

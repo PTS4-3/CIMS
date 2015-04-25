@@ -10,6 +10,8 @@ import Shared.Data.IDataRequest;
 import Shared.Data.ISortedData;
 import Shared.Tasks.IStep;
 import Shared.Tasks.ITask;
+import Shared.Users.IServiceUser;
+import Shared.Users.IUser;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,6 +22,7 @@ import java.util.List;
  * @author Kargathia + Alexander
  */
 public class PushBuffer {
+    private static final String HQChief = "HQChief";
 
     private final Object
             LOCK_SORTED = "",
@@ -32,7 +35,7 @@ public class PushBuffer {
     // key: ClientID, Value: requests
     private HashMap<Integer, List<IDataRequest>> requestBuffer;
     // key: ClientID, Value: sentData
-    private HashMap<Integer, List<IData>> unsortedDataBuffer;
+    private HashMap<Integer, List<IData>> sentDataBuffer;
     // key: ClientID, Value: steps
     private HashMap<Integer, List<ITask>> tasksBuffer;
     
@@ -42,7 +45,7 @@ public class PushBuffer {
     public PushBuffer() {
         sortedDataBuffer = new HashMap<>();
         requestBuffer = new HashMap<>();
-        unsortedDataBuffer = new HashMap<>();
+        sentDataBuffer = new HashMap<>();
         this.tasksBuffer = new HashMap<>();
         this.clientIDs = new HashMap<>();
     }
@@ -78,7 +81,7 @@ public class PushBuffer {
             throw new IllegalArgumentException("clientID has to be zero or greater");
         }
         if(this.sortedDataBuffer.get(clientID) == null &&
-                this.unsortedDataBuffer.get(clientID) == null &&
+                this.sentDataBuffer.get(clientID) == null &&
                 this.requestBuffer.get(clientID) == null) {
             this.clientIDs.get(username).remove(clientID);
             
@@ -113,14 +116,14 @@ public class PushBuffer {
     }
 
     /**
-     * Subscribe to get updates for UnsortedData
+     * Subscribe to get updates for SentData
      * @param username
      * @param clientID 
      */
-    public void subscribeUnsorted(String username, int clientID){
+    public void subscribeSent(String username, int clientID){
         this.addClientID(username, clientID);
         synchronized(LOCK_UNSORTED){
-            unsortedDataBuffer.put(clientID, new ArrayList<>());
+            sentDataBuffer.put(clientID, new ArrayList<>());
         }
     }
     
@@ -161,13 +164,13 @@ public class PushBuffer {
     }
 
     /**
-     * Unsubscribe to get updates for UnsortedData
+     * Unsubscribe to get updates for SentData
      * @param username
      * @param clientID 
      */
-    public void unsubscribeUnsorted(String username, int clientID){
+    public void unsubscribeSent(String username, int clientID){
         synchronized(LOCK_UNSORTED){
-            unsortedDataBuffer.remove(clientID);
+            sentDataBuffer.remove(clientID);
         }
         this.removeClientID(username, clientID);
     }
@@ -185,40 +188,73 @@ public class PushBuffer {
     }
 
     /**
-     * Add the given sortedData to the buffer for all subscribed clients TODO
+     * Add the given sortedData to the buffer for all subscribed clients
      * @param data 
      */
     public void addSorted(ISortedData data) {
-        //TODO
         synchronized (LOCK_SORTED) {
-            for (int client : sortedDataBuffer.keySet()) {
-                sortedDataBuffer.get(client).add(data);
+            for(String username : clientIDs.keySet()) {
+                boolean isTargetUser = false;
+                
+                if(username.equals(HQChief)) {
+                    isTargetUser = true;
+                } else {
+                    // Determine if user has same tag
+                    IUser user = ServerMain.tasksDatabaseManager.getUser(username);
+
+                    if(user instanceof IServiceUser) {
+                        IServiceUser serviceUser = (IServiceUser) user;
+                        // ??
+                        if(data.getTags().contains(serviceUser.getType())) {
+                            isTargetUser = true;
+                        }
+                    }
+                }
+                
+                if(isTargetUser) {
+                    for(int clientId : this.clientIDs.get(username)) {
+                        sortedDataBuffer.get(clientId).add(data);
+                    }
+                }
             }
         }
     }
 
     /**
-     * Add the given request to the buffer for all subscribed clients TODO
+     * Add the given request to the buffer for all subscribed clients
      * @param request 
      */
     public void addRequest(IDataRequest request) {
-        //TODO
         synchronized (LOCK_REQUESTS) {
-            for (int client : requestBuffer.keySet()) {
-                requestBuffer.get(client).add(request);
+            for(String username : this.clientIDs.keySet()) {
+                // Determine if user has same tag
+                IUser user = ServerMain.tasksDatabaseManager.getUser(username);
+
+                if(user instanceof IServiceUser) {
+                    IServiceUser serviceUser = (IServiceUser) user;
+                    // ??
+                    if(request.getTags().contains(serviceUser.getType())) {
+                        for(int clientId : this.clientIDs.get(username)) {
+                            requestBuffer.get(clientId).add(request);
+                        }
+                    }
+                }
             }
         }
     }
 
     /**
-     * Adds the given unsorted data to the buffer for all subscribed clients TODO
+     * Adds the given sent data to the buffer for all subscribed clients
      * @param data 
      */
-    public void addUnsorted(IData data){
-        //TODO
+    public void addSentData(IData data){
         synchronized(LOCK_UNSORTED){
-            for(int client : unsortedDataBuffer.keySet()){
-                unsortedDataBuffer.get(client).add(data);
+            for(String username : clientIDs.keySet()) {
+                if(username.equals(data.getSource())) {
+                    for(int clientId : clientIDs.get(username)) {
+                        sentDataBuffer.get(clientId).add(data);
+                    }
+                }
             }
         }
     }
@@ -241,7 +277,7 @@ public class PushBuffer {
      */
     public void addTaskForChief(ITask task) {
         synchronized(LOCK_TASKS) {
-            for(int client : clientIDs.get("HQChief")) {
+            for(int client : clientIDs.get(HQChief)) {
                 tasksBuffer.get(client).add(task);
             }
         }
@@ -290,11 +326,11 @@ public class PushBuffer {
      */
     public List<IData> collectUnsorted(int clientID) {
         synchronized (LOCK_UNSORTED) {
-            if (unsortedDataBuffer.get(clientID) == null) {
+            if (sentDataBuffer.get(clientID) == null) {
                 return null;
             }
             List<IData> output = new ArrayList<>();
-            List<IData> buffer = unsortedDataBuffer.get(clientID);
+            List<IData> buffer = sentDataBuffer.get(clientID);
             output.addAll(buffer);
             buffer.clear();
             return output;

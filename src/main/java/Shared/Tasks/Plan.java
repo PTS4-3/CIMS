@@ -57,8 +57,11 @@ public class Plan implements IPlan {
     }
 
     @Override
-    public void setId(int input){
-        this.id = input;
+    public void setId(int id){
+        this.id = id;
+        for(IStep s : this.steps) {
+            s.setPlanId(id);
+        }
     }
 
     @Override

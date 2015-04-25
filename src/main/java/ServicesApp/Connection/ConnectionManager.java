@@ -170,10 +170,10 @@ public class ConnectionManager {
             case UPDATE_REQUEST_UNSUBSCRIBE:
                 this.isRegisteredRequests.set(false);
                 break;
-            case UNSORTED_SUBSCRIBE:
+            case SENT_SUBSCRIBE:
                 this.isRegisteredUnsorted.set(true);
                 break;
-            case UNSORTED_UNSUBSCRIBE:
+            case SENT_UNSUBSCRIBE:
                 this.isRegisteredUnsorted.set(false);
                 break;
             case TASKS_SUBSCRIBE:
@@ -422,8 +422,8 @@ public class ConnectionManager {
             return false;
         }
         pool.execute(() -> {
-            if(new Connection(defaultIP, defaultPort).subscribeUnsorted(username, this.clientID)){
-                this.notifyCommandDone(ConnCommand.UNSORTED_SUBSCRIBE);
+            if(new Connection(defaultIP, defaultPort).subscribeSent(username, this.clientID)){
+                this.notifyCommandDone(ConnCommand.SENT_SUBSCRIBE);
             }
         });
         return true;
@@ -442,8 +442,8 @@ public class ConnectionManager {
             return false;
         }
         pool.execute(() -> {
-            if(new Connection(defaultIP, defaultPort).unsubscribeUnsorted(username, this.clientID)){
-                this.notifyCommandDone(ConnCommand.UNSORTED_UNSUBSCRIBE);
+            if(new Connection(defaultIP, defaultPort).unsubscribeSent(username, this.clientID)){
+                this.notifyCommandDone(ConnCommand.SENT_UNSUBSCRIBE);
             }
         });
         return true;
@@ -531,7 +531,7 @@ public class ConnectionManager {
 
     /**
      * Collects all new unsorted data collected on server since last call. Client
-     * needs to have called subscribeUnsorted() for this to do anything.
+ needs to have called subscribeSent() for this to do anything.
      *
      * @return Whether it was able to execute this command right now. A true
      * return type does not guarantee the command is executed, merely that it is
@@ -546,7 +546,7 @@ public class ConnectionManager {
         }
         pool.execute(() -> {
             List<IData> output
-                    = new Connection(defaultIP, defaultPort).getNewUnsorted(this.clientID);
+                    = new Connection(defaultIP, defaultPort).getNewSent(this.clientID);
             if (output != null) {
                 this.servicesController.displaySentData(output);
             } else {

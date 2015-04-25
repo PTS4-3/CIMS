@@ -6,6 +6,7 @@
 package ServerApp;
 
 import Shared.Tasks.IPlan;
+import Shared.Tasks.IStep;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -37,5 +38,13 @@ public class PlanExecutorHandler {
      */    
     public synchronized void removePlanExecutor(IPlan plan) {
         this.executors.remove(plan.getId());
+    }
+    
+    /**
+     * Send the step after this step to the executor
+     * @param step 
+     */
+    public void executeNextStepOf(IStep step) {
+        this.executors.get(step.getPlanId()).executeNextStep();
     }
 }

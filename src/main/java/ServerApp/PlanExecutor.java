@@ -27,10 +27,6 @@ public class PlanExecutor {
         }
         this.plan = plan;
         this.nextStep = 1;
-        
-        //TODO execute plan and stuff
-        //TODO step has plan? or ask for plan with step
-        //step id in plan set id for all steps??
     }
     
     public void executeNextStep() {
