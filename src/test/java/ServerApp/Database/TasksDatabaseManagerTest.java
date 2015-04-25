@@ -111,7 +111,7 @@ public class TasksDatabaseManagerTest {
                 task.getSortedData().getTitle().equals(task2.getSortedData().getTitle()));
 
         // get tasks
-        List<ITask> tasks = myDB.getTasks(executor);
+        List<ITask> tasks = myDB.getTasks(executor.getUsername());
         assertTrue("wrong number of tasks", tasks.size() == 3);
 
         // tests if tasks are correct
@@ -197,7 +197,7 @@ public class TasksDatabaseManagerTest {
         assertNotNull("Unable to insert other new plan", myDB.insertNewPlan(plan));
 
         List<IPlan> plans = myDB.getPlans(new HashSet<>());
-        assertTrue("Not all plans were retrieved", plans.size() == 2);
+        assertTrue("Not all plans were retrieved", plans.size() == 4);
 
         for (IPlan planItem : plans) {
             String expectedTitle = "??????????";
@@ -217,6 +217,11 @@ public class TasksDatabaseManagerTest {
                         + " autos en troep op de weg.";
                 expectedKeywordsCount = 6;
                 expectedStepCount = 4;
+            } else if (planItem.getId() == 3 || planItem.getId() == 4){
+                expectedTitle = plan.getTitle();
+                expectedDesc = plan.getDescription();
+                expectedKeywordsCount = plan.getKeywords().size();
+                expectedStepCount = plan.getSteps().size();
             } else {
                 fail("id fail (testGetPlans): " + planItem.getId());
             }

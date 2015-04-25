@@ -517,10 +517,10 @@ public class TasksDatabaseManager extends DatabaseManager {
 
     /**
      *
-     * @param execFilter if null, return all tasks
+     * @param execUserName if null, return all tasks
      * @return
      */
-    public List<ITask> getTasks(IServiceUser execFilter) {
+    public List<ITask> getTasks(String execUserName) {
         if (!openConnection()) {
             return null;
         }
@@ -531,21 +531,21 @@ public class TasksDatabaseManager extends DatabaseManager {
 
         try {
             query = "SELECT * FROM " + taskTable;
-            if (execFilter != null) {
+            if (execUserName != null) {
                 query += " WHERE ID in "
                         + "(SELECT TASKID FROM " + userTaskTable
                         + " WHERE USERNAME = ?)";
             }
             prepStat = conn.prepareStatement(query);
-            prepStat.setString(1, execFilter.getUsername());
+            prepStat.setString(1, execUserName);
             rs = prepStat.executeQuery();
 
             // Delegates extracting tasks
             output = this.extractTasks(rs, null);
         } catch (SQLException ex) {
-            if (execFilter != null) {
+            if (execUserName != null) {
                 System.out.print("(given IServiceUser: "
-                        + execFilter.getUsername() + ") ");
+                        + execUserName + ") ");
             }
             System.out.println("failed to retrieve tasks: " + ex.getMessage());
             Logger.getLogger(TasksDatabaseManager.class.getName())
