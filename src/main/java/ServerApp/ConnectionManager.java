@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Kargathia
+ * @author Kargathia + Alexander
  */
 public class ConnectionManager {
 

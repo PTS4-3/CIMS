@@ -761,8 +761,6 @@ public class Connection implements Runnable {
         this.writeResult(success);
     }
     
-    //TODO get Tasks bij services
-    
     /**
      * Saves a new plan
      * @throws IOException
