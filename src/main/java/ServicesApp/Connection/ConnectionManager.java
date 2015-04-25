@@ -601,8 +601,7 @@ public class ConnectionManager {
                 if (output != null) {
                     this.loginController.logIn(output);
                 } else {
-                    System.err.println("Unable to retrieve IUser from "
-                            + "buffer in server.");
+                    System.err.println("Unable to retrieve IUser from server.");
                 }
             });  
         }
@@ -627,8 +626,7 @@ public class ConnectionManager {
                 if(tasks != null) {
                     servicesController.displayTasks(tasks);
                 } else {
-                    System.err.println("Unable to retrieve Tasks from "
-                        + "buffer in server.");
+                    System.err.println("Unable to retrieve Tasks from server.");
                 }
             }
             
