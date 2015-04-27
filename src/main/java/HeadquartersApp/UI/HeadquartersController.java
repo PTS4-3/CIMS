@@ -698,7 +698,11 @@ public class HeadquartersController implements Initializable {
     }
     
     public void removeTempStep(){
-        
+        IStep step = (IStep)lvpTasks.getSelectionModel().getSelectedItem();
+        if(step != null){
+            tempSteps.remove(step);
+            lvpTasks.setItems(tempSteps);
+        }
     }
     
     /**

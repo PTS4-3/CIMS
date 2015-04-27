@@ -159,7 +159,7 @@
                 <Label layoutX="573.0" layoutY="401.0" text="Pre-condities" />
                 <TextField id="tfuTitle" fx:id="tfpCondition" layoutX="717.0" layoutY="398.0" prefWidth="455.0" />
                 <Button id="btnAcceptTask" fx:id="btnAddTask" layoutX="985.0" layoutY="431.0" mnemonicParsing="false" onAction="#addTempStep" prefWidth="187.0" text="Taak toevoegen" />
-                <Button fx:id="btnDeleteTask" layoutX="788.0" layoutY="431.0" mnemonicParsing="false" prefWidth="187.0" text="Taak verwijderen" />
+                <Button fx:id="btnDeleteTask" layoutX="788.0" layoutY="431.0" mnemonicParsing="false" onAction="#removeTempStep" prefWidth="187.0" text="Taak verwijderen" />
                 <Button id="btn" fx:id="btnRoadMapAdd" layoutX="364.0" layoutY="431.0" mnemonicParsing="false" onAction="#sendPlan" text="Stappenplan toevoegen" />
                 <Label fx:id="lblRoadMapReport" font="$x2" layoutX="34.0" layoutY="404.0" text="Melding" />
               </children>
