@@ -778,6 +778,12 @@ public class HeadquartersController implements Initializable {
     }
     
     // ApplyPlan----------------------------------------------------------------
+    public void resetApplyPlan(){
+        lvaPlans.getItems().clear();
+        lvaSteps.getItems().clear();
+        tfaTaskTitle.clear();
+        tfaTaskDescription.clear();
+    }
     
     /**
      * Fill the ListView with plans
@@ -788,6 +794,7 @@ public class HeadquartersController implements Initializable {
 
             @Override
             public void run() {
+                resetApplyPlan();
                 lvaPlans.getItems().addAll(plans);
                 if(lvaPlans.getSelectionModel().getSelectedItem() == null) {
                     lvaPlans.getSelectionModel().selectFirst();
@@ -808,7 +815,7 @@ public class HeadquartersController implements Initializable {
                 List<IStep> steps = new ArrayList();
 
                 @Override
-                public void run() {                
+                public void run() {  
                     steps.addAll(p.getSteps());
                         
                     lvaSteps.getItems().addAll(steps);
@@ -827,7 +834,7 @@ public class HeadquartersController implements Initializable {
     public void searchPlan(){
         HashSet<String> keywords = new HashSet();
         
-        String s = tapKeyWords.getText();
+        String s = tfaSearch.getText();
         String[] array = uniformString(s).split(" ");
         for(String word : array){
             if(!word.isEmpty()){
@@ -835,6 +842,7 @@ public class HeadquartersController implements Initializable {
             }          
         }
         
+        resetApplyPlan();
         connectionManager.searchPlans(keywords);
     }
     
@@ -845,6 +853,7 @@ public class HeadquartersController implements Initializable {
         IPlan plan =
                 (IPlan) lvaPlans.getSelectionModel().getSelectedItem();
         if(plan != null){
+            lvaSteps.getItems().clear();
             displaySteps();            
         }
     }
