@@ -74,7 +74,7 @@
             </AnchorPane>
           </content>
         </Tab>
-        <Tab fx:id="tabProcessSortedData" text="Gesorteerde informatie verwerken">
+        <Tab fx:id="tabProcessSortedData" text="Taken toekennen">
           <content>
             <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
               <children>
@@ -133,7 +133,7 @@
                 <Label font="$x1" layoutX="26.0" layoutY="21.0" text="Stappenplan informatie" underline="false" />
                 <TextArea id="tauDescription" fx:id="tapKeyWords" layoutX="178.0" layoutY="274.0" prefHeight="96.0" prefWidth="358.0" wrapText="true" />
                 <ListView fx:id="lvpTasks" layoutX="575.0" layoutY="55.0" prefHeight="157.0" prefWidth="597.0" />
-                <Label font="$x1" layoutX="575.0" layoutY="21.0" text="Stappenplan taken" underline="false" />
+                <Label font="$x1" layoutX="575.0" layoutY="21.0" text="Stappen" underline="false" />
                 <Label layoutX="573.0" layoutY="232.0" text="Titel" />
                 <TextField id="tfuTitle" fx:id="tfpTaskTitle" layoutX="717.0" layoutY="229.0" prefWidth="455.0" />
                 <Label layoutX="573.0" layoutY="264.0" text="Beschrijving" />
@@ -153,11 +153,11 @@
             <AnchorPane id="Content" fx:id="cbServicesApplyTask" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
               <children>
                 <Separator layoutX="402.0" layoutY="14.0" orientation="VERTICAL" prefHeight="431.0" />
-                <Label layoutX="14.0" layoutY="64.0" text="Titel" />
+                <Label layoutX="16.0" layoutY="64.0" text="Titel" />
                 <TextField id="tfuTitle" fx:id="tfaDataTitle" layoutX="158.0" layoutY="61.0" prefWidth="225.0" />
                 <Label layoutX="16.0" layoutY="107.0" text="Beschrijving" />
                 <TextArea id="tauDescription" fx:id="taaDataDescription" layoutX="158.0" layoutY="99.0" prefHeight="221.0" prefWidth="225.0" wrapText="true" />
-                <Label font="$x1" layoutX="22.0" layoutY="20.0" text="Situatie informatie" underline="false" />
+                <Label font="$x1" layoutX="16.0" layoutY="20.0" text="Situatie informatie" underline="false" />
                 <Separator layoutX="817.0" layoutY="14.0" orientation="VERTICAL" prefHeight="431.0" />
                 <ListView fx:id="lvaPlans" layoutX="425.0" layoutY="94.0" prefHeight="311.0" prefWidth="368.0" />
                 <Label layoutX="425.0" layoutY="58.0" text="Zoeken" />
@@ -165,7 +165,7 @@
                 <Button fx:id="btnSearchRoadmap" layoutX="700.0" layoutY="56.0" mnemonicParsing="false" onAction="#searchPlan" prefWidth="93.0" text="Zoeken" />
                 <Label font="$x1" layoutX="425.0" layoutY="20.0" text="Stappenplan selecteren" underline="false" />
                 <ListView id="tvTasks" fx:id="lvaSteps" layoutX="844.0" layoutY="60.0" prefHeight="125.0" prefWidth="343.0" />
-                <Label font="$x1" layoutX="844.0" layoutY="20.0" text="Taken stappenplan toekennen" underline="false" />
+                <Label font="$x1" layoutX="844.0" layoutY="20.0" text="Taken toekennen" underline="false" />
                 <Label layoutX="845.0" layoutY="200.0" text="Titel" />
                 <TextField id="tfuTitle" fx:id="tfaTaskTitle" layoutX="965.0" layoutY="200.0" prefWidth="223.0" />
                 <Label layoutX="845.0" layoutY="245.0" text="Beschrijving" />
