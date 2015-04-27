@@ -647,7 +647,8 @@ public class HeadquartersController implements Initializable {
      * Resets the tabPlanInfo
      */
     public void resetPlanInfo(){
-        lvpTasks.getItems().remove(tempSteps);
+        tempSteps.removeAll(tempSteps);
+        lvpTasks.setItems(tempSteps);
         this.tempSteps = null;        
         tfpPlanTitle.clear();
         tapPlanDescription.clear();
@@ -717,7 +718,7 @@ public class HeadquartersController implements Initializable {
             if(tempSteps != null){
                 String title = tfpPlanTitle.getText();
                 String description = tapPlanDescription.getText();
-                HashSet<String> keywords = null;
+                HashSet<String> keywords = new HashSet();
                 
                 String s = tapKeyWords.getText();
                 String[] array = uniformString(s).split(" ");
