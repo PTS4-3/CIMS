@@ -864,26 +864,27 @@ public class HeadquartersController implements Initializable {
     }
     
     public void applyPlan(){
-        List<IStep> steps = tempPlan.getSteps();
-        if(steps != null){
-            boolean done = true;
-            int step = 1;
-            
-            for(IStep s : steps){
-                s.setStepnr(step);
-                step++;
-                if(s.getExecutor() == null)
-                    done = false;
-            }
-            
-            if(done){
-                connectionManager.applyPlan(tempPlan);
-            }
-            else
-                showDialog("Foutmelding", "Niet alle stappen hebben een uitvoerder", true);
-        }
-        else
-            showDialog("Foutmelding", "Het plan heeft geen stappen", true);
+        if(sortedData != null){
+            List<IStep> steps = tempPlan.getSteps();
+            if(steps != null){
+                boolean done = true;
+                int step = 1;
+
+                for(IStep s : steps){
+                    s.setStepnr(step);
+                    step++;
+                    if(s.getExecutor() == null)
+                        done = false;
+                }
+
+                if(done){
+                    connectionManager.applyPlan(tempPlan);
+                } else
+                    showDialog("Foutmelding", "Niet alle stappen hebben een uitvoerder", true);
+            } else
+                showDialog("Foutmelding", "Het plan heeft geen stappen", true);
+        } else
+            showDialog("Foutmelding", "Het plan kan niet worden toegepast als er geen gesorteerde data is geselecteerd", true);
     }
     
     /**
