@@ -194,6 +194,14 @@ public class HeadquartersController implements Initializable {
                     selectStep();
                 }                
             });
+        
+        lvtTasks.getSelectionModel().selectedItemProperty().addListener(
+            new ChangeListener() {
+                @Override
+                public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                    selectTask();
+                }                
+            });
     }
     
     /**
