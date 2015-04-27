@@ -60,7 +60,7 @@ public class Connection implements Runnable {
                     log(Level.SEVERE, null, ex);
         }
     }
-
+    
     /**
      * Output of data after checking if it's not null.
      *
@@ -337,11 +337,18 @@ public class Connection implements Runnable {
 
         if (inObject instanceof List) {
             List list = (List) inObject;
-            if (!list.isEmpty() && (list.get(0) instanceof IData)) {
+            if(list.isEmpty()){
+                // database should do nothing, but client is expecting result
+                this.writeResult(true);
+            } else if (list.get(0) instanceof IData) {
                 synchronized (UNSORTEDLOCK) {
-                    writeResult(ServerMain.unsortedDatabaseManager.resetUnsortedData((List<IData>) list));
+                    writeResult(ServerMain.unsortedDatabaseManager.
+                            resetUnsortedData((List<IData>) list));
                 }
-            }
+            } else {
+                out.writeObject(ConnState.COMMAND_ERROR);
+                out.flush();
+            }            
         } else {
             out.writeObject(ConnState.COMMAND_ERROR);
             out.flush();
