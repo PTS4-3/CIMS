@@ -39,9 +39,9 @@
                 <Slider fx:id="suReliability" blockIncrement="1.0" layoutX="956.0" layoutY="142.0" majorTickUnit="1.0" max="5.0" min="1.0" minorTickCount="0" prefWidth="220.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
                 <Label layoutX="784.0" layoutY="192.0" text="Kwaliteit" />
                 <Slider fx:id="suQuality" blockIncrement="1.0" layoutX="956.0" layoutY="192.0" majorTickUnit="1.0" max="5.0" min="1.0" minorTickCount="0" prefWidth="220.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
-                <Button layoutX="783.0" layoutY="361.0" mnemonicParsing="false" onAction="#goToRequestInfo" prefWidth="247.0" text="Informatie update vragen" />
-                <Button layoutX="1046.0" layoutY="361.0" mnemonicParsing="false" onAction="#discard" prefWidth="130.0" text="Verwijderen" />
-                <Button layoutX="783.0" layoutY="402.0" mnemonicParsing="false" onAction="#sendSortedData" prefWidth="393.0" text="Toevoegen aan gesorteerde data" />
+                <Button layoutX="782.0" layoutY="375.0" mnemonicParsing="false" onAction="#goToRequestInfo" prefWidth="247.0" text="Informatie update vragen" />
+                <Button layoutX="1045.0" layoutY="375.0" mnemonicParsing="false" onAction="#discard" prefWidth="130.0" text="Verwijderen" />
+                <Button layoutX="782.0" layoutY="416.0" mnemonicParsing="false" onAction="#sendSortedData" prefWidth="393.0" text="Toevoegen aan gesorteerde data" />
                 <Label fx:id="lblOnsortedReport" layoutX="783.0" layoutY="259.0" text="Melding">
                   <font>
                     <Font name="System Bold" size="14.0" fx:id="x2" />
@@ -66,8 +66,8 @@
                 <Label layoutX="29.0" layoutY="289.0" text="Locatie" />
                 <TextField fx:id="tfrLocation" layoutX="173.0" layoutY="286.0" prefWidth="395.0" />
                 <Label layoutX="29.0" layoutY="331.0" text="Bestemming" />
-                <Button layoutX="396.0" layoutY="430.0" mnemonicParsing="false" onAction="#resetRequest" text="Reset" />
-                <Button layoutX="491.0" layoutY="430.0" mnemonicParsing="false" onAction="#sendRequest" text="Verzenden" />
+                <Button layoutX="396.0" layoutY="418.0" mnemonicParsing="false" onAction="#resetRequest" text="Reset" />
+                <Button layoutX="471.0" layoutY="417.0" mnemonicParsing="false" onAction="#sendRequest" text="Verzenden" />
                 <Separator layoutX="596.0" layoutY="14.0" orientation="VERTICAL" prefHeight="431.0" />
                 <Label fx:id="lblInformationReport" font="$x2" layoutX="29.0" layoutY="376.0" text="Melding" />
                 <TextField id="tfrLocation" layoutX="173.0" layoutY="328.0" prefWidth="395.0" />
