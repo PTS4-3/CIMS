@@ -115,9 +115,21 @@ public class HeadquartersController implements Initializable {
     @FXML TextArea tfaTaskDescription;
     @FXML ComboBox cbaExecutor;
     
+    // Tasks
+    @FXML Tab tabTask;
+    @FXML ListView lvtTasks;
+    @FXML TextField tftTaskTitle;
+    @FXML TextArea tatTaskDescription;
+    @FXML TextField tftTitle;
+    @FXML TextArea tatDescription;
+    @FXML TextField tftExecutor;
+    @FXML TextField tftReason;
+    @FXML ComboBox cbtNewExecutor;
+    
     private IData requestData;
     private IData sortedData;
     private ObservableList<IStep> tempSteps;
+    private List<ITask> tempTasks;
     private IPlan tempPlan;
     
     private ConnectionManager connectionManager;
@@ -163,7 +175,7 @@ public class HeadquartersController implements Initializable {
             new ChangeListener() {
                 @Override
                 public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                    selectTask();
+                    selectPlanTask();
                 }                
             });
         
@@ -540,15 +552,21 @@ public class HeadquartersController implements Initializable {
      */
     public void displayServiceUsers(List<IServiceUser> serviceUsers){
         Platform.runLater(new Runnable() {
+            ObservableList<IServiceUser> observableSU = observableArrayList(serviceUsers);
 
             @Override
             public void run() {
-                cbsExecutor.getItems().addAll(serviceUsers);
+                cbsExecutor.setItems(observableSU);
                 if(cbsExecutor.getSelectionModel().getSelectedItem() == null) {
                     cbsExecutor.getSelectionModel().selectFirst();
                 }
                 
-                cbaExecutor.getItems().addAll(serviceUsers);
+                cbaExecutor.setItems(observableSU);
+                if(cbaExecutor.getSelectionModel().getSelectedItem() == null) {
+                    cbaExecutor.getSelectionModel().selectFirst();
+                }
+                
+                cbtNewExecutor.setItems(observableSU);
                 if(cbaExecutor.getSelectionModel().getSelectedItem() == null) {
                     cbaExecutor.getSelectionModel().selectFirst();
                 }
@@ -605,13 +623,20 @@ public class HeadquartersController implements Initializable {
             String description = tasTaskDescription.getText();
             ServiceUser executor = null;
             
-            if(cbsExecutor.getValue() != null)
-                executor = (ServiceUser)cbsExecutor.getValue();
+            if(cbsExecutor.getSelectionModel().getSelectedItem() != null)
+                executor = (ServiceUser)cbsExecutor.getSelectionModel().getSelectedItem();
                 
-            connectionManager.sendTask(new Task(1, title, description, TaskStatus.UNASSIGNED, (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem(), executor.getType(), executor));
+            Task task = new Task(1, title, description, TaskStatus.UNASSIGNED, (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem(), executor.getType(), executor);
+            connectionManager.sendTask(task);
             ISortedData data = (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem();
-            List<ITask> tasks = data.getTasks();
-            displaySortedDataTasks(tasks);
+            
+            if(tempTasks == null)
+                tempTasks = new ArrayList();
+            
+            tempTasks.add(task);
+            
+            data.setTasks(tempTasks);
+            displaySortedDataTasks(tempTasks);
             
         } catch (IllegalArgumentException iaEx) {
             showDialog("", iaEx.getMessage(), false);
@@ -661,7 +686,7 @@ public class HeadquartersController implements Initializable {
     /**
      * Fills the GUI with information of the selected task
      */
-    public void selectTask(){
+    public void selectPlanTask(){
         ITask task =
                 (ITask) lvsTasks.getSelectionModel().getSelectedItem();
         if(task != null){
@@ -770,13 +795,12 @@ public class HeadquartersController implements Initializable {
         if(tempPlan != null){
             Platform.runLater(new Runnable() {
                 IPlan p = (IPlan) lvaPlans.getSelectionModel().getSelectedItem();
-                List<IStep> steps = null;
+                List<IStep> steps = new ArrayList();
 
                 @Override
                 public void run() {                
-                    for(IStep s : p.getSteps()){
-                        steps.add(s);
-                    }
+                    steps.addAll(p.getSteps());
+                        
                     lvaSteps.getItems().addAll(steps);
                     if(lvaSteps.getSelectionModel().getSelectedItem() == null) {
                         lvaSteps.getSelectionModel().selectFirst();
@@ -876,6 +900,42 @@ public class HeadquartersController implements Initializable {
     }
     
     // Tasks--------------------------------------------------------------------
+    public void displayTasks(List<ITask> tasks){
+        Platform.runLater(new Runnable(){
+
+            @Override
+            public void run() {
+                lvtTasks.getItems().addAll(tasks);
+                if(lvtTasks.getSelectionModel().getSelectedItem() == null) {
+                    lvtTasks.getSelectionModel().selectFirst();
+                }
+            }
+            
+        });
+    }
+    
+    public void selectTask(){
+        ITask task =
+                (ITask) lvtTasks.getSelectionModel().getSelectedItem();
+        if(task != null){
+            tftTaskTitle.setText(task.getTitle());
+            tatTaskDescription.setText(task.getDescription());
+            tftTitle.setText(task.getTitle());
+            tatDescription.setText(task.getDescription());
+            tftExecutor.setText(task.getExecutor().getName());
+            tftReason.setText(task.getDeclineReason());
+        }
+    }
+    
+    public void markAsRead(){
+        //TODO
+        ITask task = (ITask) lvtTasks.getSelectionModel().getSelectedItem();
+        task.setStatus(TaskStatus.READ);
+    }
+    
+    public void updateTask(){
+        //TODO
+    }
     
     public void logOutClick() {
         try {
@@ -894,10 +954,6 @@ public class HeadquartersController implements Initializable {
         if (!logout) {
             this.connectionManager.close();
         }
-    }
-    
-    public void updateTask(){
-        //TODO
     }
     
     public void showDialog(String title, String melding, boolean warning)
@@ -945,9 +1001,5 @@ public class HeadquartersController implements Initializable {
         .replace("é", "e");
         
         return s;
-    }
-
-    public void displayTasks(List<ITask> newTasks) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

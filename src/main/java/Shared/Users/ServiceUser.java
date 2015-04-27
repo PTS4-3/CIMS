@@ -32,5 +32,10 @@ public class ServiceUser extends User implements IServiceUser {
     public Tag getType() {
         return this.type;
     }
+    
+    @Override
+    public String toString(){
+        return this.getName();
+    }
 
 }

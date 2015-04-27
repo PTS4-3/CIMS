@@ -88,4 +88,10 @@ public class Plan implements IPlan {
     public boolean isTemplate() {
         return this.template;
     }
+    
+    @Override
+    public String toString(){
+        return this.title;
+    }
+    
 }

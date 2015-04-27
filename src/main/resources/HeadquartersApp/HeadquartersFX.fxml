@@ -9,7 +9,7 @@
 <?import javafx.scene.text.*?>
 <?import org.controlsfx.control.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="524.0" prefWidth="1200.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="HeadquartersApp.UI.HeadquartersController">
+<AnchorPane id="AnchorPane" prefHeight="524.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="HeadquartersApp.UI.HeadquartersController">
   <children>
     <TabPane fx:id="tabPane" layoutX="0.0" layoutY="24.0" prefHeight="500.0" prefWidth="1200.0" tabClosingPolicy="UNAVAILABLE">
       <tabs>
@@ -213,28 +213,28 @@
                 <Label font="$x1" layoutX="14.0" layoutY="19.0" text="Taken" underline="false" />
                 <TableView id="tvData" layoutX="14.0" layoutY="19.0" prefHeight="441.0" prefWidth="352.0" visible="false">
                   <columns>
-                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="171.0" text="Titel" fx:id="tcTitle" />
-                    <TableColumn prefWidth="150.0" text="Relevantie" fx:id="tcStatus" />
+                    <TableColumn fx:id="tcTitle" maxWidth="5000.0" minWidth="10.0" prefWidth="171.0" text="Titel" />
+                    <TableColumn fx:id="tcStatus" prefWidth="150.0" text="Relevantie" />
                   </columns>
                 </TableView>
-                <ListView id="lvSortedData" fx:id="lvTasks" layoutX="14.0" layoutY="43.0" prefHeight="403.0" prefWidth="341.0" />
+                <ListView id="lvSortedData" fx:id="lvtTasks" layoutX="14.0" layoutY="43.0" prefHeight="403.0" prefWidth="341.0" />
                 <Separator layoutX="805.0" layoutY="24.0" orientation="VERTICAL" prefHeight="431.0" />
                 <Separator layoutX="368.0" layoutY="24.0" orientation="VERTICAL" prefHeight="431.0" />
                 <Label layoutX="397.0" layoutY="78.0" text="Titel" />
-                <TextField id="tfuTitle" fx:id="tfTaskTitle" layoutX="541.0" layoutY="75.0" prefWidth="247.0" />
+                <TextField id="tfuTitle" fx:id="tftTaskTitle" layoutX="541.0" layoutY="75.0" prefWidth="247.0" />
                 <Label layoutX="399.0" layoutY="122.0" text="Beschrijving" />
-                <TextArea id="tauDescription" fx:id="tfTaskDescription" layoutX="541.0" layoutY="116.0" prefHeight="269.0" prefWidth="247.0" wrapText="true" />
+                <TextArea id="tauDescription" fx:id="tatTaskDescription" layoutX="541.0" layoutY="116.0" prefHeight="269.0" prefWidth="247.0" wrapText="true" />
                 <Label font="$x1" layoutX="385.0" layoutY="43.0" text="Situatie" underline="false" />
                 <Label layoutX="831.0" layoutY="81.0" text="Titel" />
-                <TextField id="tfuTitle" fx:id="tfTitle" layoutX="952.0" layoutY="78.0" prefWidth="233.0" />
+                <TextField id="tfuTitle" fx:id="tftTitle" layoutX="952.0" layoutY="78.0" prefWidth="233.0" />
                 <Label layoutX="831.0" layoutY="125.0" text="Beschrijving" />
-                <TextArea id="tauDescription" fx:id="tfDescription" layoutX="952.0" layoutY="116.0" prefHeight="110.0" prefWidth="233.0" wrapText="true" />
+                <TextArea id="tauDescription" fx:id="tatDescription" layoutX="952.0" layoutY="116.0" prefHeight="110.0" prefWidth="233.0" wrapText="true" />
                 <Label layoutX="831.0" layoutY="243.0" text="Uitvoerder" />
-                <TextField id="tfuTitle" fx:id="tfServices" layoutX="952.0" layoutY="240.0" prefWidth="233.0" />
+                <TextField id="tfuTitle" fx:id="tftExecutor" layoutX="952.0" layoutY="240.0" prefWidth="233.0" />
                 <Label layoutX="831.0" layoutY="280.0" text="Reden" />
-                <TextField id="tfuTitle" fx:id="tfReason" layoutX="953.0" layoutY="277.0" prefWidth="233.0" />
+                <TextField id="tfuTitle" fx:id="tftReason" layoutX="953.0" layoutY="277.0" prefWidth="233.0" />
                 <Label layoutX="831.0" layoutY="317.0" prefHeight="22.0" prefWidth="100.0" text="Nieuwe uitvoerder" />
-                <ComboBox id="cbaExecutor" fx:id="cbNewServices" layoutX="952.0" layoutY="317.0" prefHeight="21.0" prefWidth="233.0">
+                <ComboBox id="cbaExecutor" fx:id="cbtNewExecutor" layoutX="952.0" layoutY="317.0" prefHeight="21.0" prefWidth="233.0">
                   <items>
                     <FXCollections fx:factory="observableArrayList">
                       <String fx:value="Item 1" />
@@ -243,8 +243,8 @@
                     </FXCollections>
                   </items>
                 </ComboBox>
-                <Button fx:id="btnNewTask" layoutX="1057.0" layoutY="418.0" mnemonicParsing="false" text="Opnieuw toekennen" />
-                <Button fx:id="btnMarkRead" layoutX="905.0" layoutY="418.0" mnemonicParsing="false" text="Markeren als gelezen" />
+                <Button fx:id="btnNewTask" layoutX="1057.0" layoutY="418.0" mnemonicParsing="false" onAction="#updateTask" text="Opnieuw toekennen" />
+                <Button fx:id="btnMarkRead" layoutX="905.0" layoutY="418.0" mnemonicParsing="false" onAction="#markAsRead" text="Markeren als gelezen" />
                 <Label fx:id="lblTaskMessages" font="$x2" layoutX="831.0" layoutY="385.0" text="Melding" />
               </children>
             </AnchorPane>
