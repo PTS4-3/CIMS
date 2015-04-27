@@ -88,7 +88,7 @@ public class ServicesLogInController implements Initializable {
                         showDialog("Log in fout", "De combinatie van wachtwoord en "
                                 + "gebruikersnaam is onjuist", true);
                     } else if (user instanceof IHQChief || user instanceof IHQUser) {
-                        showDialog("Log in fout", "Je mag hier niet inloggen met deze"
+                        showDialog("Log in fout", "Je mag hier niet inloggen met deze "
                                 + "gegevens", true);
                     } else {
                         main.goToServices(connectionManager, user);

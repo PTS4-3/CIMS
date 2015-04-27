@@ -92,7 +92,7 @@ public class HeadquartersLogInController implements Initializable {
                         showDialog("Log in fout", "De combinatie van wachtwoord en "+
                                 "gebruikersnaam is onjuist", true);
                     } else if (user instanceof IServiceUser) {
-                        showDialog("Log in fout", "Je mag hier niet inloggen met deze"
+                        showDialog("Log in fout", "Je mag hier niet inloggen met deze "
                                 + "gegevens", true);
                     }else {
                         System.out.println("go to");
@@ -112,7 +112,7 @@ public class HeadquartersLogInController implements Initializable {
         if (warning)
         {
             alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("FoutMelding");
+            alert.setTitle("Foutmelding");
         }
         else
         {

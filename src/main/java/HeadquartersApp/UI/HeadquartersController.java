@@ -859,7 +859,7 @@ public class HeadquartersController implements Initializable {
             s.setExecutor((IServiceUser) cbaExecutor.getSelectionModel().getSelectedItem());        
             tempPlan.getSteps().add(s);
         } else {
-            showDialog("Foutmelding", "Selecteer een stap voor je een stap toekent.", true);
+            showDialog("Foutmelding", "Selecteer een stap voordat je een stap toekent.", true);
         }
     }
     
@@ -871,7 +871,7 @@ public class HeadquartersController implements Initializable {
         if(s != null){
             tempPlan.getSteps().remove(s);
         } else {
-            showDialog("Foutmelding", "Selecteer een stap voor je een stap verwijderd.", true);
+            showDialog("Foutmelding", "Selecteer een stap voordat je een stap verwijdert.", true);
         }
     }
     
@@ -907,7 +907,7 @@ public class HeadquartersController implements Initializable {
         if (warning)
         {
             alert = new Alert(AlertType.WARNING);
-            alert.setTitle("FoutMelding");
+            alert.setTitle("Foutmelding");
         }
         else
         {

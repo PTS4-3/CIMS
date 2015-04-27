@@ -502,7 +502,7 @@ public class ServicesController implements Initializable {
             }
 
             // Bevestiging tonen
-            lblMessageUpdate.setText("Het verzenden van de aanvraag voor"
+            lblMessageUpdate.setText("Het verzenden van de aanvraag voor "
                     + "een update is geslaagd");
         } catch (IllegalArgumentException iaEx) {
             showDialog("Invoer onjuist", iaEx.getMessage(), true);
@@ -717,7 +717,7 @@ public class ServicesController implements Initializable {
                     showDialog("Taak selectie", "Geen taak geselecteerd", false);
                 }
                 //dismiss task succeed message
-                lblMessageTask.setText("Het wijgeren van de taak is gelukt.");
+                lblMessageTask.setText("Het weigeren van de taak is gelukt.");
             }
         } catch (Exception nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
