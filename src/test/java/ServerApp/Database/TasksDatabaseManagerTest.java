@@ -128,8 +128,8 @@ public class TasksDatabaseManagerTest {
 
             if (taskItem.getId() == 3) {
                 expectedTitle = "Zet ladder neer";
-                expectedDescription = "Zet de ladder tegen de boom.";
-                expectedReason = "Allergies voor katten";
+                expectedDescription = "Zet de ladder tegen de boom.";                
+                expectedReason = null;
                 expectedTag = Tag.FIREDEPARTMENT;
                 expectedHasData = false;
                 expectedDataID = -1;
@@ -137,7 +137,7 @@ public class TasksDatabaseManagerTest {
             } else if (taskItem.getId() == 4) {
                 expectedTitle = "Kat pakken";
                 expectedDescription = "Beklim de ladder en haal de kat uit de boom.";
-                expectedReason = null;
+                expectedReason = "Allergies voor katten";
                 expectedTag = Tag.FIREDEPARTMENT;
                 expectedHasData = false;
                 expectedDataID = -1;
