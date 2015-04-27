@@ -931,10 +931,16 @@ public class HeadquartersController implements Initializable {
         //TODO
         ITask task = (ITask) lvtTasks.getSelectionModel().getSelectedItem();
         task.setStatus(TaskStatus.READ);
+        
+        connectionManager.updateTask(task);
     }
     
     public void updateTask(){
         //TODO
+        ITask task = (ITask) lvtTasks.getSelectionModel().getSelectedItem();
+        task.setExecutor((IServiceUser) cbtNewExecutor.getSelectionModel().getSelectedItem());
+        
+        connectionManager.updateTask(task);
     }
     
     public void logOutClick() {
