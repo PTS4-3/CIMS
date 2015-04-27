@@ -222,7 +222,7 @@ public class HeadquartersController implements Initializable {
         
         ccrTags = new CheckComboBox(FXCollections.observableArrayList(Tag.values()));
         ccrTags.setLayoutX(173);
-        ccrTags.setLayoutY(374);
+        ccrTags.setLayoutY(328);
         ccrTags.prefWidth(395);
         ccrTags.prefHeight(25);
         ccrTags.setMaxSize(395, 25);

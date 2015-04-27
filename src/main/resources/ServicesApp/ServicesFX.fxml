@@ -19,13 +19,13 @@
                 <Label layoutX="28.0" layoutY="25.0" text="Titel" />
                 <TextField fx:id="tfnTitle" layoutX="164.0" layoutY="22.0" prefWidth="603.0" />
                 <Label layoutX="28.0" layoutY="65.0" text="Beschrijving" />
-                <TextArea fx:id="tanDescription" layoutX="164.0" layoutY="65.0" prefHeight="258.0" prefWidth="603.0" wrapText="true" />
-                <Label layoutX="30.0" layoutY="344.0" text="Locatie" />
-                <TextField fx:id="tfnLocation" layoutX="164.0" layoutY="341.0" prefWidth="603.0" />
-                <Label layoutX="30.0" layoutY="384.0" text="Bron" />
-                <TextField fx:id="tfnSource" layoutX="164.0" layoutY="381.0" prefWidth="603.0" />
+                <TextArea fx:id="tanDescription" layoutX="164.0" layoutY="65.0" prefHeight="238.0" prefWidth="603.0" wrapText="true" />
+                <Label layoutX="28.0" layoutY="317.0" text="Locatie" />
+                <TextField fx:id="tfnLocation" layoutX="162.0" layoutY="314.0" prefWidth="603.0" />
+                <Label layoutX="28.0" layoutY="357.0" text="Bron" />
+                <TextField fx:id="tfnSource" layoutX="162.0" layoutY="354.0" prefWidth="603.0" />
                 <Button layoutX="670.0" layoutY="463.0" mnemonicParsing="false" onAction="#sendUnsortedData" text="Verzenden" />
-                <Label fx:id="lblMessageSend" layoutX="164.0" layoutY="424.0" text="Melding">
+                <Label fx:id="lblMessageSend" layoutX="28.0" layoutY="405.0" text="Melding">
                   <font>
                     <Font name="System Bold" size="14.0" fx:id="x2" />
                   </font>
@@ -38,23 +38,23 @@
           <content>
             <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
               <children>
-                <ListView fx:id="lvuSentData" layoutX="14.0" layoutY="50.0" prefHeight="451.0" prefWidth="291.0" />
+                <ListView fx:id="lvuSentData" layoutX="14.0" layoutY="50.0" prefHeight="451.0" prefWidth="340.0" />
                 <Label layoutX="14.0" layoutY="14.0" text="Verzonden data" underline="false">
                   <font>
                     <Font size="18.0" fx:id="x1" />
                   </font>
                 </Label>
-                <Label layoutX="354.0" layoutY="26.0" text="Titel" />
-                <TextField fx:id="tfuTitle" layoutX="490.0" layoutY="23.0" prefWidth="278.0" />
-                <Label layoutX="354.0" layoutY="66.0" text="Beschrijving" />
-                <TextArea fx:id="tauDescription" layoutX="490.0" layoutY="66.0" prefHeight="258.0" prefWidth="278.0" wrapText="true" />
-                <Label layoutX="356.0" layoutY="345.0" text="Locatie" />
-                <TextField fx:id="tfuLocation" layoutX="490.0" layoutY="342.0" prefWidth="278.0" />
-                <Label layoutX="356.0" layoutY="385.0" text="Bron" />
-                <TextField fx:id="tfuSource" layoutX="490.0" layoutY="382.0" prefWidth="278.0" />
+                <Label layoutX="378.0" layoutY="26.0" text="Titel" />
+                <TextField fx:id="tfuTitle" layoutX="490.0" layoutY="23.0" prefWidth="289.0" />
+                <Label layoutX="378.0" layoutY="62.0" text="Beschrijving" />
+                <TextArea fx:id="tauDescription" layoutX="490.0" layoutY="59.0" prefHeight="258.0" prefWidth="289.0" wrapText="true" />
+                <Label layoutX="380.0" layoutY="332.0" text="Locatie" />
+                <TextField fx:id="tfuLocation" layoutX="490.0" layoutY="329.0" prefWidth="289.0" />
+                <Label layoutX="380.0" layoutY="368.0" text="Bron" />
+                <TextField fx:id="tfuSource" layoutX="490.0" layoutY="365.0" prefWidth="289.0" />
                 <Button layoutX="589.0" layoutY="465.0" mnemonicParsing="false" onAction="#resetSentData" text="Reset" />
                 <Button layoutX="670.0" layoutY="465.0" mnemonicParsing="false" onAction="#sendUpdate" text="Verzenden" />
-                <Label fx:id="lblMessageUpdate" font="$x2" layoutX="354.0" layoutY="434.0" text="Het verzenden van de aanvraag voor  een update is geslaagd" />
+                <Label fx:id="lblMessageUpdate" font="$x2" layoutX="378.0" layoutY="407.0" text="Het verzenden van de aanvraag voor  een update is geslaagd" />
               </children>
             </AnchorPane>
           </content>
@@ -95,33 +95,33 @@
               <children>
                 <Label font="$x1" layoutX="14.0" layoutY="14.0" text="Taken" underline="false" />
                 <ListView id="lvSortedData" fx:id="lvtTasks" layoutX="14.0" layoutY="48.0" prefHeight="453.0" prefWidth="341.0" />
-                <Label layoutX="398.0" layoutY="57.0" text="Titel" />
-                <Label layoutX="398.0" layoutY="87.0" text="Beschrijving" />
-                <Label layoutX="398.0" layoutY="275.0" text="Pre-Conditie" />
-                <TextField fx:id="tftTaskTitle" layoutX="525.0" layoutY="54.0" prefWidth="235.0" />
-                <TextArea fx:id="tatDescription" layoutX="525.0" layoutY="87.0" prefWidth="235.0" wrapText="true" />
-                <TextArea fx:id="tatCondition" layoutX="525.0" layoutY="275.0" prefHeight="66.0" prefWidth="235.0" wrapText="true" />
-                <Button fx:id="btnDismissTask" layoutX="606.0" layoutY="373.0" mnemonicParsing="false" onAction="#dismissTask" prefWidth="154.0" styleClass="ButtonDismiss" text="Weigeren">
+                <Label layoutX="384.0" layoutY="28.0" text="Titel" />
+                <Label layoutX="384.0" layoutY="65.0" text="Beschrijving" />
+                <Label layoutX="384.0" layoutY="295.0" text="Pre-Conditie" />
+                <TextField fx:id="tftTaskTitle" layoutX="525.0" layoutY="28.0" prefWidth="249.0" />
+                <TextArea fx:id="tatDescription" layoutX="525.0" layoutY="65.0" prefHeight="219.0" prefWidth="249.0" wrapText="true" />
+                <TextArea fx:id="tatCondition" layoutX="525.0" layoutY="295.0" prefHeight="66.0" prefWidth="249.0" wrapText="true" />
+                <Button fx:id="btnDismissTask" layoutX="591.0" layoutY="382.0" mnemonicParsing="false" onAction="#dismissTask" prefWidth="181.0" styleClass="ButtonDismiss" text="Weigeren">
                   <stylesheets>
                     <URL value="@../Style.css" />
                   </stylesheets>
                 </Button>
-                <Button fx:id="btnAcceptTask" layoutX="432.0" layoutY="373.0" mnemonicParsing="false" onAction="#acceptTask" prefWidth="154.0" styleClass="ButtonAccept" text="Accepteren" textOverrun="CLIP" underline="false">
+                <Button fx:id="btnAcceptTask" layoutX="382.0" layoutY="382.0" mnemonicParsing="false" onAction="#acceptTask" prefWidth="195.0" styleClass="ButtonAccept" text="Accepteren" textOverrun="CLIP" underline="false">
                   <stylesheets>
                     <URL value="@../Style.css" />
                   </stylesheets>
                 </Button>
-                <Button fx:id="btnSucceed" layoutX="679.0" layoutY="418.0" mnemonicParsing="false" onAction="#succeedTask" prefWidth="81.0" text="Geslaagd" />
-                <Button fx:id="btnFailed" layoutX="579.0" layoutY="418.0" mnemonicParsing="false" onAction="#failedTask" prefWidth="81.0" text="Gefaald" />
-                <Button fx:id="btnNotDone" layoutX="432.0" layoutY="418.0" mnemonicParsing="false" onAction="#notDoneTask" prefWidth="126.0" text="Niet uitgevoerd" />
-                <Label fx:id="lblMessageTask" font="$x2" layoutX="398.0" layoutY="459.0" text="Melding" />
+                <Button fx:id="btnSucceed" layoutX="658.0" layoutY="427.0" mnemonicParsing="false" onAction="#succeedTask" prefWidth="114.0" text="Geslaagd" />
+                <Button fx:id="btnFailed" layoutX="556.0" layoutY="427.0" mnemonicParsing="false" onAction="#failedTask" prefWidth="92.0" text="Gefaald" />
+                <Button fx:id="btnNotDone" layoutX="384.0" layoutY="427.0" mnemonicParsing="false" onAction="#notDoneTask" prefWidth="163.0" text="Niet uitgevoerd" />
+                <Label fx:id="lblMessageTask" font="$x2" layoutX="384.0" layoutY="472.0" text="Melding" />
               </children>
             </AnchorPane>
           </content>
         </Tab>
       </tabs>
     </TabPane>
-    <MenuBar fx:id="menuServices" layoutX="0.0" layoutY="0.0" prefWidth="796.0">
+    <MenuBar fx:id="menuServices" layoutX="0.0" layoutY="0.0" minHeight="26.999908447265625" prefHeight="26.999908447265625" prefWidth="796.0">
       <menus>
         <Menu mnemonicParsing="false" text="Log uit" fx:id="btnLogOut">
           <items>
