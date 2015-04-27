@@ -81,7 +81,9 @@ public class Headquarters extends Application {
 
     @Override
     public void stop() throws Exception {
-        hqController.close();
+        if(hqController != null){
+            hqController.close();
+        }       
         super.stop();
     }
 

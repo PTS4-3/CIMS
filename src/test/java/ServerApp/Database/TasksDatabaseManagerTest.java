@@ -197,7 +197,18 @@ public class TasksDatabaseManagerTest {
         assertNotNull("Unable to insert new plan", myDB.insertNewPlan(plan));
         assertNotNull("Unable to insert other new plan", myDB.insertNewPlan(plan));
 
-        List<IPlan> plans = myDB.getPlans(new HashSet<>());
+        HashSet<String> keywordSet = new HashSet<>();
+        keywordSet.add("brand");
+        List<IPlan> plans = myDB.getPlans(keywordSet);
+        assertTrue("did not retrieve the right number of plans", plans.size() == 1);
+        assertEquals("did not retrieve the right plan", 1, plans.get(0).getId());
+        
+        keywordSet.add("drie verdiepingen");
+        plans = myDB.getPlans(keywordSet);
+        assertTrue("did not retrieve the right number of plans", plans.size() == 1);
+        assertEquals("did not retrieve the right plan", 1, plans.get(0).getId());
+        
+        plans = myDB.getPlans(new HashSet<>());
         assertTrue("Not all plans were retrieved", plans.size() == 4);
 
         for (IPlan planItem : plans) {

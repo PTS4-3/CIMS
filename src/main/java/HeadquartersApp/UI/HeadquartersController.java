@@ -756,7 +756,9 @@ public class HeadquartersController implements Initializable {
                 String s = tapKeyWords.getText();
                 String[] array = uniformString(s).split(" ");
                 for(String word : array){
-                    keywords.add(word);
+                    if(!word.isEmpty()){
+                        keywords.add(word);
+                    }                   
                 }
                 
                 if(title != null) {
@@ -828,7 +830,9 @@ public class HeadquartersController implements Initializable {
         String s = tapKeyWords.getText();
         String[] array = uniformString(s).split(" ");
         for(String word : array){
-            keywords.add(word);
+            if(!word.isEmpty()){
+                keywords.add(word);
+            }          
         }
         
         connectionManager.searchPlans(keywords);
@@ -960,6 +964,7 @@ public class HeadquartersController implements Initializable {
             Logger.getLogger(HeadquartersController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
     public void close(boolean logout) {
         if (this.connectionManager != null) {
             this.connectionManager.unsubscribeSortedData();

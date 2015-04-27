@@ -622,10 +622,10 @@ public class TasksDatabaseManager extends DatabaseManager {
             // builds query, depending on how many keywords are provided
             query = "SELECT * FROM " + planTable;
             if (keywords.size() > 0) {
-                query += " WHERE ID IN "
-                        + "(SELECT PLANID FROM " + keywordTable
+                query += " WHERE ID IN"
+                        + " (SELECT PLANID FROM " + keywordTable
                         + " WHERE WORD = ?)";
-                for (int pos = 1; pos <= keywords.size(); pos++) {
+                for (int pos = 1; pos < keywords.size(); pos++) {
                     query += " AND ID IN (SELECT PLANID FROM " + keywordTable
                             + " WHERE WORD = ?)";
                 }
@@ -636,7 +636,7 @@ public class TasksDatabaseManager extends DatabaseManager {
                 prepStat.setString(rep, kw);
                 rep++;
             }
-            rs = prepStat.executeQuery(query);
+            rs = prepStat.executeQuery();
 
             // saves info from plan table in temporary struct
             while (rs.next()) {
