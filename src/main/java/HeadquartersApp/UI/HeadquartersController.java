@@ -545,6 +545,10 @@ public class HeadquartersController implements Initializable {
 
             @Override
             public void run() {
+                lvsTasks.getItems().clear();
+                tfsTaskTitle.clear();
+                tasTaskDescription.clear();
+                
                 lvsTasks.getItems().addAll(tasks);
                 if(lvsTasks.getSelectionModel().getSelectedItem() == null) {
                     lvsTasks.getSelectionModel().selectFirst();
@@ -599,6 +603,7 @@ public class HeadquartersController implements Initializable {
             
         } else {
             // Clear GUI
+            lvsTasks.getItems().clear();
             tfuTitle.clear();
             tasSortedDataDescription.clear();
             tfsSource.clear();
@@ -903,6 +908,7 @@ public class HeadquartersController implements Initializable {
         if(s != null){
             s.setExecutor((IServiceUser) cbaExecutor.getSelectionModel().getSelectedItem());        
             tempPlan.getSteps().add(s);
+            lvaSteps.getItems().remove(s);
         } else {
             showDialog("Foutmelding", "Selecteer een stap voordat je een stap toekent.", true);
         }

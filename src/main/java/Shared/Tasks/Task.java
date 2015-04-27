@@ -115,4 +115,9 @@ public class Task implements ITask {
     public void setSortedData(SortedData data) {
         this.sortedData = data;
     }
+    
+    @Override
+    public String toString(){
+        return this.title;
+    }
 }
