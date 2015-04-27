@@ -36,6 +36,8 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import static javafx.collections.FXCollections.observableArrayList;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -115,7 +117,7 @@ public class HeadquartersController implements Initializable {
     
     private IData requestData;
     private IData sortedData;
-    private List<IStep> tempSteps;
+    private ObservableList<IStep> tempSteps;
     private IPlan tempPlan;
     
     private ConnectionManager connectionManager;
@@ -679,8 +681,10 @@ public class HeadquartersController implements Initializable {
         
         if(tempSteps != null)
             step = tempSteps.size() + 1;
-        else
+        else {
+            tempSteps = observableArrayList();
             step = 1;
+        }
         
         if(title != ""){
             tempSteps.add(new Step(step, title, description, TaskStatus.UNASSIGNED, null, null, null, step, condition));
@@ -689,6 +693,12 @@ public class HeadquartersController implements Initializable {
             tfpCondition.clear();
         } else
             showDialog("Foutmelding", "Vul een titel in.", true);
+        
+        lvpTasks.setItems(tempSteps);
+    }
+    
+    public void removeTempStep(){
+        
     }
     
     /**

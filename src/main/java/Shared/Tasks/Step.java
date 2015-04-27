@@ -95,4 +95,9 @@ public class Step extends Task implements IStep {
     public void setSortedData(SortedData data) {
         super.setSortedData(data);
     }
+    
+    @Override
+    public String toString(){
+        return this.getTitle();
+    }
 }
