@@ -767,8 +767,11 @@ public class ServicesController implements Initializable {
      * Dismiss Task with argument
      */
     public void dismissTask() {
-        try {
             String argument = showArgumentDialog();
+            if(argument == null){
+                System.out.println("Cancel Dismiss");
+                return;
+            }
             if (argument.isEmpty() || argument.equals(" ")) {
                 showDialog("Argument", "Er moet een argument ingevuld worden", true);
             } else {
@@ -783,10 +786,26 @@ public class ServicesController implements Initializable {
                     showDialog("Taak selectie", "Geen taak geselecteerd", false);
                 }
                 
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
             }
-        } catch (Exception nEx) {
-            showDialog("Geen verbinding met server", nEx.getMessage(), true);
-        }
+        
     }
 
 
