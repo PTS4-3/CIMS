@@ -253,11 +253,10 @@ public class HeadquartersController implements Initializable {
             this.connectionManager.getData();
             this.connectionManager.getSortedData();
             this.connectionManager.getServiceUsers();
-                        
-            //this.connectionManager.subscribeSortedData(this.user.getUsername());
             
             if(user instanceof IHQChief){
                 connectionManager.subscribeTasks();
+                this.connectionManager.subscribeSortedData();
             }
             
             this.startTimer();        
@@ -636,10 +635,13 @@ public class HeadquartersController implements Initializable {
             String description = tasTaskDescription.getText();
             ServiceUser executor = null;
             
-            if(cbsExecutor.getSelectionModel().getSelectedItem() != null)
+            Object object = cbsExecutor.getSelectionModel().getSelectedItem();
+            if(object != null && object instanceof ServiceUser)
                 executor = (ServiceUser)cbsExecutor.getSelectionModel().getSelectedItem();
+            else
+                showDialog("Foutmelding", "Geen uitvoerder geselecteerd", true);
                 
-            Task task = new Task(1, title, description, TaskStatus.UNASSIGNED, (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem(), executor.getType(), executor);
+            Task task = new Task(1, title, description, TaskStatus.SENT, (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem(), executor.getType(), executor);
             connectionManager.sendTask(task);
             ISortedData data = (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem();
             
@@ -767,7 +769,7 @@ public class HeadquartersController implements Initializable {
                 }
                 
                 if(title != null) {
-                    connectionManager.sendNewPlan(new Plan(1, title, description, keywords, tempSteps, false));
+                    connectionManager.sendNewPlan(new Plan(-1, title, description, keywords, tempSteps, false));
                     resetPlanInfo();
                 } else {
                     showDialog("Foutmelding", "Voer een titel voor het stappenplan in", true);
@@ -907,7 +909,12 @@ public class HeadquartersController implements Initializable {
     public void applyStep(){
         IStep s = (IStep) lvaSteps.getSelectionModel().getSelectedItem();
         if(s != null){
-            s.setExecutor((IServiceUser) cbaExecutor.getSelectionModel().getSelectedItem());        
+            Object object = cbaExecutor.getSelectionModel().getSelectedItem();
+            if(object != null && object instanceof IServiceUser)
+                s.setExecutor((IServiceUser) object);        
+            else
+                showDialog("Foutmelding", "Geen uitvoerder geselecteerd", true);
+            
             tempPlan.getSteps().add(s);
             lvaSteps.getItems().remove(s);
         } else {
@@ -966,7 +973,12 @@ public class HeadquartersController implements Initializable {
     public void updateTask(){
         //TODO
         ITask task = (ITask) lvtTasks.getSelectionModel().getSelectedItem();
-        task.setExecutor((IServiceUser) cbtNewExecutor.getSelectionModel().getSelectedItem());
+        
+        Object object = cbtNewExecutor.getSelectionModel().getSelectedItem();
+        if(object != null && object instanceof IServiceUser)
+            task.setExecutor((IServiceUser) object);
+        else
+            showDialog("Foutmelding", "Geen uitvoerder geselecteerd", true);
         
         connectionManager.updateTask(task);
     }

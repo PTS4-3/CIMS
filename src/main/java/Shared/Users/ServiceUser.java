@@ -35,7 +35,7 @@ public class ServiceUser extends User implements IServiceUser {
     
     @Override
     public String toString(){
-        return this.getName();
+        return this.getType() + " - " + this.getUsername();
     }
 
 }
