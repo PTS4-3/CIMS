@@ -777,6 +777,8 @@ public class HeadquartersController implements Initializable {
                 if(user.getType() != task.getTargetExecutor())
                     cbsExecutor.getItems().remove(user);
             }
+            
+            lblSendPlan.setVisible(false);
         }
     }
     
@@ -851,6 +853,9 @@ public class HeadquartersController implements Initializable {
         } catch (NetworkException nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
+        
+        lblSendPlan.setVisible(true);
+        lblSendPlan.setText("Plan is verzonden naar de database");
     }
     
     // ApplyPlan----------------------------------------------------------------
@@ -932,7 +937,8 @@ public class HeadquartersController implements Initializable {
         if(plan != null){
             lblApplyPlan.setVisible(false);
             lvaSteps.getItems().clear();
-            displaySteps();            
+            displaySteps();
+            lblApplyPlan.setVisible(false);
         }
     }
     
@@ -967,6 +973,9 @@ public class HeadquartersController implements Initializable {
         } catch (NetworkException nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
+        
+        lblApplyPlan.setVisible(true);
+        lblApplyPlan.setText("Plan is in werking gezet");
     }
     
     /**
@@ -986,6 +995,8 @@ public class HeadquartersController implements Initializable {
             tfaTaskDescription.clear();
             tfaTaskCondition.clear();
         }
+        
+        lblApplyPlan.setVisible(false);
     }
     
     /**
@@ -1005,6 +1016,8 @@ public class HeadquartersController implements Initializable {
         } else {
             showDialog("Foutmelding", "Selecteer een stap voordat je een stap toekent.", true);
         }
+        
+        lblApplyPlan.setVisible(false);
     }
     
     /**
@@ -1018,6 +1031,8 @@ public class HeadquartersController implements Initializable {
         } else {
             showDialog("Foutmelding", "Selecteer een stap voordat je een stap verwijdert.", true);
         }
+        
+        lblApplyPlan.setVisible(false);
     }
     
     // Tasks--------------------------------------------------------------------
