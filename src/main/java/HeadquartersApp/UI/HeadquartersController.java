@@ -247,6 +247,7 @@ public class HeadquartersController implements Initializable {
         tabProcessSortedData.setDisable(true);
         tabSendPlan.setDisable(true);
         tabApplyPlan.setDisable(true);
+        tabTask.setDisable(true);
         
         lblUnsortedReport.setVisible(false);
         lblInformationReport.setVisible(false);
@@ -259,6 +260,7 @@ public class HeadquartersController implements Initializable {
             tabProcessSortedData.setDisable(false);
             tabSendPlan.setDisable(false);
             tabApplyPlan.setDisable(false);
+            tabTask.setDisable(false);
         }
         
         try {
