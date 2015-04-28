@@ -60,7 +60,7 @@ public class Connection implements Runnable {
                     log(Level.SEVERE, null, ex);
         }
     }
-    
+
     /**
      * Output of data after checking if it's not null.
      *
@@ -337,7 +337,7 @@ public class Connection implements Runnable {
 
         if (inObject instanceof List) {
             List list = (List) inObject;
-            if(list.isEmpty()){
+            if (list.isEmpty()) {
                 // database should do nothing, but client is expecting result
                 this.writeResult(true);
             } else if (list.get(0) instanceof IData) {
@@ -348,7 +348,7 @@ public class Connection implements Runnable {
             } else {
                 out.writeObject(ConnState.COMMAND_ERROR);
                 out.flush();
-            }            
+            }
         } else {
             out.writeObject(ConnState.COMMAND_ERROR);
             out.flush();
@@ -501,7 +501,7 @@ public class Connection implements Runnable {
     private void subscribeSorted() throws IOException, ClassNotFoundException {
         Object par1 = in.readObject();
         Object par2 = in.readObject();
-        
+
         if (par1 == null || !(par1 instanceof String)) {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
@@ -510,10 +510,10 @@ public class Connection implements Runnable {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
         }
-        
+
         String username = (String) par1;
         int clientID = (Integer) par2;
-        
+
         getBuffer().subscribeSorted(username, clientID);
         this.writeResult(true);
     }
@@ -542,7 +542,7 @@ public class Connection implements Runnable {
     private void subscribeRequest() throws IOException, ClassNotFoundException {
         Object par1 = in.readObject();
         Object par2 = in.readObject();
-        
+
         if (par1 == null || !(par1 instanceof String)) {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
@@ -551,10 +551,10 @@ public class Connection implements Runnable {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
         }
-        
+
         String username = (String) par1;
         int clientID = (Integer) par2;
-        
+
         getBuffer().subscribeRequests(username, clientID);
         this.writeResult(true);
     }
@@ -568,7 +568,7 @@ public class Connection implements Runnable {
     private void unsubscribeRequest() throws IOException, ClassNotFoundException {
         Object par1 = in.readObject();
         Object par2 = in.readObject();
-        
+
         if (par1 == null || !(par1 instanceof String)) {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
@@ -577,10 +577,10 @@ public class Connection implements Runnable {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
         }
-        
+
         String username = (String) par1;
         int clientID = (Integer) par2;
-        
+
         getBuffer().unsubscribeRequests(username, clientID);
         this.writeResult(true);
     }
@@ -594,7 +594,7 @@ public class Connection implements Runnable {
     private void unsubscribeSorted() throws IOException, ClassNotFoundException {
         Object par1 = in.readObject();
         Object par2 = in.readObject();
-        
+
         if (par1 == null || !(par1 instanceof String)) {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
@@ -603,10 +603,10 @@ public class Connection implements Runnable {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
         }
-        
+
         String username = (String) par1;
         int clientID = (Integer) par2;
-        
+
         getBuffer().unsubscribeSorted(username, clientID);
         this.writeResult(true);
     }
@@ -635,7 +635,7 @@ public class Connection implements Runnable {
     private void subscribeSent() throws IOException, ClassNotFoundException {
         Object par1 = in.readObject();
         Object par2 = in.readObject();
-        
+
         if (par1 == null || !(par1 instanceof String)) {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
@@ -644,10 +644,10 @@ public class Connection implements Runnable {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
         }
-        
+
         String username = (String) par1;
         int clientID = (Integer) par2;
-        
+
         getBuffer().subscribeSent(username, clientID);
         this.writeResult(true);
     }
@@ -661,7 +661,7 @@ public class Connection implements Runnable {
     private void unsubscribeSent() throws IOException, ClassNotFoundException {
         Object par1 = in.readObject();
         Object par2 = in.readObject();
-        
+
         if (par1 == null || !(par1 instanceof String)) {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
@@ -670,14 +670,14 @@ public class Connection implements Runnable {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
         }
-        
+
         String username = (String) par1;
         int clientID = (Integer) par2;
-        
+
         getBuffer().unsubscribeSent(username, clientID);
         this.writeResult(true);
     }
-    
+
     /**
      * Sends newly submitted data tasks since last method call.
      *
@@ -702,7 +702,7 @@ public class Connection implements Runnable {
     private void subscribeTasks() throws IOException, ClassNotFoundException {
         Object par1 = in.readObject();
         Object par2 = in.readObject();
-        
+
         if (par1 == null || !(par1 instanceof String)) {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
@@ -711,10 +711,10 @@ public class Connection implements Runnable {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
         }
-        
+
         String username = (String) par1;
         int clientID = (Integer) par2;
-        
+
         getBuffer().subscribeTasks(username, clientID);
         this.writeResult(true);
     }
@@ -728,7 +728,7 @@ public class Connection implements Runnable {
     private void unsubscribeTasks() throws IOException, ClassNotFoundException {
         Object par1 = in.readObject();
         Object par2 = in.readObject();
-        
+
         if (par1 == null || !(par1 instanceof String)) {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
@@ -737,96 +737,88 @@ public class Connection implements Runnable {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
         }
-        
+
         String username = (String) par1;
         int clientID = (Integer) par2;
-        
+
         getBuffer().unsubscribeTasks(username, clientID);
         this.writeResult(true);
     }
-    
+
     /**
      * Saves a task and sends it to the executor
+     *
      * @throws IOException
-     * @throws ClassNotFoundException 
+     * @throws ClassNotFoundException
      */
     private void sendTask() throws IOException, ClassNotFoundException {
         Object inObject = in.readObject();
-        if(inObject == null || !(inObject instanceof ITask)) {
+        if (inObject == null || !(inObject instanceof ITask)) {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
         }
-        
+
         ITask task = (ITask) inObject;
-        boolean success = false;
-        
-        synchronized(TASKSLOCK) {
+
+        synchronized (TASKSLOCK) {
             task = ServerMain.tasksDatabaseManager.insertNewTask(task);
         }
-        
-        getBuffer().addTask(task);
-        
-        this.writeResult(success);
+        if (task != null) {
+            getBuffer().addTask(task);
+        }
+        this.writeResult(task != null);
     }
-    
+
     /**
      * Saves a new plan
+     *
      * @throws IOException
-     * @throws ClassNotFoundException 
+     * @throws ClassNotFoundException
      */
     private void saveNewPlan() throws IOException, ClassNotFoundException {
         Object inObject = in.readObject();
-        if(inObject == null || !(inObject instanceof IPlan)) {
+        if (inObject == null || !(inObject instanceof IPlan)) {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
         }
-        
+
         IPlan plan = (IPlan) inObject;
-        boolean success = false;
-        
-        synchronized(TASKSLOCK) {
+
+        synchronized (TASKSLOCK) {
             plan = ServerMain.tasksDatabaseManager.insertNewPlan(plan);
         }
-        
-        if(plan != null) {
-            success = true;
-        }
-        
-        this.writeResult(success);
+        this.writeResult(plan != null);
     }
-    
+
     /**
      * Applies a plan, save to database and send its steps to the executors
      */
     private void applyPlan() throws IOException, ClassNotFoundException {
         Object inObject = in.readObject();
-                
-        if(inObject == null || !(inObject instanceof IPlan)) {
+
+        if (inObject == null || !(inObject instanceof IPlan)) {
             out.writeObject(ConnState.COMMAND_ERROR);
         }
-        
+
         IPlan plan = (IPlan) inObject;
-        
-        boolean success = false;
-        
-        synchronized(TASKSLOCK) {
+
+        synchronized (TASKSLOCK) {
             plan = ServerMain.tasksDatabaseManager.insertNewPlan(plan);
         }
-        
-        if(plan != null) {
+
+        if (plan != null) {
             getPlanExecutorHandler().addPlanExecutor(plan);
         }
-        
-        this.writeResult(success);
+        this.writeResult(plan != null);
     }
-    
+
     /**
      * Files a request for an update to given piece of info.
      */
     private void getSigninUser() throws IOException, ClassNotFoundException {
         Object par1 = in.readObject();
         Object par2 = in.readObject();
-        
+
         if (par1 == null || !(par1 instanceof String)) {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
@@ -835,110 +827,108 @@ public class Connection implements Runnable {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
         }
-        
+
         String username = (String) par1;
         String password = (String) par2;
 
-        IUser output = null;        
+        IUser output = null;
         synchronized (TASKSLOCK) {
             output = ServerMain.tasksDatabaseManager.loginUser(username, password);
-        }        
+        }
         writeOutput(output);
     }
-    
+
     /**
      * Get tasks from database
      */
     private void getTasks() throws IOException, ClassNotFoundException {
         Object inObject = in.readObject();
-        
+
         if (inObject == null || !(inObject instanceof String)) {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
         }
-        
+
         String username = (String) inObject;
 
-        List<ITask> output = null;    
+        List<ITask> output = null;
         synchronized (TASKSLOCK) {
             // for now always calls active only tasks
             output = ServerMain.tasksDatabaseManager.getTasks(username, true);
-        }        
+        }
         writeOutput(output);
     }
-    
+
     /**
-     * Updates the task in the database
-     * Adds the updated task to the buffer for the HQChief
-     * Handles the task if it is a step
+     * Updates the task in the database Adds the updated task to the buffer for
+     * the HQChief Handles the task if it is a step
      */
     private void updateTask() throws IOException, ClassNotFoundException {
         Object inObject = in.readObject();
-        
-        if(inObject == null || !(inObject instanceof ITask)) {
+
+        if (inObject == null || !(inObject instanceof ITask)) {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
         }
-        
+
         ITask task = (ITask) inObject;
         boolean success = false;
-        
-        synchronized(TASKSLOCK) {
+
+        synchronized (TASKSLOCK) {
             success = ServerMain.tasksDatabaseManager.updateTask(task);
         }
-        
-        if(task.getStatus() != TaskStatus.READ) {
+
+        if (task.getStatus() != TaskStatus.READ) {
             // Add to buffer of HQChief
             getBuffer().addTaskForChief(task);
         }
-        
-        if(task.getStatus() == TaskStatus.SUCCEEDED && task instanceof IStep) {
+
+        if (task.getStatus() == TaskStatus.SUCCEEDED && task instanceof IStep) {
             // Execute next step of plan
             getPlanExecutorHandler().executeNextStepOf((IStep) task);
         }
-        
         this.writeResult(success);
     }
-    
+
     /**
      * Get plans with keywords from database
      */
     private void searchPlans() throws IOException, ClassNotFoundException {
         Object inObject = in.readObject();
-        
+
         if (inObject == null || !(inObject instanceof HashSet)) {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
         }
-        
+
         HashSet<String> keywords = (HashSet) inObject;
 
-        List<IPlan> output = null;    
+        List<IPlan> output = null;
         synchronized (TASKSLOCK) {
             output = ServerMain.tasksDatabaseManager.getPlans(keywords);
-        }        
+        }
         writeOutput(output);
     }
-    
+
     /**
      * Get all sorted data from database
      */
     private void getSortedData() throws IOException, ClassNotFoundException {
-        List<ISortedData> output = null;    
+        List<ISortedData> output = null;
         synchronized (SORTEDLOCK) {
             output = ServerMain.sortedDatabaseManager.getFromSortedData(new HashSet<Tag>());
-        }        
+        }
         writeOutput(output);
     }
-      
+
     /**
      * Get all serviceusers from database
      */
     private void getServiceUsers() throws IOException, ClassNotFoundException {
-        List<IServiceUser> output = null;    
+        List<IServiceUser> output = null;
         synchronized (TASKSLOCK) {
             output = ServerMain.tasksDatabaseManager.getServiceUsers();
-        }        
+        }
         writeOutput(output);
     }
 }

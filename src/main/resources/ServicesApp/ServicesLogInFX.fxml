@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="300.0" prefWidth="450.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="ServicesApp.UI.ServicesLogInController">
+<AnchorPane id="AnchorPane" prefHeight="300.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ServicesApp.UI.ServicesLogInController">
   <children>
     <Pane layoutX="0.0" layoutY="0.0" prefHeight="300.0" prefWidth="450.0">
       <children>
@@ -20,7 +20,7 @@
         <Label layoutX="113.0" layoutY="150.0" text="Wachtwoord" />
         <TextField fx:id="tfsUsername" layoutX="225.0" layoutY="111.0" prefWidth="133.0" />
         <PasswordField fx:id="pfPassword" layoutX="225.0" layoutY="141.0" prefWidth="133.0" />
-        <Button fx:id="btnLogIn" layoutX="225.0" layoutY="181.0" mnemonicParsing="false" onAction="#onClickLogIn" prefWidth="133.0" text="Inloggen" />  
+        <Button fx:id="btnLogIn" defaultButton="true" layoutX="225.0" layoutY="181.0" mnemonicParsing="false" onAction="#onClickLogIn" prefWidth="133.0" text="Inloggen" />  
       </children>
     </Pane>
   </children>

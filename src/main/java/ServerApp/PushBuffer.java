@@ -255,7 +255,6 @@ public class PushBuffer {
                                 requestBuffer.get(clientId).add(request);
                             }
                         }
-
                     }
                 }
             }
@@ -272,11 +271,11 @@ public class PushBuffer {
             for (String username : clientIDs.keySet()) {
                 if (username.equals(data.getSource())) {
                     HashSet<Integer> clients = this.clientIDs.get(username);
-                        if (clients != null) {
-                            for (int clientId : clients) {
-                                sentDataBuffer.get(clientId).add(data);
-                            }
+                    if (clients != null) {
+                        for (int clientId : clients) {
+                            sentDataBuffer.get(clientId).add(data);
                         }
+                    }
                 }
             }
         }
