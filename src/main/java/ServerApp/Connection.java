@@ -880,10 +880,10 @@ public class Connection implements Runnable {
         }
         
         ITask task = (ITask) inObject;
-        ITask output = null;
+        boolean success = false;
         
         synchronized(TASKSLOCK) {
-            output = ServerMain.tasksDatabaseManager.updateTask(task);
+            success = ServerMain.tasksDatabaseManager.updateTask(task);
         }
         
         if(task.getStatus() != TaskStatus.READ) {
@@ -896,7 +896,7 @@ public class Connection implements Runnable {
             getPlanExecutorHandler().executeNextStepOf((IStep) task);
         }
         
-        this.writeResult(output != null);
+        this.writeResult(success);
     }
     
     /**
