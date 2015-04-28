@@ -138,9 +138,8 @@ public class HeadquartersController implements Initializable {
     @FXML Label lblTasks;
 
     private IData requestData;
-    private IData sortedData;
+    private ISortedData sortedData;
     private ObservableList<IStep> tempSteps;
-    private List<ITask> tempTasks;
     private IPlan tempPlan;
 
     private ConnectionManager connectionManager;
@@ -374,7 +373,7 @@ public class HeadquartersController implements Initializable {
                     connectionManager.getData();
                 }
 
-            }, 10000, Long.valueOf(10000));
+            }, 10000, (long) 10000);
         }
     }
 
@@ -405,9 +404,9 @@ public class HeadquartersController implements Initializable {
             int quality = (int) suQuality.getValue();
 
             // Make and send new sorted data
-            ISortedData sortedData = new SortedData(id, title, description,
+            ISortedData sorted = new SortedData(id, title, description,
                     location, source, relevance, reliability, quality, tags);
-            this.connectionManager.sendSortedData(sortedData);
+            this.connectionManager.sendSortedData(sorted);
 
             // Update ListView
             this.updateLvuUnsortedData(unsortedData);
@@ -650,15 +649,15 @@ public class HeadquartersController implements Initializable {
      * Fills the GUI with information of the selected sorted data
      */
     public void selectSortedData() {
-        ISortedData sortedData
+        ISortedData sorted
                 = (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem();
-        if (sortedData != null) {
+        if (sorted != null) {
             // Fill GUI with information
-            tfsSortedDataTitle.setText(sortedData.getTitle());
-            tasSortedDataDescription.setText(sortedData.getDescription());
-            tfsSource.setText(sortedData.getSource());
-            tfsLocation.setText(sortedData.getLocation());
-            displaySortedDataTasks(sortedData.getTasks());
+            tfsSortedDataTitle.setText(sorted.getTitle());
+            tasSortedDataDescription.setText(sorted.getDescription());
+            tfsSource.setText(sorted.getSource());
+            tfsLocation.setText(sorted.getLocation());
+            displaySortedDataTasks(sorted.getTasks());
 
         } else {
             // Clear GUI
@@ -700,7 +699,7 @@ public class HeadquartersController implements Initializable {
 
             boolean correct = true;
             for (ITask t : data.getTasks()) {
-                if (t.getTitle() == title) {
+                if (t.getTitle().equals(title)) {
                     correct = false;
                 }
             }
@@ -716,18 +715,14 @@ public class HeadquartersController implements Initializable {
                 Task task = new Task(-1, title, description, TaskStatus.SENT, (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem(), executor.getType(), executor);
 
                 connectionManager.sendTask(task);
-
-                if (tempTasks == null) {
-                    tempTasks = new ArrayList();
-                }
-
+                
+                
+                List<ITask> tempTasks = new ArrayList();
+                tempTasks.addAll(data.getTasks());
                 tempTasks.add(task);
 
                 data.setTasks(tempTasks);
                 displaySortedDataTasks(data.getTasks());
-                tempTasks.clear();
-
-                connectionManager.getSortedData();
             } else {
                 showDialog("Foutmelding", "Titel mag niet hetzelfde zijn als een eerder toegevoegde taak", true);
             }
@@ -748,8 +743,8 @@ public class HeadquartersController implements Initializable {
     public void goToApplyPlan() {
         try {
             // Load values from GUI
-            IData data
-                    = (IData) lvsSortedData.getSelectionModel().getSelectedItem();
+            ISortedData data
+                    = (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem();
             if (data == null) {
                 showDialog("Foutmelding", "Selecteer eerst een gesorteerd bericht", true);
             }
@@ -818,14 +813,28 @@ public class HeadquartersController implements Initializable {
             tempSteps = observableArrayList();
             step = 1;
         }
+        
+        boolean correct = true;
+        
+        for(IStep s : tempSteps) {
+            if(s.getTitle().equals(title)) {
+                correct = false;
+            }
+        }
 
-        if (title != "") {
-            tempSteps.add(new Step(step, title, description, TaskStatus.UNASSIGNED, null, null, null, step, condition));
-            tfpTaskTitle.clear();
-            tapTaskDescription.clear();
-            tfpCondition.clear();
+        if(correct) {
+            try {
+                //TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                // TargetExecutor
+                tempSteps.add(new Step(step, title, description, TaskStatus.UNASSIGNED, null, Tag.FIREDEPARTMENT, null, step, condition));
+                tfpTaskTitle.clear();
+                tapTaskDescription.clear();
+                tfpCondition.clear();
+            } catch(IllegalArgumentException iaEx) {
+                showDialog("Foutmelding", iaEx.getMessage(), true);
+            }
         } else {
-            showDialog("Foutmelding", "Vul een titel in.", true);
+            showDialog("Foutmelding", "Titel mag niet hetzelfde zijn als een eerder toegevoegde stap", true);
         }
 
         lvpTasks.setItems(tempSteps);
@@ -835,6 +844,9 @@ public class HeadquartersController implements Initializable {
         IStep step = (IStep) lvpTasks.getSelectionModel().getSelectedItem();
         if (step != null) {
             tempSteps.remove(step);
+            for(int i = 0; i < tempSteps.size(); i++) {
+                tempSteps.get(i).setStepnr(i + 1);
+            }
             lvpTasks.setItems(tempSteps);
         }
     }
@@ -862,7 +874,10 @@ public class HeadquartersController implements Initializable {
                 }
 
                 if (title != null) {
-                    connectionManager.sendNewPlan(new Plan(-1, title, description, keywords, tempSteps, false));
+                    List<IStep> steps = new ArrayList<>();
+                    steps.addAll(tempSteps);
+                    
+                    connectionManager.sendNewPlan(new Plan(-1, title, description, keywords, steps, false));
                     resetPlanInfo();
                 } else {
                     showDialog("Foutmelding", "Voer een titel voor het stappenplan in", true);
@@ -913,7 +928,13 @@ public class HeadquartersController implements Initializable {
      * Fill the ListView with Steps
      */
     public void displaySteps() {
-        tempPlan = (IPlan) lvaPlans.getSelectionModel().getSelectedItem();
+        IPlan plan = (IPlan) lvaPlans.getSelectionModel().getSelectedItem();
+        List<IStep> steps = new ArrayList<>();
+        for(IStep s : plan.getSteps()) {
+            steps.add(new Step(-1, String.valueOf(s.getTitle()), String.valueOf(s.getDescription()), TaskStatus.SENT, sortedData, s.getTargetExecutor(), null, s.getStepnr(), s.getCondition()));
+        }
+        tempPlan = new Plan(-1, plan.getTitle(), plan.getDescription(), plan.getKeywords(), steps, false);
+        
         if (tempPlan != null) {
             Platform.runLater(new Runnable() {
                 IPlan p = (IPlan) lvaPlans.getSelectionModel().getSelectedItem();
@@ -974,11 +995,8 @@ public class HeadquartersController implements Initializable {
                 List<IStep> steps = tempPlan.getSteps();
                 if (steps != null) {
                     boolean done = true;
-                    int step = 1;
 
                     for (IStep s : steps) {
-                        s.setStepnr(step);
-                        step++;
                         if (s.getExecutor() == null) {
                             done = false;
                         }
@@ -1034,12 +1052,11 @@ public class HeadquartersController implements Initializable {
         if (s != null) {
             Object object = cbaExecutor.getSelectionModel().getSelectedItem();
             if (object != null && object instanceof IServiceUser) {
-                s.setExecutor((IServiceUser) object);
+                tempPlan.getSteps().get(s.getStepnr() - 1).setExecutor((IServiceUser) object);
             } else {
                 showDialog("Foutmelding", "Geen uitvoerder geselecteerd", true);
             }
-
-            tempPlan.getSteps().add(s);
+            
             lvaSteps.getItems().remove(s);
         } else {
             showDialog("Foutmelding", "Selecteer een stap voordat je een stap toekent.", true);
@@ -1054,8 +1071,12 @@ public class HeadquartersController implements Initializable {
     public void refuseStep() {
         IStep s = (IStep) lvaSteps.getSelectionModel().getSelectedItem();
         if (s != null) {
-            tempPlan.getSteps().remove(s);
+            tempPlan.getSteps().remove(s.getStepnr() - 1);
             lvaSteps.getItems().remove(s);
+            for(int i = 0; i < tempPlan.getSteps().size(); i++) {
+                tempPlan.getSteps().get(i).setStepnr(i + 1);
+                ((IStep)lvaSteps.getItems().get(i)).setStepnr(i + 1);
+            }
         } else {
             showDialog("Foutmelding", "Selecteer een stap voordat je een stap verwijdert.", true);
         }
@@ -1066,11 +1087,10 @@ public class HeadquartersController implements Initializable {
     // Tasks--------------------------------------------------------------------
     public void displayTasks(List<ITask> tasks) {
         Platform.runLater(new Runnable() {
-            ObservableList<ITask> oTasks = FXCollections.observableArrayList(tasks);
 
             @Override
             public void run() {
-                lvtTasks.setItems(oTasks);
+                lvtTasks.getItems().addAll(tasks);
                 if (lvtTasks.getSelectionModel().getSelectedItem() == null) {
                     lvtTasks.getSelectionModel().selectFirst();
                 }

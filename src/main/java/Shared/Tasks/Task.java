@@ -112,7 +112,7 @@ public class Task implements ITask {
     }
 
     @Override
-    public void setSortedData(SortedData data) {
+    public void setSortedData(ISortedData data) {
         this.sortedData = data;
     }
     

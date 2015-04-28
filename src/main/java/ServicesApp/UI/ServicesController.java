@@ -112,7 +112,7 @@ public class ServicesController implements Initializable {
     @FXML
     TextArea tatDescription;
     @FXML
-    TextField tftCondition;
+    TextArea tatCondition;
     @FXML
     Button btnAcceptTask;
     @FXML
@@ -139,7 +139,7 @@ public class ServicesController implements Initializable {
     private IDataRequest answeredRequest;
     private ITask selectedTask = null;
     private IServiceUser user = null;
-    private HashSet<Tag> tags = new HashSet<Tag>();
+    private HashSet<Tag> tags = new HashSet<>();
 
     private Services main;
 
@@ -156,16 +156,6 @@ public class ServicesController implements Initializable {
         lblMessageUpdate.setText("");
         lblMessageTask.setText("");
         lblMessageSend.setText("");
-        
-        //tab change refresh sentData
-        this.tabPane.selectionModelProperty().addListener(new ChangeListener() {
-
-            @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                resetSentData();
-                resetTaskData();
-            }
-        });
         
         // Add Change Listeners
         lvuSentData.getSelectionModel().selectedItemProperty().addListener(
@@ -191,38 +181,18 @@ public class ServicesController implements Initializable {
                         lblMessageSend.setText("");
                     }
                 });
-
-        lvtTasks.setCellFactory(new Callback<ListView<ITask>, ListCell<ITask>>() {
+        
+        lvtTasks.getSelectionModel().selectedItemProperty().addListener(
+                new ChangeListener() {
 
             @Override
-            public ListCell<ITask> call(ListView<ITask> param) {
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 selectTask();
-                return new ListCell<ITask>() {
+            }
+                    
+                });
 
-                    @Override
-                    protected void updateItem(ITask item, boolean empty) {
-                        super.updateItem(item, empty);
-                        lblMessageUpdate.setText("");
-                        lblMessageTask.setText("");
-                        lblMessageSend.setText("");
-                        if (!empty) {
-                            setItem(item);
-                            setText(item.toString());
-
-                            if (item.getStatus() == TaskStatus.INPROCESS) {
-                                setTextFill(Color.GREEN);
-                            } else {
-                                setTextFill(Color.BLACK);
-                            }
-                        } else {
-                            setItem(null);
-                            setText("");
-                        }
-                    }
-                };
-            };
-        });
-
+        // Set cell factories
         lvsSortedData.setCellFactory(new Callback<ListView<IData>, ListCell<IData>>() {
 
             @Override
@@ -252,6 +222,37 @@ public class ServicesController implements Initializable {
                     }
                 };
             }
+        });
+        
+        lvtTasks.setCellFactory(new Callback<ListView<ITask>, ListCell<ITask>>() {
+
+            @Override
+            public ListCell<ITask> call(ListView<ITask> param) {
+                selectTask();
+                return new ListCell<ITask>() {
+
+                    @Override
+                    protected void updateItem(ITask item, boolean empty) {
+                        super.updateItem(item, empty);
+                        lblMessageUpdate.setText("");
+                        lblMessageTask.setText("");
+                        lblMessageSend.setText("");
+                        if (!empty) {
+                            setItem(item);
+                            setText(item.toString());
+
+                            if (item.getStatus() == TaskStatus.INPROCESS) {
+                                setTextFill(Color.GREEN);
+                            } else {
+                                setTextFill(Color.BLACK);
+                            }
+                        } else {
+                            setItem(null);
+                            setText("");
+                        }
+                    }
+                };
+            };
         });
     }
 
@@ -565,28 +566,6 @@ public class ServicesController implements Initializable {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
     }
-    
-    /**
-     * Resets the filter of sentData, all sentData becomes visible
-     */
-    public void resetTaskData() {
-        try {
-            if (this.connectionManager == null) {
-                throw new NetworkException("Kon geen data ophalen");
-            }
-
-            this.showingDataItem = false;
-            this.answeredRequest = null;
-
-            // Clear sentData
-            lvtTasks.getItems().clear();
-
-            // TODO source
-            this.connectionManager.getTasks(this.user.getUsername());
-        } catch (NetworkException nEx) {
-            showDialog("Geen verbinding met server", nEx.getMessage(), true);
-        }
-    }
 
     /**
      * Fills the GUI with the information of the selected data
@@ -616,33 +595,33 @@ public class ServicesController implements Initializable {
      * Fills the GUI with the information of the tasks
      */
     public void selectTask() {
-        ITask data = (ITask) lvtTasks.getSelectionModel().getSelectedItem();
-        //all buttons onvisible
+        ITask task = (ITask) lvtTasks.getSelectionModel().getSelectedItem();
+        //all buttons invisible
         btnAcceptTask.setVisible(false);
         btnDismissTask.setVisible(false);
         btnFailed.setVisible(false);
         btnSucceed.setVisible(false);
 
-        if (data != null) {
-            this.selectedTask = data;
-            if (data instanceof IStep) {
-                IStep step = (IStep) data;
+        if (task != null) {
+            this.selectedTask = task;
+            if (task instanceof IStep) {
+                IStep step = (IStep) task;
                 // Fill GUI with information
                 tftTaskTitle.setText(step.getTitle());
                 tatDescription.setText(step.getDescription());
-                tftCondition.setText(step.getCondition());
+                tatCondition.setText(step.getCondition());
             } else {
-                tftTaskTitle.setText(data.getTitle());
-                tatDescription.setText(data.getDescription());
+                tftTaskTitle.setText(task.getTitle());
+                tatDescription.setText(task.getDescription());
             }
 
             // Determine visibility button requests
             //if status is sent -- accept and dismiss button
             //if status is accept -- failed, notdone and succeed button
-            if (data.getStatus().equals(TaskStatus.SENT)) {
+            if (task.getStatus().equals(TaskStatus.SENT)) {
                 btnAcceptTask.setVisible(true);
                 btnDismissTask.setVisible(true);
-            } else if (data.getStatus().equals(TaskStatus.INPROCESS)) {
+            } else if (task.getStatus().equals(TaskStatus.INPROCESS)) {
                 btnFailed.setVisible(true);
                 btnSucceed.setVisible(true);
             }
@@ -651,13 +630,7 @@ public class ServicesController implements Initializable {
             this.selectedTask = null;
             tftTaskTitle.clear();
             tatDescription.clear();
-            tftCondition.clear();
-            
-            //buttons on true
-            btnAcceptTask.setVisible(true);
-            btnDismissTask.setVisible(true);
-            btnFailed.setVisible(true);
-            btnSucceed.setVisible(true);
+            tatCondition.clear();
         }
     }
 
@@ -676,10 +649,8 @@ public class ServicesController implements Initializable {
 
                 // Add
                 if (source == chbsData) {
-                    //TODO tags
                     this.connectionManager.getSortedData(tags);
                 } else if (source == chbsRequests) {
-                    //TODO tags
                     this.connectionManager.getRequests(tags);
                 }
             } catch (NetworkException nEx) {
@@ -751,8 +722,8 @@ public class ServicesController implements Initializable {
                 btnAcceptTask.setVisible(false);
                 btnDismissTask.setVisible(false);
                 btnFailed.setVisible(true);
-                btnSucceed.setVisible(true);
-                resetTaskData();
+                btnSucceed.setVisible(true);                
+                //resetTaskData();
                 //dismiss task succeed message
                 lblMessageTask.setText("Het accepteren van de taak is gelukt.");
             } else {
@@ -769,44 +740,25 @@ public class ServicesController implements Initializable {
      * Dismiss Task with argument
      */
     public void dismissTask() {
-            String argument = showArgumentDialog();
-            if(argument == null){
-                return;
-            }
-            if (argument.isEmpty() || argument.equals(" ")) {
-                showDialog("Argument", "Er moet een argument ingevuld worden", true);
+        String argument = showArgumentDialog();
+        if(argument == null){
+            return;
+        }
+        if (argument.isEmpty() || argument.equals(" ")) {
+            showDialog("Argument", "Er moet een argument ingevuld worden", true);
+        } else {
+            if (selectedTask != null) {
+                selectedTask.setStatus(TaskStatus.REFUSED);
+                selectedTask.setDeclineReason(argument);
+                this.connectionManager.updateTask(selectedTask);
+                lvtTasks.getItems().remove(selectedTask);
+                //resetTaskData();
+                //dismiss task succeed message
+                lblMessageTask.setText("Het weigeren van de taak is gelukt.");
             } else {
-                if (selectedTask != null) {
-                    selectedTask.setStatus(TaskStatus.REFUSED);
-                    selectedTask.setDeclineReason(argument);
-                    this.connectionManager.updateTask(selectedTask);
-                    resetTaskData();
-                    //dismiss task succeed message
-                    lblMessageTask.setText("Het weigeren van de taak is gelukt.");
-                } else {
-                    showDialog("Taak selectie", "Geen taak geselecteerd", false);
-                }
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
+                showDialog("Taak selectie", "Geen taak geselecteerd", false);
             }
-        
+        }
     }
 
 
@@ -818,7 +770,8 @@ public class ServicesController implements Initializable {
             if (selectedTask != null) {
                 selectedTask.setStatus(TaskStatus.FAILED);
                 this.connectionManager.updateTask(selectedTask);
-                resetTaskData();
+                lvtTasks.getItems().remove(selectedTask);
+                //resetTaskData();
                 //dismiss task succeed message
                 lblMessageTask.setText("Het veranderen van de status is gelukt.");
             } else {
@@ -838,7 +791,8 @@ public class ServicesController implements Initializable {
             if (selectedTask != null) {
                 selectedTask.setStatus(TaskStatus.SUCCEEDED);
                 this.connectionManager.updateTask(selectedTask);
-                resetTaskData();
+                lvtTasks.getItems().remove(selectedTask);
+                //resetTaskData();
                 //dismiss task succeed message
                 lblMessageTask.setText("Het veranderen van de status is gelukt.");
             } else {

@@ -23,7 +23,7 @@
                 <Label layoutX="28.0" layoutY="317.0" text="Locatie" />
                 <TextField fx:id="tfnLocation" layoutX="162.0" layoutY="314.0" prefWidth="603.0" />
                 <Label layoutX="28.0" layoutY="357.0" text="Bron" />
-                <TextField fx:id="tfnSource" disable="true" layoutX="162.0" layoutY="354.0" prefWidth="603.0" />
+                <TextField fx:id="tfnSource" disable="false" editable="false" layoutX="162.0" layoutY="354.0" prefWidth="603.0" />
                 <Button layoutX="670.0" layoutY="463.0" mnemonicParsing="false" onAction="#sendUnsortedData" text="Verzenden" />
                 <Label fx:id="lblMessageSend" layoutX="28.0" layoutY="405.0" text="Melding">
                   <font>
@@ -51,7 +51,7 @@
                 <Label layoutX="380.0" layoutY="332.0" text="Locatie" />
                 <TextField fx:id="tfuLocation" layoutX="490.0" layoutY="329.0" prefWidth="289.0" />
                 <Label layoutX="380.0" layoutY="368.0" text="Bron" />
-                <TextField fx:id="tfuSource" disable="true" layoutX="490.0" layoutY="365.0" prefWidth="289.0" />
+                <TextField fx:id="tfuSource" disable="false" editable="false" layoutX="490.0" layoutY="365.0" prefWidth="289.0" visible="true" />
                 <Button layoutX="589.0" layoutY="465.0" mnemonicParsing="false" onAction="#resetSentData" text="Reset" />
                 <Button layoutX="670.0" layoutY="465.0" mnemonicParsing="false" onAction="#sendUpdate" text="Verzenden" />
                 <Label fx:id="lblMessageUpdate" font="$x2" layoutX="499.0" layoutY="407.0" text="Het verzenden van de update is geslaagd" />
@@ -77,13 +77,13 @@
                 <CheckBox fx:id="chbsData" layoutX="518.0" layoutY="28.0" mnemonicParsing="false" onAction="#changeDisplay" selected="true" text="Data" />
                 <CheckBox id="chbsRequest" fx:id="chbsRequests" layoutX="518.0" layoutY="58.0" mnemonicParsing="false" onAction="#changeDisplay" selected="true" text="Meldingen" />
                 <Label layoutX="396.0" layoutY="113.0" text="Titel" />
-                <TextField fx:id="tfsTitle" disable="true" layoutX="518.0" layoutY="110.0" prefWidth="257.0" />
+                <TextField fx:id="tfsTitle" disable="false" editable="false" layoutX="518.0" layoutY="110.0" prefWidth="257.0" />
                 <Label layoutX="396.0" layoutY="153.0" text="Beschrijving" />
-                <TextArea id="tas" fx:id="tasDescription" disable="true" layoutX="518.0" layoutY="153.0" prefWidth="256.9999000000025" wrapText="true" />
+                <TextArea id="tas" fx:id="tasDescription" disable="false" editable="false" layoutX="518.0" layoutY="153.0" prefWidth="256.9999000000025" wrapText="true" />
                 <Label layoutX="398.0" layoutY="379.0" text="Locatie" />
-                <TextField fx:id="tfsLocation" disable="true" layoutX="518.0" layoutY="376.0" prefWidth="257.0" />
+                <TextField fx:id="tfsLocation" disable="false" editable="false" layoutX="518.0" layoutY="376.0" prefWidth="257.0" />
                 <Label layoutX="398.0" layoutY="419.0" text="Bron" />
-                <TextField fx:id="tfsSource" disable="true" layoutX="518.0" layoutY="416.0" prefWidth="257.0" />
+                <TextField fx:id="tfsSource" disable="false" editable="false" layoutX="518.0" layoutY="416.0" prefWidth="257.0" />
                 <Button fx:id="btnAnswerRequest" layoutX="614.0" layoutY="464.0" mnemonicParsing="false" onAction="#goToSendUpdate" text="Reageer op melding" />
               </children>
             </AnchorPane>
@@ -98,9 +98,9 @@
                 <Label layoutX="384.0" layoutY="28.0" text="Titel" />
                 <Label layoutX="384.0" layoutY="65.0" text="Beschrijving" />
                 <Label layoutX="384.0" layoutY="295.0" text="Pre-Conditie" />
-                <TextField fx:id="tftTaskTitle" disable="true" layoutX="525.0" layoutY="28.0" prefWidth="249.0" />
-                <TextArea fx:id="tatDescription" disable="true" layoutX="525.0" layoutY="65.0" prefHeight="219.0" prefWidth="249.0" wrapText="true" />
-                <TextArea fx:id="tatCondition" disable="true" layoutX="525.0" layoutY="295.0" prefHeight="66.0" prefWidth="249.0" wrapText="true" />
+                <TextField fx:id="tftTaskTitle" disable="false" editable="false" layoutX="525.0" layoutY="28.0" prefWidth="249.0" />
+                <TextArea fx:id="tatDescription" disable="false" editable="false" layoutX="525.0" layoutY="65.0" prefHeight="219.0" prefWidth="249.0" wrapText="true" />
+                <TextArea fx:id="tatCondition" disable="false" editable="false" layoutX="525.0" layoutY="295.0" prefHeight="66.0" prefWidth="249.0" wrapText="true" />
                 <Button fx:id="btnDismissTask" layoutX="591.0" layoutY="382.0" mnemonicParsing="false" onAction="#dismissTask" prefWidth="181.0" styleClass="ButtonDismiss" text="Weigeren">
                   <stylesheets>
                     <URL value="@../Style.css" />

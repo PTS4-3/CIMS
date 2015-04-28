@@ -25,7 +25,7 @@ public interface ITask extends Serializable {
     TaskStatus getStatus();
     void setStatus(TaskStatus status);
     ISortedData getSortedData();
-    void setSortedData(SortedData data);
+    void setSortedData(ISortedData data);
     Tag getTargetExecutor();
     IServiceUser getExecutor();
     void setExecutor(IServiceUser serviceUser);
