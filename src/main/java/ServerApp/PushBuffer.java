@@ -84,7 +84,9 @@ public class PushBuffer {
         }
         if (this.sortedDataBuffer.get(clientID) == null
                 && this.sentDataBuffer.get(clientID) == null
-                && this.requestBuffer.get(clientID) == null) {
+                && this.requestBuffer.get(clientID) == null
+                && this.tasksBuffer.get(clientID) == null
+                && this.clientIDs.get(username) != null) {
             this.clientIDs.get(username).remove(clientID);
 
             if (this.clientIDs.get(username).isEmpty()) {
