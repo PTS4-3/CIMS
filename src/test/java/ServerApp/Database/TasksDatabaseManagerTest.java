@@ -93,10 +93,6 @@ public class TasksDatabaseManagerTest {
         task = (Task) myDB.insertNewTask(task);
         assertNotNull("Unable to insert full task", task);
 
-        // set task status
-        task.setStatus(TaskStatus.INPROCESS);
-        assertTrue("failed to update task status", myDB.setTaskStatus(task));
-
         // get task
         Task task2 = (Task) myDB.getTask(task.getId());
         assertNull("declineReason was not null",

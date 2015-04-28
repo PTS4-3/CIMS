@@ -329,38 +329,6 @@ public class TasksDatabaseManager extends DatabaseManager {
     }
 
     /**
-     * Updates status in database to status of given task. Nothing else is done.
-     *
-     * @param input
-     * @return
-     */
-    public boolean setTaskStatus(ITask input) {
-        if (!openConnection() || (input == null)) {
-            return false;
-        }
-        boolean result = false;
-        String query;
-        PreparedStatement prepStat;
-
-        try {
-            // overwrites if existing, inserts if not
-            query = "UPDATE " + taskTable + " SET STATUS = ? WHERE ID = ?";
-            prepStat = conn.prepareStatement(query);
-            prepStat.setString(1, input.getStatus().toString());
-            prepStat.setInt(2, input.getId());
-            prepStat.execute();
-            result = true;
-        } catch (SQLException ex) {
-            System.out.println("failed to set task status: " + ex.getMessage());
-            Logger.getLogger(TasksDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
-            result = false;
-        } finally {
-            closeConnection();
-        }
-        return result;
-    }
-
-    /**
      *
      * @param ID
      * @return Task with given ID. Null if ID == -1 or no Task found.
@@ -399,11 +367,11 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @param input
      * @return
      */
-    public ITask updateTask(ITask input) {
+    public boolean updateTask(ITask input) {
         if (!openConnection() || (input == null)) {
-            return null;
+            return false;
         }
-        ITask output = null;
+        boolean output = false;
         String query;
         PreparedStatement prepStat;
 
@@ -429,11 +397,11 @@ public class TasksDatabaseManager extends DatabaseManager {
             }
 
             // returns updated task
-            output = getTask(input.getId());
+            output = true;
         } catch (SQLException ex) {
             System.out.println("failed to update task: " + ex.getMessage());
             Logger.getLogger(TasksDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
-            output = null;
+            output = false;
         } finally {
             closeConnection();
         }
