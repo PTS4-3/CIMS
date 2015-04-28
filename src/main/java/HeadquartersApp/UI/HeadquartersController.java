@@ -96,7 +96,7 @@ public class HeadquartersController implements Initializable {
     @FXML TextField tfsTaskTitle;
     @FXML TextArea tasTaskDescription;
     @FXML ComboBox cbsExecutor;
-    @FXML Label lblSingleTaskReport;
+    @FXML Label lblProcessSortedData;
     
     // SendPlan
     @FXML Tab tabSendPlan;
@@ -107,7 +107,7 @@ public class HeadquartersController implements Initializable {
     @FXML TextField tfpTaskTitle;
     @FXML TextArea tapTaskDescription;
     @FXML TextField tfpCondition;
-    @FXML Label lblRoadMapReport;
+    @FXML Label lblSendPlan;
     
     // ApplyPlan
     @FXML Tab tabApplyPlan;
@@ -120,7 +120,7 @@ public class HeadquartersController implements Initializable {
     @FXML TextArea tfaTaskDescription;
     @FXML TextField tfaTaskCondition;
     @FXML ComboBox cbaExecutor;
-    @FXML Label lblTaskReport;
+    @FXML Label lblApplyPlan;
     
     // Tasks
     @FXML Tab tabTask;
@@ -132,7 +132,7 @@ public class HeadquartersController implements Initializable {
     @FXML TextField tftExecutor;
     @FXML TextField tftReason;
     @FXML ComboBox cbtNewExecutor;
-    @FXML Label lblTaskMessages;
+    @FXML Label lblTasks;
     
     private IData requestData;
     private IData sortedData;
@@ -253,10 +253,10 @@ public class HeadquartersController implements Initializable {
         
         lblUnsortedReport.setVisible(false);
         lblInformationReport.setVisible(false);
-        lblSingleTaskReport.setVisible(false);
-        lblRoadMapReport.setVisible(false);
-        lblTaskReport.setVisible(false);
-        lblTaskMessages.setVisible(false);
+        lblProcessSortedData.setVisible(false);
+        lblSendPlan.setVisible(false);
+        lblApplyPlan.setVisible(false);
+        lblTasks.setVisible(false);
         
         if(user instanceof IHQChief){
             tabProcessSortedData.setDisable(false);
@@ -270,12 +270,15 @@ public class HeadquartersController implements Initializable {
                 throw new NetworkException("Kon geen data ophalen");
             }
             this.connectionManager.getData();
-            this.connectionManager.getSortedData();
-            this.connectionManager.getServiceUsers();
+            
             
             if(user instanceof IHQChief){
                 connectionManager.subscribeTasks();
                 this.connectionManager.subscribeSortedData();
+                
+                this.connectionManager.getSortedData();
+                this.connectionManager.getServiceUsers();
+                this.connectionManager.getTasks();
             }
             
             this.startTimer();        
@@ -649,7 +652,7 @@ public class HeadquartersController implements Initializable {
             tfsLocation.clear();
         }
         
-        lblSingleTaskReport.setVisible(false);
+        lblProcessSortedData.setVisible(false);
     }
     
     /**
@@ -703,6 +706,8 @@ public class HeadquartersController implements Initializable {
                 data.setTasks(tempTasks);
                 displaySortedDataTasks(data.getTasks());
                 tempTasks.clear();
+                
+                connectionManager.getSortedData();
             } else
                 showDialog("Foutmelding", "Titel mag niet hetzelfde zijn als een eerder toegevoegde taak", true);
             
@@ -712,8 +717,8 @@ public class HeadquartersController implements Initializable {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
         
-        lblSingleTaskReport.setVisible(true);
-        lblSingleTaskReport.setText("Taak is verzonden naar de database");
+        lblProcessSortedData.setVisible(true);
+        lblProcessSortedData.setText("Taak is verzonden naar de database");
     }
     
     /**
@@ -752,7 +757,7 @@ public class HeadquartersController implements Initializable {
         tfpTaskTitle.clear();
         tapTaskDescription.clear();
         tfpCondition.clear();
-        lblRoadMapReport.setVisible(false);
+        lblSendPlan.setVisible(false);
     }
     
     /**
@@ -854,7 +859,7 @@ public class HeadquartersController implements Initializable {
         lvaSteps.getItems().clear();
         tfaTaskTitle.clear();
         tfaTaskDescription.clear();
-        lblTaskReport.setVisible(false);
+        lblApplyPlan.setVisible(false);
     }
     
     /**
@@ -925,7 +930,7 @@ public class HeadquartersController implements Initializable {
         IPlan plan =
                 (IPlan) lvaPlans.getSelectionModel().getSelectedItem();
         if(plan != null){
-            lblTaskReport.setVisible(false);
+            lblApplyPlan.setVisible(false);
             lvaSteps.getItems().clear();
             displaySteps();            
         }
@@ -970,7 +975,7 @@ public class HeadquartersController implements Initializable {
     public void selectStep(){
         IStep s = (IStep) lvaSteps.getSelectionModel().getSelectedItem();
         if(s != null){
-            lblTaskReport.setVisible(false);
+            lblApplyPlan.setVisible(false);
             tfaTaskTitle.setText(s.getTitle());
             tfaTaskDescription.setText(s.getDescription());
             tfaTaskCondition.setText(s.getCondition());            
@@ -1041,7 +1046,7 @@ public class HeadquartersController implements Initializable {
             tatDescription.setText(task.getDescription());
             tftExecutor.setText(task.getExecutor().getName());
             tftReason.setText(task.getDeclineReason());
-            lblTaskMessages.setVisible(false);
+            lblTasks.setVisible(false);
             
             this.connectionManager.getServiceUsers();
             List<IServiceUser> users = cbtNewExecutor.getItems();
@@ -1094,8 +1099,8 @@ public class HeadquartersController implements Initializable {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
         
-        lblTaskMessages.setVisible(true);
-        lblTaskMessages.setText("Taak is up-to-date");
+        lblTasks.setVisible(true);
+        lblTasks.setText("Taak is up-to-date");
     }
     
     public void logOutClick() {
