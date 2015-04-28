@@ -145,8 +145,7 @@ public class HeadquartersController implements Initializable {
     private IUser user = null;
     private Headquarters main;
 
-    private ObservableList<IServiceUser> observableSU;
-    
+   
     public void setApp(Headquarters application) {
         this.main = application;
     }
@@ -561,8 +560,7 @@ public class HeadquartersController implements Initializable {
      * @param serviceUsers 
      */
     public void displayServiceUsers(List<IServiceUser> serviceUsers){
-        Platform.runLater(new Runnable() {           
-
+        Platform.runLater(new Runnable() {                   
             @Override
             public void run() {
                 
@@ -576,16 +574,16 @@ public class HeadquartersController implements Initializable {
                     }
                 } else
                     users.addAll(serviceUsers);
+                ObservableList<IServiceUser> observableSU1 = observableArrayList(users);
                 
-                observableSU = observableArrayList(users);
-                
-                cbsExecutor.setItems(observableSU);
+                cbsExecutor.setItems(observableSU1);
                 if(cbsExecutor.getSelectionModel().getSelectedItem() == null) {
                     cbsExecutor.getSelectionModel().selectFirst();
                 }
                 
                 
-                IStep step = (IStep)lvaSteps.getSelectionModel().getSelectedItem();                
+                IStep step = (IStep)lvaSteps.getSelectionModel().getSelectedItem();
+                users = new ArrayList<>();
                 if (step != null) {
                     for (IServiceUser s : serviceUsers) {
                         if (s.getType() == step.getTargetExecutor()) {
@@ -595,15 +593,16 @@ public class HeadquartersController implements Initializable {
                 } else
                     users.addAll(serviceUsers);
                 
-                observableSU = observableArrayList(users);
+                ObservableList<IServiceUser> observableSU2 = observableArrayList(users);
                 
-                cbaExecutor.setItems(observableSU);
+                cbaExecutor.setItems(observableSU2);
                 if(cbaExecutor.getSelectionModel().getSelectedItem() == null) {
                     cbaExecutor.getSelectionModel().selectFirst();
                 }
                 
                 
                 task = (ITask)lvtTasks.getSelectionModel().getSelectedItem();
+                users = new ArrayList<>();
                 if (task != null) {
                     for (IServiceUser s : serviceUsers) {
                         if (s.getType() == task.getTargetExecutor()) {
@@ -613,9 +612,9 @@ public class HeadquartersController implements Initializable {
                 } else
                     users.addAll(serviceUsers);
                 
-                observableSU = observableArrayList(users);
+                ObservableList<IServiceUser> observableSU3 = observableArrayList(users);
                 
-                cbtNewExecutor.setItems(observableSU);
+                cbtNewExecutor.setItems(observableSU3);
                 if(cbaExecutor.getSelectionModel().getSelectedItem() == null) {
                     cbaExecutor.getSelectionModel().selectFirst();
                 }
@@ -697,6 +696,7 @@ public class HeadquartersController implements Initializable {
 
                 data.setTasks(tempTasks);
                 displaySortedDataTasks(tempTasks);
+                tempTasks.clear();
             } else
                 showDialog("Foutmelding", "Titel mag niet hetzelfde zijn als een eerder toegevoegde taak", true);
             
