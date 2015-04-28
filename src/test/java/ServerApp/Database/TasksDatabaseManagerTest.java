@@ -124,7 +124,7 @@ public class TasksDatabaseManagerTest {
 
             if (taskItem.getId() == 3) {
                 expectedTitle = "Zet ladder neer";
-                expectedDescription = "Zet de ladder tegen de boom.";                
+                expectedDescription = "Zet de ladder tegen de boom.";
                 expectedReason = null;
                 expectedTag = Tag.FIREDEPARTMENT;
                 expectedHasData = false;
@@ -133,7 +133,7 @@ public class TasksDatabaseManagerTest {
             } else if (taskItem.getId() == 4) {
                 expectedTitle = "Kat pakken";
                 expectedDescription = "Beklim de ladder en haal de kat uit de boom.";
-                expectedReason = "Allergies voor katten";
+                expectedReason = "Allergisch voor katten";
                 expectedTag = Tag.FIREDEPARTMENT;
                 expectedHasData = false;
                 expectedDataID = -1;
@@ -167,11 +167,11 @@ public class TasksDatabaseManagerTest {
 
         // gets only active tasks
         tasks = myDB.getTasks(executor.getUsername(), true);
-            for(ITask taskItem : tasks){
-                assertTrue("wrong tag in active tasks",
-                        taskItem.getStatus() == TaskStatus.SENT
-                                || taskItem.getStatus() == TaskStatus.INPROCESS);
-            }
+        for (ITask taskItem : tasks) {
+            assertTrue("wrong tag in active tasks",
+                    taskItem.getStatus() == TaskStatus.SENT
+                    || taskItem.getStatus() == TaskStatus.INPROCESS);
+        }
 
         // get sorted data tasks
         tasks = myDB.getSortedDataTasks(data);
@@ -213,12 +213,12 @@ public class TasksDatabaseManagerTest {
         plans = myDB.getPlans(keywordSet);
         assertTrue("did not retrieve the right number of plans", plans.size() == 1);
         assertEquals("did not retrieve the right plan", 1, plans.get(0).getId());
-        
+
         keywordSet.add("drie verdiepingen");
         plans = myDB.getPlans(keywordSet);
         assertTrue("did not retrieve the right number of plans", plans.size() == 1);
         assertEquals("did not retrieve the right plan", 1, plans.get(0).getId());
-        
+
         plans = myDB.getPlans(new HashSet<>());
         assertTrue("Not all plans were retrieved", plans.size() == 4);
 
@@ -240,7 +240,7 @@ public class TasksDatabaseManagerTest {
                         + " autos en troep op de weg.";
                 expectedKeywordsCount = 6;
                 expectedStepCount = 4;
-            } else if (planItem.getId() == 3 || planItem.getId() == 4){
+            } else if (planItem.getId() == 3 || planItem.getId() == 4) {
                 expectedTitle = plan.getTitle();
                 expectedDesc = plan.getDescription();
                 expectedKeywordsCount = plan.getKeywords().size();
@@ -306,23 +306,49 @@ public class TasksDatabaseManagerTest {
         // get service users
         List<IServiceUser> serviceUsers = myDB.getServiceUsers();
         assertTrue("not all serviceUsers were retrieved",
-                serviceUsers.size() == 3);
+                serviceUsers.size() == 9);
 
-        for(IServiceUser sUser : serviceUsers){
+        for (IServiceUser sUser : serviceUsers) {
             String expectedName = "????????";
             Tag expectedTag = null;
 
-            if(sUser.getUsername().equals("firefighter01")){
-                expectedName = "Bart Bouten";
-                expectedTag = Tag.FIREDEPARTMENT;
-            } else if (sUser.getUsername().equals("paramedic01")){
-                expectedName = "Linda van Engelen";
-                expectedTag = Tag.AMBULANCE;
-            } else if (sUser.getUsername().equals("policeofficer01")){
-                expectedName = "Bob Steers";
-                expectedTag = Tag.POLICE;
-            } else {
-                fail("unexpected username: " + sUser.getUsername());
+            switch (sUser.getUsername()) {
+                case "firefighter01":
+                    expectedName = "Bart Bouten";
+                    expectedTag = Tag.FIREDEPARTMENT;
+                    break;
+                case "firefighter02":
+                    expectedName = "Henk van Wylijck";
+                    expectedTag = Tag.FIREDEPARTMENT;
+                    break;
+                case "firefighter03":
+                    expectedName = "Jos Hegger";
+                    expectedTag = Tag.FIREDEPARTMENT;
+                    break;
+                case "firefighter04":
+                    expectedName = "Frank Haverkort";
+                    expectedTag = Tag.FIREDEPARTMENT;
+                    break;
+                case "paramedic01":
+                    expectedName = "Linda van Engelen";
+                    expectedTag = Tag.AMBULANCE;
+                    break;
+                case "paramedic02":
+                    expectedName = "Yori Bogie";
+                    expectedTag = Tag.AMBULANCE;
+                    break;
+                case "policeofficer01":
+                    expectedName = "Bob Steers";
+                    expectedTag = Tag.POLICE;
+                    break;
+                case "policeofficer02":
+                    expectedName = "Klaas Smits";
+                    expectedTag = Tag.POLICE;
+                    break;
+                case "policeofficer03":
+                    expectedName = "Piet Zwarts";
+                    expectedTag = Tag.POLICE;
+                    break;
             }
 
             assertEquals("wrong name serviceUser", expectedName, sUser.getName());
