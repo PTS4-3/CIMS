@@ -120,7 +120,7 @@ public class HeadquartersController implements Initializable {
     @FXML TextArea tfaTaskDescription;
     @FXML TextField tfaTaskCondition;
     @FXML ComboBox cbaExecutor;
-    @FXML Label lblTaskMe;
+    @FXML Label lblTaskReport;
     
     // Tasks
     @FXML Tab tabTask;
@@ -144,6 +144,8 @@ public class HeadquartersController implements Initializable {
     private Timer timer;
     private IUser user = null;
     private Headquarters main;
+
+    private ObservableList<IServiceUser> observableSU;
     
     public void setApp(Headquarters application) {
         this.main = application;
@@ -247,18 +249,20 @@ public class HeadquartersController implements Initializable {
         tabProcessSortedData.setDisable(true);
         tabSendPlan.setDisable(true);
         tabApplyPlan.setDisable(true);
+        tabTask.setDisable(true);
         
         lblUnsortedReport.setVisible(false);
         lblInformationReport.setVisible(false);
         lblSingleTaskReport.setVisible(false);
         lblRoadMapReport.setVisible(false);
-        lblTaskMe.setVisible(false);
+        lblTaskReport.setVisible(false);
         lblTaskMessages.setVisible(false);
         
         if(user instanceof IHQChief){
             tabProcessSortedData.setDisable(false);
             tabSendPlan.setDisable(false);
             tabApplyPlan.setDisable(false);
+            tabTask.setDisable(false);
         }
         
         try {
@@ -557,11 +561,27 @@ public class HeadquartersController implements Initializable {
      * @param serviceUsers 
      */
     public void displayServiceUsers(List<IServiceUser> serviceUsers){
-        Platform.runLater(new Runnable() {
-            ObservableList<IServiceUser> observableSU = observableArrayList(serviceUsers);
+        Platform.runLater(new Runnable() {           
 
             @Override
             public void run() {
+                
+                IStep step = (IStep)lvaSteps.getSelectionModel().getSelectedItem();
+                List<IServiceUser> users = new ArrayList<>();
+                
+                if (step != null)
+                {
+                    for (IServiceUser s : serviceUsers)
+                    {
+                        if (s.getType() == step.getTargetExecutor())
+                        {
+                            users.add(s);
+                        }
+                    }
+                }
+                
+                observableSU = observableArrayList(users);
+                
                 cbsExecutor.setItems(observableSU);
                 if(cbsExecutor.getSelectionModel().getSelectedItem() == null) {
                     cbsExecutor.getSelectionModel().selectFirst();
@@ -626,27 +646,36 @@ public class HeadquartersController implements Initializable {
                 throw new NetworkException("Kon data niet wegschrijven");
             }
             
+            ISortedData data = (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem();
             String title = tfsTaskTitle.getText();
             String description = tasTaskDescription.getText();
             ServiceUser executor = null;
             
-            Object object = cbsExecutor.getSelectionModel().getSelectedItem();
-            if(object != null && object instanceof ServiceUser)
-                executor = (ServiceUser)cbsExecutor.getSelectionModel().getSelectedItem();
-            else
-                showDialog("Foutmelding", "Geen uitvoerder geselecteerd", true);
-                
-            Task task = new Task(-1, title, description, TaskStatus.SENT, (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem(), executor.getType(), executor);
-            connectionManager.sendTask(task);
-            ISortedData data = (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem();
+            boolean correct = true;
+            for(ITask t : data.getTasks()){
+                if(t.getTitle() == title)
+                    correct = false;
+            }
             
-            if(tempTasks == null)
-                tempTasks = new ArrayList();
-            
-            tempTasks.add(task);
-            
-            data.setTasks(tempTasks);
-            displaySortedDataTasks(tempTasks);
+            if(correct){
+                Object object = cbsExecutor.getSelectionModel().getSelectedItem();
+                if(object != null && object instanceof ServiceUser)
+                    executor = (ServiceUser)cbsExecutor.getSelectionModel().getSelectedItem();
+                else
+                    showDialog("Foutmelding", "Geen uitvoerder geselecteerd", true);
+
+                Task task = new Task(-1, title, description, TaskStatus.SENT, (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem(), executor.getType(), executor);
+                connectionManager.sendTask(task);
+
+                if(tempTasks == null)
+                    tempTasks = new ArrayList();
+
+                tempTasks.add(task);
+
+                data.setTasks(tempTasks);
+                displaySortedDataTasks(tempTasks);
+            } else
+                showDialog("Foutmelding", "Titel mag niet hetzelfde zijn als een eerder toegevoegde taak", true);
             
         } catch (IllegalArgumentException iaEx) {
             showDialog("", iaEx.getMessage(), false);
@@ -899,14 +928,9 @@ public class HeadquartersController implements Initializable {
         if(s != null){
             tfaTaskTitle.setText(s.getTitle());
             tfaTaskDescription.setText(s.getDescription());
-            tfaTaskCondition.setText(s.getCondition());
+            tfaTaskCondition.setText(s.getCondition());            
+            this.connectionManager.getServiceUsers();         
             
-            this.connectionManager.getServiceUsers();
-            List<IServiceUser> users = cbaExecutor.getItems();
-            for(IServiceUser user : users){
-                if(user.getType() != s.getTargetExecutor())
-                    cbaExecutor.getItems().remove(user);
-            }
         } else {
             tfaTaskTitle.clear();
             tfaTaskDescription.clear();

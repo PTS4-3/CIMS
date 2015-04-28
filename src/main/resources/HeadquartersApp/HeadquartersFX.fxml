@@ -183,7 +183,7 @@
                 <Button fx:id="btnCancelTask" layoutX="1017.0" layoutY="417.0" mnemonicParsing="false" onAction="#refuseStep" prefWidth="170.0" text="Taak annuleren" />
                 <Button fx:id="btnApplyTask" layoutX="857.0" layoutY="417.0" mnemonicParsing="false" onAction="#applyStep" prefWidth="157.0" text="Taak toekennen" />
                 <Button fx:id="btnApplyRoadMap" layoutX="613.0" layoutY="417.0" mnemonicParsing="false" onAction="#applyPlan" prefHeight="31.0" prefWidth="180.0" text="Stappenplan toekennen" />
-                <Label id="lblTaskMe" fx:id="lblTaskReport" font="$x2" layoutX="844.0" layoutY="376.0" text="Melding" />
+                <Label fx:id="lblTaskReport" font="$x2" layoutX="844.0" layoutY="376.0" text="Melding" />
                         <TextField id="tfuTitle" fx:id="tfaTaskCondition" layoutX="966.0" layoutY="305.0" prefWidth="223.0" />
                         <Label layoutX="846.0" layoutY="305.0" text="Pre-conditie" />
               </children>
