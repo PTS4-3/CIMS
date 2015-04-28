@@ -144,6 +144,8 @@ public class HeadquartersController implements Initializable {
     private Timer timer;
     private IUser user = null;
     private Headquarters main;
+
+    private ObservableList<IServiceUser> observableSU;
     
     public void setApp(Headquarters application) {
         this.main = application;
@@ -579,11 +581,27 @@ public class HeadquartersController implements Initializable {
      * @param serviceUsers 
      */
     public void displayServiceUsers(List<IServiceUser> serviceUsers){
-        Platform.runLater(new Runnable() {
-            ObservableList<IServiceUser> observableSU = observableArrayList(serviceUsers);
+        Platform.runLater(new Runnable() {           
 
             @Override
             public void run() {
+                
+                IStep step = (IStep)lvaSteps.getSelectionModel().getSelectedItem();
+                List<IServiceUser> users = new ArrayList<>();
+                
+                if (step != null)
+                {
+                    for (IServiceUser s : serviceUsers)
+                    {
+                        if (s.getType() == step.getTargetExecutor())
+                        {
+                            users.add(s);
+                        }
+                    }
+                }
+                
+                observableSU = observableArrayList(users);
+                
                 cbsExecutor.setItems(observableSU);
                 if(cbsExecutor.getSelectionModel().getSelectedItem() == null) {
                     cbsExecutor.getSelectionModel().selectFirst();
@@ -930,14 +948,9 @@ public class HeadquartersController implements Initializable {
         if(s != null){
             tfaTaskTitle.setText(s.getTitle());
             tfaTaskDescription.setText(s.getDescription());
-            tfaTaskCondition.setText(s.getCondition());
+            tfaTaskCondition.setText(s.getCondition());            
+            this.connectionManager.getServiceUsers();         
             
-            this.connectionManager.getServiceUsers();
-            List<IServiceUser> users = cbaExecutor.getItems();
-            for(IServiceUser user : users){
-                if(user.getType() != s.getTargetExecutor())
-                    cbaExecutor.getItems().remove(user);
-            }
         } else {
             tfaTaskTitle.clear();
             tfaTaskDescription.clear();
