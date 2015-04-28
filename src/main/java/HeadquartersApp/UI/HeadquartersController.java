@@ -118,6 +118,7 @@ public class HeadquartersController implements Initializable {
     @FXML ListView lvaSteps;
     @FXML TextField tfaTaskTitle;
     @FXML TextArea tfaTaskDescription;
+    @FXML TextField tfaTaskCondition;
     @FXML ComboBox cbaExecutor;
     @FXML Label lblTaskMe;
     
@@ -722,6 +723,13 @@ public class HeadquartersController implements Initializable {
             tfsTaskTitle.setText(task.getTitle());
             tasTaskDescription.setText(task.getDescription());
             cbsExecutor.getSelectionModel().select(task.getExecutor());
+            
+            this.connectionManager.getServiceUsers();
+            List<IServiceUser> users = cbsExecutor.getItems();
+            for(IServiceUser user : users){
+                if(user.getType() != task.getTargetExecutor())
+                    cbsExecutor.getItems().remove(user);
+            }
         }
     }
     
@@ -911,9 +919,18 @@ public class HeadquartersController implements Initializable {
         if(s != null){
             tfaTaskTitle.setText(s.getTitle());
             tfaTaskDescription.setText(s.getDescription());
+            tfaTaskCondition.setText(s.getCondition());
+            
+            this.connectionManager.getServiceUsers();
+            List<IServiceUser> users = cbaExecutor.getItems();
+            for(IServiceUser user : users){
+                if(user.getType() != s.getTargetExecutor())
+                    cbaExecutor.getItems().remove(user);
+            }
         } else {
             tfaTaskTitle.clear();
             tfaTaskDescription.clear();
+            tfaTaskCondition.clear();
         }
     }
     
@@ -974,6 +991,13 @@ public class HeadquartersController implements Initializable {
             tatDescription.setText(task.getDescription());
             tftExecutor.setText(task.getExecutor().getName());
             tftReason.setText(task.getDeclineReason());
+            
+            this.connectionManager.getServiceUsers();
+            List<IServiceUser> users = cbtNewExecutor.getItems();
+            for(IServiceUser user : users){
+                if(user.getType() != task.getTargetExecutor())
+                    cbtNewExecutor.getItems().remove(user);
+            }
         }
     }
     
