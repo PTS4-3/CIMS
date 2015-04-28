@@ -20,6 +20,7 @@ import Shared.Users.IServiceUser;
 import Shared.Users.IUser;
 import Shared.Users.ServiceUser;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.TreeSet;
@@ -109,7 +110,7 @@ public class TasksDatabaseManagerTest {
                 task.getSortedData().getTitle().equals(task2.getSortedData().getTitle()));
 
         // get tasks
-        List<ITask> tasks = myDB.getTasks(executor.getUsername(), false);
+        List<ITask> tasks = myDB.getTasks(executor.getUsername(), new HashSet<>());
         assertTrue("wrong number of tasks", tasks.size() == 3);
 
         // tests if tasks are correct
@@ -166,7 +167,12 @@ public class TasksDatabaseManagerTest {
         }
 
         // gets only active tasks
-        tasks = myDB.getTasks(executor.getUsername(), true);
+        TaskStatus[] desiredStatuses = new TaskStatus[]{
+            TaskStatus.SENT,
+            TaskStatus.INPROCESS
+        };
+        tasks = myDB.getTasks(executor.getUsername(), new HashSet<>(
+                Arrays.asList(desiredStatuses)));
         for (ITask taskItem : tasks) {
             assertTrue("wrong tag in active tasks",
                     taskItem.getStatus() == TaskStatus.SENT

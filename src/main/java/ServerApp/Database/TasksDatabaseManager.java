@@ -490,12 +490,12 @@ public class TasksDatabaseManager extends DatabaseManager {
 
     /**
      *
-     * @param execUserName if null, return all tasks
-     * @param activeTasksOnly
+     * @param execUserName if null or empty, return all tasks
+     * @param filter
      * @return
      */
-    public List<ITask> getTasks(String execUserName, boolean activeTasksOnly) {
-        if (!openConnection()) {
+    public List<ITask> getTasks(String execUserName, HashSet<TaskStatus> filter) {
+        if (!openConnection() || filter == null) {
             return null;
         }
         List<ITask> output = null;
@@ -505,19 +505,26 @@ public class TasksDatabaseManager extends DatabaseManager {
 
         try {
             query = "SELECT * FROM " + taskTable;
-            if (execUserName != null) {
+            if (execUserName != null && !execUserName.isEmpty()) {
                 query += " WHERE ID IN "
                         + "(SELECT TASKID FROM " + userTaskTable
                         + " WHERE USERNAME = ?)";
             }
-            if (activeTasksOnly) {
-                query += " AND STATUS = ? OR STATUS = ?";
+            boolean firstItem = true;
+            for(TaskStatus status : filter){
+                if(firstItem){
+                    query += " AND STATUS = ?";
+                    firstItem = false;
+                } else {
+                    query += " OR STATUS = ?";
+                }
             }
             prepStat = conn.prepareStatement(query);
             prepStat.setString(1, execUserName);
-            if (activeTasksOnly) {
-                prepStat.setString(2, TaskStatus.SENT.toString());
-                prepStat.setString(3, TaskStatus.INPROCESS.toString());
+
+            int count = 2;
+            for (TaskStatus status : filter) {
+                prepStat.setString(count++, status.toString());
             }
             rs = prepStat.executeQuery();
 
