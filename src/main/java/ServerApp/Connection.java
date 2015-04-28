@@ -759,14 +759,16 @@ public class Connection implements Runnable {
         }
 
         ITask task = (ITask) inObject;
+        boolean success = false;
 
         synchronized (TASKSLOCK) {
             task = ServerMain.tasksDatabaseManager.insertNewTask(task);
         }
         if (task != null) {
             getBuffer().addTask(task);
+            success = true;
         }
-        this.writeResult(task != null);
+        this.writeResult(success);
     }
 
     /**
@@ -783,11 +785,17 @@ public class Connection implements Runnable {
         }
 
         IPlan plan = (IPlan) inObject;
+        boolean success = false;
 
         synchronized (TASKSLOCK) {
             plan = ServerMain.tasksDatabaseManager.insertNewPlan(plan);
         }
-        this.writeResult(plan != null);
+        
+        if(plan != null) {
+            success = true;
+        }
+        
+        this.writeResult(success);
     }
 
     /**
@@ -801,6 +809,7 @@ public class Connection implements Runnable {
         }
 
         IPlan plan = (IPlan) inObject;
+        boolean success = false;
 
         synchronized (TASKSLOCK) {
             plan = ServerMain.tasksDatabaseManager.insertNewPlan(plan);
@@ -808,8 +817,9 @@ public class Connection implements Runnable {
 
         if (plan != null) {
             getPlanExecutorHandler().addPlanExecutor(plan);
+            success = true;
         }
-        this.writeResult(plan != null);
+        this.writeResult(success);
     }
 
     /**

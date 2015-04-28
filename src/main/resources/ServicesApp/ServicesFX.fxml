@@ -54,7 +54,7 @@
                 <TextField fx:id="tfuSource" disable="true" layoutX="490.0" layoutY="365.0" prefWidth="289.0" />
                 <Button layoutX="589.0" layoutY="465.0" mnemonicParsing="false" onAction="#resetSentData" text="Reset" />
                 <Button layoutX="670.0" layoutY="465.0" mnemonicParsing="false" onAction="#sendUpdate" text="Verzenden" />
-                <Label fx:id="lblMessageUpdate" font="$x2" layoutX="378.0" layoutY="407.0" text="Het verzenden van de aanvraag voor  een update is geslaagd" />
+                <Label fx:id="lblMessageUpdate" font="$x2" layoutX="499.0" layoutY="407.0" text="Het verzenden van de update is geslaagd" />
               </children>
             </AnchorPane>
           </content>

@@ -1085,13 +1085,6 @@ public class HeadquartersController implements Initializable {
             lblTasks.setVisible(false);
 
             this.connectionManager.getServiceUsers();
-            List<IServiceUser> users = cbtNewExecutor.getItems();
-            for (int rep = 0; rep < users.size(); rep++) {
-                if (users.get(rep).getType() != task.getTargetExecutor()) {
-                    cbtNewExecutor.getItems().remove(rep);
-                    rep--;
-                }
-            }
         }
     }
 

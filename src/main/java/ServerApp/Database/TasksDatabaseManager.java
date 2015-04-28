@@ -505,12 +505,15 @@ public class TasksDatabaseManager extends DatabaseManager {
 
         try {
             query = "SELECT * FROM " + taskTable;
+            int count = 1;
             if (execUserName != null && !execUserName.isEmpty()) {
                 query += " WHERE ID IN "
                         + "(SELECT TASKID FROM " + userTaskTable
                         + " WHERE USERNAME = ?)";
+                count++;
             }
             boolean firstItem = true;
+            
             for(TaskStatus status : filter){
                 if(firstItem && execUserName != null && !execUserName.isEmpty()){
                     query += " AND STATUS = ?";
@@ -518,23 +521,25 @@ public class TasksDatabaseManager extends DatabaseManager {
                 } else if(firstItem){
                     query += " WHERE STATUS = ?";
                     firstItem = false;
-                }else {
+                } else {
                     query += " OR STATUS = ?";
                 }
             }
             prepStat = conn.prepareStatement(query);
-            prepStat.setString(1, execUserName);
+            if(execUserName != null && !execUserName.isEmpty()) {
+                prepStat.setString(1, execUserName);
+            }
 
-            int count = 1;
             for (TaskStatus status : filter) {
-                prepStat.setString(count++, status.toString());
+                prepStat.setString(count, status.toString());
+                count++;
             }
             rs = prepStat.executeQuery();
 
             // Delegates extracting tasks
             output = this.extractTasks(rs, null);
         } catch (SQLException ex) {
-            if (execUserName != null) {
+            if (execUserName != null && !execUserName.isEmpty()) {
                 System.out.print("(given IServiceUser: "
                         + execUserName + ") ");
             }

@@ -531,10 +531,13 @@ public class ServicesController implements Initializable {
             if (this.showingDataItem) {
                 this.resetSentData();
             }
+            
+            // Update value is listview
+            lvuSentData.getItems().remove(sentData);
+            lvuSentData.getItems().add(update);
 
             // Bevestiging tonen
-            lblMessageUpdate.setText("Het verzenden van de aanvraag voor "
-                    + "een update is geslaagd");
+            lblMessageUpdate.setText("Het verzenden van de update is geslaagd");
         } catch (IllegalArgumentException iaEx) {
             showDialog("Invoer onjuist", iaEx.getMessage(), true);
         } catch (NetworkException nEx) {
@@ -557,7 +560,6 @@ public class ServicesController implements Initializable {
             // Clear sentData
             lvuSentData.getItems().clear();
 
-            // TODO source
             this.connectionManager.getSentData(this.user.getUsername());
         } catch (NetworkException nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
