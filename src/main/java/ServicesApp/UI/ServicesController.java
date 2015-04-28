@@ -704,11 +704,12 @@ public class ServicesController implements Initializable {
             if (selectedTask != null) {
                 selectedTask.setStatus(TaskStatus.INPROCESS);
                 this.connectionManager.updateTask(selectedTask);
+                //dismiss task succeed message
+                lblMessageTask.setText("Het accepteren van de taak is gelukt.");
             } else {
                 showDialog("Taak selectie", "Geen taak geselecteerd", false);
             }
-            //dismiss task succeed message
-            lblMessageTask.setText("Het accepteren van de taak is gelukt.");
+            
         } catch (Exception nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
@@ -728,34 +729,18 @@ public class ServicesController implements Initializable {
                     selectedTask.setStatus(TaskStatus.REFUSED);
                     selectedTask.setDeclineReason(argument);
                     this.connectionManager.updateTask(selectedTask);
+                    //dismiss task succeed message
+                    lblMessageTask.setText("Het weigeren van de taak is gelukt.");
                 } else {
                     showDialog("Taak selectie", "Geen taak geselecteerd", false);
                 }
-                //dismiss task succeed message
-                lblMessageTask.setText("Het weigeren van de taak is gelukt.");
+                
             }
         } catch (Exception nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
     }
 
-    /**
-     * Status Task to not done
-     */
-    public void notDoneTask() {
-        try {
-            if (selectedTask != null) {
-                selectedTask.setStatus(TaskStatus.FAILED);
-                this.connectionManager.updateTask(selectedTask);
-            } else {
-                showDialog("Taak selectie", "Geen taak geselecteerd", false);
-            }
-            //dismiss task succeed message
-            lblMessageTask.setText("Het veranderen van de status is gelukt.");
-        } catch (Exception nEx) {
-            showDialog("Geen verbinding met server", nEx.getMessage(), true);
-        }
-    }
 
     /**
      * Status Task to failed
@@ -765,11 +750,12 @@ public class ServicesController implements Initializable {
             if (selectedTask != null) {
                 selectedTask.setStatus(TaskStatus.FAILED);
                 this.connectionManager.updateTask(selectedTask);
+                //dismiss task succeed message
+                lblMessageTask.setText("Het veranderen van de status is gelukt.");
             } else {
                 showDialog("Taak selectie", "Geen taak geselecteerd", false);
             }
-            //dismiss task succeed message
-            lblMessageTask.setText("Het veranderen van de status is gelukt.");
+            
         } catch (Exception nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
@@ -783,11 +769,12 @@ public class ServicesController implements Initializable {
             if (selectedTask != null) {
                 selectedTask.setStatus(TaskStatus.SUCCEEDED);
                 this.connectionManager.updateTask(selectedTask);
+                //dismiss task succeed message
+                lblMessageTask.setText("Het veranderen van de status is gelukt.");
             } else {
                 showDialog("Taak selectie", "Geen taak geselecteerd", false);
             }
-            //dismiss task succeed message
-            lblMessageTask.setText("Het veranderen van de status is gelukt.");
+            
         } catch (Exception nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }

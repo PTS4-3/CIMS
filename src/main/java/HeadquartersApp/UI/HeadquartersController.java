@@ -409,26 +409,6 @@ public class HeadquartersController implements Initializable {
     }
     
     /**
-     * Set status current data back to none
-     */
-    public void close() {        
-        if(this.connectionManager != null){
-            //this.connectionManager.unsubscribeSortedData(this.user.getUsername());
-            
-            if(user instanceof IHQChief){
-                connectionManager.unsubscribeTasks();
-            }
-            
-            this.connectionManager.stopWorkingOnData(
-                    new ArrayList<>(lvuUnsortedData.getItems()));
-            this.connectionManager.close();
-        }
-        if(this.timer != null) {
-            this.timer.cancel();
-        }
-    }
-    
-    /**
      * Set status to discarded
      */
     public void discard() {
@@ -1032,13 +1012,24 @@ public class HeadquartersController implements Initializable {
         }
     }
     
+    /**
+     * Set status current data back to none
+     */
     public void close(boolean logout) {
         if (this.connectionManager != null) {
-            this.connectionManager.unsubscribeSortedData();
-            this.connectionManager.unsubscribeTasks();
+            if(user instanceof IHQChief){
+                connectionManager.unsubscribeTasks();
+            }
+            
+            this.connectionManager.stopWorkingOnData(
+                    new ArrayList<>(lvuUnsortedData.getItems()));
+            this.connectionManager.unsubscribeSortedData();            
         }
         if (!logout) {
             this.connectionManager.close();
+        }
+        if(this.timer != null) {
+            this.timer.cancel();
         }
     }
     

@@ -82,7 +82,7 @@ public class Headquarters extends Application {
     @Override
     public void stop() throws Exception {
         if(hqController != null){
-            hqController.close();
+            hqController.close(false);
         }    
         super.stop();
     }
