@@ -335,6 +335,7 @@ public class HeadquartersController implements Initializable {
         suRelevance.setValue(suRelevance.getMin());
         suReliability.setValue(suReliability.getMin());
         suQuality.setValue(suQuality.getMin());
+        lblUnsortedReport.setVisible(false);
     }
 
     /**
@@ -416,6 +417,9 @@ public class HeadquartersController implements Initializable {
         } catch (NetworkException nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
+        
+        lblUnsortedReport.setVisible(true);
+        lblUnsortedReport.setText("Data is verzonden naar de database");
     }
 
     /**
@@ -446,6 +450,9 @@ public class HeadquartersController implements Initializable {
         } catch (NetworkException nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
+        
+        lblUnsortedReport.setVisible(true);
+        lblUnsortedReport.setText("Data is verwijderd uit de database");
     }
 
     /**
@@ -505,6 +512,9 @@ public class HeadquartersController implements Initializable {
         } catch (NetworkException nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
+        
+        lblInformationReport.setVisible(true);
+        lblInformationReport.setText("Verzoek is verstuurd");
     }
 
     /**
@@ -517,6 +527,7 @@ public class HeadquartersController implements Initializable {
         tarDescription.clear();
         tfrLocation.clear();
         ccrTags.getCheckModel().clearChecks();
+        lblInformationReport.setVisible(false);
     }
 
     // ProcessSortedData--------------------------------------------------------
