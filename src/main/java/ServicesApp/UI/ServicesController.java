@@ -769,7 +769,6 @@ public class ServicesController implements Initializable {
     public void dismissTask() {
             String argument = showArgumentDialog();
             if(argument == null){
-                System.out.println("Cancel Dismiss");
                 return;
             }
             if (argument.isEmpty() || argument.equals(" ")) {
