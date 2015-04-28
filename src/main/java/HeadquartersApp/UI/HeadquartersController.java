@@ -645,6 +645,8 @@ public class HeadquartersController implements Initializable {
             tfsSource.clear();
             tfsLocation.clear();
         }
+        
+        lblSingleTaskReport.setVisible(false);
     }
     
     /**
@@ -687,6 +689,7 @@ public class HeadquartersController implements Initializable {
                     showDialog("Foutmelding", "Geen uitvoerder geselecteerd", true);
 
                 Task task = new Task(-1, title, description, TaskStatus.SENT, (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem(), executor.getType(), executor);
+                
                 connectionManager.sendTask(task);
 
                 if(tempTasks == null)
@@ -695,7 +698,7 @@ public class HeadquartersController implements Initializable {
                 tempTasks.add(task);
 
                 data.setTasks(tempTasks);
-                displaySortedDataTasks(tempTasks);
+                displaySortedDataTasks(data.getTasks());
                 tempTasks.clear();
             } else
                 showDialog("Foutmelding", "Titel mag niet hetzelfde zijn als een eerder toegevoegde taak", true);
@@ -705,6 +708,9 @@ public class HeadquartersController implements Initializable {
         } catch (NetworkException nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
+        
+        lblSingleTaskReport.setVisible(true);
+        lblSingleTaskReport.setText("Taak is verzonden naar de database");
     }
     
     /**
@@ -743,6 +749,7 @@ public class HeadquartersController implements Initializable {
         tfpTaskTitle.clear();
         tapTaskDescription.clear();
         tfpCondition.clear();
+        lblRoadMapReport.setVisible(false);
     }
     
     /**
@@ -844,6 +851,7 @@ public class HeadquartersController implements Initializable {
         lvaSteps.getItems().clear();
         tfaTaskTitle.clear();
         tfaTaskDescription.clear();
+        lblTaskReport.setVisible(false);
     }
     
     /**
@@ -914,6 +922,7 @@ public class HeadquartersController implements Initializable {
         IPlan plan =
                 (IPlan) lvaPlans.getSelectionModel().getSelectedItem();
         if(plan != null){
+            lblTaskReport.setVisible(false);
             lvaSteps.getItems().clear();
             displaySteps();            
         }
@@ -958,6 +967,7 @@ public class HeadquartersController implements Initializable {
     public void selectStep(){
         IStep s = (IStep) lvaSteps.getSelectionModel().getSelectedItem();
         if(s != null){
+            lblTaskReport.setVisible(false);
             tfaTaskTitle.setText(s.getTitle());
             tfaTaskDescription.setText(s.getDescription());
             tfaTaskCondition.setText(s.getCondition());            
@@ -1028,6 +1038,7 @@ public class HeadquartersController implements Initializable {
             tatDescription.setText(task.getDescription());
             tftExecutor.setText(task.getExecutor().getName());
             tftReason.setText(task.getDeclineReason());
+            lblTaskMessages.setVisible(false);
             
             this.connectionManager.getServiceUsers();
             List<IServiceUser> users = cbtNewExecutor.getItems();
@@ -1039,7 +1050,6 @@ public class HeadquartersController implements Initializable {
     }
     
     public void markAsRead(){
-        //TODO
         try {
             if(connectionManager == null){
                 throw new NetworkException("Kon data niet wegschrijven");
@@ -1059,7 +1069,6 @@ public class HeadquartersController implements Initializable {
     }
     
     public void updateTask(){
-        //TODO
         try{
             if(connectionManager == null){
                 throw new NetworkException("Kon data niet wegschrijven");
@@ -1081,6 +1090,9 @@ public class HeadquartersController implements Initializable {
         } catch (NetworkException nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
+        
+        lblTaskMessages.setVisible(true);
+        lblTaskMessages.setText("Taak is up-to-date");
     }
     
     public void logOutClick() {
