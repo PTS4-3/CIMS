@@ -513,10 +513,10 @@ public class TasksDatabaseManager extends DatabaseManager {
             boolean firstItem = true;
             for(TaskStatus status : filter){
                 if(firstItem && execUserName != null && !execUserName.isEmpty()){
-                    query += " WHERE STATUS = ?";
+                    query += " AND STATUS = ?";
                     firstItem = false;
                 } else if(firstItem){
-                    query += " AND STATUS = ?";
+                    query += " WHERE STATUS = ?";
                     firstItem = false;
                 }else {
                     query += " OR STATUS = ?";
