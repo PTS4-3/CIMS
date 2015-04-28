@@ -920,27 +920,36 @@ public class HeadquartersController implements Initializable {
     }
     
     public void applyPlan(){
-        if(sortedData != null){
-            List<IStep> steps = tempPlan.getSteps();
-            if(steps != null){
-                boolean done = true;
-                int step = 1;
+        try {
+            if(connectionManager == null){
+                throw new NetworkException("Kon data niet wegschrijven");
+            }
+            if(sortedData != null){
+                List<IStep> steps = tempPlan.getSteps();
+                if(steps != null){
+                    boolean done = true;
+                    int step = 1;
 
-                for(IStep s : steps){
-                    s.setStepnr(step);
-                    step++;
-                    if(s.getExecutor() == null)
-                        done = false;
-                }
+                    for(IStep s : steps){
+                        s.setStepnr(step);
+                        step++;
+                        if(s.getExecutor() == null)
+                            done = false;
+                    }
 
-                if(done){
-                    connectionManager.applyPlan(tempPlan);
+                    if(done){
+                        connectionManager.applyPlan(tempPlan);
+                    } else
+                        showDialog("Foutmelding", "Niet alle stappen hebben een uitvoerder", true);
                 } else
-                    showDialog("Foutmelding", "Niet alle stappen hebben een uitvoerder", true);
+                    showDialog("Foutmelding", "Het plan heeft geen stappen", true);
             } else
-                showDialog("Foutmelding", "Het plan heeft geen stappen", true);
-        } else
-            showDialog("Foutmelding", "Het plan kan niet worden toegepast als er geen gesorteerde data is geselecteerd", true);
+                showDialog("Foutmelding", "Het plan kan niet worden toegepast als er geen gesorteerde data is geselecteerd", true);
+        } catch (IllegalArgumentException iaEx) {
+            showDialog("", iaEx.getMessage(), false);
+        } catch (NetworkException nEx) {
+            showDialog("Geen verbinding met server", nEx.getMessage(), true);
+        }
     }
     
     /**
@@ -1031,23 +1040,47 @@ public class HeadquartersController implements Initializable {
     
     public void markAsRead(){
         //TODO
-        ITask task = (ITask) lvtTasks.getSelectionModel().getSelectedItem();
-        task.setStatus(TaskStatus.READ);
-        
-        connectionManager.updateTask(task);
+        try {
+            if(connectionManager == null){
+                throw new NetworkException("Kon data niet wegschrijven");
+            }
+            
+            ITask task = (ITask) lvtTasks.getSelectionModel().getSelectedItem();
+            if(task != null){
+                task.setStatus(TaskStatus.READ);
+
+                connectionManager.updateTask(task);
+            }
+        } catch (IllegalArgumentException iaEx) {
+            showDialog("", iaEx.getMessage(), false);
+        } catch (NetworkException nEx) {
+            showDialog("Geen verbinding met server", nEx.getMessage(), true);
+        }
     }
     
     public void updateTask(){
         //TODO
-        ITask task = (ITask) lvtTasks.getSelectionModel().getSelectedItem();
-        
-        Object object = cbtNewExecutor.getSelectionModel().getSelectedItem();
-        if(object != null && object instanceof IServiceUser)
-            task.setExecutor((IServiceUser) object);
-        else
-            showDialog("Foutmelding", "Geen uitvoerder geselecteerd", true);
-        
-        connectionManager.updateTask(task);
+        try{
+            if(connectionManager == null){
+                throw new NetworkException("Kon data niet wegschrijven");
+            }
+            
+            ITask task = (ITask) lvtTasks.getSelectionModel().getSelectedItem();
+
+            if(task != null){
+                Object object = cbtNewExecutor.getSelectionModel().getSelectedItem();
+                if(object != null && object instanceof IServiceUser)
+                    task.setExecutor((IServiceUser) object);
+                else
+                    showDialog("Foutmelding", "Geen uitvoerder geselecteerd", true);
+
+                connectionManager.updateTask(task);
+            }
+        } catch (IllegalArgumentException iaEx) {
+            showDialog("", iaEx.getMessage(), false);
+        } catch (NetworkException nEx) {
+            showDialog("Geen verbinding met server", nEx.getMessage(), true);
+        }
     }
     
     public void logOutClick() {
