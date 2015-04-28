@@ -566,19 +566,16 @@ public class HeadquartersController implements Initializable {
             @Override
             public void run() {
                 
-                IStep step = (IStep)lvaSteps.getSelectionModel().getSelectedItem();
+                ITask task = (ITask)lvsTasks.getSelectionModel().getSelectedItem();
                 List<IServiceUser> users = new ArrayList<>();
-                
-                if (step != null)
-                {
-                    for (IServiceUser s : serviceUsers)
-                    {
-                        if (s.getType() == step.getTargetExecutor())
-                        {
+                if (task != null) {
+                    for (IServiceUser s : serviceUsers) {
+                        if (s.getType() == task.getTargetExecutor()) {
                             users.add(s);
                         }
                     }
-                }
+                } else
+                    users.addAll(serviceUsers);
                 
                 observableSU = observableArrayList(users);
                 
@@ -587,10 +584,36 @@ public class HeadquartersController implements Initializable {
                     cbsExecutor.getSelectionModel().selectFirst();
                 }
                 
+                
+                IStep step = (IStep)lvaSteps.getSelectionModel().getSelectedItem();                
+                if (step != null) {
+                    for (IServiceUser s : serviceUsers) {
+                        if (s.getType() == step.getTargetExecutor()) {
+                            users.add(s);
+                        }
+                    }
+                } else
+                    users.addAll(serviceUsers);
+                
+                observableSU = observableArrayList(users);
+                
                 cbaExecutor.setItems(observableSU);
                 if(cbaExecutor.getSelectionModel().getSelectedItem() == null) {
                     cbaExecutor.getSelectionModel().selectFirst();
                 }
+                
+                
+                task = (ITask)lvtTasks.getSelectionModel().getSelectedItem();
+                if (task != null) {
+                    for (IServiceUser s : serviceUsers) {
+                        if (s.getType() == task.getTargetExecutor()) {
+                            users.add(s);
+                        }
+                    }
+                } else
+                    users.addAll(serviceUsers);
+                
+                observableSU = observableArrayList(users);
                 
                 cbtNewExecutor.setItems(observableSU);
                 if(cbaExecutor.getSelectionModel().getSelectedItem() == null) {
@@ -973,10 +996,11 @@ public class HeadquartersController implements Initializable {
     // Tasks--------------------------------------------------------------------
     public void displayTasks(List<ITask> tasks){
         Platform.runLater(new Runnable(){
-
+            ObservableList<ITask> oTasks = FXCollections.observableArrayList(tasks);
+            
             @Override
             public void run() {
-                lvtTasks.getItems().addAll(tasks);
+                lvtTasks.setItems(oTasks);
                 if(lvtTasks.getSelectionModel().getSelectedItem() == null) {
                     lvtTasks.getSelectionModel().selectFirst();
                 }
