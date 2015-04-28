@@ -1059,7 +1059,11 @@ public class HeadquartersController implements Initializable {
             tatTaskDescription.setText(task.getDescription());
             tftTitle.setText(task.getTitle());
             tatDescription.setText(task.getDescription());
+            
+            if (task.getExecutor() != null) {
             tftExecutor.setText(task.getExecutor().getName());
+            }
+            
             tftReason.setText(task.getDeclineReason());
             lblTasks.setVisible(false);
             
