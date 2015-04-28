@@ -546,9 +546,12 @@ public class HeadquartersController implements Initializable {
                 tfsTaskTitle.clear();
                 tasTaskDescription.clear();
                 
-                lvsTasks.getItems().addAll(tasks);
-                if(lvsTasks.getSelectionModel().getSelectedItem() == null) {
-                    lvsTasks.getSelectionModel().selectFirst();
+                if (tasks != null) {
+                    lvsTasks.getItems().addAll(tasks);
+                    
+                    if(lvsTasks.getSelectionModel().getSelectedItem() == null) {
+                        lvsTasks.getSelectionModel().selectFirst();
+                    }
                 }
             }
             
