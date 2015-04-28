@@ -167,12 +167,8 @@ public class TasksDatabaseManagerTest {
         }
 
         // gets only active tasks
-        TaskStatus[] desiredStatuses = new TaskStatus[]{
-            TaskStatus.SENT,
-            TaskStatus.INPROCESS
-        };
         tasks = myDB.getTasks(executor.getUsername(), new HashSet<>(
-                Arrays.asList(desiredStatuses)));
+                Arrays.asList(TaskStatus.SENT, TaskStatus.INPROCESS)));
         for (ITask taskItem : tasks) {
             assertTrue("wrong tag in active tasks",
                     taskItem.getStatus() == TaskStatus.SENT
