@@ -9,7 +9,7 @@
 <?import javafx.scene.text.*?>
 <?import org.controlsfx.control.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="524.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="HeadquartersApp.UI.HeadquartersController">
+<AnchorPane id="AnchorPane" prefHeight="524.0" prefWidth="1200.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="HeadquartersApp.UI.HeadquartersController">
   <children>
     <TabPane fx:id="tabPane" layoutX="0.0" layoutY="24.0" prefHeight="500.0" prefWidth="1200.0" tabClosingPolicy="UNAVAILABLE">
       <tabs>
@@ -29,7 +29,7 @@
                 <Label layoutX="342.0" layoutY="62.0" text="Beschrijving" />
                 <TextArea fx:id="tauDescription" layoutX="484.0" layoutY="55.0" prefHeight="269.0" prefWidth="247.0" wrapText="true" />
                 <Label layoutX="340.0" layoutY="341.0" text="Bron" />
-                <TextField fx:id="tfuSource" layoutX="484.0" layoutY="338.0" prefWidth="247.0" />
+                <TextField fx:id="tfuSource" disable="true" layoutX="484.0" layoutY="338.0" prefWidth="247.0" />
                 <Label layoutX="340.0" layoutY="382.0" text="Locatie" />
                 <TextField fx:id="tfuLocation" layoutX="484.0" layoutY="379.0" prefWidth="247.0" />
                 <Label layoutX="784.0" layoutY="23.0" text="Bestemming" />
@@ -62,7 +62,7 @@
                 <Label layoutX="27.0" layoutY="104.0" text="Beschrijving" />
                 <TextArea fx:id="tarDescription" layoutX="173.0" layoutY="103.0" prefHeight="125.0" prefWidth="395.0" wrapText="true" />
                 <Label layoutX="29.0" layoutY="248.0" text="Bron" />
-                <TextField fx:id="tfrSource" layoutX="173.0" layoutY="244.0" prefWidth="395.0" />
+                <TextField fx:id="tfrSource" disable="true" layoutX="173.0" layoutY="244.0" prefWidth="395.0" />
                 <Label layoutX="29.0" layoutY="289.0" text="Locatie" />
                 <TextField fx:id="tfrLocation" layoutX="173.0" layoutY="286.0" prefWidth="395.0" />
                 <Label layoutX="29.0" layoutY="331.0" text="Bestemming" />
@@ -94,7 +94,7 @@
                 <Label layoutX="393.0" layoutY="67.0" text="Beschrijving" />
                 <TextArea id="tauDescription" fx:id="tasSortedDataDescription" layoutX="535.0" layoutY="61.0" prefHeight="269.0" prefWidth="247.0" wrapText="true" />
                 <Label layoutX="391.0" layoutY="352.0" text="Bron" />
-                <TextField id="tfuSource" fx:id="tfsSource" layoutX="535.0" layoutY="349.0" prefWidth="247.0" />
+                <TextField id="tfuSource" fx:id="tfsSource" disable="true" layoutX="535.0" layoutY="349.0" prefWidth="247.0" />
                 <Label layoutX="391.0" layoutY="393.0" text="Locatie" />
                 <TextField id="tfuLocation" fx:id="tfsLocation" layoutX="535.0" layoutY="390.0" prefWidth="247.0" />
                 <Label font="$x1" layoutX="818.0" layoutY="18.0" text="Taken" underline="false" />
@@ -184,8 +184,8 @@
                 <Button fx:id="btnApplyTask" layoutX="857.0" layoutY="417.0" mnemonicParsing="false" onAction="#applyStep" prefWidth="157.0" text="Taak toekennen" />
                 <Button fx:id="btnApplyRoadMap" layoutX="613.0" layoutY="417.0" mnemonicParsing="false" onAction="#applyPlan" prefHeight="31.0" prefWidth="180.0" text="Stappenplan toekennen" />
                 <Label fx:id="lblTaskReport" font="$x2" layoutX="844.0" layoutY="376.0" text="Melding" />
-                        <TextField id="tfuTitle" fx:id="tfaTaskCondition" layoutX="966.0" layoutY="305.0" prefWidth="223.0" />
-                        <Label layoutX="846.0" layoutY="305.0" text="Pre-conditie" />
+                <TextField id="tfuTitle" fx:id="tfaTaskCondition" layoutX="966.0" layoutY="305.0" prefWidth="223.0" />
+                <Label layoutX="846.0" layoutY="305.0" text="Pre-conditie" />
               </children>
             </AnchorPane>
           </content>
@@ -197,8 +197,8 @@
                 <Label font="$x1" layoutX="14.0" layoutY="19.0" text="Taken" underline="false" />
                 <TableView id="tvData" layoutX="14.0" layoutY="19.0" prefHeight="441.0" prefWidth="352.0" visible="false">
                   <columns>
-                    <TableColumn fx:id="tcTitle" maxWidth="5000.0" minWidth="10.0" prefWidth="171.0" text="Titel" />
-                    <TableColumn fx:id="tcStatus" prefWidth="150.0" text="Relevantie" />
+                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="171.0" text="Titel" fx:id="tcTitle" />
+                    <TableColumn prefWidth="150.0" text="Relevantie" fx:id="tcStatus" />
                   </columns>
                 </TableView>
                 <ListView id="lvSortedData" fx:id="lvtTasks" layoutX="14.0" layoutY="50.0" prefHeight="396.0" prefWidth="333.0" />
@@ -214,9 +214,9 @@
                 <Label layoutX="806.0" layoutY="105.0" text="Beschrijving" />
                 <TextArea id="tauDescription" fx:id="tatDescription" layoutX="949.0" layoutY="96.0" prefHeight="110.0" prefWidth="233.0" wrapText="true" />
                 <Label layoutX="806.0" layoutY="223.0" text="Uitvoerder" />
-                <TextField id="tfuTitle" fx:id="tftExecutor" layoutX="949.0" layoutY="220.0" prefWidth="233.0" />
+                <TextField id="tfuTitle" fx:id="tftExecutor" disable="true" layoutX="949.0" layoutY="220.0" prefWidth="233.0" />
                 <Label layoutX="806.0" layoutY="260.0" text="Reden" />
-                <TextField id="tfuTitle" fx:id="tftReason" layoutX="950.0" layoutY="257.0" prefWidth="233.0" />
+                <TextField id="tfuTitle" fx:id="tftReason" disable="true" layoutX="950.0" layoutY="257.0" prefWidth="233.0" />
                 <Label layoutX="806.0" layoutY="297.0" prefHeight="22.0" prefWidth="128.0" text="Nieuwe uitvoerder" />
                 <ComboBox id="cbaExecutor" fx:id="cbtNewExecutor" layoutX="949.0" layoutY="297.0" prefHeight="21.0" prefWidth="233.0">
                   <items>
