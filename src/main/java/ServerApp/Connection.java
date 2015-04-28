@@ -842,19 +842,24 @@ public class Connection implements Runnable {
      * Get tasks from database
      */
     private void getTasks() throws IOException, ClassNotFoundException {
-        Object inObject = in.readObject();
+        Object par1 = in.readObject();
+        Object par2 = in.readObject();
 
-        if (inObject == null || !(inObject instanceof String)) {
+        if (par1 == null || !(par1 instanceof String)) {
+            out.writeObject(ConnState.COMMAND_ERROR);
+            return;
+        }
+        if(par2 == null || !(par2 instanceof HashSet)) {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
         }
 
-        String username = (String) inObject;
+        String username = (String) par1;
+        HashSet<TaskStatus> statusses = (HashSet<TaskStatus>) par2;
 
         List<ITask> output = null;
         synchronized (TASKSLOCK) {
-            // for now always calls active only tasks
-            output = ServerMain.tasksDatabaseManager.getTasks(username, true);
+            output = ServerMain.tasksDatabaseManager.getTasks(username, statusses);
         }
         writeOutput(output);
     }

@@ -13,6 +13,7 @@ import Shared.Data.ISortedData;
 import Shared.NetworkException;
 import Shared.Tasks.IPlan;
 import Shared.Tasks.ITask;
+import Shared.Tasks.TaskStatus;
 import Shared.Users.IServiceUser;
 import Shared.Users.IUser;
 import java.io.IOException;
@@ -277,5 +278,28 @@ class Connection extends ConnClientBase {
         }
         
         return (List<IServiceUser>) output;
+    }
+    
+    /**
+     * Get all tasks
+     * @return 
+     */
+    protected List<ITask> getTasks() throws NetworkException {
+        HashSet<TaskStatus> statuses = new HashSet<TaskStatus>();
+        for(TaskStatus ts : TaskStatus.values()) {
+            if(ts != TaskStatus.READ) {
+                statuses.add(ts);
+            }
+        }
+        
+        Object output = super.objectCommand(
+                ConnCommand.TASKS_GET, new Object[]{"", statuses});
+        
+        if(!(output instanceof List)) {
+            throw new NetworkException("Unexpected result in " + 
+                    super.getCommandDescription(ConnCommand.TASKS_GET));
+        }
+        
+        return (List<ITask>) output;
     }
 }

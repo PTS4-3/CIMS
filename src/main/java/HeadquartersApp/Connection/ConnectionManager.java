@@ -378,6 +378,34 @@ public class ConnectionManager {
             
         });
     }
+    
+    /**
+     * Gets all tasks
+     * Sends returnvalue to hqController.displayTasks()
+     */
+    public void getTasks() {
+        if(this.hqController == null) {
+            return;
+        }
+        
+        this.pool.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    List<ITask> tasks =
+                            new Connection(defaultIP, defaultPort).getTasks();
+
+                    if(tasks != null) {
+                        hqController.displayTasks(tasks);
+                    }
+                } catch (NetworkException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            
+        });
+    }
         
     /**
      * Subscribes to get updates for sortedData for HQChief
@@ -401,6 +429,8 @@ public class ConnectionManager {
         });
         return true;
     }
+    
+    
     
     /**
      * Unsubscribes to get updates for sortedData for HQChief

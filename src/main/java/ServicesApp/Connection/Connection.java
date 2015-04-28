@@ -14,6 +14,7 @@ import Shared.Data.IDataRequest;
 import Shared.Data.ISortedData;
 import Shared.Tag;
 import Shared.Tasks.ITask;
+import Shared.Tasks.TaskStatus;
 import Shared.Users.IUser;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -354,9 +355,13 @@ class Connection extends ConnClientBase {
      * @return
      */
     protected List<ITask> getTasks(String username) {
+        HashSet<TaskStatus> statusses = new HashSet<>();
+        statusses.add(TaskStatus.INPROCESS);
+        statusses.add(TaskStatus.SENT);
+        
         List<ITask> output = null;
             Object inObject = super.objectCommand(
-                    ConnCommand.TASKS_GET, new Object[]{username});
+                    ConnCommand.TASKS_GET, new Object[]{username, statusses});
             if (inObject instanceof List) {
                 output = (List<ITask>) inObject;
             } else {
