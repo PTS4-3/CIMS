@@ -223,8 +223,11 @@ public class PushBuffer {
                 }
 
                 if (isTargetUser) {
-                    for (int clientId : this.clientIDs.get(username)) {
-                        sortedDataBuffer.get(clientId).add(data);
+                    HashSet<Integer> clients = this.clientIDs.get(username);
+                    if (clients != null) {
+                        for (int clientId : clients) {
+                            sortedDataBuffer.get(clientId).add(data);
+                        }
                     }
                 }
             }
@@ -246,9 +249,13 @@ public class PushBuffer {
                     IServiceUser serviceUser = (IServiceUser) user;
                     // ??
                     if (request.getTags().contains(serviceUser.getType())) {
-                        for (int clientId : this.clientIDs.get(username)) {
-                            requestBuffer.get(clientId).add(request);
+                        HashSet<Integer> clients = this.clientIDs.get(username);
+                        if (clients != null) {
+                            for (int clientId : clients) {
+                                requestBuffer.get(clientId).add(request);
+                            }
                         }
+
                     }
                 }
             }
@@ -264,9 +271,12 @@ public class PushBuffer {
         synchronized (LOCK_UNSORTED) {
             for (String username : clientIDs.keySet()) {
                 if (username.equals(data.getSource())) {
-                    for (int clientId : clientIDs.get(username)) {
-                        sentDataBuffer.get(clientId).add(data);
-                    }
+                    HashSet<Integer> clients = this.clientIDs.get(username);
+                        if (clients != null) {
+                            for (int clientId : clients) {
+                                sentDataBuffer.get(clientId).add(data);
+                            }
+                        }
                 }
             }
         }
@@ -279,8 +289,11 @@ public class PushBuffer {
      */
     public void addTask(ITask task) {
         synchronized (LOCK_TASKS) {
-            for (int client : clientIDs.get(task.getExecutor().getUsername())) {
-                tasksBuffer.get(client).add(task);
+            HashSet<Integer> clients = clientIDs.get(task.getExecutor().getUsername());
+            if (clients != null) {
+                for (int client : clients) {
+                    tasksBuffer.get(client).add(task);
+                }
             }
         }
     }
