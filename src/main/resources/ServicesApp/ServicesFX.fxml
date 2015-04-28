@@ -111,9 +111,8 @@
                     <URL value="@../Style.css" />
                   </stylesheets>
                 </Button>
-                <Button fx:id="btnSucceed" layoutX="658.0" layoutY="427.0" mnemonicParsing="false" onAction="#succeedTask" prefWidth="114.0" text="Geslaagd" />
-                <Button fx:id="btnFailed" layoutX="556.0" layoutY="427.0" mnemonicParsing="false" onAction="#failedTask" prefWidth="92.0" text="Gefaald" />
-                <Button fx:id="btnNotDone" layoutX="384.0" layoutY="427.0" mnemonicParsing="false" onAction="#notDoneTask" prefWidth="163.0" text="Niet uitgevoerd" />
+                <Button fx:id="btnSucceed" layoutX="591.0" layoutY="427.0" mnemonicParsing="false" onAction="#succeedTask" prefWidth="181.0" text="Geslaagd" />
+                <Button fx:id="btnFailed" layoutX="384.0" layoutY="427.0" mnemonicParsing="false" onAction="#failedTask" prefWidth="195.0" text="Niet uitgevoerd / Gefaald" />
                 <Label fx:id="lblMessageTask" font="$x2" layoutX="384.0" layoutY="472.0" text="Melding" />
               </children>
             </AnchorPane>
