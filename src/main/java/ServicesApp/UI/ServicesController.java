@@ -650,6 +650,12 @@ public class ServicesController implements Initializable {
             tftTaskTitle.clear();
             tatDescription.clear();
             tftCondition.clear();
+            
+            //buttons on true
+            btnAcceptTask.setVisible(true);
+            btnDismissTask.setVisible(true);
+            btnFailed.setVisible(true);
+            btnSucceed.setVisible(true);
         }
     }
 
