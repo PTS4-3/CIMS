@@ -242,8 +242,9 @@ public class ServicesController implements Initializable {
         this.connectionManager = manager;
         if(user instanceof IServiceUser)
         {
-        this.user = (IServiceUser) user;
-        this.tags.add(this.user.getType());
+            this.user = (IServiceUser) user;
+            this.tags.add(this.user.getType());
+            tfnSource.setText(this.user.getUsername());
         }
         this.connectionManager.setServicesController(this);
 
@@ -266,7 +267,7 @@ public class ServicesController implements Initializable {
             if (chbsData.isSelected()) {
                 this.connectionManager.getSortedData(tags);
             }
-            //TODO source
+
             this.connectionManager.getSentData(this.user.getUsername());
             this.connectionManager.getTasks(this.user.getUsername());
         } catch (NetworkException nEx) {
@@ -449,7 +450,6 @@ public class ServicesController implements Initializable {
     private void clearSendInfo() {
         tfnTitle.clear();
         tanDescription.clear();
-        tfnSource.clear();
         tfnLocation.clear();
     }
 

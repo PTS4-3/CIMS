@@ -228,6 +228,7 @@ public class HeadquartersController implements Initializable {
             Logger.getLogger(HeadquartersController.class.getName()).log(Level.SEVERE, null, nEx);
         }
         this.user = user;
+        tfrSource.setText(this.user.getUsername());
 
         // Fill GUI with initial values        
         ccuTags = new CheckComboBox(FXCollections.observableArrayList(Tag.values()));
@@ -509,7 +510,6 @@ public class HeadquartersController implements Initializable {
         tfrRequestTitle.clear();
         tfrTitle.clear();
         tarDescription.clear();
-        tfrSource.clear();
         tfrLocation.clear();
         ccrTags.getCheckModel().clearChecks();
     }
