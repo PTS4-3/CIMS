@@ -120,7 +120,7 @@ public class HeadquartersController implements Initializable {
     @FXML TextArea tfaTaskDescription;
     @FXML TextField tfaTaskCondition;
     @FXML ComboBox cbaExecutor;
-    @FXML Label lblTaskMe;
+    @FXML Label lblTaskReport;
     
     // Tasks
     @FXML Tab tabTask;
@@ -648,27 +648,36 @@ public class HeadquartersController implements Initializable {
                 throw new NetworkException("Kon data niet wegschrijven");
             }
             
+            ISortedData data = (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem();
             String title = tfsTaskTitle.getText();
             String description = tasTaskDescription.getText();
             ServiceUser executor = null;
             
-            Object object = cbsExecutor.getSelectionModel().getSelectedItem();
-            if(object != null && object instanceof ServiceUser)
-                executor = (ServiceUser)cbsExecutor.getSelectionModel().getSelectedItem();
-            else
-                showDialog("Foutmelding", "Geen uitvoerder geselecteerd", true);
-                
-            Task task = new Task(-1, title, description, TaskStatus.SENT, (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem(), executor.getType(), executor);
-            connectionManager.sendTask(task);
-            ISortedData data = (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem();
+            boolean correct = true;
+            for(ITask t : data.getTasks()){
+                if(t.getTitle() == title)
+                    correct = false;
+            }
             
-            if(tempTasks == null)
-                tempTasks = new ArrayList();
-            
-            tempTasks.add(task);
-            
-            data.setTasks(tempTasks);
-            displaySortedDataTasks(tempTasks);
+            if(correct){
+                Object object = cbsExecutor.getSelectionModel().getSelectedItem();
+                if(object != null && object instanceof ServiceUser)
+                    executor = (ServiceUser)cbsExecutor.getSelectionModel().getSelectedItem();
+                else
+                    showDialog("Foutmelding", "Geen uitvoerder geselecteerd", true);
+
+                Task task = new Task(-1, title, description, TaskStatus.SENT, (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem(), executor.getType(), executor);
+                connectionManager.sendTask(task);
+
+                if(tempTasks == null)
+                    tempTasks = new ArrayList();
+
+                tempTasks.add(task);
+
+                data.setTasks(tempTasks);
+                displaySortedDataTasks(tempTasks);
+            } else
+                showDialog("Foutmelding", "Titel mag niet hetzelfde zijn als een eerder toegevoegde taak", true);
             
         } catch (IllegalArgumentException iaEx) {
             showDialog("", iaEx.getMessage(), false);
