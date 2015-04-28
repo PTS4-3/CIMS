@@ -162,7 +162,9 @@ public class ServicesController implements Initializable {
 
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                resetSentData();            }
+                resetSentData();
+                resetTaskData();
+            }
         });
         
         // Add Change Listeners
@@ -190,16 +192,36 @@ public class ServicesController implements Initializable {
                     }
                 });
 
-        lvtTasks.getSelectionModel().selectedItemProperty().addListener(
-                new ChangeListener() {
+        lvtTasks.setCellFactory(new Callback<ListView<ITask>, ListCell<ITask>>() {
+
+            @Override
+            public ListCell<ITask> call(ListView<ITask> param) {
+                selectTask();
+                return new ListCell<ITask>() {
+
                     @Override
-                    public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                        selectTask();
+                    protected void updateItem(ITask item, boolean empty) {
+                        super.updateItem(item, empty);
                         lblMessageUpdate.setText("");
                         lblMessageTask.setText("");
                         lblMessageSend.setText("");
+                        if (!empty) {
+                            setItem(item);
+                            setText(item.toString());
+
+                            if (item.getStatus() == TaskStatus.INPROCESS) {
+                                setTextFill(Color.GREEN);
+                            } else {
+                                setTextFill(Color.BLACK);
+                            }
+                        } else {
+                            setItem(null);
+                            setText("");
+                        }
                     }
-                });
+                };
+            };
+        });
 
         lvsSortedData.setCellFactory(new Callback<ListView<IData>, ListCell<IData>>() {
 
@@ -308,6 +330,7 @@ public class ServicesController implements Initializable {
             public void run() {
                 if (!showingDataItem) {
                     lvtTasks.getItems().addAll(tasks);
+                    
 
                     if (lvtTasks.getSelectionModel().getSelectedItem() == null) {
                         lvtTasks.getSelectionModel().selectFirst();
@@ -540,6 +563,28 @@ public class ServicesController implements Initializable {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
     }
+    
+    /**
+     * Resets the filter of sentData, all sentData becomes visible
+     */
+    public void resetTaskData() {
+        try {
+            if (this.connectionManager == null) {
+                throw new NetworkException("Kon geen data ophalen");
+            }
+
+            this.showingDataItem = false;
+            this.answeredRequest = null;
+
+            // Clear sentData
+            lvtTasks.getItems().clear();
+
+            // TODO source
+            this.connectionManager.getTasks(this.user.getUsername());
+        } catch (NetworkException nEx) {
+            showDialog("Geen verbinding met server", nEx.getMessage(), true);
+        }
+    }
 
     /**
      * Fills the GUI with the information of the selected data
@@ -695,6 +740,11 @@ public class ServicesController implements Initializable {
             if (selectedTask != null) {
                 selectedTask.setStatus(TaskStatus.INPROCESS);
                 this.connectionManager.updateTask(selectedTask);
+                btnAcceptTask.setVisible(false);
+                btnDismissTask.setVisible(false);
+                btnFailed.setVisible(true);
+                btnSucceed.setVisible(true);
+                resetTaskData();
                 //dismiss task succeed message
                 lblMessageTask.setText("Het accepteren van de taak is gelukt.");
             } else {
@@ -720,6 +770,7 @@ public class ServicesController implements Initializable {
                     selectedTask.setStatus(TaskStatus.REFUSED);
                     selectedTask.setDeclineReason(argument);
                     this.connectionManager.updateTask(selectedTask);
+                    resetTaskData();
                     //dismiss task succeed message
                     lblMessageTask.setText("Het weigeren van de taak is gelukt.");
                 } else {
@@ -741,6 +792,7 @@ public class ServicesController implements Initializable {
             if (selectedTask != null) {
                 selectedTask.setStatus(TaskStatus.FAILED);
                 this.connectionManager.updateTask(selectedTask);
+                resetTaskData();
                 //dismiss task succeed message
                 lblMessageTask.setText("Het veranderen van de status is gelukt.");
             } else {
@@ -760,6 +812,7 @@ public class ServicesController implements Initializable {
             if (selectedTask != null) {
                 selectedTask.setStatus(TaskStatus.SUCCEEDED);
                 this.connectionManager.updateTask(selectedTask);
+                resetTaskData();
                 //dismiss task succeed message
                 lblMessageTask.setText("Het veranderen van de status is gelukt.");
             } else {
