@@ -582,7 +582,8 @@ public class HeadquartersController implements Initializable {
                 }
                 
                 
-                IStep step = (IStep)lvaSteps.getSelectionModel().getSelectedItem();                
+                IStep step = (IStep)lvaSteps.getSelectionModel().getSelectedItem();
+                users = new ArrayList<>();
                 if (step != null) {
                     for (IServiceUser s : serviceUsers) {
                         if (s.getType() == step.getTargetExecutor()) {
@@ -601,6 +602,7 @@ public class HeadquartersController implements Initializable {
                 
                 
                 task = (ITask)lvtTasks.getSelectionModel().getSelectedItem();
+                users = new ArrayList<>();
                 if (task != null) {
                     for (IServiceUser s : serviceUsers) {
                         if (s.getType() == task.getTargetExecutor()) {
@@ -694,6 +696,7 @@ public class HeadquartersController implements Initializable {
 
                 data.setTasks(tempTasks);
                 displaySortedDataTasks(tempTasks);
+                tempTasks.clear();
             } else
                 showDialog("Foutmelding", "Titel mag niet hetzelfde zijn als een eerder toegevoegde taak", true);
             
