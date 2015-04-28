@@ -253,7 +253,7 @@ public class HeadquartersController implements Initializable {
         lblInformationReport.setVisible(false);
         lblSingleTaskReport.setVisible(false);
         lblRoadMapReport.setVisible(false);
-        lblTaskMe.setVisible(false);
+        lblTaskReport.setVisible(false);
         lblTaskMessages.setVisible(false);
         
         if(user instanceof IHQChief){
