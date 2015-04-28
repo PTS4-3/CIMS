@@ -598,11 +598,7 @@ public class ConnectionManager {
             pool.execute(() -> {
                 IUser output
                         = new Connection(defaultIP, defaultPort).getSigninUser(username, password);
-                if (output != null) {
-                    this.loginController.logIn(output);
-                } else {
-                    System.err.println("Unable to retrieve IUser from server.");
-                }
+                this.loginController.logIn(output);
             });  
         }
     }
