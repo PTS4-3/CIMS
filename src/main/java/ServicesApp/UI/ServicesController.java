@@ -17,7 +17,9 @@ import Shared.Data.UnsortedData;
 import Shared.Tasks.IStep;
 import Shared.Tasks.ITask;
 import Shared.Tasks.TaskStatus;
+import Shared.Users.IServiceUser;
 import Shared.Users.IUser;
+import Shared.Users.ServiceUser;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -143,7 +145,8 @@ public class ServicesController implements Initializable {
     private boolean showingDataItem;
     private IDataRequest answeredRequest;
     private ITask selectedTask = null;
-    private IUser user = null;
+    private IServiceUser user = null;
+    private HashSet<Tag> tags = new HashSet<Tag>();
 
     private Services main;
 
@@ -160,7 +163,15 @@ public class ServicesController implements Initializable {
         lblMessageUpdate.setText("");
         lblMessageTask.setText("");
         lblMessageSend.setText("");
-        //System.setErr();
+        
+        //tab change refresh sentData
+        this.tabPane.selectionModelProperty().addListener(new ChangeListener() {
+
+            @Override
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                resetSentData();            }
+        });
+        
         // Add Change Listeners
         lvuSentData.getSelectionModel().selectedItemProperty().addListener(
                 new ChangeListener() {
@@ -236,7 +247,11 @@ public class ServicesController implements Initializable {
      */
     public void configure(ConnectionManager manager, IUser user) {
         this.connectionManager = manager;
-        this.user = user;
+        if(user instanceof IServiceUser)
+        {
+        this.user = (IServiceUser) user;
+        this.tags.add(this.user.getType());
+        }
         this.connectionManager.setServicesController(this);
 
         // Fill GUI with initial values
@@ -253,14 +268,14 @@ public class ServicesController implements Initializable {
 
             // Get initial values
             if (chbsRequests.isSelected()) {
-                this.connectionManager.getRequests(new HashSet<Tag>());
+                this.connectionManager.getRequests(tags);
             }
             if (chbsData.isSelected()) {
-                this.connectionManager.getSortedData(new HashSet<Tag>());
+                this.connectionManager.getSortedData(tags);
             }
             //TODO source
-            this.connectionManager.getSentData(user.getUsername());
-            this.connectionManager.getTasks(user.getUsername());
+            this.connectionManager.getSentData(this.user.getUsername());
+            this.connectionManager.getTasks(this.user.getUsername());
         } catch (NetworkException nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
@@ -527,7 +542,7 @@ public class ServicesController implements Initializable {
             lvuSentData.getItems().clear();
 
             // TODO source
-            this.connectionManager.getSentData("");
+            this.connectionManager.getSentData(this.user.getUsername());
         } catch (NetworkException nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
@@ -618,10 +633,10 @@ public class ServicesController implements Initializable {
                 // Add
                 if (source == chbsData) {
                     //TODO tags
-                    this.connectionManager.getSortedData(new HashSet<Tag>());
+                    this.connectionManager.getSortedData(tags);
                 } else if (source == chbsRequests) {
                     //TODO tags
-                    this.connectionManager.getRequests(new HashSet<Tag>());
+                    this.connectionManager.getRequests(tags);
                 }
             } catch (NetworkException nEx) {
                 showDialog("Geen verbinding met server", nEx.getMessage(), true);
