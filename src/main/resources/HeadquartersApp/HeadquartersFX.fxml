@@ -42,7 +42,7 @@
                 <Button layoutX="782.0" layoutY="375.0" mnemonicParsing="false" onAction="#goToRequestInfo" prefWidth="247.0" text="Informatie update vragen" />
                 <Button layoutX="1045.0" layoutY="375.0" mnemonicParsing="false" onAction="#discard" prefWidth="130.0" text="Verwijderen" />
                 <Button layoutX="782.0" layoutY="416.0" mnemonicParsing="false" onAction="#sendSortedData" prefWidth="393.0" text="Toevoegen aan gesorteerde data" />
-                <Label fx:id="lblOnsortedReport" layoutX="783.0" layoutY="259.0" text="Melding">
+                <Label fx:id="lblUnsortedReport" layoutX="783.0" layoutY="259.0" text="Melding">
                   <font>
                     <Font name="System Bold" size="14.0" fx:id="x2" />
                   </font>
@@ -169,7 +169,7 @@
                 <Label layoutX="845.0" layoutY="200.0" text="Titel" />
                 <TextField id="tfuTitle" fx:id="tfaTaskTitle" layoutX="965.0" layoutY="200.0" prefWidth="223.0" />
                 <Label layoutX="845.0" layoutY="245.0" text="Beschrijving" />
-                <TextArea id="tauDescription" fx:id="tfaTaskDescription" layoutX="965.0" layoutY="238.0" prefHeight="92.0" prefWidth="223.0" wrapText="true" />
+                <TextArea id="tauDescription" fx:id="tfaTaskDescription" layoutX="965.0" layoutY="238.0" prefHeight="58.0" prefWidth="223.0" wrapText="true" />
                 <Label layoutX="844.0" layoutY="342.0" prefHeight="22.0" prefWidth="80.0" text="Uitvoerder" />
                 <ComboBox fx:id="cbaExecutor" layoutX="965.0" layoutY="340.0" prefHeight="21.0" prefWidth="223.0">
                   <items>
@@ -182,8 +182,10 @@
                 </ComboBox>
                 <Button fx:id="btnCancelTask" layoutX="1017.0" layoutY="417.0" mnemonicParsing="false" onAction="#refuseStep" prefWidth="170.0" text="Taak annuleren" />
                 <Button fx:id="btnApplyTask" layoutX="857.0" layoutY="417.0" mnemonicParsing="false" onAction="#applyStep" prefWidth="157.0" text="Taak toekennen" />
-                <Button fx:id="btnApplyRoadMap" layoutX="623.0" layoutY="417.0" mnemonicParsing="false" onAction="#applyPlan" prefWidth="170.0" text="Stappenplan kiezen" />
+                <Button fx:id="btnApplyRoadMap" layoutX="613.0" layoutY="417.0" mnemonicParsing="false" onAction="#applyPlan" prefHeight="31.0" prefWidth="180.0" text="Stappenplan toekennen" />
                 <Label id="lblTaskMe" fx:id="lblTaskReport" font="$x2" layoutX="844.0" layoutY="376.0" text="Melding" />
+                        <TextField id="tfuTitle" fx:id="tfaTaskCondition" layoutX="966.0" layoutY="305.0" prefWidth="223.0" />
+                        <Label layoutX="846.0" layoutY="305.0" text="Pre-conditie" />
               </children>
             </AnchorPane>
           </content>

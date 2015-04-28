@@ -43,6 +43,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
@@ -71,6 +72,7 @@ public class HeadquartersController implements Initializable {
     @FXML Slider suQuality;
     @FXML AnchorPane apuPane;
     @FXML CheckComboBox ccuTags;
+    @FXML Label lblUnsortedReport;
     
     // RequestInfo
     @FXML Tab tabRequestInfo;
@@ -80,7 +82,8 @@ public class HeadquartersController implements Initializable {
     @FXML TextField tfrSource;
     @FXML TextField tfrLocation;
     @FXML AnchorPane aprPane;
-    @FXML CheckComboBox ccrTags; 
+    @FXML CheckComboBox ccrTags;
+    @FXML Label lblInformationReport;
     
     // ProcessSortedData
     @FXML Tab tabProcessSortedData;
@@ -93,6 +96,7 @@ public class HeadquartersController implements Initializable {
     @FXML TextField tfsTaskTitle;
     @FXML TextArea tasTaskDescription;
     @FXML ComboBox cbsExecutor;
+    @FXML Label lblSingleTaskReport;
     
     // SendPlan
     @FXML Tab tabSendPlan;
@@ -103,6 +107,7 @@ public class HeadquartersController implements Initializable {
     @FXML TextField tfpTaskTitle;
     @FXML TextArea tapTaskDescription;
     @FXML TextField tfpCondition;
+    @FXML Label lblRoadMapReport;
     
     // ApplyPlan
     @FXML Tab tabApplyPlan;
@@ -114,6 +119,7 @@ public class HeadquartersController implements Initializable {
     @FXML TextField tfaTaskTitle;
     @FXML TextArea tfaTaskDescription;
     @FXML ComboBox cbaExecutor;
+    @FXML Label lblTaskMe;
     
     // Tasks
     @FXML Tab tabTask;
@@ -125,6 +131,7 @@ public class HeadquartersController implements Initializable {
     @FXML TextField tftExecutor;
     @FXML TextField tftReason;
     @FXML ComboBox cbtNewExecutor;
+    @FXML Label lblTaskMessages;
     
     private IData requestData;
     private IData sortedData;
@@ -239,6 +246,13 @@ public class HeadquartersController implements Initializable {
         tabProcessSortedData.setDisable(true);
         tabSendPlan.setDisable(true);
         tabApplyPlan.setDisable(true);
+        
+        lblUnsortedReport.setVisible(false);
+        lblInformationReport.setVisible(false);
+        lblSingleTaskReport.setVisible(false);
+        lblRoadMapReport.setVisible(false);
+        lblTaskMe.setVisible(false);
+        lblTaskMessages.setVisible(false);
         
         if(user instanceof IHQChief){
             tabProcessSortedData.setDisable(false);
@@ -641,7 +655,7 @@ public class HeadquartersController implements Initializable {
             else
                 showDialog("Foutmelding", "Geen uitvoerder geselecteerd", true);
                 
-            Task task = new Task(1, title, description, TaskStatus.SENT, (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem(), executor.getType(), executor);
+            Task task = new Task(-1, title, description, TaskStatus.SENT, (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem(), executor.getType(), executor);
             connectionManager.sendTask(task);
             ISortedData data = (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem();
             
@@ -929,6 +943,7 @@ public class HeadquartersController implements Initializable {
         IStep s = (IStep) lvaSteps.getSelectionModel().getSelectedItem();
         if(s != null){
             tempPlan.getSteps().remove(s);
+            lvaSteps.getItems().remove(s);
         } else {
             showDialog("Foutmelding", "Selecteer een stap voordat je een stap verwijdert.", true);
         }
