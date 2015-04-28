@@ -5,7 +5,6 @@
  */
 package ServicesApp.UI;
 
-import ServicesApp.*;
 import ServicesApp.Connection.ConnectionManager;
 import Shared.Data.IData;
 import Shared.Data.IDataRequest;
@@ -19,7 +18,6 @@ import Shared.Tasks.ITask;
 import Shared.Tasks.TaskStatus;
 import Shared.Users.IServiceUser;
 import Shared.Users.IUser;
-import Shared.Users.ServiceUser;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -32,7 +30,6 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -41,9 +38,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
@@ -122,8 +117,6 @@ public class ServicesController implements Initializable {
     Button btnAcceptTask;
     @FXML
     Button btnDismissTask;
-    @FXML
-    Button btnNotDone;
     @FXML
     Button btnFailed;
     @FXML
@@ -582,7 +575,6 @@ public class ServicesController implements Initializable {
         btnDismissTask.setVisible(false);
         btnFailed.setVisible(false);
         btnSucceed.setVisible(false);
-        btnNotDone.setVisible(false);
 
         if (data != null) {
             this.selectedTask = data;
@@ -606,7 +598,6 @@ public class ServicesController implements Initializable {
             } else if (data.getStatus().equals(TaskStatus.INPROCESS)) {
                 btnFailed.setVisible(true);
                 btnSucceed.setVisible(true);
-                btnNotDone.setVisible(true);
             }
         } else {
             // Clear GUI
