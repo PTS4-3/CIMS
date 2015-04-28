@@ -861,7 +861,8 @@ public class Connection implements Runnable {
 
         List<ITask> output = null;    
         synchronized (TASKSLOCK) {
-            output = ServerMain.tasksDatabaseManager.getTasks(username);
+            // for now always calls active only tasks
+            output = ServerMain.tasksDatabaseManager.getTasks(username, true);
         }        
         writeOutput(output);
     }

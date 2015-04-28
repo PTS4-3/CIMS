@@ -489,9 +489,10 @@ public class TasksDatabaseManager extends DatabaseManager {
     /**
      *
      * @param execUserName if null, return all tasks
+     * @param activeTasksOnly
      * @return
      */
-    public List<ITask> getTasks(String execUserName) {
+    public List<ITask> getTasks(String execUserName, boolean activeTasksOnly) {
         if (!openConnection()) {
             return null;
         }
@@ -503,12 +504,19 @@ public class TasksDatabaseManager extends DatabaseManager {
         try {
             query = "SELECT * FROM " + taskTable;
             if (execUserName != null) {
-                query += " WHERE ID in "
+                query += " WHERE ID IN "
                         + "(SELECT TASKID FROM " + userTaskTable
                         + " WHERE USERNAME = ?)";
             }
+            if (activeTasksOnly) {
+                query += " AND STATUS = ? OR STATUS = ?";
+            }
             prepStat = conn.prepareStatement(query);
             prepStat.setString(1, execUserName);
+            if (activeTasksOnly) {
+                prepStat.setString(2, TaskStatus.SENT.toString());
+                prepStat.setString(3, TaskStatus.INPROCESS.toString());
+            }
             rs = prepStat.executeQuery();
 
             // Delegates extracting tasks
@@ -545,8 +553,8 @@ public class TasksDatabaseManager extends DatabaseManager {
         ResultSet rs;
 
         try {
-            query = "SELECT * FROM " + userTable + 
-                    " WHERE BINARY USERNAME = ? AND BINARY PASSWORD = ?";
+            query = "SELECT * FROM " + userTable
+                    + " WHERE BINARY USERNAME = ? AND BINARY PASSWORD = ?";
             prepStat = conn.prepareStatement(query);
             prepStat.setString(1, userName);
             prepStat.setString(2, password);
@@ -592,16 +600,16 @@ public class TasksDatabaseManager extends DatabaseManager {
             if (keywords.size() > 0) {
                 query += " WHERE ID IN"
                         + " (SELECT PLANID FROM " + keywordTable
-                        + " WHERE WORD = ?)";
+                        + " WHERE WORD LIKE ?)";
                 for (int pos = 1; pos < keywords.size(); pos++) {
                     query += " AND ID IN (SELECT PLANID FROM " + keywordTable
-                            + " WHERE WORD = ?)";
+                            + " WHERE WORD LIKE ?)";
                 }
             }
             prepStat = conn.prepareStatement(query);
             int rep = 1;
             for (String kw : keywords) {
-                prepStat.setString(rep, kw);
+                prepStat.setString(rep, "%" + kw + "%");
                 rep++;
             }
             rs = prepStat.executeQuery();

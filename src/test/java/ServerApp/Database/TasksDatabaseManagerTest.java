@@ -109,7 +109,7 @@ public class TasksDatabaseManagerTest {
                 task.getSortedData().getTitle().equals(task2.getSortedData().getTitle()));
 
         // get tasks
-        List<ITask> tasks = myDB.getTasks(executor.getUsername());
+        List<ITask> tasks = myDB.getTasks(executor.getUsername(), false);
         assertTrue("wrong number of tasks", tasks.size() == 3);
 
         // tests if tasks are correct
@@ -165,6 +165,14 @@ public class TasksDatabaseManagerTest {
             assertEquals("different status", expectedStatus, taskItem.getStatus());
         }
 
+        // gets only active tasks
+        tasks = myDB.getTasks(executor.getUsername(), true);
+            for(ITask taskItem : tasks){
+                assertTrue("wrong tag in active tasks",
+                        taskItem.getStatus() == TaskStatus.SENT
+                                || taskItem.getStatus() == TaskStatus.INPROCESS);
+            }
+
         // get sorted data tasks
         tasks = myDB.getSortedDataTasks(data);
         assertEquals("wrong number of tasks", 1, tasks.size());
@@ -194,8 +202,15 @@ public class TasksDatabaseManagerTest {
         assertNotNull("Unable to insert other new plan", myDB.insertNewPlan(plan));
 
         HashSet<String> keywordSet = new HashSet<>();
-        keywordSet.add("brand");
+
+        keywordSet.add("ran");
         List<IPlan> plans = myDB.getPlans(keywordSet);
+        assertTrue("did not retrieve the right number of plans", plans.size() == 1);
+        assertEquals("did not retrieve the right plan", 1, plans.get(0).getId());
+        keywordSet.clear();
+
+        keywordSet.add("brand");
+        plans = myDB.getPlans(keywordSet);
         assertTrue("did not retrieve the right number of plans", plans.size() == 1);
         assertEquals("did not retrieve the right plan", 1, plans.get(0).getId());
         
