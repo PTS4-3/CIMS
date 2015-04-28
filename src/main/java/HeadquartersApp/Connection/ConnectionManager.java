@@ -70,7 +70,7 @@ public class ConnectionManager {
      */
     public void setHQController(HeadquartersController hqController) throws NetworkException {
         this.hqController = hqController;
-        if(this.collectFuture != null) {
+        if(this.collectFuture == null) {
             this.getID();
             this.startPulling();
         }
