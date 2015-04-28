@@ -378,21 +378,23 @@ public class TasksDatabaseManager extends DatabaseManager {
         try {
             // updates task itself
             query = "UPDATE " + taskTable
-                    + " SET TITLE = " + input.getTitle()
-                    + ", DESCRIPTION = " + input.getDescription()
-                    + ", STATUS = " + input.getStatus().toString();
-            if (input.getDeclineReason() != null) {
-                query += ", REASON = " + input.getDeclineReason();
-            }
-            query += " WHERE ID = " + input.getId();
+                    + " SET TITLE = ?, DESCRIPTION = ?, STATUS = ?, REASON = ?"
+                    + " WHERE ID = ?";
+            
             prepStat = conn.prepareStatement(query);
+            prepStat.setString(1, input.getTitle());
+            prepStat.setString(2, input.getDescription());
+            prepStat.setString(3, input.getStatus().toString());
+            prepStat.setString(4, input.getDeclineReason());
+            prepStat.setInt(5, input.getId());
             prepStat.execute();
 
             if (input.getExecutor() != null) {
                 query = "REPLACE INTO " + userTaskTable
-                        + " SET TASKID = " + input.getId()
-                        + ", SET USERNAME = " + input.getExecutor().getUsername();
+                        + "(TASKID, USERNAME) VALUES (?, ?)";
                 prepStat = conn.prepareStatement(query);
+                prepStat.setInt(1, input.getId());
+                prepStat.setString(2, input.getExecutor().getUsername());
                 prepStat.execute();
             }
 
