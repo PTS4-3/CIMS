@@ -1047,7 +1047,7 @@ public class HeadquartersController implements Initializable {
             if (connectionManager == null) {
                 throw new NetworkException("Kon data niet wegschrijven");
             }
-            if (sortedData != null) {
+            if (sortedData != null && tempPlan != null) {
                 List<IStep> steps = tempPlan.getSteps();
                 if (steps != null) {
                     boolean done = true;
