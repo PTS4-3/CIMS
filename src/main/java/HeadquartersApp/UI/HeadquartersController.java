@@ -1049,6 +1049,7 @@ public class HeadquartersController implements Initializable {
                 throw new NetworkException("Kon data niet wegschrijven");
             }
             if (sortedData != null) {
+                if(tempPlan != null){
                 List<IStep> steps = tempPlan.getSteps();
                 if (steps != null) {
                     boolean done = true;
@@ -1069,8 +1070,12 @@ public class HeadquartersController implements Initializable {
                     } else {
                         showDialog("Foutmelding", "Niet alle stappen hebben een uitvoerder", true);
                     }
+                
                 } else {
                     showDialog("Foutmelding", "Het plan heeft geen stappen", true);
+                }
+                }else{
+                    showDialog("Foutmelding", "Er is geen plan geselecteerd", true);
                 }
             } else {
                 showDialog("Foutmelding", "Het plan kan niet worden toegepast als er geen gesorteerde data is geselecteerd", true);
