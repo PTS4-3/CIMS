@@ -937,6 +937,8 @@ public class HeadquartersController implements Initializable {
 
     // ApplyPlan----------------------------------------------------------------
     public void resetApplyPlan() {
+        tfaDataTitle.clear();
+        taaDataDescription.clear();
         lvaPlans.getItems().clear();
         lvaSteps.getItems().clear();
         tfaTaskTitle.clear();
@@ -1068,10 +1070,9 @@ public class HeadquartersController implements Initializable {
                         tasks.addAll(tempPlan.getSteps());
                         sortedData.setTasks(tasks);
                         connectionManager.applyPlan(tempPlan);
-                        
                         sortedData = null;
-                        tfaDataTitle.clear();
-                        taaDataDescription.clear();
+                        resetApplyPlan();
+                        
                         
                         lblApplyPlan.setVisible(true);
                         lblApplyPlan.setText("Plan is in werking gezet");
