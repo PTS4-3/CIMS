@@ -380,7 +380,7 @@ public class TasksDatabaseManager extends DatabaseManager {
             query = "UPDATE " + taskTable
                     + " SET TITLE = ?, DESCRIPTION = ?, STATUS = ?, REASON = ?"
                     + " WHERE ID = ?";
-            
+
             prepStat = conn.prepareStatement(query);
             prepStat.setString(1, input.getTitle());
             prepStat.setString(2, input.getDescription());
@@ -513,12 +513,12 @@ public class TasksDatabaseManager extends DatabaseManager {
                 count++;
             }
             boolean firstItem = true;
-            
-            for(TaskStatus status : filter){
-                if(firstItem && execUserName != null && !execUserName.isEmpty()){
+
+            for (TaskStatus status : filter) {
+                if (firstItem && execUserName != null && !execUserName.isEmpty()) {
                     query += " AND STATUS = ?";
                     firstItem = false;
-                } else if(firstItem){
+                } else if (firstItem) {
                     query += " WHERE STATUS = ?";
                     firstItem = false;
                 } else {
@@ -526,7 +526,7 @@ public class TasksDatabaseManager extends DatabaseManager {
                 }
             }
             prepStat = conn.prepareStatement(query);
-            if(execUserName != null && !execUserName.isEmpty()) {
+            if (execUserName != null && !execUserName.isEmpty()) {
                 prepStat.setString(1, execUserName);
             }
 
@@ -617,7 +617,7 @@ public class TasksDatabaseManager extends DatabaseManager {
             query = "SELECT * FROM " + planTable
                     + " WHERE TEMPLATE = 1";
             if (keywords.size() > 0) {
-                query += " and ID IN"
+                query += " AND ID IN"
                         + " (SELECT PLANID FROM " + keywordTable
                         + " WHERE WORD LIKE ?)";
                 for (int pos = 1; pos < keywords.size(); pos++) {
@@ -743,13 +743,14 @@ public class TasksDatabaseManager extends DatabaseManager {
     /**
      *
      * @param input
-     * @return tasks associated with given ISortedData
+     * @return tasks associated with given ISortedData. Reflects what tasks are
+     * steps
      */
     public List<ITask> getSortedDataTasks(ISortedData input) {
         if (!openConnection() || (input == null)) {
             return null;
         }
-        List<ITask> output = null;
+        HashMap<Integer, ITask> output = null;
         String query;
         PreparedStatement prepStat;
         ResultSet rs;
@@ -760,12 +761,39 @@ public class TasksDatabaseManager extends DatabaseManager {
             prepStat.setInt(1, input.getId());
             rs = prepStat.executeQuery();
 
-            // delegates actually extracting tasks
-            output = this.extractTasks(rs, input);
-
-            for (ITask task : output) {
-                task.setSortedData((SortedData) input);
+            // delegates actually extracting tasks, puts them in hashmap for access
+            output = new HashMap<>();
+            for (ITask task : this.extractTasks(rs, input)) {
+                output.put(task.getId(), task);
             }
+
+            // assigns sorted data, starts step query
+            if (!output.isEmpty()) {
+                query = "SELECT * FROM " + stepTable
+                        + " WHERE TASKID in (";
+                for (ITask task : output.values()) {
+                    query += "?,";
+                    task.setSortedData((SortedData) input);
+                }
+                // removes trailing comma, closes brackets
+                query = query.substring(0, query.length() - 1);
+                query += ")";
+                prepStat = conn.prepareStatement(query);
+                for (int i = 0; i < output.size(); i++) {
+                    prepStat.setInt(i + 1, output.get(i).getId());
+                }
+                rs = prepStat.executeQuery();
+
+                while (rs.next()) {
+                    int taskID = rs.getInt("TASKID");
+                    int planID = rs.getInt("PLANID");
+                    int stepNumber = rs.getInt("NUMBER");
+                    String condition = rs.getString("CONDITION");
+                    ITask task = output.get(taskID);
+                    output.put(taskID, new Step(task, stepNumber, condition));
+                }
+            }
+
         } catch (SQLException ex) {
             System.out.println("Failed to retrieve sorted data task IDs: " + ex.getMessage());
             Logger.getLogger(TasksDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
@@ -773,7 +801,11 @@ public class TasksDatabaseManager extends DatabaseManager {
         } finally {
             closeConnection();
         }
-        return output;
+        if (output != null) {
+            return new ArrayList<>(output.values());
+        } else {
+            return null;
+        }
     }
 
 }
