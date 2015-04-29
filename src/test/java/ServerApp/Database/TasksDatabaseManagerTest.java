@@ -39,17 +39,7 @@ public class TasksDatabaseManagerTest {
 
     private static TasksDatabaseManager myDB;
 
-    private Plan plan;
-
     public TasksDatabaseManagerTest() {
-        HashSet<String> keywords = new HashSet<>();
-        keywords.add("keyword");
-
-        List<IStep> steps = new ArrayList<>();
-        steps.add(new Step(-1, "title", "desc", TaskStatus.UNASSIGNED,
-                null, Tag.POLICE, null, 1, "condition"));
-
-        plan = new Plan(-1, "title", "description", keywords, steps, true);
     }
 
     @BeforeClass
@@ -109,9 +99,9 @@ public class TasksDatabaseManagerTest {
         assertTrue("different sortedData title",
                 task.getSortedData().getTitle().equals(task2.getSortedData().getTitle()));
 
-        // get tasks
+        // get tasks // TODO 
         List<ITask> tasks = myDB.getTasks(executor.getUsername(), new HashSet<>());
-        assertTrue("wrong number of tasks", tasks.size() == 3);
+        assertTrue("wrong number of tasks", tasks.size() == 2);
 
         // tests if tasks are correct
         for (ITask taskItem : tasks) {
@@ -128,8 +118,8 @@ public class TasksDatabaseManagerTest {
                 expectedDescription = "Zet de ladder tegen de boom.";
                 expectedReason = null;
                 expectedTag = Tag.FIREDEPARTMENT;
-                expectedHasData = false;
-                expectedDataID = -1;
+                expectedHasData = true;
+                expectedDataID = 3;
                 expectedStatus = TaskStatus.SENT;
             } else if (taskItem.getId() == 4) {
                 expectedTitle = "Kat pakken";
@@ -139,7 +129,7 @@ public class TasksDatabaseManagerTest {
                 expectedHasData = false;
                 expectedDataID = -1;
                 expectedStatus = TaskStatus.REFUSED;
-            } else if (taskItem.getId() == 11) {
+            } else if (taskItem.getId() == 13) {
                 expectedTitle = task2.getTitle();
                 expectedDescription = task2.getDescription();
                 expectedReason = task2.getDeclineReason();
@@ -196,10 +186,26 @@ public class TasksDatabaseManagerTest {
         Task task = new Task(-1, "title", "desc", TaskStatus.UNASSIGNED, data,
                 Tag.AMBULANCE, null);
         task = (Task) myDB.insertNewTask(task);
+        assertNotNull("failed to insert new task", task);
+
+        task.setStatus(TaskStatus.FAILED);
+        assertTrue("failed to update task", myDB.updateTask(task));
+
+        Task task2 = (Task) myDB.getTask(task.getId());
+        assertEquals("task was not updated", task.getStatus(), task2.getStatus());
     }
 
     @Test
     public void testPlans() {
+        HashSet<String> keywords = new HashSet<>();
+        keywords.add("keyword");
+
+        List<IStep> steps = new ArrayList<>();
+        steps.add(new Step(-1, "title", "desc", TaskStatus.UNASSIGNED,
+                null, Tag.POLICE, null, 1, "condition"));
+
+        Plan plan = new Plan(-1, "title", "description", keywords, steps, true);
+
         assertNotNull("Unable to insert new plan", myDB.insertNewPlan(plan));
         assertNotNull("Unable to insert other new plan", myDB.insertNewPlan(plan));
 
@@ -230,7 +236,7 @@ public class TasksDatabaseManagerTest {
             int expectedKeywordsCount = -1;
             int expectedStepCount = -1;
             // sets expected
-            if (planItem.getId() == 1) {
+            if (planItem.getId() == 1 || planItem.getId() == 3) {
                 expectedTitle = "Brand";
                 expectedDesc = "Brand in een gebouw met 3 verdiepingen.";
                 expectedKeywordsCount = 3;
@@ -242,7 +248,7 @@ public class TasksDatabaseManagerTest {
                         + " autos en troep op de weg.";
                 expectedKeywordsCount = 6;
                 expectedStepCount = 4;
-            } else if (planItem.getId() == 3 || planItem.getId() == 4) {
+            } else if (planItem.getId() == 4 || planItem.getId() == 5) {
                 expectedTitle = plan.getTitle();
                 expectedDesc = plan.getDescription();
                 expectedKeywordsCount = plan.getKeywords().size();
@@ -356,16 +362,6 @@ public class TasksDatabaseManagerTest {
             assertEquals("wrong name serviceUser", expectedName, sUser.getName());
             assertEquals("wrong tag serviceUser", expectedTag, sUser.getType());
         }
-    }
-
-    @Test
-    public void testGetUser() {
-
-    }
-
-    @Test
-    public void testGetServiceUsers() {
-
     }
 
 }
