@@ -898,7 +898,7 @@ public class Connection implements Runnable {
             getBuffer().addTaskForChief(task);
         }
 
-        if (task.getStatus() == TaskStatus.SUCCEEDED && task instanceof IStep) {
+        if ((task.getStatus() == TaskStatus.SUCCEEDED || task.getStatus() == TaskStatus.FAILED) && task instanceof IStep) {
             // Execute next step of plan
             getPlanExecutorHandler().executeNextStepOf((IStep) task);
         }

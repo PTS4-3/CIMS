@@ -921,7 +921,7 @@ public class HeadquartersController implements Initializable {
                     List<IStep> steps = new ArrayList<>();
                     steps.addAll(tempSteps);
                     
-                    connectionManager.sendNewPlan(new Plan(-1, title, description, keywords, steps, false));
+                    connectionManager.sendNewPlan(new Plan(-1, title, description, keywords, steps, true));
                     resetPlanInfo();
                     
                     lblSendPlan.setVisible(true);
