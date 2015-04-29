@@ -958,16 +958,30 @@ public class HeadquartersController implements Initializable {
      * Search for plans with similar keywords and display them in the listview.
      */
     public void searchPlan() {
-        HashSet<String> keywords = new HashSet();
-
+        
         String s = tfaSearch.getText();
-        String[] array = uniformString(s).split(" ");
-        for (String word : array) {
-            if (!word.isEmpty()) {
-                keywords.add(word);
+        
+        if (!s.isEmpty()) {
+            HashSet<String> keywords = new HashSet();
+            String[] array = uniformString(s).split(" ");
+            for (String word : array) {
+                if (!word.isEmpty()) {
+                    keywords.add(word);
+                }
             }
+            resetApplyPlan();
+            connectionManager.searchPlans(keywords);        
+        }  
+        else {
+            showDialog("Foutmelding", "Vul een of meer keywords in", true);
         }
-
+    }
+    
+    /**
+     * Show all plans
+     */
+    public void resetPlans() {
+        HashSet<String> keywords = new HashSet();
         resetApplyPlan();
         connectionManager.searchPlans(keywords);
     }
@@ -1102,8 +1116,8 @@ public class HeadquartersController implements Initializable {
         ITask task
                 = (ITask) lvtTasks.getSelectionModel().getSelectedItem();
         if (task != null) {
-            tftTaskTitle.setText(task.getTitle());
-            tatTaskDescription.setText(task.getDescription());
+            tftTaskTitle.setText(task.getSortedData().getTitle());
+            tatTaskDescription.setText(task.getSortedData().getDescription());
             tftTitle.setText(task.getTitle());
             tatDescription.setText(task.getDescription());
 
@@ -1135,6 +1149,9 @@ public class HeadquartersController implements Initializable {
         } catch (NetworkException nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
+        
+        lblTasks.setVisible(true);
+        lblTasks.setText("Taak is gelezen");
     }
 
     public void updateTask() {
@@ -1149,13 +1166,15 @@ public class HeadquartersController implements Initializable {
                 Object object = cbtNewExecutor.getSelectionModel().getSelectedItem();
                 if (object != null && object instanceof IServiceUser) {
                     task.setExecutor((IServiceUser) object);
+                    task.setStatus(TaskStatus.SENT);
+                    
                     lblTasks.setVisible(true);
                     lblTasks.setText("Taak is up-to-date");
                 } else {
                     showDialog("Foutmelding", "Geen uitvoerder geselecteerd", true);
                 }
 
-                connectionManager.updateTask(task);
+                connectionManager.sendTask(task);
             }
         } catch (IllegalArgumentException iaEx) {
             showDialog("", iaEx.getMessage(), false);
