@@ -112,7 +112,7 @@ public class HeadquartersController implements Initializable {
     @FXML ListView lvpTasks;
     @FXML TextField tfpTaskTitle;
     @FXML TextArea tapTaskDescription;
-    @FXML ComboBox cbpExecutor;
+    @FXML ComboBox cbExecutor;
     @FXML TextField tfpCondition;
     @FXML Label lblSendPlan;
 
@@ -252,10 +252,10 @@ public class HeadquartersController implements Initializable {
         ccrTags.setMaxSize(395, 25);
         aprPane.getChildren().add(ccrTags);
         
-        this.cbpExecutor.setItems(FXCollections.observableArrayList(Tag.values()));
-        this.cbpExecutor.getItems().remove(Tag.CITIZENS);
-        if (this.cbpExecutor.getSelectionModel().getSelectedItem() == null) {
-            this.cbpExecutor.getSelectionModel().selectFirst();
+        this.cbExecutor.setItems(FXCollections.observableArrayList(Tag.values()));
+        this.cbExecutor.getItems().remove(Tag.CITIZENS);
+        if (this.cbExecutor.getSelectionModel().getSelectedItem() == null) {
+            this.cbExecutor.getSelectionModel().selectFirst();
         }
         
 
@@ -866,7 +866,7 @@ public class HeadquartersController implements Initializable {
             try {
                 //TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 // TargetExecutor
-                tempSteps.add(new Step(step, title, description, TaskStatus.UNASSIGNED, null, (Tag)cbpExecutor.getSelectionModel().getSelectedItem(), null, step, condition));
+                tempSteps.add(new Step(step, title, description, TaskStatus.UNASSIGNED, null, (Tag)this.cbExecutor.getSelectionModel().getSelectedItem(), null, step, condition));
                 tfpTaskTitle.clear();
                 tapTaskDescription.clear();
                 tfpCondition.clear();

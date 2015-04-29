@@ -145,7 +145,7 @@
                 <Button id="btn" fx:id="btnRoadMapAdd" layoutX="350.0" layoutY="421.0" mnemonicParsing="false" onAction="#sendPlan" text="Stappenplan toevoegen" />
                 <Label fx:id="lblSendPlan" font="$x2" layoutX="20.0" layoutY="379.0" prefWidth="516.0" text="Melding" />
                 <Label layoutX="575.0" layoutY="379.0" text="Bestemming" />
-                <ComboBox fx:id="cbpExecutor" layoutX="717.0" layoutY="379.0" prefHeight="21.0" prefWidth="455.0">
+                <ComboBox fx:id="cbExecutor" layoutX="717.0" layoutY="379.0" prefHeight="21.0" prefWidth="455.0">
                   <items>
                     <FXCollections fx:factory="observableArrayList">
                       <String fx:value="Item 1" />
