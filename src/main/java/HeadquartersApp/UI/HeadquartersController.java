@@ -951,6 +951,14 @@ public class HeadquartersController implements Initializable {
         tfaTaskDescription.clear();
         lblApplyPlan.setVisible(false);
     }
+    
+    public void resetPlansList(){
+        lvaPlans.getItems().clear();
+        lvaSteps.getItems().clear();
+        tfaTaskTitle.clear();
+        tfaTaskDescription.clear();
+        lblApplyPlan.setVisible(false);
+    }
 
     /**
      * Fill the ListView with plans
@@ -962,7 +970,7 @@ public class HeadquartersController implements Initializable {
 
             @Override
             public void run() {               
-                resetApplyPlan();
+                resetPlansList();
                 lvaPlans.getItems().addAll(plans);
                 if (lvaPlans.getSelectionModel().getSelectedItem() == null) {
                     lvaPlans.getSelectionModel().selectFirst();
@@ -1023,7 +1031,7 @@ public class HeadquartersController implements Initializable {
                     keywords.add(word);
                 }
             }
-            resetApplyPlan();
+            resetPlansList();
             connectionManager.searchPlans(keywords);        
         }  
         else {
@@ -1036,7 +1044,7 @@ public class HeadquartersController implements Initializable {
      */
     public void resetPlans() {
         HashSet<String> keywords = new HashSet();
-        resetApplyPlan();
+        resetPlansList();
         connectionManager.searchPlans(keywords);
     }
 
