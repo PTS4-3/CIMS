@@ -963,7 +963,13 @@ public class HeadquartersController implements Initializable {
         IPlan plan = (IPlan) lvaPlans.getSelectionModel().getSelectedItem();
         List<IStep> steps = new ArrayList<>();
         for(IStep s : plan.getSteps()) {
-            steps.add(new Step(-1, String.valueOf(s.getTitle()), String.valueOf(s.getDescription()), TaskStatus.SENT, sortedData, s.getTargetExecutor(), null, s.getStepnr(), s.getCondition()));
+            steps.add(new Step(-1, String.valueOf(s.getTitle()), 
+                    String.valueOf(s.getDescription()), 
+                    TaskStatus.SENT, sortedData, 
+                    s.getTargetExecutor(), 
+                    null, 
+                    s.getStepnr(), 
+                    s.getCondition()));
         }
         tempPlan = new Plan(-1, plan.getTitle(), plan.getDescription(), plan.getKeywords(), steps, false);
         
@@ -1049,6 +1055,9 @@ public class HeadquartersController implements Initializable {
                     }
 
                     if (done) {
+                        List<ITask> tasks = new ArrayList<>();
+                        tasks.addAll(tempPlan.getSteps());
+                        sortedData.setTasks(tasks);
                         connectionManager.applyPlan(tempPlan);
                         lblApplyPlan.setVisible(true);
                         lblApplyPlan.setText("Plan is in werking gezet");
@@ -1102,6 +1111,8 @@ public class HeadquartersController implements Initializable {
                 showDialog("Foutmelding", "Geen uitvoerder geselecteerd", true);
             }
             
+            s.setSortedData(sortedData);
+           
             lvaSteps.getItems().remove(s);
         } else {
             showDialog("Foutmelding", "Selecteer een stap voordat je een stap toekent.", true);

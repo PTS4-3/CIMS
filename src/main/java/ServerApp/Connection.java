@@ -815,7 +815,7 @@ public class Connection implements Runnable {
             plan = ServerMain.tasksDatabaseManager.insertNewPlan(plan);
         }
 
-        if (plan != null) {
+        if (plan != null) {            
             getPlanExecutorHandler().addPlanExecutor(plan);
             success = true;
         }
