@@ -893,7 +893,7 @@ public class Connection implements Runnable {
             success = ServerMain.tasksDatabaseManager.updateTask(task);
         }
 
-        if (task.getStatus() != TaskStatus.READ) {
+        if (task.getStatus() != TaskStatus.READ && task.getStatus() != TaskStatus.SENT) {
             // Add to buffer of HQChief
             getBuffer().addTaskForChief(task);
         }

@@ -410,15 +410,15 @@ public class HeadquartersController implements Initializable {
 
             // Update ListView
             this.updateLvuUnsortedData(unsortedData);
+            
+            lblUnsortedReport.setVisible(true);
+            lblUnsortedReport.setText("Data is verzonden naar de database");
 
         } catch (IllegalArgumentException iaEx) {
             showDialog("", iaEx.getMessage(), false);
         } catch (NetworkException nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
-        
-        lblUnsortedReport.setVisible(true);
-        lblUnsortedReport.setText("Data is verzonden naar de database");
     }
 
     /**
@@ -443,15 +443,15 @@ public class HeadquartersController implements Initializable {
 
             // Update ListView
             this.updateLvuUnsortedData(unsortedData);
+            
+            lblUnsortedReport.setVisible(true);
+            lblUnsortedReport.setText("Data is verwijderd uit de database");
 
         } catch (IllegalArgumentException iaEx) {
             showDialog("", iaEx.getMessage(), false);
         } catch (NetworkException nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
-        
-        lblUnsortedReport.setVisible(true);
-        lblUnsortedReport.setText("Data is verwijderd uit de database");
     }
 
     /**
@@ -505,15 +505,15 @@ public class HeadquartersController implements Initializable {
 
             // Reset tab
             resetRequest();
+            
+            lblInformationReport.setVisible(true);
+            lblInformationReport.setText("Verzoek is verstuurd");
 
         } catch (IllegalArgumentException iaEx) {
             showDialog("Invoer onjuist", iaEx.getMessage(), true);
         } catch (NetworkException nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
-        
-        lblInformationReport.setVisible(true);
-        lblInformationReport.setText("Verzoek is verstuurd");
     }
 
     /**
@@ -723,6 +723,9 @@ public class HeadquartersController implements Initializable {
 
                 data.setTasks(tempTasks);
                 displaySortedDataTasks(data.getTasks());
+                
+                lblProcessSortedData.setVisible(true);
+                lblProcessSortedData.setText("Taak is verzonden naar de database");
             } else {
                 showDialog("Foutmelding", "Titel mag niet hetzelfde zijn als een eerder toegevoegde taak", true);
             }
@@ -732,9 +735,6 @@ public class HeadquartersController implements Initializable {
         } catch (NetworkException nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
-
-        lblProcessSortedData.setVisible(true);
-        lblProcessSortedData.setText("Taak is verzonden naar de database");
     }
 
     /**
@@ -879,6 +879,9 @@ public class HeadquartersController implements Initializable {
                     
                     connectionManager.sendNewPlan(new Plan(-1, title, description, keywords, steps, false));
                     resetPlanInfo();
+                    
+                    lblSendPlan.setVisible(true);
+                    lblSendPlan.setText("Plan is verzonden naar de database");
                 } else {
                     showDialog("Foutmelding", "Voer een titel voor het stappenplan in", true);
                 }
@@ -890,9 +893,6 @@ public class HeadquartersController implements Initializable {
         } catch (NetworkException nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
-
-        lblSendPlan.setVisible(true);
-        lblSendPlan.setText("Plan is verzonden naar de database");
     }
 
     // ApplyPlan----------------------------------------------------------------
@@ -1004,6 +1004,8 @@ public class HeadquartersController implements Initializable {
 
                     if (done) {
                         connectionManager.applyPlan(tempPlan);
+                        lblApplyPlan.setVisible(true);
+                        lblApplyPlan.setText("Plan is in werking gezet");
                     } else {
                         showDialog("Foutmelding", "Niet alle stappen hebben een uitvoerder", true);
                     }
@@ -1018,9 +1020,6 @@ public class HeadquartersController implements Initializable {
         } catch (NetworkException nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
-
-        lblApplyPlan.setVisible(true);
-        lblApplyPlan.setText("Plan is in werking gezet");
     }
 
     /**
@@ -1150,6 +1149,8 @@ public class HeadquartersController implements Initializable {
                 Object object = cbtNewExecutor.getSelectionModel().getSelectedItem();
                 if (object != null && object instanceof IServiceUser) {
                     task.setExecutor((IServiceUser) object);
+                    lblTasks.setVisible(true);
+                    lblTasks.setText("Taak is up-to-date");
                 } else {
                     showDialog("Foutmelding", "Geen uitvoerder geselecteerd", true);
                 }
@@ -1161,9 +1162,6 @@ public class HeadquartersController implements Initializable {
         } catch (NetworkException nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
-
-        lblTasks.setVisible(true);
-        lblTasks.setText("Taak is up-to-date");
     }
 
     public void logOutClick() {
