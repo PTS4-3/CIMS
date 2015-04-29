@@ -684,6 +684,7 @@ public class HeadquartersController implements Initializable {
         if (task != null) {
             tfsTaskTitle.setText(task.getTitle());
             tasTaskDescription.setText(task.getDescription());
+            cbsExecutor.getSelectionModel().select(task.getExecutor());
         }
     }
 
@@ -788,8 +789,6 @@ public class HeadquartersController implements Initializable {
         if (task != null) {
             tfsTaskTitle.setText(task.getTitle());
             tasTaskDescription.setText(task.getDescription());
-            cbsExecutor.getSelectionModel().select(task.getExecutor());
-
             this.connectionManager.getServiceUsers();
             List<IServiceUser> users = cbsExecutor.getItems();
             for (IServiceUser user : users) {
@@ -797,6 +796,7 @@ public class HeadquartersController implements Initializable {
                     cbsExecutor.getItems().remove(user);
                 }
             }
+            cbsExecutor.getSelectionModel().select(task.getExecutor());
 
             lblSendPlan.setVisible(false);
         }
