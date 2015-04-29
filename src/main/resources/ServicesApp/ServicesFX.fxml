@@ -101,18 +101,18 @@
                 <TextField fx:id="tftTaskTitle" disable="false" editable="false" layoutX="525.0" layoutY="28.0" prefWidth="249.0" />
                 <TextArea fx:id="tatDescription" disable="false" editable="false" layoutX="525.0" layoutY="65.0" prefHeight="219.0" prefWidth="249.0" wrapText="true" />
                 <TextArea fx:id="tatCondition" disable="false" editable="false" layoutX="525.0" layoutY="295.0" prefHeight="66.0" prefWidth="249.0" wrapText="true" />
-                <Button fx:id="btnDismissTask" layoutX="591.0" layoutY="382.0" mnemonicParsing="false" onAction="#dismissTask" prefWidth="181.0" styleClass="ButtonDismiss" text="Weigeren">
+                <Button fx:id="btnDismissTask" layoutX="591.0" layoutY="382.0" mnemonicParsing="false" onAction="#dismissTask" prefWidth="181.0" styleClass="ButtonDismiss" text="Weigeren" visible="false">
                   <stylesheets>
                     <URL value="@../Style.css" />
                   </stylesheets>
                 </Button>
-                <Button fx:id="btnAcceptTask" layoutX="382.0" layoutY="382.0" mnemonicParsing="false" onAction="#acceptTask" prefWidth="195.0" styleClass="ButtonAccept" text="Accepteren" textOverrun="CLIP" underline="false">
+                <Button fx:id="btnAcceptTask" layoutX="382.0" layoutY="382.0" mnemonicParsing="false" onAction="#acceptTask" prefWidth="195.0" styleClass="ButtonAccept" text="Accepteren" textOverrun="CLIP" underline="false" visible="false">
                   <stylesheets>
                     <URL value="@../Style.css" />
                   </stylesheets>
                 </Button>
-                <Button fx:id="btnSucceed" layoutX="591.0" layoutY="427.0" mnemonicParsing="false" onAction="#succeedTask" prefWidth="181.0" text="Geslaagd" />
-                <Button fx:id="btnFailed" layoutX="384.0" layoutY="427.0" mnemonicParsing="false" onAction="#failedTask" prefWidth="195.0" text="Niet uitgevoerd / Gefaald" />
+                <Button fx:id="btnSucceed" layoutX="591.0" layoutY="427.0" mnemonicParsing="false" onAction="#succeedTask" prefWidth="181.0" text="Geslaagd" visible="false" />
+                <Button fx:id="btnFailed" layoutX="384.0" layoutY="427.0" mnemonicParsing="false" onAction="#failedTask" prefWidth="195.0" text="Niet uitgevoerd / Gefaald" visible="false" />
                 <Label fx:id="lblMessageTask" font="$x2" layoutX="384.0" layoutY="472.0" text="Melding" />
               </children>
             </AnchorPane>
