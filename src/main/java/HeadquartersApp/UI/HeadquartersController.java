@@ -669,11 +669,12 @@ public class HeadquartersController implements Initializable {
             boolean plan = false;
             boolean tasks = false;
             
-            connectionManager.searchPlans(new HashSet<>());
-            
             if (sorted.getTasks() != null) {                             
                 for (ITask t : sorted.getTasks()) {
-                    tasks = true;                    
+                    tasks = true;     
+                    if (t instanceof IStep) {
+                        plan = true;
+                    }
                 }
             }                
             
