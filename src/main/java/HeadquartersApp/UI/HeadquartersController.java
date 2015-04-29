@@ -140,6 +140,7 @@ public class HeadquartersController implements Initializable {
     @FXML TextField tftReason;
     @FXML ComboBox cbtNewExecutor;
     @FXML Label lblTasks;
+    @FXML Button btnNewTask;
 
     private IData requestData;
     private ISortedData sortedData;
@@ -1175,6 +1176,17 @@ public class HeadquartersController implements Initializable {
 
             if (task.getExecutor() != null) {
                 tftExecutor.setText(task.getExecutor().toString());
+            }
+            
+            if(task.getStatus() != TaskStatus.REFUSED){
+                
+                cbtNewExecutor.setDisable(true);
+                btnNewTask.setDisable(true);
+                tftReason.setDisable(true);
+            } else {
+                cbtNewExecutor.setDisable(false);
+                btnNewTask.setDisable(false);
+                tftReason.setDisable(false);
             }
 
             tftReason.setText(task.getDeclineReason());
