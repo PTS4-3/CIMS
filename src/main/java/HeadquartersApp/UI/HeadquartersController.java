@@ -109,6 +109,7 @@ public class HeadquartersController implements Initializable {
     @FXML ListView lvpTasks;
     @FXML TextField tfpTaskTitle;
     @FXML TextArea tapTaskDescription;
+    @FXML ComboBox cbpExecutor;
     @FXML TextField tfpCondition;
     @FXML Label lblSendPlan;
 
@@ -246,6 +247,9 @@ public class HeadquartersController implements Initializable {
         ccrTags.prefHeight(25);
         ccrTags.setMaxSize(395, 25);
         aprPane.getChildren().add(ccrTags);
+        
+        cbpExecutor.setItems(FXCollections.observableArrayList(Tag.values()));
+        cbpExecutor.getItems().remove(Tag.CITIZENS);
 
         tabProcessSortedData.setDisable(true);
         tabSendPlan.setDisable(true);
@@ -826,7 +830,7 @@ public class HeadquartersController implements Initializable {
             try {
                 //TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 // TargetExecutor
-                tempSteps.add(new Step(step, title, description, TaskStatus.UNASSIGNED, null, Tag.FIREDEPARTMENT, null, step, condition));
+                tempSteps.add(new Step(step, title, description, TaskStatus.UNASSIGNED, null, (Tag)cbpExecutor.getSelectionModel().getSelectedItem(), null, step, condition));
                 tfpTaskTitle.clear();
                 tapTaskDescription.clear();
                 tfpCondition.clear();
