@@ -251,8 +251,12 @@ public class HeadquartersController implements Initializable {
         ccrTags.setMaxSize(395, 25);
         aprPane.getChildren().add(ccrTags);
         
-        cbpExecutor.setItems(FXCollections.observableArrayList(Tag.values()));
-        cbpExecutor.getItems().remove(Tag.CITIZENS);
+        this.cbpExecutor.setItems(FXCollections.observableArrayList(Tag.values()));
+        this.cbpExecutor.getItems().remove(Tag.CITIZENS);
+        if (this.cbpExecutor.getSelectionModel().getSelectedItem() == null) {
+            this.cbpExecutor.getSelectionModel().selectFirst();
+        }
+        
 
         tabProcessSortedData.setDisable(true);
         tabSendPlan.setDisable(true);
@@ -1299,7 +1303,7 @@ public class HeadquartersController implements Initializable {
                 .replace("?", " ")
                 .replace("  ", " ")
                 .toLowerCase()
-                .replace("é", "e");
+                .replace("Ã©", "e");
 
         return s;
     }
