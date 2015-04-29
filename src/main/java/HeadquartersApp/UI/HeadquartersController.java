@@ -683,6 +683,10 @@ public class HeadquartersController implements Initializable {
                         plan = true;
                     } catch (ClassCastException ex) {                               
                     }
+                    
+                    if (t instanceof IStep) {
+                        plan = true;
+                    }
                 }
             }                
             
