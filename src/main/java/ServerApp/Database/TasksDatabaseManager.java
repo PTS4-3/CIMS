@@ -598,9 +598,10 @@ public class TasksDatabaseManager extends DatabaseManager {
      *
      * @param keywords
      * @return IPlans with <i>all</i> given keywords. <br>
-     * Will return all Plans in database if empty
+     * Will return all Plans in database if empty <br>
+     * only returns templates
      */
-    public List<IPlan> getPlans(HashSet<String> keywords) {
+    public List<IPlan> getTemplatePlans(HashSet<String> keywords) {
         if (!openConnection() || (keywords == null)) {
             return null;
         }
@@ -613,9 +614,10 @@ public class TasksDatabaseManager extends DatabaseManager {
 
         try {
             // builds query, depending on how many keywords are provided
-            query = "SELECT * FROM " + planTable;
+            query = "SELECT * FROM " + planTable
+                    + " WHERE TEMPLATE = 1";
             if (keywords.size() > 0) {
-                query += " WHERE ID IN"
+                query += " and ID IN"
                         + " (SELECT PLANID FROM " + keywordTable
                         + " WHERE WORD LIKE ?)";
                 for (int pos = 1; pos < keywords.size(); pos++) {

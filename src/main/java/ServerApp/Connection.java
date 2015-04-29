@@ -920,7 +920,7 @@ public class Connection implements Runnable {
 
         List<IPlan> output = null;
         synchronized (TASKSLOCK) {
-            output = ServerMain.tasksDatabaseManager.getPlans(keywords);
+            output = ServerMain.tasksDatabaseManager.getTemplatePlans(keywords);
         }
         writeOutput(output);
     }

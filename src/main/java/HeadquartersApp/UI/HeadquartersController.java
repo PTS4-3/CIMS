@@ -140,6 +140,7 @@ public class HeadquartersController implements Initializable {
     @FXML TextField tftReason;
     @FXML ComboBox cbtNewExecutor;
     @FXML Label lblTasks;
+    @FXML Button btnNewTask;
 
     private IData requestData;
     private ISortedData sortedData;
@@ -675,9 +676,12 @@ public class HeadquartersController implements Initializable {
             
             if (sorted.getTasks() != null) {                             
                 for (ITask t : sorted.getTasks()) {
-                    tasks = true;     
-                    if (t instanceof IStep) {
+                    tasks = true;    
+                    
+                    try {
+                        IStep s = (IStep)t;
                         plan = true;
+                    } catch (ClassCastException ex) {                               
                     }
                 }
             }                
@@ -1047,29 +1051,34 @@ public class HeadquartersController implements Initializable {
             if (connectionManager == null) {
                 throw new NetworkException("Kon data niet wegschrijven");
             }
-            if (sortedData != null && tempPlan != null) {
-                List<IStep> steps = tempPlan.getSteps();
-                if (steps != null) {
-                    boolean done = true;
+            if (sortedData != null) {
+                if(tempPlan != null) {
+                    List<IStep> steps = tempPlan.getSteps();
+                    if (steps != null) {
+                        boolean done = true;
 
-                    for (IStep s : steps) {
-                        if (s.getExecutor() == null) {
-                            done = false;
+                        for (IStep s : steps) {
+                            if (s.getExecutor() == null) {
+                                done = false;
+                            }
                         }
-                    }
 
-                    if (done) {
-                        List<ITask> tasks = new ArrayList<>();
-                        tasks.addAll(tempPlan.getSteps());
-                        sortedData.setTasks(tasks);
-                        connectionManager.applyPlan(tempPlan);
-                        lblApplyPlan.setVisible(true);
-                        lblApplyPlan.setText("Plan is in werking gezet");
+                        if (done) {
+                            List<ITask> tasks = new ArrayList<>();
+                            tasks.addAll(tempPlan.getSteps());
+                            sortedData.setTasks(tasks);
+                            connectionManager.applyPlan(tempPlan);
+                            lblApplyPlan.setVisible(true);
+                            lblApplyPlan.setText("Plan is in werking gezet");
+                        } else {
+                            showDialog("Foutmelding", "Niet alle stappen hebben een uitvoerder", true);
+                        }
+
                     } else {
-                        showDialog("Foutmelding", "Niet alle stappen hebben een uitvoerder", true);
-                    }
-                } else {
                     showDialog("Foutmelding", "Het plan heeft geen stappen", true);
+                    }
+                }else{
+                    showDialog("Foutmelding", "Er is geen plan geselecteerd", true);
                 }
             } else {
                 showDialog("Foutmelding", "Het plan kan niet worden toegepast als er geen gesorteerde data is geselecteerd", true);
@@ -1175,6 +1184,17 @@ public class HeadquartersController implements Initializable {
 
             if (task.getExecutor() != null) {
                 tftExecutor.setText(task.getExecutor().toString());
+            }
+            
+            if(task.getStatus() != TaskStatus.REFUSED){
+                
+                cbtNewExecutor.setDisable(true);
+                btnNewTask.setDisable(true);
+                tftReason.setDisable(true);
+            } else {
+                cbtNewExecutor.setDisable(false);
+                btnNewTask.setDisable(false);
+                tftReason.setDisable(false);
             }
 
             tftReason.setText(task.getDeclineReason());

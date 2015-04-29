@@ -206,22 +206,22 @@ public class TasksDatabaseManagerTest {
         HashSet<String> keywordSet = new HashSet<>();
 
         keywordSet.add("ran");
-        List<IPlan> plans = myDB.getPlans(keywordSet);
+        List<IPlan> plans = myDB.getTemplatePlans(keywordSet);
         assertTrue("did not retrieve the right number of plans", plans.size() == 1);
         assertEquals("did not retrieve the right plan", 1, plans.get(0).getId());
         keywordSet.clear();
 
         keywordSet.add("brand");
-        plans = myDB.getPlans(keywordSet);
+        plans = myDB.getTemplatePlans(keywordSet);
         assertTrue("did not retrieve the right number of plans", plans.size() == 1);
         assertEquals("did not retrieve the right plan", 1, plans.get(0).getId());
 
         keywordSet.add("drie verdiepingen");
-        plans = myDB.getPlans(keywordSet);
+        plans = myDB.getTemplatePlans(keywordSet);
         assertTrue("did not retrieve the right number of plans", plans.size() == 1);
         assertEquals("did not retrieve the right plan", 1, plans.get(0).getId());
 
-        plans = myDB.getPlans(new HashSet<>());
+        plans = myDB.getTemplatePlans(new HashSet<>());
         assertTrue("Not all plans were retrieved", plans.size() == 4);
 
         for (IPlan planItem : plans) {
