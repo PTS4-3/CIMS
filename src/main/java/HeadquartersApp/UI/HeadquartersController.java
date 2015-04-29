@@ -1251,14 +1251,17 @@ public class HeadquartersController implements Initializable {
                     task.setExecutor((IServiceUser) object);
                     task.setStatus(TaskStatus.SENT);
                     task.setDeclineReason(null);
+                    connectionManager.sendTask(task);
+                    
+                    lvtTasks.getItems().remove(lvtTasks.getSelectionModel().getSelectedItem());
+                    lvtTasks.getSelectionModel().selectFirst();
                     
                     lblTasks.setVisible(true);
                     lblTasks.setText("Taak is up-to-date");
                 } else {
                     showDialog("Foutmelding", "Geen uitvoerder geselecteerd", true);
                 }
-
-                connectionManager.sendTask(task);
+                
             }
         } catch (IllegalArgumentException iaEx) {
             showDialog("", iaEx.getMessage(), false);
