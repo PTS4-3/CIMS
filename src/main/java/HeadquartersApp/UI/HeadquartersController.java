@@ -676,9 +676,12 @@ public class HeadquartersController implements Initializable {
             
             if (sorted.getTasks() != null) {                             
                 for (ITask t : sorted.getTasks()) {
-                    tasks = true;     
-                    if (t instanceof IStep) {
+                    tasks = true;    
+                    
+                    try {
+                        IStep s = (IStep)t;
                         plan = true;
+                    } catch (ClassCastException ex) {                               
                     }
                 }
             }                
