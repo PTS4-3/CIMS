@@ -796,7 +796,7 @@ public class TasksDatabaseManager extends DatabaseManager {
                 }
             }
 
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             System.out.println("Failed to retrieve sorted data task IDs: " + ex.getMessage());
             Logger.getLogger(TasksDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
             output = null;
