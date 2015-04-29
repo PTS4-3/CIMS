@@ -1159,8 +1159,13 @@ public class HeadquartersController implements Initializable {
         ITask task
                 = (ITask) lvtTasks.getSelectionModel().getSelectedItem();
         if (task != null) {
-            tftTaskTitle.setText(task.getSortedData().getTitle());
-            tatTaskDescription.setText(task.getSortedData().getDescription());
+            if(task.getSortedData() != null) {
+                tftTaskTitle.setText(task.getSortedData().getTitle());
+                tatTaskDescription.setText(task.getSortedData().getDescription());
+            } else {
+                tftTaskTitle.clear();
+                tatTaskDescription.clear();
+            }
             tftTitle.setText(task.getTitle());
             tatDescription.setText(task.getDescription());
 
