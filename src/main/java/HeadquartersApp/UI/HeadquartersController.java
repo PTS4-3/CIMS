@@ -937,6 +937,8 @@ public class HeadquartersController implements Initializable {
 
     // ApplyPlan----------------------------------------------------------------
     public void resetApplyPlan() {
+        sortedData = null;
+        
         tfaDataTitle.clear();
         taaDataDescription.clear();
         lvaPlans.getItems().clear();
@@ -1070,7 +1072,6 @@ public class HeadquartersController implements Initializable {
                         tasks.addAll(tempPlan.getSteps());
                         sortedData.setTasks(tasks);
                         connectionManager.applyPlan(tempPlan);
-                        sortedData = null;
                         resetApplyPlan();
                         
                         

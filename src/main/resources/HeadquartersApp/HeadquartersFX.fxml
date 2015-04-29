@@ -9,7 +9,7 @@
 <?import javafx.scene.text.*?>
 <?import org.controlsfx.control.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="524.0" prefWidth="1200.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="HeadquartersApp.UI.HeadquartersController">
+<AnchorPane id="AnchorPane" prefHeight="524.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="HeadquartersApp.UI.HeadquartersController">
   <children>
     <TabPane fx:id="tabPane" layoutX="0.0" layoutY="24.0" prefHeight="500.0" prefWidth="1200.0" tabClosingPolicy="UNAVAILABLE">
       <tabs>
@@ -197,6 +197,7 @@
                 <Label fx:id="lblApplyPlan" font="$x2" layoutX="844.0" layoutY="376.0" prefWidth="343.0" text="Melding" />
                 <TextField id="tfuTitle" fx:id="tfaTaskCondition" layoutX="966.0" layoutY="305.0" prefWidth="223.0" />
                 <Label layoutX="846.0" layoutY="305.0" text="Pre-conditie" />
+                        <Button id="btnSearchRoadmap" fx:id="btnResetSortedData" layoutX="298.0" layoutY="417.0" mnemonicParsing="false" onAction="#resetApplyPlan" prefHeight="31.0" prefWidth="97.0" text="Reset Data" />
               </children>
             </AnchorPane>
           </content>
@@ -208,8 +209,8 @@
                 <Label font="$x1" layoutX="14.0" layoutY="19.0" text="Taken" underline="false" />
                 <TableView id="tvData" layoutX="14.0" layoutY="19.0" prefHeight="441.0" prefWidth="352.0" visible="false">
                   <columns>
-                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="171.0" text="Titel" fx:id="tcTitle" />
-                    <TableColumn prefWidth="150.0" text="Relevantie" fx:id="tcStatus" />
+                    <TableColumn fx:id="tcTitle" maxWidth="5000.0" minWidth="10.0" prefWidth="171.0" text="Titel" />
+                    <TableColumn fx:id="tcStatus" prefWidth="150.0" text="Relevantie" />
                   </columns>
                 </TableView>
                 <ListView id="lvSortedData" fx:id="lvtTasks" layoutX="14.0" layoutY="50.0" prefHeight="396.0" prefWidth="333.0" />
