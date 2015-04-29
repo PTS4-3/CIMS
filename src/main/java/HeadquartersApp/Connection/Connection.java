@@ -287,7 +287,7 @@ class Connection extends ConnClientBase {
     protected List<ITask> getTasks() throws NetworkException {
         HashSet<TaskStatus> statuses = new HashSet<TaskStatus>();
         for(TaskStatus ts : TaskStatus.values()) {
-            if(ts != TaskStatus.READ) {
+            if(ts != TaskStatus.READ && ts != TaskStatus.SENT && ts != TaskStatus.UNASSIGNED) {
                 statuses.add(ts);
             }
         }
