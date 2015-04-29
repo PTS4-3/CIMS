@@ -1068,6 +1068,11 @@ public class HeadquartersController implements Initializable {
                         tasks.addAll(tempPlan.getSteps());
                         sortedData.setTasks(tasks);
                         connectionManager.applyPlan(tempPlan);
+                        
+                        sortedData = null;
+                        tfaDataTitle.clear();
+                        taaDataDescription.clear();
+                        
                         lblApplyPlan.setVisible(true);
                         lblApplyPlan.setText("Plan is in werking gezet");
                     } else {
