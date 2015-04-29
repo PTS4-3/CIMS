@@ -1186,7 +1186,7 @@ public class HeadquartersController implements Initializable {
                 tftExecutor.setText(task.getExecutor().toString());
             }
             
-            if(task.getStatus() != TaskStatus.REFUSED){
+            if(task.getStatus() != TaskStatus.REFUSED && task.getStatus() != TaskStatus.FAILED){
                 
                 cbtNewExecutor.setDisable(true);
                 btnNewTask.setDisable(true);
