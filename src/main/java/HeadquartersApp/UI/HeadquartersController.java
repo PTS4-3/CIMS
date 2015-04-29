@@ -958,16 +958,30 @@ public class HeadquartersController implements Initializable {
      * Search for plans with similar keywords and display them in the listview.
      */
     public void searchPlan() {
-        HashSet<String> keywords = new HashSet();
-
+        
         String s = tfaSearch.getText();
-        String[] array = uniformString(s).split(" ");
-        for (String word : array) {
-            if (!word.isEmpty()) {
-                keywords.add(word);
+        
+        if (!s.isEmpty()) {
+            HashSet<String> keywords = new HashSet();
+            String[] array = uniformString(s).split(" ");
+            for (String word : array) {
+                if (!word.isEmpty()) {
+                    keywords.add(word);
+                }
             }
+            resetApplyPlan();
+            connectionManager.searchPlans(keywords);        
+        }  
+        else {
+            showDialog("Foutmelding", "Vul een of meer keywords in", true);
         }
-
+    }
+    
+    /**
+     * Show all plans
+     */
+    public void resetPlans() {
+        HashSet<String> keywords = new HashSet();
         resetApplyPlan();
         connectionManager.searchPlans(keywords);
     }
