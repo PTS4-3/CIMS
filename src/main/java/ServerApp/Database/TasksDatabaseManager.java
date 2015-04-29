@@ -770,7 +770,7 @@ public class TasksDatabaseManager extends DatabaseManager {
             // assigns sorted data, starts step query
             if (!output.isEmpty()) {
                 query = "SELECT * FROM " + stepTable
-                        + " WHERE TASKID in (";
+                        + " WHERE TASKID IN (";
                 for (ITask task : output.values()) {
                     query += "?,";
                     task.setSortedData((SortedData) input);
@@ -779,8 +779,10 @@ public class TasksDatabaseManager extends DatabaseManager {
                 query = query.substring(0, query.length() - 1);
                 query += ")";
                 prepStat = conn.prepareStatement(query);
-                for (int i = 0; i < output.size(); i++) {
-                    prepStat.setInt(i + 1, output.get(i).getId());
+                int rep = 1;
+                for(int key : output.keySet()){
+                    prepStat.setInt(rep, key);
+                    rep++;
                 }
                 rs = prepStat.executeQuery();
 
@@ -794,7 +796,7 @@ public class TasksDatabaseManager extends DatabaseManager {
                 }
             }
 
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             System.out.println("Failed to retrieve sorted data task IDs: " + ex.getMessage());
             Logger.getLogger(TasksDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
             output = null;
