@@ -1150,6 +1150,9 @@ public class HeadquartersController implements Initializable {
         } catch (NetworkException nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
+        
+        lblTasks.setVisible(true);
+        lblTasks.setText("Taak is gelezen");
     }
 
     public void updateTask() {
@@ -1164,11 +1167,12 @@ public class HeadquartersController implements Initializable {
                 Object object = cbtNewExecutor.getSelectionModel().getSelectedItem();
                 if (object != null && object instanceof IServiceUser) {
                     task.setExecutor((IServiceUser) object);
+                    task.setStatus(TaskStatus.SENT);
                 } else {
                     showDialog("Foutmelding", "Geen uitvoerder geselecteerd", true);
                 }
 
-                connectionManager.updateTask(task);
+                connectionManager.sendTask(task);
             }
         } catch (IllegalArgumentException iaEx) {
             showDialog("", iaEx.getMessage(), false);
