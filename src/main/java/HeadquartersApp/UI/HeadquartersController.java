@@ -43,6 +43,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -100,6 +101,8 @@ public class HeadquartersController implements Initializable {
     @FXML TextArea tasTaskDescription;
     @FXML ComboBox cbsExecutor;
     @FXML Label lblProcessSortedData;
+    @FXML Button btnAddSortedTask;
+    @FXML Button btnAddRoadMap;
 
     // SendPlan
     @FXML Tab tabSendPlan;
@@ -662,6 +665,30 @@ public class HeadquartersController implements Initializable {
             tfsSource.setText(sorted.getSource());
             tfsLocation.setText(sorted.getLocation());
             displaySortedDataTasks(sorted.getTasks());
+            
+            boolean plan = false;
+            boolean tasks = false;
+            
+            connectionManager.searchPlans(new HashSet<>());
+            
+            if (sorted.getTasks() != null) {                             
+                for (ITask t : sorted.getTasks()) {
+                    tasks = true;                    
+                }
+            }                
+            
+            if (plan) {
+                btnAddSortedTask.setDisable(true);
+                btnAddRoadMap.setDisable(true);
+            }
+            else if (tasks) {
+                btnAddSortedTask.setDisable(false);
+                btnAddRoadMap.setDisable(true);
+            }
+            else {
+                btnAddSortedTask.setDisable(false);
+                btnAddRoadMap.setDisable(false);
+            }
 
         } else {
             // Clear GUI
@@ -917,7 +944,7 @@ public class HeadquartersController implements Initializable {
         Platform.runLater(new Runnable() {
 
             @Override
-            public void run() {
+            public void run() {               
                 resetApplyPlan();
                 lvaPlans.getItems().addAll(plans);
                 if (lvaPlans.getSelectionModel().getSelectedItem() == null) {
