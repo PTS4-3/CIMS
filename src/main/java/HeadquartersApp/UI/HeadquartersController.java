@@ -1126,7 +1126,7 @@ public class HeadquartersController implements Initializable {
             tatDescription.setText(task.getDescription());
 
             if (task.getExecutor() != null) {
-                tftExecutor.setText(task.getExecutor().getName());
+                tftExecutor.setText(task.getExecutor().toString());
             }
 
             tftReason.setText(task.getDeclineReason());
@@ -1171,6 +1171,7 @@ public class HeadquartersController implements Initializable {
                 if (object != null && object instanceof IServiceUser) {
                     task.setExecutor((IServiceUser) object);
                     task.setStatus(TaskStatus.SENT);
+                    task.setDeclineReason(null);
                     
                     lblTasks.setVisible(true);
                     lblTasks.setText("Taak is up-to-date");
