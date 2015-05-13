@@ -14,7 +14,9 @@ import Shared.Connection.ConnState;
 import Shared.Connection.ConnCommand;
 import Shared.Data.IData;
 import Shared.Data.IDataRequest;
+import Shared.Data.INewsItem;
 import Shared.Data.ISortedData;
+import Shared.Data.Situation;
 import Shared.Tag;
 import Shared.Tasks.IPlan;
 import Shared.Tasks.IStep;
@@ -224,6 +226,12 @@ public class Connection implements Runnable {
                                 break;
                             case SERVICEUSERS_GET:
                                 this.getServiceUsers();
+                                break;
+                            case NEWSITEM_SEND:
+                                this.saveNewsItem();
+                                break;
+                            case SITUATIONS_GET:
+                                this.getSituations();
                                 break;
                         }
                     }
@@ -790,11 +798,11 @@ public class Connection implements Runnable {
         synchronized (TASKSLOCK) {
             plan = ServerMain.tasksDatabaseManager.insertNewPlan(plan);
         }
-        
-        if(plan != null) {
+
+        if (plan != null) {
             success = true;
         }
-        
+
         this.writeResult(success);
     }
 
@@ -815,7 +823,7 @@ public class Connection implements Runnable {
             plan = ServerMain.tasksDatabaseManager.insertNewPlan(plan);
         }
 
-        if (plan != null) {            
+        if (plan != null) {
             getPlanExecutorHandler().addPlanExecutor(plan);
             success = true;
         }
@@ -859,7 +867,7 @@ public class Connection implements Runnable {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
         }
-        if(par2 == null || !(par2 instanceof HashSet)) {
+        if (par2 == null || !(par2 instanceof HashSet)) {
             out.writeObject(ConnState.COMMAND_ERROR);
             return;
         }
@@ -945,5 +953,38 @@ public class Connection implements Runnable {
             output = ServerMain.tasksDatabaseManager.getServiceUsers();
         }
         writeOutput(output);
+    }
+
+    /**
+     * Send the NewsItem to the database
+     */
+    private void saveNewsItem() throws IOException, ClassNotFoundException {
+        Object inObject = in.readObject();
+
+        if (inObject == null || !(inObject instanceof INewsItem)) {
+            out.writeObject(ConnState.COMMAND_ERROR);
+            return;
+        }
+
+        INewsItem item = (INewsItem) inObject;
+        boolean success = false;
+
+        synchronized (SORTEDLOCK) {
+            item = ServerMain.sortedDatabaseManager.insertNewsItem(item);
+        }
+
+        if (item != null) {
+            success = true;
+        }
+
+        this.writeResult(success);
+    }
+    
+    private void getSituations(){
+        List<Situation> output = null;
+        synchronized (SORTEDLOCK){
+            output = ServerMain.sortedDatabaseManager.getSituations();
+        }
+        this.writeOutput(output);
     }
 }

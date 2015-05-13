@@ -42,7 +42,9 @@ public enum ConnCommand {
     TASKS_GET,
     PLAN_SEARCH,
     SORTED_GET_ALL,
-    SERVICEUSERS_GET
+    SERVICEUSERS_GET,
+    NEWSITEM_SEND,
+    SITUATIONS_GET
 }
 
 /*
