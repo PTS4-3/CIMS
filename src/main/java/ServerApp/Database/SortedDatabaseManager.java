@@ -427,49 +427,51 @@ public class SortedDatabaseManager extends DatabaseManager {
     }
 
     /**
-     * TODO: replace placeholder column names
      *
-     * @return all situations
-     * @deprecated
+     * @return all situations as set
      */
-    @Deprecated
     public Set<Situation> getSituations() {
+        HashMap<Integer, Situation> map = this.getSituationsMap();
+        if (map != null) {
+            return new HashSet(map.values());
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     *
+     * @return all situations as HashMap, key being their ID
+     */
+    public HashMap<Integer, Situation> getSituationsMap() {
         if (!openConnection()) {
             return null;
         }
 
-        Set<Situation> output = null;
+        HashMap<Integer, Situation> output = null;
         String query;
         PreparedStatement prepStat;
         ResultSet rs;
 
         try {
-            query = "SELECT * FROM " + situationsTable;
+            query = "SELECT ad.*, st.* FROM " + situationsTable + " AS st"
+                    + " LEFT JOIN " + situationsAdviceTable + " AS sa"
+                    + " ON st.ID = sa.SITUATIONID"
+                    + " LEFT JOIN " + adviceTable + " AS ad"
+                    + " ON sa.ADVICEID = ad.ID"
+                    + " ORDER BY st.ID";
             prepStat = conn.prepareStatement(query);
             rs = prepStat.executeQuery();
 
-            // gets situations - no advices yet
-            output = new HashSet<>();
+            output = new HashMap<>();
             while (rs.next()) {
-                String description = rs.getString("DESCRIPTION");
-                output.add(new Situation(null, description));
-            }
+                int sitID = rs.getInt("st.ID");
+                String sitDesc = rs.getString("st.DESCRIPTION");
+                output.putIfAbsent(sitID, new Situation(null, sitDesc));
 
-            // assigns advices per situation
-            for (Situation sit : output) {
-                query = "SELECT * FROM " + adviceTable
-                        + " WHERE ID IN"
-                        + " (SELECT ADVICEID FROM " + situationsAdviceTable
-                        + " WHERE SITUATIONID = ?)";
-                prepStat = conn.prepareStatement(query);
-                // TODO: FIX THIS - needs ID, not description
-                prepStat.setString(1, sit.getDescription());
-                rs = prepStat.executeQuery();
-
-                while (rs.next()) {
-                    String adviceDesc = rs.getString("DESCRIPTION");
-                    sit.addAdvice(new Advice(adviceDesc));
-                }
+                int advID = rs.getInt("ad.ID");
+                String advDesc = rs.getString("ad.DESCRIPTION");
+                output.get(sitID).addAdvice(new Advice(advDesc));
             }
         } catch (SQLException ex) {
             System.out.println("failed to get situations: " + ex.getMessage());
@@ -483,7 +485,7 @@ public class SortedDatabaseManager extends DatabaseManager {
 
     /**
      *
-     * @param limit
+     * @param limit must be >= 1
      * @return news items from database
      */
     public List<INewsItem> getNewsItems(int limit) {
@@ -491,38 +493,35 @@ public class SortedDatabaseManager extends DatabaseManager {
             return null;
         }
 
+        // key: newsItem ID
+        HashMap<Integer, NewsItem> newsItems;
+        // key: newsItem ID, value = situation IDs
+        HashMap<Integer, Set<Integer>> newsSituations;
+
         List<INewsItem> output = null;
         String query;
         PreparedStatement prepStat;
         ResultSet rs;
 
         try {
-            query = "SELECT ni.*, ns.*, st.*, sa.*, ad.*"
+            query = "SELECT ni.*, ns.*"
                     + " FROM (SELECT * FROM " + newsItemTable
-                    + " ORDER BY ITEMDATE limit ?) AS ni"
+                    + " ORDER BY ITEMDATE LIMIT ?) AS ni"
                     + " LEFT JOIN " + newsSituationsTable + " AS ns"
                     + " ON ni.ID = ns.NEWSID"
-                    + " LEFT JOIN " + situationsTable + " AS st"
-                    + " ON ns.SITUATIONID = st.ID"
-                    + " LEFT JOIN " + situationsAdviceTable + " AS sa"
-                    + " ON st.ID = sa.SITUATIONID"
-                    + " LEFT JOIN " + adviceTable + " AS ad"
-                    + " ON sa.ADVICEID = ad.ID"
-                    + " ORDER BY ni.ID, st.ID, ad.ID";
+                    + " ORDER BY ni.ID";
             prepStat = conn.prepareCall(query);
             prepStat.setInt(1, limit);
             rs = prepStat.executeQuery();
 
-            HashMap<Integer, NewsItem> newsItems = new HashMap<>();
-            HashMap<Integer, Situation> situations = new HashMap<>();
-            HashMap<Integer, Advice> advices = new HashMap<>();
-            HashMap<Integer, HashMap<Integer, Set<Integer>>> combinations = new HashMap<>();
-
+            newsItems = new HashMap<>();
+            newsSituations = new HashMap<>();
             while (rs.next()) {
                 // query will display items as a completely expanded tree
-                // with duplicate items if columns on the left correspond to multiple columns on the right
+                // with total number of rows being the sum of all newsitem situations
 
                 // first checks newsitems
+                // only generates a new item if ID is not duplicate
                 int newsID = rs.getInt("ni.ID");
                 if (newsItems.get(newsID) == null) {
                     String title = rs.getString("ni.TITLE");
@@ -533,40 +532,34 @@ public class SortedDatabaseManager extends DatabaseManager {
                     Date date = rs.getDate("ni.ITEMDATE");
                     newsItems.put(newsID, new NewsItem(newsID, title, newsDesc,
                             loc, source, null, victims, date));
-                    combinations.put(newsID, new HashMap<>());
+                    newsSituations.put(newsID, new HashSet<>());
                 }
-
-                // adds situations
-                int sitID = rs.getInt("st.ID");
-                String sitDesc = rs.getString("st.DESCRIPTION");
-                situations.putIfAbsent(sitID, new Situation(null, sitDesc));
-                combinations.get(newsID).putIfAbsent(sitID, new HashSet<>());
-
-                // adds advices
-                int advID = rs.getInt("ad.ID");
-                String advDesc = rs.getString("ad.DESCRIPTION");
-                advices.putIfAbsent(advID, new Advice(advDesc));
-                combinations.get(newsID).get(sitID).add(advID);
-            }
-
-            // iterate through news items
-            for (int newsKey : combinations.keySet()) {
-                // iterate through situations
-                for (int sitKey : combinations.get(newsKey).keySet()) {
-                    // iterate through advices
-                    for (int advKey : combinations.get(newsKey).get(sitKey)) {
-                        situations.get(sitKey).addAdvice(advices.get(advKey));
-                    }
-                    newsItems.get(newsKey).addSituation(situations.get(sitKey));
+                // adds situation ID
+                int sitID = rs.getInt("ns.SITUATIONID");
+                if (sitID > 0) {
+                    newsSituations.get(newsID).add(sitID);
                 }
             }
-            output = new ArrayList<>(newsItems.values());
         } catch (SQLException ex) {
             System.out.println("failed to get news items: " + ex.getMessage());
             Logger.getLogger(SortedDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
-            output = null;
+            newsItems = null;
+            newsSituations = null;
         } finally {
             closeConnection();
+        }
+
+        // assigns situations to newsitems
+        if (newsItems != null) {
+            // gets all unique situations from database, then assigns them on ID
+            // prevents constantly regenerating a limited number of situations/advices
+            HashMap<Integer, Situation> situations = this.getSituationsMap();
+            for (int newsID : newsSituations.keySet()) {
+                for (int sitID : newsSituations.get(newsID)) {
+                    newsItems.get(newsID).addSituation(situations.get(sitID));
+                }
+            }
+            output = new ArrayList<>(newsItems.values());
         }
         return output;
     }
