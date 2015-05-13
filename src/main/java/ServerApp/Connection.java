@@ -32,6 +32,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -980,8 +981,12 @@ public class Connection implements Runnable {
         this.writeResult(success);
     }
     
-    private void getSituations(){
-        List<Situation> output = null;
+    /**
+     * Get all situations from database
+     * @throws IOException 
+     */
+    private void getSituations() throws IOException{
+        Set<Situation> output = null;
         synchronized (SORTEDLOCK){
             output = ServerMain.sortedDatabaseManager.getSituations();
         }

@@ -21,6 +21,7 @@ import Shared.Users.IUser;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -328,7 +329,7 @@ class Connection extends ConnClientBase {
         super.booleanCommand(ConnCommand.NEWSITEM_SEND, new Object[]{item});
     }
     
-    protected List<Situation> getSituations() throws NetworkException{
+    protected Set<Situation> getSituations() throws NetworkException{
         Object output = super.objectCommand(
                 ConnCommand.SERVICEUSERS_GET, new Object[]{});
 
@@ -337,6 +338,6 @@ class Connection extends ConnClientBase {
                     + super.getCommandDescription(ConnCommand.SITUATIONS_GET));
         }
 
-        return (List<Situation>) output;
+        return (Set<Situation>) output;
     }
 }
