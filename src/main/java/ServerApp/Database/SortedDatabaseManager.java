@@ -6,9 +6,12 @@
 package ServerApp.Database;
 
 import ServerApp.ServerMain;
+import Shared.Data.Advice;
 import Shared.Data.DataRequest;
 import Shared.Data.IDataRequest;
+import Shared.Data.INewsItem;
 import Shared.Data.ISortedData;
+import Shared.Data.Situation;
 import Shared.Data.SortedData;
 import Shared.Data.Status;
 import Shared.Tag;
@@ -31,15 +34,17 @@ import java.util.logging.Logger;
  */
 public class SortedDatabaseManager extends DatabaseManager {
 
-    private final String
-            sortedDataTable = "SORTEDDATA",
+    private final String sortedDataTable = "SORTEDDATA",
             sortedDataTagsTable = "SORTEDDATATAGS",
             requestsTable = "REQUEST",
-            requestTagsTable = "REQUESTTAGS";
+            requestTagsTable = "REQUESTTAGS",
+            newsItemTable = "",
+            newsItemSituationsTable = "",
+            situationsTable = "",
+            situationsAdviceTable = "",
+            adviceTable = "";
 
-
-    
-    public SortedDatabaseManager(String propsFileName){
+    public SortedDatabaseManager(String propsFileName) {
         super(propsFileName);
     }
 
@@ -68,7 +73,6 @@ public class SortedDatabaseManager extends DatabaseManager {
             sortedData.execute();
 
 //            System.out.println("Insert sortedData succeeded");
-
             Iterator it = tags.iterator();
             while (it.hasNext()) {
                 // Get element
@@ -85,7 +89,6 @@ public class SortedDatabaseManager extends DatabaseManager {
             ServerMain.unsortedDatabaseManager.updateStatusUnsortedData(sorted);
 
 //            System.out.println("insertToSortedData succeeded");
-
             succeed = true;
         } catch (SQLException ex) {
             System.out.println("insertToSortedData failed: " + ex);
@@ -291,8 +294,8 @@ public class SortedDatabaseManager extends DatabaseManager {
                     query += "WHERE TAGNAME = '" + element.toString() + "' ";
                     amount++;
                 } else {
-                    query += "AND REQUESTID IN (SELECT REQUESTID FROM " + requestTagsTable +
-                            " WHERE  TAGNAME ='" + element.toString() + "' ";
+                    query += "AND REQUESTID IN (SELECT REQUESTID FROM " + requestTagsTable
+                            + " WHERE  TAGNAME ='" + element.toString() + "' ";
                 }
             }
             for (int x = 1; x < sizeList; x++) {
@@ -357,34 +360,32 @@ public class SortedDatabaseManager extends DatabaseManager {
      * @return SortedData with given ID. null if unknown.
      */
     ISortedData getFromSortedData(int ID) {
-        if(!openConnection() || (ID == -1)){
+        if (!openConnection() || (ID == -1)) {
             return null;
         }
-        
+
         ISortedData output = null;
         String query;
         PreparedStatement prepStat;
         ResultSet rs;
-        
+
         try {
             // gets sorted data
             query = "SELECT * FROM " + sortedDataTable + " WHERE ID = ?";
             prepStat = conn.prepareStatement(query);
             prepStat.setInt(1, ID);
             rs = prepStat.executeQuery();
-            
-            int 
-                    outputID = -1, 
-                    outputRelevance = -1, 
-                    outputReliability = -1, 
+
+            int outputID = -1,
+                    outputRelevance = -1,
+                    outputReliability = -1,
                     outputQuality = -1;
-            String 
-                    outputTitle = null, 
-                    outputDesc = null, 
-                    outputLocation = null, 
+            String outputTitle = null,
+                    outputDesc = null,
+                    outputLocation = null,
                     outputSource = null;
-            
-            while(rs.next()){
+
+            while (rs.next()) {
                 outputID = rs.getInt("ID");
                 outputTitle = rs.getString("TITLE");
                 outputDesc = rs.getString("DESCRIPTION");
@@ -392,10 +393,10 @@ public class SortedDatabaseManager extends DatabaseManager {
                 outputSource = rs.getString("SOURCE");
                 outputRelevance = rs.getInt("RELEVANCE");
                 outputReliability = rs.getInt("RELIABILITY");
-                outputQuality = rs.getInt("QUALITY");              
+                outputQuality = rs.getInt("QUALITY");
             }
             // if no data found
-            if(outputID == -1){
+            if (outputID == -1) {
                 return null;
             }
 
@@ -405,8 +406,8 @@ public class SortedDatabaseManager extends DatabaseManager {
             prepStat = conn.prepareStatement(query);
             prepStat.setInt(1, outputID);
             rs = prepStat.executeQuery();
-            
-            while (rs.next()){
+
+            while (rs.next()) {
                 tags.add(Tag.valueOf(rs.getString("TAGNAME")));
             }
             output = new SortedData(outputID, outputTitle, outputDesc,
@@ -422,4 +423,93 @@ public class SortedDatabaseManager extends DatabaseManager {
         return output;
     }
 
+    /**
+     * TODO: replace placeholder column names
+     * @return all situations
+     * @deprecated
+     */
+    @Deprecated
+    public Set<Situation> getSituations() {
+        if (!openConnection()) {
+            return null;
+        }
+
+        Set<Situation> output = null;
+        String query;
+        PreparedStatement prepStat;
+        ResultSet rs;
+
+        try {
+            query = "SELECT * FROM " + situationsTable;
+            prepStat = conn.prepareStatement(query);
+            rs = prepStat.executeQuery();
+
+            // gets situations - no advices yet
+            output = new HashSet<>();
+            while (rs.next()) {
+                String description = rs.getString("DESCRIPTION");
+                output.add(new Situation(null, description));
+            }
+
+            // assigns advices per situation
+            for(Situation sit : output){
+                query = "SELECT * FROM " + adviceTable +
+                        " WHERE ID IN" +
+                        " (SELECT ADVICEID FROM " + situationsAdviceTable +
+                        " WHERE SITUATIONID = ?)";
+                prepStat = conn.prepareStatement(query);
+                prepStat.setString(1, sit.getDescription());
+                rs = prepStat.executeQuery();
+
+                while(rs.next()){
+                    String adviceDesc = rs.getString("ADVICEID");
+                    sit.addAdvice(new Advice(adviceDesc));
+                }
+            }
+        } catch (SQLException ex) {
+            System.out.println("failed to get situations: " + ex.getMessage());
+            Logger.getLogger(SortedDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+            output = null;
+        } finally {
+            closeConnection();
+        }
+        return output;
+    }
+
+    /**
+     *
+     * @param limit
+     * @return news items from database
+     */
+    public List<INewsItem> getNewsItems(int limit){
+        if (!openConnection() || limit < 1) {
+            return null;
+        }
+
+        List<INewsItem> output = null;
+        String query;
+        PreparedStatement prepStat;
+        ResultSet rs;
+
+        try {
+//            query = "SELECT " + newsItemTable + ".*, "
+//                    + newsItemSituationsTable + ".*, "
+//                    + situationsTable + ".*, "
+//                    + situationsAdviceTable + ".*, "
+//                    + adviceTable + ".*, "
+//                    + " FROM " + newsItemTable
+//                    + " LEFT JOIN " + newsItemSituationsTable
+//                    + " ON " + newsItemTable + ".VALUE = "
+//                    + newsItemSituationsTable + ".VALUE"
+//                    + " LEFT JOIN "
+        } finally {
+            closeConnection();
+        }
+        return output;
+    }
+
+//    SELECT Orders.OrderID, Customers.CustomerName, Orders.OrderDate
+//FROM Orders
+//INNER JOIN Customers
+//ON Orders.CustomerID=Customers.CustomerID;
 }

@@ -23,9 +23,17 @@ public class Situation {
         return description;
     }
 
+    public void addAdvice(Advice advice){
+        advices.add(advice);
+    }
+
     public Situation(HashSet<Advice> advices, String description) {
         this.advices = advices;
         this.description = description;
+
+        if(this.advices == null){
+            this.advices = new HashSet<>();
+        }
     }
 
 }

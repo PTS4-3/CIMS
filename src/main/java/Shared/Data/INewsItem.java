@@ -5,6 +5,7 @@
  */
 package Shared.Data;
 
+import java.util.Date;
 import java.util.Set;
 
 /**
@@ -14,4 +15,5 @@ import java.util.Set;
 public interface INewsItem extends IData{
     public Set<Situation> getSituations();
     public int getVictims();
+    public Date getDate();
 }

@@ -5,6 +5,7 @@
  */
 package Shared.Data;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,6 +18,7 @@ public class NewsItem implements INewsItem {
     private HashSet<Situation> situations;
     private int victims, ID;
     private String title, description, location, source;
+    private Date date;
 
     @Override
     public Set<Situation> getSituations() {
@@ -51,6 +53,11 @@ public class NewsItem implements INewsItem {
     @Override
     public String getSource() {
         return source;
+    }
+
+    @Override
+    public Date getDate() {
+        return date;
     }
 
     /**
