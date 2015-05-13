@@ -16,14 +16,12 @@ import Shared.Users.IUser;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -622,7 +620,7 @@ public class ConnectionManager {
             @Override
             public void run() {
                 try {
-                    List<Situation> situations
+                    Set<Situation> situations
                             = new Connection(defaultIP, defaultPort).getSituations();;
                     hqController.displaySituations(situations);
                 } catch (NetworkException ex) {
