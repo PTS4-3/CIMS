@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
@@ -346,7 +347,7 @@ public class HeadquartersController implements Initializable {
         });
     }
     
-    public void displaySituations(List<Situation> situations) {
+    public void displaySituations(Set<Situation> situations) {
         Platform.runLater(new Runnable() {
 
             @Override
