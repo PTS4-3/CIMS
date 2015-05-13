@@ -11,6 +11,7 @@ import Shared.Data.DataRequest;
 import Shared.Data.IDataRequest;
 import Shared.Data.INewsItem;
 import Shared.Data.ISortedData;
+import Shared.Data.NewsItem;
 import Shared.Data.Situation;
 import Shared.Data.SortedData;
 import Shared.Data.Status;
@@ -20,6 +21,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -38,11 +41,11 @@ public class SortedDatabaseManager extends DatabaseManager {
             sortedDataTagsTable = "SORTEDDATATAGS",
             requestsTable = "REQUEST",
             requestTagsTable = "REQUESTTAGS",
-            newsItemTable = "",
-            newsItemSituationsTable = "",
-            situationsTable = "",
-            situationsAdviceTable = "",
-            adviceTable = "";
+            newsItemTable = "NEWSITEM",
+            newsSituationsTable = "NEWSSITUATION",
+            situationsTable = "SITUATION",
+            situationsAdviceTable = "SITUATIONADVICE",
+            adviceTable = "ADVICE";
 
     public SortedDatabaseManager(String propsFileName) {
         super(propsFileName);
@@ -425,6 +428,7 @@ public class SortedDatabaseManager extends DatabaseManager {
 
     /**
      * TODO: replace placeholder column names
+     *
      * @return all situations
      * @deprecated
      */
@@ -452,17 +456,18 @@ public class SortedDatabaseManager extends DatabaseManager {
             }
 
             // assigns advices per situation
-            for(Situation sit : output){
-                query = "SELECT * FROM " + adviceTable +
-                        " WHERE ID IN" +
-                        " (SELECT ADVICEID FROM " + situationsAdviceTable +
-                        " WHERE SITUATIONID = ?)";
+            for (Situation sit : output) {
+                query = "SELECT * FROM " + adviceTable
+                        + " WHERE ID IN"
+                        + " (SELECT ADVICEID FROM " + situationsAdviceTable
+                        + " WHERE SITUATIONID = ?)";
                 prepStat = conn.prepareStatement(query);
+                // TODO: FIX THIS - needs ID, not description
                 prepStat.setString(1, sit.getDescription());
                 rs = prepStat.executeQuery();
 
-                while(rs.next()){
-                    String adviceDesc = rs.getString("ADVICEID");
+                while (rs.next()) {
+                    String adviceDesc = rs.getString("DESCRIPTION");
                     sit.addAdvice(new Advice(adviceDesc));
                 }
             }
@@ -481,7 +486,7 @@ public class SortedDatabaseManager extends DatabaseManager {
      * @param limit
      * @return news items from database
      */
-    public List<INewsItem> getNewsItems(int limit){
+    public List<INewsItem> getNewsItems(int limit) {
         if (!openConnection() || limit < 1) {
             return null;
         }
@@ -492,24 +497,77 @@ public class SortedDatabaseManager extends DatabaseManager {
         ResultSet rs;
 
         try {
-//            query = "SELECT " + newsItemTable + ".*, "
-//                    + newsItemSituationsTable + ".*, "
-//                    + situationsTable + ".*, "
-//                    + situationsAdviceTable + ".*, "
-//                    + adviceTable + ".*, "
-//                    + " FROM " + newsItemTable
-//                    + " LEFT JOIN " + newsItemSituationsTable
-//                    + " ON " + newsItemTable + ".VALUE = "
-//                    + newsItemSituationsTable + ".VALUE"
-//                    + " LEFT JOIN "
+            query = "SELECT ni.*, ns.*, st.*, sa.*, ad.*"
+                    + " FROM (SELECT * FROM " + newsItemTable
+                    + " ORDER BY ITEMDATE limit ?) AS ni"
+                    + " LEFT JOIN " + newsSituationsTable + " AS ns"
+                    + " ON ni.ID = ns.NEWSID"
+                    + " LEFT JOIN " + situationsTable + " AS st"
+                    + " ON ns.SITUATIONID = st.ID"
+                    + " LEFT JOIN " + situationsAdviceTable + " AS sa"
+                    + " ON st.ID = sa.SITUATIONID"
+                    + " LEFT JOIN " + adviceTable + " AS ad"
+                    + " ON sa.ADVICEID = ad.ID"
+                    + " ORDER BY ni.ID, st.ID, ad.ID";
+            prepStat = conn.prepareCall(query);
+            prepStat.setInt(1, limit);
+            rs = prepStat.executeQuery();
+
+            HashMap<Integer, NewsItem> newsItems = new HashMap<>();
+            HashMap<Integer, Situation> situations = new HashMap<>();
+            HashMap<Integer, Advice> advices = new HashMap<>();
+            HashMap<Integer, HashMap<Integer, Set<Integer>>> combinations = new HashMap<>();
+
+            while (rs.next()) {
+                // query will display items as a completely expanded tree
+                // with duplicate items if columns on the left correspond to multiple columns on the right
+
+                // first checks newsitems
+                int newsID = rs.getInt("ni.ID");
+                if (newsItems.get(newsID) == null) {
+                    String title = rs.getString("ni.TITLE");
+                    String newsDesc = rs.getString("ni.DESCRIPTION");
+                    String loc = rs.getString("ni.LOCATION");
+                    String source = rs.getString("ni.SOURCE");
+                    int victims = rs.getInt("ni.VICTIMS");
+                    Date date = rs.getDate("ni.ITEMDATE");
+                    newsItems.put(newsID, new NewsItem(newsID, title, newsDesc,
+                            loc, source, null, victims, date));
+                    combinations.put(newsID, new HashMap<>());
+                }
+
+                // adds situations
+                int sitID = rs.getInt("st.ID");
+                String sitDesc = rs.getString("st.DESCRIPTION");
+                situations.putIfAbsent(sitID, new Situation(null, sitDesc));
+                combinations.get(newsID).putIfAbsent(sitID, new HashSet<>());
+
+                // adds advices
+                int advID = rs.getInt("ad.ID");
+                String advDesc = rs.getString("ad.DESCRIPTION");
+                advices.putIfAbsent(advID, new Advice(advDesc));
+                combinations.get(newsID).get(sitID).add(advID);
+            }
+
+            // iterate through news items
+            for (int newsKey : combinations.keySet()) {
+                // iterate through situations
+                for (int sitKey : combinations.get(newsKey).keySet()) {
+                    // iterate through advices
+                    for (int advKey : combinations.get(newsKey).get(sitKey)) {
+                        situations.get(sitKey).addAdvice(advices.get(advKey));
+                    }
+                    newsItems.get(newsKey).addSituation(situations.get(sitKey));
+                }
+            }
+            output = new ArrayList<>(newsItems.values());
+        } catch (SQLException ex) {
+            System.out.println("failed to get news items: " + ex.getMessage());
+            Logger.getLogger(SortedDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+            output = null;
         } finally {
             closeConnection();
         }
         return output;
     }
-
-//    SELECT Orders.OrderID, Customers.CustomerName, Orders.OrderDate
-//FROM Orders
-//INNER JOIN Customers
-//ON Orders.CustomerID=Customers.CustomerID;
 }

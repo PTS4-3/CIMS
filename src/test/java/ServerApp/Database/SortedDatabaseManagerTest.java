@@ -13,12 +13,16 @@ import org.junit.BeforeClass;
 import ServerApp.ServerMain;
 import Shared.Data.DataRequest;
 import Shared.Data.IDataRequest;
+import Shared.Data.INewsItem;
 import Shared.Data.ISortedData;
+import Shared.Data.NewsItem;
+import Shared.Data.Situation;
 import Shared.Data.SortedData;
 import Shared.Tag;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import org.junit.AfterClass;
 
 /**
@@ -122,6 +126,18 @@ public class SortedDatabaseManagerTest {
 
             assertFalse("id was -1 (getUpdateRequests)", req.getId() == -1);
         }
+    }
+
+    @Test
+    public void testNewsItems(){
+        List<INewsItem> items = myDB.getNewsItems(20);
+        assertTrue("wrong number of items", items.size() == 6);
+
+        items = myDB.getNewsItems(2);
+        assertTrue("wrong number of limited items", items.size() == 2);
+
+        Set<Situation> situations = myDB.getSituations();
+        assertTrue("wrong number of situations", situations.size() == 10);
     }
 
 }

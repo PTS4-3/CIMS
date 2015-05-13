@@ -21,7 +21,7 @@ public class NewsItem implements INewsItem {
     private Date date;
 
     @Override
-    public Set<Situation> getSituations() {
+    public HashSet<Situation> getSituations() {
         return situations;
     }
 
@@ -71,7 +71,7 @@ public class NewsItem implements INewsItem {
      * @param victims
      */
     public NewsItem(int ID,String title, String description, String location,
-            String source, HashSet<Situation> situations, int victims) {
+            String source, HashSet<Situation> situations, int victims, Date date) {
         this.situations = situations;
         this.victims = victims;
         this.ID = ID;
@@ -79,6 +79,11 @@ public class NewsItem implements INewsItem {
         this.description = description;
         this.location = location;
         this.source = source;
+        this.date = date;
+
+        if(this.situations == null){
+            this.situations = new HashSet<>();
+        }
     }
 
     /**
@@ -92,15 +97,11 @@ public class NewsItem implements INewsItem {
      */
     public NewsItem(String title, String description, String location,
             String source, HashSet<Situation> situations, int victims) {
-        this.ID = -1;
-        this.situations = situations;
-        this.victims = victims;
-        this.title = title;
-        this.description = description;
-        this.location = location;
-        this.source = source;
+        this(-1, title, description, location, source, situations, victims, null);
     }
 
-
+    public void addSituation(Situation sit){
+        this.situations.add(sit);
+    }
 
 }
