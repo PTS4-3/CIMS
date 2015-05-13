@@ -26,7 +26,6 @@ import Shared.Users.ServiceUser;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Timer;
@@ -88,6 +87,21 @@ public class HeadquartersController implements Initializable {
     @FXML AnchorPane aprPane;
     @FXML CheckComboBox ccrTags;
     @FXML Label lblInformationReport;
+    
+    // SendNewsItems
+    @FXML Tab tabNews;
+    @FXML ListView lvnSorted;
+    @FXML TextField tfnTitleSorted;
+    @FXML TextArea tanDescriptionSorted;
+    @FXML TextField tfnSourceSorted;
+    @FXML TextField tfnLocationSorted;
+    @FXML TextField tfnTitle;
+    @FXML TextArea tanDescription;
+    @FXML TextField tfnLocation;
+    @FXML TextField tfnVictims;
+    @FXML CheckComboBox ccnSituations;
+    @FXML Label lblnMessage;
+    @FXML AnchorPane apnPane;
 
     // ProcessSortedData
     @FXML Tab tabProcessSortedData;
@@ -217,6 +231,14 @@ public class HeadquartersController implements Initializable {
                         selectTask();
                     }
                 });
+        
+        lvnSorted.getSelectionModel().selectedItemProperty().addListener(
+                new ChangeListener() {
+                    @Override
+                    public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                        selectNewsSorted();
+                    }
+                });
     }
 
     /**
@@ -257,7 +279,6 @@ public class HeadquartersController implements Initializable {
         if (this.cbExecutor.getSelectionModel().getSelectedItem() == null) {
             this.cbExecutor.getSelectionModel().selectFirst();
         }
-        
 
         tabProcessSortedData.setDisable(true);
         tabSendPlan.setDisable(true);
@@ -291,6 +312,7 @@ public class HeadquartersController implements Initializable {
                 this.connectionManager.getSortedData();
                 this.connectionManager.getServiceUsers();
                 this.connectionManager.getTasks();
+                this.connectionManager.getSituations();
             }
 
             this.startTimer();
@@ -320,6 +342,25 @@ public class HeadquartersController implements Initializable {
                 }
             }
 
+        });
+    }
+    
+    public void displaySituations(List<Situation> situations) {
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                if(ccnSituations == null) {
+                    ccnSituations = new CheckComboBox(FXCollections.observableArrayList(situations));
+                    ccnSituations.setLayoutX(924);
+                    ccnSituations.setLayoutY(325);
+                    ccnSituations.prefWidth(262);
+                    ccnSituations.prefHeight(25);
+                    ccnSituations.setMaxSize(262, 25);
+                    apnPane.getChildren().add(ccnSituations);
+                }
+            }
+            
         });
     }
 
@@ -555,6 +596,11 @@ public class HeadquartersController implements Initializable {
                 lvsSortedData.getItems().addAll(sortedData);
                 if (lvsSortedData.getSelectionModel().getSelectedItem() == null) {
                     lvsSortedData.getSelectionModel().selectFirst();
+                }
+                
+                lvnSorted.getItems().addAll(sortedData);
+                if(lvnSorted.getSelectionModel().getSelectedItem() == null) {
+                    lvnSorted.getSelectionModel().selectFirst();
                 }
             }
 
@@ -868,8 +914,6 @@ public class HeadquartersController implements Initializable {
 
         if(correct) {
             try {
-                //TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                // TargetExecutor
                 tempSteps.add(new Step(step, title, description, TaskStatus.UNASSIGNED, null, (Tag)this.cbExecutor.getSelectionModel().getSelectedItem(), null, step, condition));
                 tfpTaskTitle.clear();
                 tapTaskDescription.clear();
@@ -1276,6 +1320,34 @@ public class HeadquartersController implements Initializable {
         } catch (NetworkException nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
+    }
+    
+    // News ----------------------------------------------------------
+    /**
+     * Fills the GUI with information of the selected sorted data
+     */
+    public void selectNewsSorted() {
+        ISortedData sorted
+                = (ISortedData) lvnSorted.getSelectionModel().getSelectedItem();
+        if (sorted != null) {
+            // Fill GUI with information
+            tfnTitleSorted.setText(sorted.getTitle());
+            tanDescriptionSorted.setText(sorted.getDescription());
+            tfnSourceSorted.setText(sorted.getSource());
+            tfnLocationSorted.setText(sorted.getLocation());
+        } else {
+            // Clear GUI
+            tfnTitleSorted.clear();
+            tanDescriptionSorted.clear();
+            tfnSourceSorted.clear();
+            tfnLocationSorted.clear();
+        }
+
+        lblnMessage.setVisible(false);
+    }
+    
+    public void sendNewsItem() {
+        //TODO
     }
 
     public void logOutClick() {
