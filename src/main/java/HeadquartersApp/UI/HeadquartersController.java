@@ -11,6 +11,7 @@ import Shared.Data.DataRequest;
 import Shared.Data.IData;
 import Shared.Data.IDataRequest;
 import Shared.Data.ISortedData;
+import Shared.Data.Situation;
 import Shared.Data.SortedData;
 import Shared.Tasks.IPlan;
 import Shared.Tasks.IStep;
