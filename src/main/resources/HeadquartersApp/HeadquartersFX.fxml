@@ -76,7 +76,7 @@
         </Tab>
         <Tab fx:id="tabNews" text="Nieuwsbericht">
           <content>
-            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+            <AnchorPane id="Content" fx:id="apnPane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
               <children>
                 <Label font="$x1" layoutX="14.0" layoutY="14.0" text="Gesorteerde data" underline="false" />
                 <TableView id="tvData" layoutX="14.0" layoutY="14.0" prefHeight="441.0" prefWidth="352.0" visible="false">
@@ -107,7 +107,7 @@
                 <TextArea id="tauDescription" fx:id="tanDescription" editable="false" layoutX="924.0" layoutY="84.0" prefHeight="146.0" prefWidth="262.0" wrapText="true" />
                 <TextField id="tfuSource" fx:id="tfnLocation" disable="false" editable="false" layoutX="924.0" layoutY="249.0" prefWidth="262.0" />
                 <Label layoutX="819.0" layoutY="249.0" text="Locatie" />
-                <TextField id="tfuLocation" fx:id="tfnVictims" editable="false" layoutX="924.0" layoutY="286.0" prefWidth="262.0" />
+                <TextField id="tfuLocation" fx:id="tfnVictims" editable="false" layoutX="924.0" layoutY="325.0" prefWidth="262.0" />
                 <Label layoutX="818.0" layoutY="289.0" text="Slachtoffers" />
               </children>
             </AnchorPane>
