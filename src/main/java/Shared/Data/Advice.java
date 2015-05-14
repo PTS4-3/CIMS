@@ -12,12 +12,18 @@ package Shared.Data;
 public class Advice {
 
     private String description;
+    private int ID;
+
+    public int getID() {
+        return ID;
+    }
 
     public String getDescription() {
         return description;
     }
 
-    public Advice(String description) {
+    public Advice(int ID, String description) {
+        this.ID = ID;
         this.description = description;
     }
 

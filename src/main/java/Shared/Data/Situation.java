@@ -14,6 +14,11 @@ import java.util.HashSet;
 public class Situation {
     private HashSet<Advice> advices;
     private String description;
+    private int ID;
+
+    public int getID() {
+        return ID;
+    }
 
     public HashSet<Advice> getAdvices() {
         return advices;
@@ -27,9 +32,10 @@ public class Situation {
         advices.add(advice);
     }
 
-    public Situation(HashSet<Advice> advices, String description) {
+    public Situation(int ID, HashSet<Advice> advices, String description) {
         this.advices = advices;
         this.description = description;
+        this.ID = ID;
 
         if(this.advices == null){
             this.advices = new HashSet<>();

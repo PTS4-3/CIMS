@@ -21,6 +21,16 @@ public class NewsItem implements INewsItem {
     private Date date;
 
     @Override
+    public void setID(int ID){
+        this.ID = ID;
+    }
+
+    @Override
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    @Override
     public HashSet<Situation> getSituations() {
         return situations;
     }
@@ -103,5 +113,7 @@ public class NewsItem implements INewsItem {
     public void addSituation(Situation sit){
         this.situations.add(sit);
     }
+
+
 
 }
