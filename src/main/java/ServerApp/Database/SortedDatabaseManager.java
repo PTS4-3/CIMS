@@ -567,8 +567,9 @@ public class SortedDatabaseManager extends DatabaseManager {
 
     /**
      * Inserts given item. Returns item including ID.
+     *
      * @param item
-     * @return 
+     * @return
      */
     public INewsItem insertNewsItem(INewsItem item) {
         if (!openConnection() || item == null) {
@@ -600,28 +601,87 @@ public class SortedDatabaseManager extends DatabaseManager {
             prepStat = conn.prepareStatement(query);
             prepStat.setInt(1, item.getId());
             rs = prepStat.executeQuery();
-            while(rs.next()){
+            while (rs.next()) {
                 item.setDate(rs.getDate("ITEMDATE"));
             }
-            
+
             // inserts references to all situations
             query = "INSERT INTO " + newsSituationsTable
                     + " (NEWSID, SITUATIONID)"
                     + " VALUES (?, ?)";
             prepStat = conn.prepareStatement(query);
-            for(Situation sit : item.getSituations()){
+            for (Situation sit : item.getSituations()) {
                 prepStat.setInt(1, item.getId());
                 prepStat.setInt(2, sit.getID());
                 prepStat.addBatch();
             }
             prepStat.executeBatch();
 
-            
-
             output = item;
         } catch (SQLException ex) {
             System.out.println("failed to insert newsitem: " + ex.getMessage());
             Logger.getLogger(SortedDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            closeConnection();
+        }
+        return output;
+    }
+
+    /**
+     * Updates given news item.
+     *
+     * @param item
+     * @return
+     */
+    public boolean updateNewsItem(INewsItem item) {
+        if (!openConnection() || item == null || item.getId() == -1) {
+            return false;
+        }
+
+        boolean output = false;
+        String query;
+        PreparedStatement prepStat;
+
+        try {
+            query = "UPDATE " + newsItemTable + " SET"
+                    + " TITLE = ?,"
+                    + " DESCRIPTION = ?,"
+                    + " LOCATION = ?,"
+                    + " SOURCE = ?,"
+                    + " VICTIMS = ?"
+                    + " WHERE ID = ?";
+            prepStat = conn.prepareStatement(query);
+            prepStat.setString(1, item.getTitle());
+            prepStat.setString(2, item.getDescription());
+            prepStat.setString(3, item.getLocation());
+            prepStat.setString(4, item.getSource());
+            prepStat.setInt(5, item.getVictims());
+            prepStat.setInt(6, item.getId());
+            prepStat.execute();
+
+            // wipes current references to situations
+            query = "DELETE FROM " + newsSituationsTable
+                    + " WHERE NEWSID = ?";
+            prepStat = conn.prepareStatement(query);
+            prepStat.setInt(1, item.getId());
+            prepStat.execute();
+
+            // inserts references to all situations
+            query = "INSERT INTO " + newsSituationsTable
+                    + " (NEWSID, SITUATIONID)"
+                    + " VALUES (?, ?)";
+            prepStat = conn.prepareStatement(query);
+            for (Situation sit : item.getSituations()) {
+                prepStat.setInt(1, item.getId());
+                prepStat.setInt(2, sit.getID());
+                prepStat.addBatch();
+            }
+            prepStat.executeBatch();
+            output = true;
+        } catch (SQLException ex) {
+            System.out.println("failed to update newsitem: " + ex.getMessage());
+            Logger.getLogger(SortedDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+            output = false;
         } finally {
             closeConnection();
         }
