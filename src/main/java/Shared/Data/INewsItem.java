@@ -12,7 +12,7 @@ import java.util.Set;
  *
  * @author Kargathia
  */
-public interface INewsItem extends IData{
+public interface INewsItem extends IData {
     public Set<Situation> getSituations();
     public int getVictims();
     public Date getDate();

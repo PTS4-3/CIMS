@@ -102,12 +102,12 @@
                 <Button id="btnAddRoadMap" fx:id="btnSendNews" layoutX="993.0" layoutY="416.0" mnemonicParsing="false" onAction="#sendNewsItem" prefWidth="193.0" text="Verzenden" />
                 <Label id="lblProcessSortedData" fx:id="lblnMessage" font="$x2" layoutX="818.0" layoutY="376.0" prefHeight="22.0" prefWidth="368.0" text="Melding" />
                 <Label layoutX="819.0" layoutY="55.0" text="Titel" />
-                <TextField id="tfuTitle" fx:id="tfnTitle" editable="false" layoutX="924.0" layoutY="52.0" prefWidth="262.0" />
+                <TextField id="tfuTitle" fx:id="tfnTitle" editable="true" layoutX="924.0" layoutY="52.0" prefWidth="262.0" />
                 <Label layoutX="819.0" layoutY="94.0" text="Beschrijving" />
-                <TextArea id="tauDescription" fx:id="tanDescription" editable="false" layoutX="924.0" layoutY="84.0" prefHeight="146.0" prefWidth="262.0" wrapText="true" />
-                <TextField id="tfuSource" fx:id="tfnLocation" disable="false" editable="false" layoutX="924.0" layoutY="249.0" prefWidth="262.0" />
+                <TextArea id="tauDescription" fx:id="tanDescription" editable="true" layoutX="924.0" layoutY="84.0" prefHeight="146.0" prefWidth="262.0" wrapText="true" />
+                <TextField id="tfuSource" fx:id="tfnLocation" disable="false" editable="true" layoutX="924.0" layoutY="249.0" prefWidth="262.0" />
                 <Label layoutX="819.0" layoutY="249.0" text="Locatie" />
-                <TextField id="tfuLocation" fx:id="tfnVictims" editable="false" layoutX="924.0" layoutY="286.0" prefWidth="262.0" />
+                <TextField id="tfuLocation" fx:id="tfnVictims" editable="true" layoutX="924.0" layoutY="286.0" prefWidth="262.0" />
                 <Label layoutX="818.0" layoutY="289.0" text="Slachtoffers" />
               </children>
             </AnchorPane>

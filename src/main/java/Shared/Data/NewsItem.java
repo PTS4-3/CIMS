@@ -7,7 +7,6 @@ package Shared.Data;
 
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Set;
 
 /**
  *
@@ -73,15 +72,25 @@ public class NewsItem implements INewsItem {
     /**
      * id specified
      * @param ID
-     * @param title
+     * @param title cannot be null or empty
      * @param description
      * @param location
-     * @param source
+     * @param source the username of the source, cannot be null or empty
      * @param situations
-     * @param victims
+     * @param victims has to be zero or greater
+     * @param date
      */
     public NewsItem(int ID,String title, String description, String location,
             String source, HashSet<Situation> situations, int victims, Date date) {
+        if(title == null || title.isEmpty()) {
+            throw new IllegalArgumentException("Voer een titel in");
+        }
+        if(source == null || source.isEmpty()) {
+            throw new IllegalArgumentException("Voer een bron in");
+        }
+        if(victims < 0) {
+            throw new IllegalArgumentException("Slachtoffers moet 0 of meer zijn");
+        }
         this.situations = situations;
         this.victims = victims;
         this.ID = ID;
@@ -98,12 +107,12 @@ public class NewsItem implements INewsItem {
 
     /**
      * no id specified
-     * @param title
+     * @param title cannot be null or empty
      * @param description
      * @param location
-     * @param source
+     * @param source the username of the source, cannot be null or empty
      * @param situations
-     * @param victims
+     * @param victims has to be zero or greater
      */
     public NewsItem(String title, String description, String location,
             String source, HashSet<Situation> situations, int victims) {
@@ -113,7 +122,4 @@ public class NewsItem implements INewsItem {
     public void addSituation(Situation sit){
         this.situations.add(sit);
     }
-
-
-
 }

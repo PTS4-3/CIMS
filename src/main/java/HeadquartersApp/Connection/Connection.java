@@ -331,9 +331,9 @@ class Connection extends ConnClientBase {
     
     protected Set<Situation> getSituations() throws NetworkException{
         Object output = super.objectCommand(
-                ConnCommand.SERVICEUSERS_GET, new Object[]{});
+                ConnCommand.SITUATIONS_GET, new Object[]{});
 
-        if (!(output instanceof List)) {
+        if (!(output instanceof Set)) {
             throw new NetworkException("Unexpected result in "
                     + super.getCommandDescription(ConnCommand.SITUATIONS_GET));
         }

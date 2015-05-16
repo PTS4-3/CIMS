@@ -5,13 +5,14 @@
  */
 package Shared.Data;
 
+import java.io.Serializable;
 import java.util.HashSet;
 
 /**
  *
  * @author Kargathia
  */
-public class Situation {
+public class Situation implements Serializable {
     private HashSet<Advice> advices;
     private String description;
     private int ID;
@@ -42,4 +43,8 @@ public class Situation {
         }
     }
 
+    @Override
+    public String toString() {
+        return description;
+    }
 }

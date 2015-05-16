@@ -10,7 +10,9 @@ import Shared.*;
 import Shared.Data.DataRequest;
 import Shared.Data.IData;
 import Shared.Data.IDataRequest;
+import Shared.Data.INewsItem;
 import Shared.Data.ISortedData;
+import Shared.Data.NewsItem;
 import Shared.Data.Situation;
 import Shared.Data.SortedData;
 import Shared.Tasks.IPlan;
@@ -306,15 +308,15 @@ public class HeadquartersController implements Initializable {
                 throw new NetworkException("Kon geen data ophalen");
             }
             this.connectionManager.getData();
+            this.connectionManager.subscribeSortedData();
+            this.connectionManager.getSortedData();
+            this.connectionManager.getSituations();
 
             if (user instanceof IHQChief) {
                 connectionManager.subscribeTasks();
-                this.connectionManager.subscribeSortedData();
 
-                this.connectionManager.getSortedData();
                 this.connectionManager.getServiceUsers();
                 this.connectionManager.getTasks();
-                this.connectionManager.getSituations();
             }
 
             this.startTimer();
@@ -1349,7 +1351,45 @@ public class HeadquartersController implements Initializable {
     }
     
     public void sendNewsItem() {
-        //TODO
+        try {
+            if(connectionManager == null) {
+                throw new NetworkException("Kon data niet wegschrijven");
+            }
+            
+            // Load values from GUI
+            String title = tfnTitle.getText();
+            String description = tanDescription.getText();
+            String location = tfnLocation.getText();
+            String source = this.user.getUsername();
+            int victims = Integer.parseInt(tfnVictims.getText());
+            HashSet<Situation> situations = new HashSet<>();
+            situations.addAll(ccnSituations.getCheckModel().getCheckedItems());
+            
+            // Make and send new NewsItem
+            INewsItem newsItem = new NewsItem(title, description, location, 
+                    source, situations, victims);
+            this.connectionManager.sendNewsItem(newsItem);
+            
+            // Show message
+            lblnMessage.setVisible(true);
+            lblnMessage.setText("Nieuwsbericht is succesvol verzonden");
+            
+            // Reset GUI
+            tfnTitle.clear();
+            tanDescription.clear();
+            tfnLocation.clear();
+            tfnVictims.clear();
+            ccnSituations.getCheckModel().clearChecks();
+        } catch (NumberFormatException nfEx) {
+            showDialog("Onjuiste invoer", "Voer een getal in bij aantal slachtoffers", false);
+        } catch (IllegalArgumentException iaEx) {
+            showDialog("Onjuiste invoer", iaEx.getMessage(), false);
+        } catch (NetworkException nEx) {
+            showDialog("Geen verbinding met server", nEx.getMessage(), true);
+        } catch (Exception ex) {
+            showDialog("Fout", ex.getMessage(), false);
+            ex.printStackTrace();
+        }
     }
 
     public void logOutClick() {
@@ -1419,7 +1459,7 @@ public class HeadquartersController implements Initializable {
                 .replace("?", " ")
                 .replace("  ", " ")
                 .toLowerCase()
-                .replace("Ã©", "e");
+                .replace("ÃƒÂ©", "e");
 
         return s;
     }

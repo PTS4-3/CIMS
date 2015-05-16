@@ -5,11 +5,13 @@
  */
 package Shared.Data;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Kargathia
  */
-public class Advice {
+public class Advice implements Serializable {
 
     private String description;
     private int ID;
