@@ -20,8 +20,7 @@ import java.util.logging.Logger;
  */
 public class ConnectionManager {
 
-    public static final Object 
-            SORTEDLOCK = "",
+    public static final Object SORTEDLOCK = "",
             UNSORTEDLOCK = "",
             TASKSLOCK = "";
 
@@ -44,16 +43,17 @@ public class ConnectionManager {
 
     /**
      * Returns a unique int to serve as client ID.
+     *
      * @return
      */
-    protected static synchronized int getNextID(){
+    protected static synchronized int getNextID() {
         return nextID++;
     }
 
-    protected static PushBuffer getBuffer(){
+    protected static PushBuffer getBuffer() {
         return buffer;
     }
-    
+
     protected static PlanExecutorHandler getPlanExecutorHandler() {
         return planExecutorHandler;
     }

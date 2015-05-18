@@ -607,6 +607,25 @@ public class ConnectionManager {
     }
 
     /**
+     * Sends the NewsItem to the server, where it will update the existing NewsItem.
+     * @param item 
+     */
+    public void updateNewsItem(INewsItem item) {
+        if (item == null) {
+            throw new IllegalArgumentException("Selecteer een nieuwsbericht om te updateten");
+        }
+
+        pool.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                new Connection(defaultIP, defaultPort).updateNewsItem(item);
+            }
+
+        });
+    }
+
+    /**
      * Gets all situations from server and sends the returnvalue to
      * hqController.displaySituations()
      */

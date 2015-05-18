@@ -44,6 +44,7 @@ public enum ConnCommand {
     SORTED_GET_ALL,
     SERVICEUSERS_GET,
     NEWSITEM_SEND,
+    NEWSITEM_UPDATE,
     SITUATIONS_GET
 }
 

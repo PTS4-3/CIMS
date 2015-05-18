@@ -329,7 +329,21 @@ class Connection extends ConnClientBase {
         super.booleanCommand(ConnCommand.NEWSITEM_SEND, new Object[]{item});
     }
     
-    protected Set<Situation> getSituations() throws NetworkException{
+    /**
+     * Sends the NewsItem to the server, where it will update the existing NewsItem.
+     * @param item 
+     */
+    protected void updateNewsItem(INewsItem item){
+        super.booleanCommand(ConnCommand.NEWSITEM_UPDATE, new Object[]{item});
+    }
+
+    /**
+     * Gets all of the situations from the server
+     *
+     * @return Set<Situation>
+     * @throws NetworkException
+     */
+    protected Set<Situation> getSituations() throws NetworkException {
         Object output = super.objectCommand(
                 ConnCommand.SITUATIONS_GET, new Object[]{});
 

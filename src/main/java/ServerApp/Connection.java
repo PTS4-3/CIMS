@@ -231,6 +231,9 @@ public class Connection implements Runnable {
                             case NEWSITEM_SEND:
                                 this.saveNewsItem();
                                 break;
+                            case NEWSITEM_UPDATE:
+                                this.updateNewsItem();
+                                break;
                             case SITUATIONS_GET:
                                 this.getSituations();
                                 break;
@@ -980,14 +983,39 @@ public class Connection implements Runnable {
 
         this.writeResult(success);
     }
-    
+
+    /**
+     * Updates the NewsItem in the database.
+     *
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private void updateNewsItem() throws IOException, ClassNotFoundException {
+        Object inObject = in.readObject();
+
+        if (inObject == null || !(inObject instanceof INewsItem)) {
+            out.writeObject(ConnState.COMMAND_ERROR);
+            return;
+        }
+
+        INewsItem item = (INewsItem) inObject;
+        boolean success = false;
+
+        synchronized (SORTEDLOCK) {
+            success = ServerMain.sortedDatabaseManager.updateNewsItem(item);
+        }
+
+        this.writeResult(success);
+    }
+
     /**
      * Get all situations from database
-     * @throws IOException 
+     *
+     * @throws IOException
      */
-    private void getSituations() throws IOException{
+    private void getSituations() throws IOException {
         Set<Situation> output = null;
-        synchronized (SORTEDLOCK){
+        synchronized (SORTEDLOCK) {
             output = ServerMain.sortedDatabaseManager.getSituations();
         }
         this.writeOutput(output);
