@@ -120,6 +120,9 @@ public class UnsortedDatabaseManager extends DatabaseManager {
      * @return succeed reset status unsorted data
      */
     public boolean resetUnsortedData(List<IData> data) {
+        if(data.isEmpty()){
+            return true;
+        }
         if (!openConnection()) {
             return false;
         }

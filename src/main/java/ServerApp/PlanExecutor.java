@@ -5,8 +5,6 @@
  */
 package ServerApp;
 
-import static ServerApp.ConnectionManager.getBuffer;
-import static ServerApp.ConnectionManager.getPlanExecutorHandler;
 import Shared.Tasks.IPlan;
 
 /**
@@ -31,10 +29,11 @@ public class PlanExecutor {
     
     public void executeNextStep() {
         if(this.nextStep > 0 && this.nextStep <= this.plan.getSteps().size()) {
-            getBuffer().addTask(this.plan.getSteps().get(nextStep - 1));
+            // TODO
+//            getBuffer().addTask(this.plan.getSteps().get(nextStep - 1));
             this.nextStep++;
         } else {
-            getPlanExecutorHandler().removePlanExecutor(this.plan);
+            ServerMain.planExecutorHandler.removePlanExecutor(this.plan);
         }
     }
 }

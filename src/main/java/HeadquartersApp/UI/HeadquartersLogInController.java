@@ -5,7 +5,7 @@ package HeadquartersApp.UI;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-import HeadquartersApp.Connection.ConnectionManager;
+import HeadquartersApp.ConnectionHandler.ConnectionHandler;
 import Shared.NetworkException;
 import Shared.Users.IServiceUser;
 import Shared.Users.IUser;
@@ -38,7 +38,7 @@ public class HeadquartersLogInController implements Initializable {
     @FXML
     Button btnLogIn;
 
-    private ConnectionManager connectionManager;
+    private ConnectionHandler connectionManager;
     private IUser user = null;
     
     private Headquarters main;
@@ -57,7 +57,7 @@ public class HeadquartersLogInController implements Initializable {
      *
      * @param ipAdressServer
      */
-    public void configure(Headquarters main, ConnectionManager manager) {
+    public void configure(Headquarters main, ConnectionHandler manager) {
         this.main = main;
         this.connectionManager = manager;
         this.connectionManager.setLogInController(this);

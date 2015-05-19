@@ -232,13 +232,12 @@ public class ConnClientBase {
      */
     protected IUser getSigninUser(String username, String password) {
         IUser output = null;
-            Object inObject = objectCommand(
-                    ConnCommand.SIGN_IN, new Object[]{username, password});
+            Object inObject = objectCommand(ConnCommand.USERS_SIGN_IN, new Object[]{username, password});
             if (inObject instanceof IUser || inObject == null) {
                 output = (IUser) inObject;
             } else {
                 System.err.println("Unexpected output from "
-                    + getCommandDescription(ConnCommand.SIGN_IN));
+                    + getCommandDescription(ConnCommand.USERS_SIGN_IN));
             }
         return output;
     }
@@ -250,14 +249,14 @@ public class ConnClientBase {
      */
     protected int getClientID() {
         int output = -1;
-        Object inObject = this.objectCommand(
-                ConnCommand.CLIENT_ID_GET, new Object[]{});
-        if (inObject instanceof Integer) {
-            output = (Integer) inObject;
-        } else {
-            System.err.println("Unexpected output from "
-                    + this.getCommandDescription(ConnCommand.CLIENT_ID_GET));
-        }
+//        Object inObject = this.objectCommand(
+//                ConnCommand.CLIENT_ID_GET, new Object[]{});
+//        if (inObject instanceof Integer) {
+//            output = (Integer) inObject;
+//        } else {
+//            System.err.println("Unexpected output from "
+//                    + this.getCommandDescription(ConnCommand.CLIENT_ID_GET));
+//        }
 
         return output;
     }
@@ -270,23 +269,11 @@ public class ConnClientBase {
     protected String getCommandDescription(ConnCommand command) {
         String output = "Unknown command";
         switch (command) {
-            case CLIENT_ID_GET:
-                output = "getting client ID";
-                break;
             case SORTED_SEND:
                 output = "sending sorted data";
                 break;
             case SORTED_GET:
                 output = "getting sorted data";
-                break;
-            case SORTED_GET_NEW:
-                output = "retrieving new sorted data";
-                break;
-            case SORTED_SUBSCRIBE:
-                output = "subscribing to sorted data updates";
-                break;
-            case SORTED_UNSUBSCRIBE:
-                output = "unsubscribing from sorted data updates";
                 break;
             case UNSORTED_SEND:
                 output = "submitting new unsorted data";
@@ -309,29 +296,11 @@ public class ConnClientBase {
             case UNSORTED_DISCARD:
                 output = "discard given piece of unsorted data";
                 break;
-            case SENT_GET_NEW:
-                output = "retrieving new unsorted data";
-                break;
-            case SENT_SUBSCRIBE:
-                output = "subscriving to unsorted data updates";
-                break;
-            case SENT_UNSUBSCRIBE:
-                output = "unsubscribing from unsorted data updates";
-                break;
             case UPDATE_REQUEST_SEND:
                 output = "submitting a request for updated data";
                 break;
             case UPDATE_REQUEST_GET:
                 output = "retrieving all requests for updated data";
-                break;
-            case UPDATE_REQUEST_GET_NEW:
-                output = "retrieving new update requests";
-                break;
-            case UPDATE_REQUEST_SUBSCRIBE:
-                output = "subscribing to new update requests";
-                break;
-            case UPDATE_REQUEST_UNSUBSCRIBE:
-                output = "unsubscribing from new update requests";
                 break;
             case TASK_SEND:
                 output = "sending task";
@@ -342,16 +311,7 @@ public class ConnClientBase {
             case PLAN_APPLY:
                 output = "apply a plan";
                 break;
-            case TASKS_GET_NEW:
-                output = "get new tasks";
-                break;
-            case TASKS_SUBSCRIBE:
-                output = "subscribe to get updates for tasks";
-                break;
-            case TASKS_UNSUBSCRIBE:
-                output = "unsubscribe to get updates for tasks";
-                break;
-            case SIGN_IN:
+            case USERS_SIGN_IN:
                 output = "retrieving user";
                 break;
             case TASK_UPDATE:
@@ -366,7 +326,7 @@ public class ConnClientBase {
             case SORTED_GET_ALL:
                 output = "get all sorted data";
                 break;
-            case SERVICEUSERS_GET:
+            case USERS_GET_SERVICE:
                 output = "get all service users";
                 break;
         }

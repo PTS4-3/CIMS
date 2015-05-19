@@ -5,7 +5,7 @@
  */
 package HeadquartersApp.UI;
 
-import HeadquartersApp.Connection.ConnectionManager;
+import HeadquartersApp.ConnectionHandler.ConnectionHandler;
 import Shared.Users.IUser;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
@@ -23,7 +23,7 @@ public class Headquarters extends Application {
 
     private HeadquartersLogInController controller;
     private HeadquartersController hqController;
-    private ConnectionManager connectionmanager;
+    private ConnectionHandler connectionHandler;
     private String ipAdressServer = "127.0.0.1";
     ;
 
@@ -36,7 +36,7 @@ public class Headquarters extends Application {
             this.stage.setTitle("Headquarters CIMS");
             this.stage.setMinWidth(100);
             this.stage.setMinHeight(100);
-            this.connectionmanager = new ConnectionManager(this.ipAdressServer);
+            this.connectionHandler = new ConnectionHandler(this.ipAdressServer);
             goToLogIn();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -50,7 +50,7 @@ public class Headquarters extends Application {
         Parent root = (Parent) loader.load();
         controller = (HeadquartersLogInController) loader.getController();
 
-        this.controller.configure(this, this.connectionmanager);
+        this.controller.configure(this, this.connectionHandler);
         Scene scene = new Scene(root);
 
         stage.setScene(scene);
@@ -58,7 +58,7 @@ public class Headquarters extends Application {
         stage.show();
     }
 
-    public void goToHeadquarters(ConnectionManager manager,
+    public void goToHeadquarters(ConnectionHandler manager,
             IUser user) throws Exception {
         if (user != null) {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader()

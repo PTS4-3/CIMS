@@ -9,14 +9,7 @@ package Shared.Connection;
  *
  * @author Kargathia
  */
-public enum ConnState {
+public interface IRspHandler extends Runnable {
+ public boolean handleResponse(byte[] rsp);
 
-    CONNECTION_START,
-    CONNECTION_END,
-    TRANSFER_START,
-    TRANSFER_END,
-    COMMAND_ERROR,
-    COMMAND_SUCCESS,
-    COMMAND_FAIL,
-    COMMAND_UNKNOWN
 }

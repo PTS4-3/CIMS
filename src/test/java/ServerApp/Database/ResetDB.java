@@ -23,7 +23,7 @@ public class ResetDB {
 
     @BeforeClass
     public static void setUp() {
-        if(ServerMain.connectionManager == null){
+        if(ServerMain.sortedDatabaseManager == null){
             ServerMain.startDatabases();
         }
         ServerMain.sortedDatabaseManager.resetDatabase();

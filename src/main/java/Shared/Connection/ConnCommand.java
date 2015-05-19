@@ -10,12 +10,8 @@ package Shared.Connection;
  * @author Kargathia + Alexander
  */
 public enum ConnCommand {
-    CLIENT_ID_GET,
     SORTED_SEND,
     SORTED_GET,
-    SORTED_GET_NEW,
-    SORTED_SUBSCRIBE,
-    SORTED_UNSUBSCRIBE,
     UNSORTED_SEND,
     UNSORTED_GET,
     UNSORTED_GET_ID,
@@ -23,29 +19,21 @@ public enum ConnCommand {
     UNSORTED_STATUS_RESET,
     UNSORTED_UPDATE_SEND,
     UNSORTED_DISCARD,
-    SENT_GET_NEW,
-    SENT_SUBSCRIBE,
-    SENT_UNSUBSCRIBE,
     UPDATE_REQUEST_SEND,
     UPDATE_REQUEST_GET,
-    UPDATE_REQUEST_GET_NEW,
-    UPDATE_REQUEST_SUBSCRIBE,
-    UPDATE_REQUEST_UNSUBSCRIBE,
     TASK_SEND,
     PLAN_SEND_NEW,
     PLAN_APPLY,
-    TASKS_GET_NEW,
-    TASKS_SUBSCRIBE,
-    TASKS_UNSUBSCRIBE,
-    SIGN_IN,
+    USERS_SIGN_IN,
     TASK_UPDATE,
     TASKS_GET,
     PLAN_SEARCH,
     SORTED_GET_ALL,
-    SERVICEUSERS_GET,
+    USERS_GET_SERVICE,
     NEWSITEM_SEND,
     NEWSITEM_UPDATE,
-    SITUATIONS_GET
+    SITUATIONS_GET,
+    USERS_REGISTER,
 }
 
 /*
@@ -133,7 +121,7 @@ public enum ConnCommand {
  -> Client: int clientID
  Option 28 - Client: ConnCommand.TASKS_UNSUBSCRIBE
  -> Client: int clientID
- Option 29 - Client: ConnCommand.SIGN_IN
+ Option 29 - Client: ConnCommand.USERS_SIGN_IN
  -> Client: int clientID
  -> Server: IUser
  Option 30 - Client: ConnCommand.TASK_UPDATE
@@ -148,7 +136,7 @@ public enum ConnCommand {
  Option 33 - Client: ConnCommand.SORTED_GET_ALL
  -> Client: int clientID
  -> Server: List<ISortedData>
- Option 34 - Client: ConnCommand.SERVICEUSERS_GET
+ Option 34 - Client: ConnCommand.USERS_GET_SERVICE
  -> Client: int clientID
  -> Server: List<IServiceUser>    
  -----

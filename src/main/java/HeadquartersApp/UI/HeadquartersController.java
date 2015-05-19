@@ -5,7 +5,7 @@
  */
 package HeadquartersApp.UI;
 
-import HeadquartersApp.Connection.ConnectionManager;
+import HeadquartersApp.ConnectionHandler.ConnectionHandler;
 import Shared.*;
 import Shared.Data.DataRequest;
 import Shared.Data.IData;
@@ -26,6 +26,7 @@ import Shared.Users.IHQChief;
 import Shared.Users.IServiceUser;
 import Shared.Users.IUser;
 import Shared.Users.ServiceUser;
+import Shared.Users.UserRole;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -165,7 +166,7 @@ public class HeadquartersController implements Initializable {
     private ObservableList<IStep> tempSteps;
     private IPlan tempPlan;
 
-    private ConnectionManager connectionManager;
+    private ConnectionHandler connectionManager;
     private Timer timer;
     private IUser user = null;
     private Headquarters main;
@@ -251,7 +252,7 @@ public class HeadquartersController implements Initializable {
      * @param manager
      * @param user
      */
-    public void configure(ConnectionManager manager, IUser user) {
+    public void configure(ConnectionHandler manager, IUser user) {
         this.connectionManager = manager;
         try {
             this.connectionManager.setHQController(this);
@@ -308,16 +309,16 @@ public class HeadquartersController implements Initializable {
                 throw new NetworkException("Kon geen data ophalen");
             }
             this.connectionManager.getData();
-            this.connectionManager.subscribeSortedData();
             this.connectionManager.getSortedData();
             this.connectionManager.getSituations();
+            UserRole role = UserRole.HQ;
 
             if (user instanceof IHQChief) {
-                connectionManager.subscribeTasks();
-
+                role = UserRole.CHIEF;
                 this.connectionManager.getServiceUsers();
                 this.connectionManager.getTasks();
             }
+            connectionManager.registerForUpdates(role);
 
             this.startTimer();
         } catch (NetworkException nEx) {
@@ -1407,13 +1408,8 @@ public class HeadquartersController implements Initializable {
      */
     public void close(boolean logout) {
         if (this.connectionManager != null) {
-            if (user instanceof IHQChief) {
-                connectionManager.unsubscribeTasks();
-            }
-
             this.connectionManager.stopWorkingOnData(
                     new ArrayList<>(lvuUnsortedData.getItems()));
-            this.connectionManager.unsubscribeSortedData();
         }
         if (!logout) {
             this.connectionManager.close();
