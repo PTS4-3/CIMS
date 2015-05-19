@@ -3,20 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package HeadquartersApp.ConnectionHandler;
+package HeadquartersApp.Connection;
 
-import Shared.Connection.NioClient;
+import Shared.Connection.ClientConnection;
 import HeadquartersApp.UI.HeadquartersController;
 import HeadquartersApp.UI.HeadquartersLogInController;
-import Shared.Connection.ConnCommand;
+import Shared.Connection.Transaction.ConnCommand;
 import Shared.Connection.SerializeUtils;
-import Shared.Connection.ServerBoundTransaction;
+import Shared.Connection.Transaction.ServerBoundTransaction;
 import Shared.Data.DataRequest;
 import Shared.Data.IData;
 import Shared.Data.IDataRequest;
 import Shared.Data.INewsItem;
 import Shared.Data.ISortedData;
-import Shared.Data.Situation;
 import Shared.Data.SortedData;
 import Shared.Data.Status;
 import Shared.Data.UnsortedData;
@@ -29,16 +28,12 @@ import Shared.Tasks.Plan;
 import Shared.Tasks.Step;
 import Shared.Tasks.Task;
 import Shared.Tasks.TaskStatus;
-import Shared.Users.IServiceUser;
-import Shared.Users.IUser;
 import Shared.Users.UserRole;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -47,8 +42,8 @@ import java.util.concurrent.TimeUnit;
 public class ConnectionHandler {
 
     public static final int DEFAULT_PORT = 9090;
-    private RspHandler responder;
-    private NioClient client;
+    private ResponseHandler responder;
+    private ClientConnection client;
     private int commandID;
 
     /**
@@ -82,14 +77,14 @@ public class ConnectionHandler {
      * @throws IOException
      */
     public ConnectionHandler(String address) throws IOException {
-        this.client = new NioClient(InetAddress.getByName(address), DEFAULT_PORT);
+        this.client = new ClientConnection(InetAddress.getByName(address), DEFAULT_PORT);
         this.commandID = 0;
 
         Thread clientThread = new Thread(client);
         clientThread.setDaemon(true);
         clientThread.start();
 
-        this.responder = new RspHandler();
+        this.responder = new ResponseHandler();
         Thread handlerThread = new Thread(responder);
         handlerThread.setDaemon(true);
         handlerThread.start();
@@ -99,31 +94,6 @@ public class ConnectionHandler {
         return this.commandID++;
     }
 
-    /**
-     * Gets the clientId from the server
-     *
-     * @throws NetworkException if the retrieved clientId is -1
-     */
-//    private void getID() throws NetworkException {
-//        this.clientId = new Connection(defaultIP, defaultPort).getClientId();
-//        if (this.clientId == -1) {
-//            throw new NetworkException("ClientId is -1");
-//        }
-//    }
-    /**
-     * Starts pulling for new information
-     */
-//    private void startPulling() {
-//        this.collectFuture = this.pool.scheduleWithFixedDelay(new Runnable() {
-//
-//            @Override
-//            public void run() {
-//                getNewSortedData();
-//                getNewTasks();
-//            }
-//
-//        }, collectionIntervalInMillis, collectionIntervalInMillis, TimeUnit.MILLISECONDS);
-//    }
     /**
      * Testing only. Takes place in lieu of unit tests.
      */
@@ -356,7 +326,7 @@ public class ConnectionHandler {
     public void getSortedData() {
         ServerBoundTransaction transaction
                 = new ServerBoundTransaction(this.getCommandID(),
-                        ConnCommand.SORTED_GET_ALL);
+                        ConnCommand.SORTED_GET_ALL, new HashSet<Tag>());
         try {
             this.client.send(SerializeUtils.serialize(transaction), responder);
         } catch (IOException ex) {
@@ -385,7 +355,7 @@ public class ConnectionHandler {
     public void getTasks() {
         ServerBoundTransaction transaction
                 = new ServerBoundTransaction(this.getCommandID(),
-                        ConnCommand.TASKS_GET);
+                        ConnCommand.TASKS_GET, null, new HashSet<TaskStatus>());
         try {
             this.client.send(SerializeUtils.serialize(transaction), responder);
         } catch (IOException ex) {

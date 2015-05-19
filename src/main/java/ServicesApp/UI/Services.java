@@ -5,7 +5,7 @@
  */
 package ServicesApp.UI;
 
-import ServicesApp.Connection.ConnectionManager;
+import ServicesApp.Connection.ConnectionHandler;
 import Shared.Users.IUser;
 import javafx.application.Application;
 import javafx.event.Event;
@@ -20,7 +20,7 @@ import javafx.stage.Stage;
  * @author Alexander
  */
 public class Services extends Application {
-    private ConnectionManager connectionmanager;
+    private ConnectionHandler connectionmanager;
     private ServicesLogInController controller;
     private ServicesController servicesController;
     private Stage stage;
@@ -30,7 +30,7 @@ public class Services extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         this.stage = stage;
-        this.connectionmanager = new ConnectionManager(this.ipAdressServer);
+        this.connectionmanager = new ConnectionHandler(this.ipAdressServer);
         this.goToLogIn();
     }
     
@@ -50,7 +50,7 @@ public class Services extends Application {
         stage.show();
     }
     
-    public void goToServices(ConnectionManager manager, IUser user)
+    public void goToServices(ConnectionHandler manager, IUser user)
             throws Exception
     {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("ServicesApp/ServicesFX.fxml"));

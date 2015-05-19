@@ -3,43 +3,37 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package HeadquartersApp.ConnectionHandler;
+package ServicesApp.Connection;
 
-import HeadquartersApp.UI.HeadquartersController;
-import HeadquartersApp.UI.HeadquartersLogInController;
-import Shared.Connection.ClientBoundTransaction;
-import Shared.Connection.ConnState;
-import Shared.Connection.IRspHandler;
-import java.util.LinkedList;
-import java.util.Queue;
+import ServicesApp.UI.ServicesController;
+import ServicesApp.UI.ServicesLogInController;
+import Shared.Connection.Transaction.ClientBoundTransaction;
+import Shared.Connection.Transaction.ConnState;
+import Shared.Connection.IResponseHandler;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import Shared.Connection.SerializeUtils;
 import Shared.Data.IData;
+import Shared.Data.IDataRequest;
 import Shared.Data.ISortedData;
-import Shared.Data.Situation;
 import Shared.NetworkException;
-import Shared.Tasks.IPlan;
 import Shared.Tasks.ITask;
-import Shared.Users.IServiceUser;
 import Shared.Users.IUser;
 import java.util.List;
-import java.util.Set;
 
-class RspHandler implements IRspHandler {
+class ResponseHandler implements IResponseHandler {
 
-    private HeadquartersController hqController = null;
-    private HeadquartersLogInController loginController = null;
+    private ServicesController servicesController = null;
+    private ServicesLogInController loginController = null;
 
-    protected void setLoginController(HeadquartersLogInController loginController) {
+    protected void setLoginController(ServicesLogInController loginController) {
         this.loginController = loginController;
     }
 
-    protected void setHQController(HeadquartersController hqController) {
-        this.hqController = hqController;
+    protected void setServicesController(ServicesController hqController) {
+        this.servicesController = hqController;
     }
 
     private ConcurrentLinkedQueue<byte[]> responses = new ConcurrentLinkedQueue<>();
-//    private byte[] rsp = null;
 
     @Override
     public synchronized boolean handleResponse(byte[] rsp) {
@@ -82,31 +76,29 @@ class RspHandler implements IRspHandler {
                         case SORTED_GET:
                             this.handleSortedResponse(transaction);
                             break;
-                        case UNSORTED_GET:
-                            this.handleUnsortedResult(transaction);
+                        case UNSORTED_GET_ID:
+                            this.handleDataItemResult(transaction);
+                            break;
+                        case UNSORTED_GET_SOURCE:
+                            this.handleSentDataResult(transaction);
                             break;
                         case TASKS_GET:
                             this.handleTasksResult(transaction);
                             break;
-                        case PLAN_SEARCH:
-                            this.handleSearchPlansResult(transaction);
-                            break;
-                        case USERS_GET_SERVICE:
-                            this.handleServiceUsersResult(transaction);
-                            break;
                         case USERS_SIGN_IN:
                             this.handleLoginResult(transaction);
                             break;
-                        case SITUATIONS_GET:
-                            this.handleSituationsResult(transaction);
+                        case UPDATE_REQUEST_GET:
+                            this.handleRequestsResult(transaction);
                             break;
-                        case UNSORTED_GET_ID:
-                        case UNSORTED_GET_SOURCE:
+                        case UNSORTED_GET:
+                        case PLAN_SEARCH:
+                        case USERS_GET_SERVICE:
+                        case SITUATIONS_GET:
                         case UNSORTED_STATUS_RESET:
                         case UNSORTED_UPDATE_SEND:
                         case UNSORTED_DISCARD:
                         case UPDATE_REQUEST_SEND:
-                        case UPDATE_REQUEST_GET:
                         case TASK_SEND:
                         case PLAN_SEND_NEW:
                         case PLAN_APPLY:
@@ -145,37 +137,10 @@ class RspHandler implements IRspHandler {
         }
     }
 
-    private void handleUnsortedResult(ClientBoundTransaction transaction) {
-        try {
-            List<IData> list = (List) transaction.data;
-            this.hqController.displayData(list);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    private void handleSearchPlansResult(ClientBoundTransaction transaction) {
-        try {
-            List<IPlan> plans = (List) transaction.data;
-            this.hqController.displayPlans(plans);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
     private void handleSortedResponse(ClientBoundTransaction transaction) {
         try {
             List<ISortedData> data = (List) transaction.data;
-            this.hqController.displaySortedData(data);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    private void handleServiceUsersResult(ClientBoundTransaction transaction) {
-        try {
-            List<IServiceUser> users = (List) transaction.data;
-            this.hqController.displayServiceUsers(users);
+            this.servicesController.displaySortedData(data);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -184,16 +149,34 @@ class RspHandler implements IRspHandler {
     private void handleTasksResult(ClientBoundTransaction transaction) {
         try {
             List<ITask> tasks = (List) transaction.data;
-            this.hqController.displayTasks(tasks);
+            this.servicesController.displayTasks(tasks);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-    private void handleSituationsResult(ClientBoundTransaction transaction) {
+    private void handleDataItemResult(ClientBoundTransaction transaction) {
         try {
-          Set<Situation> situations = (Set) transaction.data;
-          this.hqController.displaySituations(situations);
+            IData data = (IData) transaction.data;
+            this.servicesController.displayDataItem(data);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void handleRequestsResult(ClientBoundTransaction transaction) {
+        try {
+            List<IDataRequest> requests = (List) transaction.data;
+            this.servicesController.displayRequests(requests);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void handleSentDataResult(ClientBoundTransaction transaction) {
+        try {
+            List<IData> data = (List) transaction.data;
+            this.servicesController.displaySentData(data);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

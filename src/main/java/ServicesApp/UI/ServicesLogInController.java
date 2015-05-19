@@ -5,8 +5,7 @@ package ServicesApp.UI;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-import HeadquartersApp.UI.Headquarters;
-import ServicesApp.Connection.ConnectionManager;
+import ServicesApp.Connection.ConnectionHandler;
 import Shared.NetworkException;
 import Shared.Users.IHQChief;
 import Shared.Users.IHQUser;
@@ -38,7 +37,7 @@ public class ServicesLogInController implements Initializable {
     @FXML
     PasswordField pfPassword;
 
-    private ConnectionManager connectionManager;
+    private ConnectionHandler connectionManager;
     private IUser user;
 
     private Services main;
@@ -57,7 +56,7 @@ public class ServicesLogInController implements Initializable {
      * @param main
      * @param manager
      */
-    public void configure(Services main, ConnectionManager manager) {
+    public void configure(Services main, ConnectionHandler manager) {
         this.main = main;
         this.connectionManager = manager;
         this.connectionManager.setLogInController(this);
@@ -102,7 +101,7 @@ public class ServicesLogInController implements Initializable {
     }
     
     public void close(){
-        this.connectionManager.closeConnection();
+        this.connectionManager.close();
     }
 
     private void showDialog(String title, String melding, boolean warning) {

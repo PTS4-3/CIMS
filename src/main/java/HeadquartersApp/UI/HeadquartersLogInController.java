@@ -5,7 +5,7 @@ package HeadquartersApp.UI;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-import HeadquartersApp.ConnectionHandler.ConnectionHandler;
+import HeadquartersApp.Connection.ConnectionHandler;
 import Shared.NetworkException;
 import Shared.Users.IServiceUser;
 import Shared.Users.IUser;

@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ServerApp.ConnectionHandler;
+package ServerApp.Connection;
 
 import ServerApp.ServerMain;
-import Shared.Connection.ClientBoundTransaction;
-import Shared.Connection.ConnState;
-import Shared.Connection.ServerBoundTransaction;
+import Shared.Connection.Transaction.ClientBoundTransaction;
+import Shared.Connection.Transaction.ConnState;
+import Shared.Connection.Transaction.ServerBoundTransaction;
 import Shared.Connection.SerializeUtils;
 import Shared.Data.IData;
 import Shared.Data.IDataRequest;
@@ -25,7 +25,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
-public class EchoWorker implements Runnable {
+public class ConnectionWorker implements Runnable {
 
     private static List queue = new LinkedList();
     private static final String
@@ -41,7 +41,7 @@ public class EchoWorker implements Runnable {
      * @param data
      * @param count
      */
-    public static void processData(NioServer server, SocketChannel socket, byte[] data, int count) {
+    public static void processData(ConnectionHandler server, SocketChannel socket, byte[] data, int count) {
         byte[] dataCopy = new byte[count];
         System.arraycopy(data, 0, dataCopy, 0, count);
         synchronized (queue) {
@@ -363,303 +363,6 @@ public class EchoWorker implements Runnable {
     }
 
     /**
-     * Assigns an ID to new clients.
-     *
-     * @throws IOException
-     */
-    @Deprecated
-    private ClientBoundTransaction assignID(ServerBoundTransaction input) {
-//        writeOutput(ConnectionManager.getNextID());
-        return null;
-    }
-
-    /**
-     * Sends the newly submitted sorted data since last sendNewSortedData call
-     * by this client.
-     *
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    @Deprecated
-    private ClientBoundTransaction sendNewSortedData(ServerBoundTransaction input) {
-//        Object inObject = in.readObject();
-//        if (inObject instanceof Integer) {
-//            writeOutput(getBuffer().collectSorted((int) inObject));
-//        } else {
-//            writeResult(false);
-//        }
-        return null;
-    }
-
-    /**
-     * Subscribes client with given clientID for his own buffer of new
-     * sortedData
-     *
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    private ClientBoundTransaction subscribeSorted(ServerBoundTransaction input) {
-//        Object par1 = in.readObject();
-//        Object par2 = in.readObject();
-//
-//        if (par1 == null || !(par1 instanceof String)) {
-//            out.writeObject(ConnState.COMMAND_ERROR);
-//            return;
-//        }
-//        if (par2 == null || !(par2 instanceof Integer)) {
-//            out.writeObject(ConnState.COMMAND_ERROR);
-//            return;
-//        }
-//
-//        String username = (String) par1;
-//        int clientID = (Integer) par2;
-//
-//        getBuffer().subscribeSorted(username, clientID);
-//        this.writeResult(true);
-        return null;
-    }
-
-    /**
-     * Sends newly submitted data requests since last method call.
-     *
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    @Deprecated
-    private ClientBoundTransaction sendNewRequests(ServerBoundTransaction input) {
-//        Object inObject = in.readObject();
-//        if (inObject instanceof Integer) {
-//            writeOutput(getBuffer().collectRequests((int) inObject));
-//        } else {
-//            writeResult(false);
-//        }
-        return null;
-    }
-
-    /**
-     * Subscribes client with given id for his own buffer of datarequests.
-     *
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    private ClientBoundTransaction subscribeRequest(ServerBoundTransaction input) {
-//        Object par1 = in.readObject();
-//        Object par2 = in.readObject();
-//
-//        if (par1 == null || !(par1 instanceof String)) {
-//            out.writeObject(ConnState.COMMAND_ERROR);
-//            return;
-//        }
-//        if (par2 == null || !(par2 instanceof Integer)) {
-//            out.writeObject(ConnState.COMMAND_ERROR);
-//            return;
-//        }
-//
-//        String username = (String) par1;
-//        int clientID = (Integer) par2;
-//
-//        getBuffer().subscribeRequests(username, clientID);
-//        this.writeResult(true);
-        return null;
-    }
-
-    /**
-     * Unsubscribes client with given ID from his personal buffer.
-     *
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    private ClientBoundTransaction unsubscribeRequest(ServerBoundTransaction input) {
-//        Object par1 = in.readObject();
-//        Object par2 = in.readObject();
-//
-//        if (par1 == null || !(par1 instanceof String)) {
-//            out.writeObject(ConnState.COMMAND_ERROR);
-//            return;
-//        }
-//        if (par2 == null || !(par2 instanceof Integer)) {
-//            out.writeObject(ConnState.COMMAND_ERROR);
-//            return;
-//        }
-//
-//        String username = (String) par1;
-//        int clientID = (Integer) par2;
-//
-//        getBuffer().unsubscribeRequests(username, clientID);
-//        this.writeResult(true);
-        return null;
-    }
-
-    /**
-     * Unsubscribes client with given ID from his personal buffer.
-     *
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    private ClientBoundTransaction unsubscribeSorted(ServerBoundTransaction input) {
-//        Object par1 = in.readObject();
-//        Object par2 = in.readObject();
-//
-//        if (par1 == null || !(par1 instanceof String)) {
-//            out.writeObject(ConnState.COMMAND_ERROR);
-//            return;
-//        }
-//        if (par2 == null || !(par2 instanceof Integer)) {
-//            out.writeObject(ConnState.COMMAND_ERROR);
-//            return;
-//        }
-//
-//        String username = (String) par1;
-//        int clientID = (Integer) par2;
-//
-//        getBuffer().unsubscribeSorted(username, clientID);
-//        this.writeResult(true);
-        return null;
-    }
-
-    /**
-     * Sends newly submitted data requests since last method call.
-     *
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    @Deprecated
-    private ClientBoundTransaction sendNewSent(ServerBoundTransaction input) {
-//        Object inObject = in.readObject();
-//        if (inObject instanceof Integer) {
-//            writeOutput(getBuffer().collectUnsorted((int) inObject));
-//        } else {
-//            writeResult(false);
-//        }
-        return null;
-    }
-
-    /**
-     * Subscribes client with given id for his own buffer of datarequests.
-     *
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    private ClientBoundTransaction subscribeSent(ServerBoundTransaction input) {
-//        Object par1 = in.readObject();
-//        Object par2 = in.readObject();
-//
-//        if (par1 == null || !(par1 instanceof String)) {
-//            out.writeObject(ConnState.COMMAND_ERROR);
-//            return;
-//        }
-//        if (par2 == null || !(par2 instanceof Integer)) {
-//            out.writeObject(ConnState.COMMAND_ERROR);
-//            return;
-//        }
-//
-//        String username = (String) par1;
-//        int clientID = (Integer) par2;
-//
-//        getBuffer().subscribeSent(username, clientID);
-//        this.writeResult(true);
-        return null;
-    }
-
-    /**
-     * Unsubscribes client with given ID from his personal buffer.
-     *
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    private ClientBoundTransaction unsubscribeSent(ServerBoundTransaction input) {
-//        Object par1 = in.readObject();
-//        Object par2 = in.readObject();
-//
-//        if (par1 == null || !(par1 instanceof String)) {
-//            out.writeObject(ConnState.COMMAND_ERROR);
-//            return;
-//        }
-//        if (par2 == null || !(par2 instanceof Integer)) {
-//            out.writeObject(ConnState.COMMAND_ERROR);
-//            return;
-//        }
-//
-//        String username = (String) par1;
-//        int clientID = (Integer) par2;
-//
-//        getBuffer().unsubscribeSent(username, clientID);
-//        this.writeResult(true);
-        return null;
-    }
-
-    /**
-     * Sends newly submitted data tasks since last method call.
-     *
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    @Deprecated
-    private ClientBoundTransaction sendNewTasks(ServerBoundTransaction input) {
-//        Object inObject = in.readObject();
-//        if (inObject instanceof Integer) {
-//            writeOutput(getBuffer().collectTasks((int) inObject));
-//        } else {
-//            writeResult(false);
-//        }
-        return null;
-    }
-
-    /**
-     * Subscribes client with given id for his own buffer of Tasks.
-     *
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    private ClientBoundTransaction subscribeTasks(ServerBoundTransaction input) {
-//        Object par1 = in.readObject();
-//        Object par2 = in.readObject();
-//
-//        if (par1 == null || !(par1 instanceof String)) {
-//            out.writeObject(ConnState.COMMAND_ERROR);
-//            return;
-//        }
-//        if (par2 == null || !(par2 instanceof Integer)) {
-//            out.writeObject(ConnState.COMMAND_ERROR);
-//            return;
-//        }
-//
-//        String username = (String) par1;
-//        int clientID = (Integer) par2;
-//
-//        getBuffer().subscribeTasks(username, clientID);
-//        this.writeResult(true);
-        return null;
-    }
-
-    /**
-     * Unsubscribes client with given ID from his personal buffer.
-     *
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    private ClientBoundTransaction unsubscribeTasks(ServerBoundTransaction input) {
-//        Object par1 = in.readObject();
-//        Object par2 = in.readObject();
-//
-//        if (par1 == null || !(par1 instanceof String)) {
-//            out.writeObject(ConnState.COMMAND_ERROR);
-//            return;
-//        }
-//        if (par2 == null || !(par2 instanceof Integer)) {
-//            out.writeObject(ConnState.COMMAND_ERROR);
-//            return;
-//        }
-//
-//        String username = (String) par1;
-//        int clientID = (Integer) par2;
-//
-//        getBuffer().unsubscribeTasks(username, clientID);
-//        this.writeResult(true);
-        return null;
-    }
-
-    /**
      * Saves a task and sends it to the executor
      *
      * @throws IOException
@@ -746,10 +449,10 @@ public class EchoWorker implements Runnable {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
         try {
             String username = (String) input.objects[0];
-            HashSet<TaskStatus> statusses = (HashSet<TaskStatus>) input.objects[1];
+            HashSet<TaskStatus> statuses = (HashSet<TaskStatus>) input.objects[1];
             synchronized (TASKSLOCK) {
                 return output.setResult(
-                        ServerMain.tasksDatabaseManager.getTasks(username, statusses));
+                        ServerMain.tasksDatabaseManager.getTasks(username, statuses));
             }
         } catch (Exception ex) {
             ex.printStackTrace();

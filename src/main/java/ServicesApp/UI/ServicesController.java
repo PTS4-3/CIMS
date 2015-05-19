@@ -5,7 +5,7 @@
  */
 package ServicesApp.UI;
 
-import ServicesApp.Connection.ConnectionManager;
+import ServicesApp.Connection.ConnectionHandler;
 import Shared.Data.IData;
 import Shared.Data.IDataRequest;
 import Shared.Data.ISortedData;
@@ -18,6 +18,7 @@ import Shared.Tasks.ITask;
 import Shared.Tasks.TaskStatus;
 import Shared.Users.IServiceUser;
 import Shared.Users.IUser;
+import Shared.Users.UserRole;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -134,7 +135,7 @@ public class ServicesController implements Initializable {
     @FXML
     MenuBar menuHQ;
 
-    private ConnectionManager connectionManager;
+    private ConnectionHandler connectionManager;
     private boolean showingDataItem;
     private IDataRequest answeredRequest;
     private ITask selectedTask = null;
@@ -261,7 +262,7 @@ public class ServicesController implements Initializable {
      *
      * @param ipAdressServer
      */
-    public void configure(ConnectionManager manager, IUser user) {
+    public void configure(ConnectionHandler manager, IUser user) {
         this.connectionManager = manager;
         if(user instanceof IServiceUser)
         {
@@ -278,10 +279,7 @@ public class ServicesController implements Initializable {
             }
 
             // Subscribe
-            this.connectionManager.subscribeRequests(user.getUsername());
-            this.connectionManager.subscribeSorted(user.getUsername());
-            this.connectionManager.subscribeUnsorted(user.getUsername());
-            this.connectionManager.subscribeTasks(user.getUsername());
+            this.connectionManager.registerForUpdates(UserRole.SERVICE);
 
             // Get initial values
             if (chbsRequests.isSelected()) {
@@ -409,14 +407,8 @@ public class ServicesController implements Initializable {
      * Unsubscribe to the information from the connectionManager
      */
     public void close(boolean logout) {
-        if (this.connectionManager != null) {
-            this.connectionManager.unsubscribeRequests(user.getUsername());
-            this.connectionManager.unsubscribeSorted(user.getUsername());
-            this.connectionManager.unsubscribeTasks(user.getUsername());
-            this.connectionManager.unsubscribeUnsorted(user.getUsername());
-        }
         if (!logout) {
-            this.connectionManager.closeConnection();
+            this.connectionManager.close();
         }
     }
 

@@ -9,7 +9,7 @@ package Shared.Connection;
  *
  * @author Kargathia
  */
-public interface IRspHandler extends Runnable {
+public interface IResponseHandler extends Runnable {
  public boolean handleResponse(byte[] rsp);
 
 }

@@ -5,7 +5,7 @@
  */
 package HeadquartersApp.UI;
 
-import HeadquartersApp.ConnectionHandler.ConnectionHandler;
+import HeadquartersApp.Connection.ConnectionHandler;
 import Shared.*;
 import Shared.Data.DataRequest;
 import Shared.Data.IData;

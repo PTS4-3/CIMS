@@ -5,8 +5,8 @@
  */
 package ServerApp;
 
-import ServerApp.ConnectionHandler.EchoWorker;
-import ServerApp.ConnectionHandler.NioServer;
+import ServerApp.Connection.ConnectionWorker;
+import ServerApp.Connection.ConnectionHandler;
 import ServerApp.Database.DummyDatabaseManager;
 import ServerApp.Database.SortedDatabaseManager;
 import ServerApp.Database.TasksDatabaseManager;
@@ -24,7 +24,7 @@ public class ServerMain {
     public static UnsortedDatabaseManager unsortedDatabaseManager = null;
     public static TasksDatabaseManager tasksDatabaseManager = null;
     public static PlanExecutorHandler planExecutorHandler = null;
-    public static NioServer nioServerManager = null;
+    public static ConnectionHandler nioServerManager = null;
 
     public static DummyDatabaseManager dummyDatabaseManager = null;
 
@@ -51,7 +51,7 @@ public class ServerMain {
 //            EchoWorker worker = new EchoWorker();
 //            new Thread(worker).start();
 
-            nioServerManager = new NioServer(null, 9090);
+            nioServerManager = new ConnectionHandler(null, 9090);
             new Thread(nioServerManager).start();
             System.out.println("connection started");
         } catch (IOException e) {
