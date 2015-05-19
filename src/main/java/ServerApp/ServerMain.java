@@ -13,18 +13,22 @@ import ServerApp.Database.TasksDatabaseManager;
 import ServerApp.Database.UnsortedDatabaseManager;
 import ServerApp.Database.UnsortedDatabaseManager;
 import java.io.IOException;
+import java.net.InetAddress;
 
 /**
  *
  * @author Kargathia
  */
 public class ServerMain {
+    
+    public static String SERVER_ADDRESS = "127.0.0.1";
 
     public static SortedDatabaseManager sortedDatabaseManager = null;
     public static UnsortedDatabaseManager unsortedDatabaseManager = null;
     public static TasksDatabaseManager tasksDatabaseManager = null;
     public static PlanExecutorHandler planExecutorHandler = null;
-    public static ConnectionHandler nioServerManager = null;
+    public static ConnectionHandler connectionHandler = null;
+    public static PushHandler pushHandler = null;
 
     public static DummyDatabaseManager dummyDatabaseManager = null;
 
@@ -41,21 +45,19 @@ public class ServerMain {
         sortedDatabaseManager = new SortedDatabaseManager("sorteddatabase.properties");
         unsortedDatabaseManager = new UnsortedDatabaseManager("unsorteddatabase.properties");
         tasksDatabaseManager = new TasksDatabaseManager("taskdatabase.properties");
-//       connectionManager = new ConnectionManager();
 
         dummyDatabaseManager = new DummyDatabaseManager();
     }
 
     public static void startConnection() {
         try {
-//            EchoWorker worker = new EchoWorker();
-//            new Thread(worker).start();
-
-            nioServerManager = new ConnectionHandler(null, 9090);
-            new Thread(nioServerManager).start();
+            connectionHandler = new ConnectionHandler(
+                    InetAddress.getByName(SERVER_ADDRESS), 9090);
+            new Thread(connectionHandler).start();         
+            pushHandler = new PushHandler();
             System.out.println("connection started");
         } catch (IOException e) {
-            System.out.println("failed to start server");
+            System.out.println("failed to start connection");
             e.printStackTrace();
         }
     }

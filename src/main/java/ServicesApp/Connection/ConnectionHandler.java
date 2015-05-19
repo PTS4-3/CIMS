@@ -12,9 +12,11 @@ import Shared.Connection.Transaction.ConnCommand;
 import Shared.Connection.SerializeUtils;
 import Shared.Connection.Transaction.ServerBoundTransaction;
 import Shared.Data.IData;
+import Shared.Data.Status;
 import Shared.NetworkException;
 import Shared.Tag;
 import Shared.Tasks.ITask;
+import Shared.Users.IServiceUser;
 import Shared.Users.UserRole;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -93,12 +95,14 @@ public class ConnectionHandler {
      * Registers user after logging in for receiving updates appropriate for his
      * role.
      *
+     * @param user
      * @param role
      */
-    public void registerForUpdates(UserRole role) {
+    public void registerForUpdates(IServiceUser user) {
         ServerBoundTransaction transaction
                 = new ServerBoundTransaction(this.getCommandID(),
-                        ConnCommand.USERS_REGISTER, role);
+                        ConnCommand.USERS_REGISTER, 
+                        UserRole.SERVICE, user.getType(), user.getUsername());
         try {
             this.client.send(SerializeUtils.serialize(transaction), responder);
         } catch (IOException ex) {
@@ -160,7 +164,8 @@ public class ConnectionHandler {
     public void getTasks(String username) {
         ServerBoundTransaction transaction
                 = new ServerBoundTransaction(this.getCommandID(),
-                        ConnCommand.TASKS_GET, username);
+                        ConnCommand.TASKS_GET, username, new HashSet<Status>());
+        // empty set because there is no filter
         try {
             this.client.send(SerializeUtils.serialize(transaction), responder);
         } catch (IOException ex) {

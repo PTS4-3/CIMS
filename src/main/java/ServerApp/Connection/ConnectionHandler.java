@@ -27,27 +27,27 @@ import java.util.Map;
 public class ConnectionHandler implements Runnable {
 
     // The host:port combination to listen on
-    private InetAddress hostAddress;
-    private int port;
+    private final InetAddress hostAddress;
+    private final int port;
 
     // The channel on which we'll accept connections
     private ServerSocketChannel serverChannel;
 
     // The selector we'll be monitoring
-    private Selector selector;
+    private final Selector selector;
 
     // The buffer into which we'll read data when it's available
-    private ByteBuffer readBuffer = ByteBuffer.allocate(8192);
+    private final ByteBuffer readBuffer = ByteBuffer.allocate(8192);
 
     // Used for processing data
-    private HashSet<ConnectionWorker> workers;
+    private final HashSet<ConnectionWorker> workers;
     private final int numWorkers = 5;
 
     // A list of PendingChange instances
-    private List<ChangeRequest> pendingChanges = new LinkedList<>();
+    private final List<ChangeRequest> pendingChanges = new LinkedList<>();
 
     // Maps a SocketChannel to a list of ByteBuffer instances
-    private Map<SocketChannel, List<ByteBuffer>> pendingData = new HashMap<>();
+    private final Map<SocketChannel, List<ByteBuffer>> pendingData = new HashMap<>();
 
     public ConnectionHandler(InetAddress hostAddress, int port) throws IOException {
         this.hostAddress = hostAddress;

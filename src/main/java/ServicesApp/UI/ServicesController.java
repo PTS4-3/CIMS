@@ -279,7 +279,7 @@ public class ServicesController implements Initializable {
             }
 
             // Subscribe
-            this.connectionManager.registerForUpdates(UserRole.SERVICE);
+            this.connectionManager.registerForUpdates(this.user);
 
             // Get initial values
             if (chbsRequests.isSelected()) {
@@ -330,7 +330,6 @@ public class ServicesController implements Initializable {
                 if (!showingDataItem) {
                     lvtTasks.getItems().addAll(tasks);
                     
-
                     if (lvtTasks.getSelectionModel().getSelectedItem() == null) {
                         lvtTasks.getSelectionModel().selectFirst();
                     }

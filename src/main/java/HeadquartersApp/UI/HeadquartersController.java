@@ -167,7 +167,6 @@ public class HeadquartersController implements Initializable {
     private IPlan tempPlan;
 
     private ConnectionHandler connectionManager;
-    private Timer timer;
     private IUser user = null;
     private Headquarters main;
 
@@ -309,7 +308,7 @@ public class HeadquartersController implements Initializable {
                 throw new NetworkException("Kon geen data ophalen");
             }
             this.connectionManager.getData();
-            this.connectionManager.getSortedData();
+            this.connectionManager.getAllSortedData();
             this.connectionManager.getSituations();
             UserRole role = UserRole.HQ;
 
@@ -319,8 +318,7 @@ public class HeadquartersController implements Initializable {
                 this.connectionManager.getTasks();
             }
             connectionManager.registerForUpdates(role);
-
-            this.startTimer();
+            connectionManager.subscribeUnsorted();
         } catch (NetworkException nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
@@ -336,9 +334,8 @@ public class HeadquartersController implements Initializable {
 
             @Override
             public void run() {
-                if (timer != null && !output.isEmpty()) {
-                    timer.cancel();
-                    timer = null;
+                if (!output.isEmpty()) {
+                    connectionManager.unsubscribeUnsorted();
                 }
 
                 lvuUnsortedData.getItems().addAll(output);
@@ -410,29 +407,14 @@ public class HeadquartersController implements Initializable {
 
             // Start timer
             if (lvuUnsortedData.getItems().size() == 0) {
-                this.startTimer();
+                this.connectionManager.subscribeUnsorted();
+            } else {
+                this.connectionManager.unsubscribeUnsorted();
             }
         }
 
         // Select new
         lvuUnsortedData.getSelectionModel().selectFirst();
-    }
-
-    /**
-     * Starts the timer for getting data
-     */
-    private void startTimer() {
-        if (this.timer == null) {
-            this.timer = new Timer();
-            this.timer.schedule(new TimerTask() {
-
-                @Override
-                public void run() {
-                    connectionManager.getData();
-                }
-
-            }, 10000, (long) 10000);
-        }
     }
 
     /**
@@ -1410,12 +1392,10 @@ public class HeadquartersController implements Initializable {
         if (this.connectionManager != null) {
             this.connectionManager.stopWorkingOnData(
                     new ArrayList<>(lvuUnsortedData.getItems()));
-        }
-        if (!logout) {
-            this.connectionManager.close();
-        }
-        if (this.timer != null) {
-            this.timer.cancel();
+            this.connectionManager.unsubscribeUnsorted();
+            if (!logout) {
+                this.connectionManager.close();
+            }
         }
     }
 

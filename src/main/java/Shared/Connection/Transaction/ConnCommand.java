@@ -13,6 +13,15 @@ public enum ConnCommand {
     /**
      * params: ISortedData <br>
      * result: boolean
+     *//**
+     * params: ISortedData <br>
+     * result: boolean
+     *//**
+     * params: ISortedData <br>
+     * result: boolean
+     *//**
+     * params: ISortedData <br>
+     * result: boolean
      */
     SORTED_SEND,
     /**
@@ -91,7 +100,7 @@ public enum ConnCommand {
      */
     TASK_UPDATE,
     /**
-     * params: String <br>
+     * params: String, HashSet&lt;Status&gt; <br>
      * result: List&lt;ITask&gt;
      */
     TASKS_GET,
@@ -101,15 +110,10 @@ public enum ConnCommand {
      */
     PLAN_SEARCH,
     /**
-     * params: int <br>
-     * result: List&lt;ISortedData&gt;
-     */
-    SORTED_GET_ALL,
-    /**
      * params: void <br>
      * result: List&lt;IServiceUser&gt;
      */
-    USERS_GET_SERVICE,
+    USERS_GET_SERVICEUSERS,
     /**
      * params: INewsItem <br>
      * result: boolean
@@ -126,8 +130,19 @@ public enum ConnCommand {
      */
     SITUATIONS_GET,
     /**
-     * params: UserRole <br>
-     * result: boolean
+     * params: UserRole, Tag, String (username) <br>
+     * result: boolean <br>
+     * If not a ServiceUser, tag and username can be null.
      */
     USERS_REGISTER,
+    /**
+     * params: void <br>
+     * result: boolean
+     */
+    USERS_UNSORTED_SUBSCRIBE,
+    /**
+     * params: void <br>
+     * result: boolean
+     */
+    USERS_UNSORTED_UNSUBSCRIBE,
 }

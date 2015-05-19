@@ -34,6 +34,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  *
@@ -52,7 +53,6 @@ public class ConnectionHandler {
      * @param loginController
      */
     public void setLogInController(HeadquartersLogInController loginController) {
-//        this.loginController = loginController;
         this.responder.setLoginController(loginController);
     }
 
@@ -64,11 +64,6 @@ public class ConnectionHandler {
      */
     public void setHQController(HeadquartersController hqController) throws NetworkException {
         this.responder.setHQController(hqController);
-//        this.hqController = hqController;
-//        if (this.collectFuture == null) {
-//            this.getID();
-//            this.startPulling();
-//        }
     }
 
     /**
@@ -84,10 +79,12 @@ public class ConnectionHandler {
         clientThread.setDaemon(true);
         clientThread.start();
 
-        this.responder = new ResponseHandler();
+        this.responder = new ResponseHandler(this);
         Thread handlerThread = new Thread(responder);
         handlerThread.setDaemon(true);
         handlerThread.start();
+
+//        this.testMethods();
     }
 
     private synchronized int getCommandID() {
@@ -139,7 +136,8 @@ public class ConnectionHandler {
     public void registerForUpdates(UserRole role) {
         ServerBoundTransaction transaction
                 = new ServerBoundTransaction(this.getCommandID(),
-                        ConnCommand.USERS_REGISTER, role);
+                        ConnCommand.USERS_REGISTER, role, null, null);
+        // other variables are only relevant for serviceusers
         try {
             this.client.send(SerializeUtils.serialize(transaction), responder);
         } catch (IOException ex) {
@@ -323,10 +321,11 @@ public class ConnectionHandler {
      * Gets all sorted data Sends returnvalue to
      * hqController.displaySortedData()
      */
-    public void getSortedData() {
+    public void getAllSortedData() {
         ServerBoundTransaction transaction
                 = new ServerBoundTransaction(this.getCommandID(),
-                        ConnCommand.SORTED_GET_ALL, new HashSet<Tag>());
+                        ConnCommand.SORTED_GET, new HashSet<Tag>());
+        // empty HashSet tag because there is no filter
         try {
             this.client.send(SerializeUtils.serialize(transaction), responder);
         } catch (IOException ex) {
@@ -341,7 +340,7 @@ public class ConnectionHandler {
     public void getServiceUsers() {
         ServerBoundTransaction transaction
                 = new ServerBoundTransaction(this.getCommandID(),
-                        ConnCommand.USERS_GET_SERVICE);
+                        ConnCommand.USERS_GET_SERVICEUSERS);
         try {
             this.client.send(SerializeUtils.serialize(transaction), responder);
         } catch (IOException ex) {
@@ -435,4 +434,33 @@ public class ConnectionHandler {
             ex.printStackTrace();
         }
     }
+
+    /**
+     * Tries to subscribe to unsorted data from server. subscribed.
+     */
+    public void subscribeUnsorted() {
+        ServerBoundTransaction transaction
+                = new ServerBoundTransaction(this.getCommandID(),
+                        ConnCommand.USERS_UNSORTED_SUBSCRIBE);
+        try {
+            this.client.send(SerializeUtils.serialize(transaction), responder);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    /**
+     * Tries to unsubscribe to unsorted data from server.
+     */
+    public void unsubscribeUnsorted() {
+        ServerBoundTransaction transaction
+                = new ServerBoundTransaction(this.getCommandID(),
+                        ConnCommand.USERS_UNSORTED_UNSUBSCRIBE);
+        try {
+            this.client.send(SerializeUtils.serialize(transaction), responder);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
 }

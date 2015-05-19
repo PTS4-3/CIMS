@@ -19,6 +19,7 @@ import Shared.Tasks.IPlan;
 import Shared.Tasks.IStep;
 import Shared.Tasks.ITask;
 import Shared.Tasks.TaskStatus;
+import Shared.Users.UserRole;
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
 import java.util.HashSet;
@@ -27,8 +28,8 @@ import java.util.List;
 
 public class ConnectionWorker implements Runnable {
 
-    private static List queue = new LinkedList();
-    private static final String
+    private static final List queue = new LinkedList();
+    private static final String 
             SORTEDLOCK = "",
             UNSORTEDLOCK = "",
             TASKSLOCK = "";
@@ -72,7 +73,7 @@ public class ConnectionWorker implements Runnable {
 
             switch (incoming.command) {
                 case SORTED_GET:
-                    outgoing = this.sendSortedData(incoming);
+                    outgoing = this.getSortedData(incoming);
                     break;
                 case SORTED_SEND:
                     outgoing = this.saveSortedData(incoming);
@@ -125,10 +126,7 @@ public class ConnectionWorker implements Runnable {
                 case PLAN_SEARCH:
                     outgoing = this.searchPlans(incoming);
                     break;
-                case SORTED_GET_ALL:
-                    outgoing = this.getSortedData(incoming);
-                    break;
-                case USERS_GET_SERVICE:
+                case USERS_GET_SERVICEUSERS:
                     outgoing = this.getServiceUsers(incoming);
                     break;
                 case NEWSITEM_SEND:
@@ -139,6 +137,15 @@ public class ConnectionWorker implements Runnable {
                     break;
                 case SITUATIONS_GET:
                     outgoing = this.getSituations(incoming);
+                    break;
+                case USERS_REGISTER:
+                    outgoing = this.registerUser(incoming, dataEvent);
+                    break;
+                case USERS_UNSORTED_SUBSCRIBE:
+                    outgoing = this.subscribeUnsorted(incoming, dataEvent);
+                    break;
+                case USERS_UNSORTED_UNSUBSCRIBE:
+                    outgoing = this.unsubscribeUnsorted(incoming, dataEvent);
                     break;
                 default:
                     outgoing = new ClientBoundTransaction(incoming);
@@ -191,17 +198,18 @@ public class ConnectionWorker implements Runnable {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
         try {
             ISortedData data = (ISortedData) input.objects[0];
+            boolean result = false;
             synchronized (SORTEDLOCK) {
-                return output.setResult(
-                        ServerMain.sortedDatabaseManager.insertToSortedData(data));
+                result = ServerMain.sortedDatabaseManager.insertToSortedData(data);
             }
+            if (result) {
+                ServerMain.pushHandler.push(data);
+            }
+            return output.setResult(result);
         } catch (Exception ex) {
             ex.printStackTrace();
             return output.setError();
         }
-//        if (output) {
-//            getBuffer().addSorted(data);
-//        }
     }
 
     /**
@@ -212,17 +220,21 @@ public class ConnectionWorker implements Runnable {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
         try {
             IData data = (IData) input.objects[0];
+            IData insertedData = null;
             synchronized (UNSORTEDLOCK) {
-                return output.setResult(
-                        ServerMain.unsortedDatabaseManager.insertToUnsortedData(data));
+                insertedData = ServerMain.unsortedDatabaseManager.insertToUnsortedData(data);
+                // pushes getFromUnsorted to set status as it should
+                if (insertedData != null 
+                        && ServerMain.pushHandler.hasUnsortedSubscribers()) {
+                    ServerMain.pushHandler.push(
+                            ServerMain.unsortedDatabaseManager.getFromUnsortedData());
+                }
             }
+            return output.setResult(insertedData);
         } catch (Exception ex) {
             ex.printStackTrace();
             return output.setError();
         }
-//        if (output) {
-//            getBuffer().addSentData(data);
-//        }
     }
 
     /**
@@ -231,10 +243,16 @@ public class ConnectionWorker implements Runnable {
     private ClientBoundTransaction resetUnsortedData(ServerBoundTransaction input) {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
         try {
-            List<IData> list = (List) input.objects[0];
+            List<IData> inputList = (List) input.objects[0];
+            // first checks if can push to other HQ
+            if (ServerMain.pushHandler.hasUnsortedSubscribers()) {
+                ServerMain.pushHandler.push(inputList);
+                return output.setResult(true);
+            }
+            // if not: resets
             synchronized (UNSORTEDLOCK) {
-                return output.setResult(ServerMain.unsortedDatabaseManager.
-                        resetUnsortedData(list));
+                return output.setResult(
+                        ServerMain.unsortedDatabaseManager.resetUnsortedData(inputList));
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -289,17 +307,18 @@ public class ConnectionWorker implements Runnable {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
         try {
             IDataRequest data = (IDataRequest) input.objects[0];
+            boolean result;
             synchronized (SORTEDLOCK) {
-                boolean result = ServerMain.sortedDatabaseManager.insertDataRequest(data);
-                return output.setResult(result);
+                result = ServerMain.sortedDatabaseManager.insertDataRequest(data);
             }
+            if (result) {
+                ServerMain.pushHandler.push(data);
+            }
+            return output.setResult(result);
         } catch (Exception ex) {
             ex.printStackTrace();
             return output.setError();
         }
-//        if (output) {
-//            getBuffer().addRequest(data);
-//        }
     }
 
     /**
@@ -372,19 +391,18 @@ public class ConnectionWorker implements Runnable {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
         try {
             ITask task = (ITask) input.objects[0];
+            ITask insertedTask;
             synchronized (TASKSLOCK) {
-                task = ServerMain.tasksDatabaseManager.insertNewTask(task);
-                return output.setResult(task);
+                insertedTask = ServerMain.tasksDatabaseManager.insertNewTask(task);
             }
+            if (insertedTask != null) {
+                ServerMain.pushHandler.push(insertedTask);
+            }
+            return output.setResult(insertedTask);
         } catch (Exception ex) {
             ex.printStackTrace();
             return output.setError();
         }
-        // TODO
-//        if (task != null) {
-//            getBuffer().addTask(task);
-//            success = true;
-//        }
     }
 
     /**
@@ -415,7 +433,7 @@ public class ConnectionWorker implements Runnable {
         try {
             IPlan plan = (IPlan) input.objects[0];
             if (plan != null) {
-            ServerMain.planExecutorHandler.addPlanExecutor(plan);
+                ServerMain.planExecutorHandler.addPlanExecutor(plan);
             }
             return output.setResult(plan != null);
         } catch (Exception ex) {
@@ -473,18 +491,16 @@ public class ConnectionWorker implements Runnable {
             synchronized (TASKSLOCK) {
                 success = ServerMain.tasksDatabaseManager.updateTask(task);
             }
-            // TODO
-            //        (task.getStatus() != TaskStatus.READ) {
-//            // Add to buffer of HQChief
-//            getBuffer().addTaskForChief(task);
-//        }
+            if (success) {
+                ServerMain.pushHandler.push(task);
+            }
 
-        if ((task.getStatus() == TaskStatus.SUCCEEDED 
-                || task.getStatus() == TaskStatus.FAILED)
-                && task instanceof IStep) {
-            // Execute next step of plan
-            ServerMain.planExecutorHandler.executeNextStepOf((IStep) task);
-        }
+            if ((task.getStatus() == TaskStatus.SUCCEEDED
+                    || task.getStatus() == TaskStatus.FAILED)
+                    && task instanceof IStep) {
+                // Execute next step of plan
+                ServerMain.planExecutorHandler.executeNextStepOf((IStep) task);
+            }
             return output.setResult(success);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -591,6 +607,67 @@ public class ConnectionWorker implements Runnable {
                 return output.setResult(
                         ServerMain.sortedDatabaseManager.getSituations());
             }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return output.setError();
+        }
+    }
+
+    /**
+     * Subscribes Channel for updates for given user role.
+     *
+     * @param input
+     * @return
+     */
+    private ClientBoundTransaction registerUser(
+            ServerBoundTransaction input, ServerDataEvent event) {
+        ClientBoundTransaction output = new ClientBoundTransaction(input);
+        try {
+            UserRole role = (UserRole) input.objects[0];
+            Tag tag = (Tag) input.objects[1];
+            String username = (String) input.objects[2];
+
+            boolean result = ServerMain.pushHandler.subscribe(
+                    role, tag, username, event.socket);
+            return output.setResult(result);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return output.setError();
+        }
+    }
+
+    /**
+     * Subscribes Channel to updates on unsorted data.
+     *
+     * @param input
+     * @param dataEvent
+     * @return
+     */
+    private ClientBoundTransaction subscribeUnsorted(
+            ServerBoundTransaction input, ServerDataEvent dataEvent) {
+        ClientBoundTransaction output = new ClientBoundTransaction(input);
+        try {
+            return output.setResult(
+                    ServerMain.pushHandler.subscribeUnsorted(dataEvent.socket));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return output.setError();
+        }
+    }
+
+    /**
+     * Unsubscribes given channel to updates on unsorted data.
+     *
+     * @param input
+     * @param dataEvent
+     * @return
+     */
+    private ClientBoundTransaction unsubscribeUnsorted(
+            ServerBoundTransaction input, ServerDataEvent dataEvent) {
+        ClientBoundTransaction output = new ClientBoundTransaction(input);
+        try {
+            return output.setResult(
+                    ServerMain.pushHandler.unsubscribeUnsorted(dataEvent.socket));
         } catch (Exception ex) {
             ex.printStackTrace();
             return output.setError();

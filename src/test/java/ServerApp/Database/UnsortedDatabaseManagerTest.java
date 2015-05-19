@@ -57,8 +57,8 @@ public class UnsortedDatabaseManagerTest {
     @Test
     public void testInsertToUnsortedData() {
         unsortedData = new UnsortedData("title", "desc", "loc", "source");
-        assertTrue("Failed to insert unsorted data", myDB.insertToUnsortedData(unsortedData));       
-        assertTrue("Failed to insert second unsorted data", myDB.insertToUnsortedData(unsortedData));
+        assertNotNull("Failed to insert unsorted data", myDB.insertToUnsortedData(unsortedData));       
+        assertNotNull("Failed to insert second unsorted data", myDB.insertToUnsortedData(unsortedData));
     }
 
     @Test

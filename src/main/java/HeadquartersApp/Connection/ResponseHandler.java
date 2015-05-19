@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import Shared.Connection.SerializeUtils;
+import Shared.Connection.Transaction.ConnCommand;
 import Shared.Data.IData;
 import Shared.Data.ISortedData;
 import Shared.Data.Situation;
@@ -29,6 +30,11 @@ class ResponseHandler implements IResponseHandler {
 
     private HeadquartersController hqController = null;
     private HeadquartersLogInController loginController = null;
+    private ConnectionHandler connectionHandler = null;
+
+    protected ResponseHandler(ConnectionHandler connHandler) {
+        this.connectionHandler = connHandler;
+    }
 
     protected void setLoginController(HeadquartersLogInController loginController) {
         this.loginController = loginController;
@@ -63,18 +69,18 @@ class ResponseHandler implements IResponseHandler {
                 try {
                     ClientBoundTransaction transaction
                             = (ClientBoundTransaction) SerializeUtils.deserialize(rsp);
-
+                    System.out.println(transaction.command.toString() // debugging println
+                            + ": "
+                            + transaction.result.toString());
                     if (transaction.result == ConnState.COMMAND_ERROR) {
                         throw new NetworkException(transaction.command.toString());
                     }
 
                     switch (transaction.command) {
+
                         default:
                             throw new NetworkException("(Unknown Command) - "
                                     + transaction.command.toString());
-                        case USERS_REGISTER:
-                            handleLoginResult(transaction);
-                            break;
                         case SORTED_SEND:
                             this.handleGenericResult(transaction);
                             break;
@@ -90,7 +96,7 @@ class ResponseHandler implements IResponseHandler {
                         case PLAN_SEARCH:
                             this.handleSearchPlansResult(transaction);
                             break;
-                        case USERS_GET_SERVICE:
+                        case USERS_GET_SERVICEUSERS:
                             this.handleServiceUsersResult(transaction);
                             break;
                         case USERS_SIGN_IN:
@@ -99,7 +105,10 @@ class ResponseHandler implements IResponseHandler {
                         case SITUATIONS_GET:
                             this.handleSituationsResult(transaction);
                             break;
+                        case USERS_UNSORTED_SUBSCRIBE:
+                        case USERS_UNSORTED_UNSUBSCRIBE:
                         case UNSORTED_GET_ID:
+                        case UNSORTED_SEND:
                         case UNSORTED_GET_SOURCE:
                         case UNSORTED_STATUS_RESET:
                         case UNSORTED_UPDATE_SEND:
@@ -110,9 +119,9 @@ class ResponseHandler implements IResponseHandler {
                         case PLAN_SEND_NEW:
                         case PLAN_APPLY:
                         case TASK_UPDATE:
-                        case SORTED_GET_ALL:
                         case NEWSITEM_SEND:
                         case NEWSITEM_UPDATE:
+                        case USERS_REGISTER:
                             this.handleGenericResult(transaction);
                             break;
                     }
@@ -137,8 +146,10 @@ class ResponseHandler implements IResponseHandler {
 
     private void handleLoginResult(ClientBoundTransaction transaction) {
         try {
-            IUser user = (IUser) transaction.data;
-            this.loginController.logIn(user);
+            if (transaction.result == ConnState.COMMAND_SUCCESS) {
+                IUser user = (IUser) transaction.data;
+                this.loginController.logIn(user);
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -146,8 +157,10 @@ class ResponseHandler implements IResponseHandler {
 
     private void handleUnsortedResult(ClientBoundTransaction transaction) {
         try {
-            List<IData> list = (List) transaction.data;
-            this.hqController.displayData(list);
+            if (transaction.result == ConnState.COMMAND_SUCCESS) {
+                List<IData> list = (List) transaction.data;
+                this.hqController.displayData(list);
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -155,8 +168,10 @@ class ResponseHandler implements IResponseHandler {
 
     private void handleSearchPlansResult(ClientBoundTransaction transaction) {
         try {
-            List<IPlan> plans = (List) transaction.data;
-            this.hqController.displayPlans(plans);
+            if (transaction.result == ConnState.COMMAND_SUCCESS) {
+                List<IPlan> plans = (List) transaction.data;
+                this.hqController.displayPlans(plans);
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -164,8 +179,10 @@ class ResponseHandler implements IResponseHandler {
 
     private void handleSortedResponse(ClientBoundTransaction transaction) {
         try {
-            List<ISortedData> data = (List) transaction.data;
-            this.hqController.displaySortedData(data);
+            if (transaction.result == ConnState.COMMAND_SUCCESS) {
+                List<ISortedData> data = (List) transaction.data;
+                this.hqController.displaySortedData(data);
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -173,8 +190,10 @@ class ResponseHandler implements IResponseHandler {
 
     private void handleServiceUsersResult(ClientBoundTransaction transaction) {
         try {
-            List<IServiceUser> users = (List) transaction.data;
-            this.hqController.displayServiceUsers(users);
+            if (transaction.result == ConnState.COMMAND_SUCCESS) {
+                List<IServiceUser> users = (List) transaction.data;
+                this.hqController.displayServiceUsers(users);
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -182,8 +201,10 @@ class ResponseHandler implements IResponseHandler {
 
     private void handleTasksResult(ClientBoundTransaction transaction) {
         try {
-            List<ITask> tasks = (List) transaction.data;
-            this.hqController.displayTasks(tasks);
+            if (transaction.result == ConnState.COMMAND_SUCCESS) {
+                List<ITask> tasks = (List) transaction.data;
+                this.hqController.displayTasks(tasks);
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -191,8 +212,10 @@ class ResponseHandler implements IResponseHandler {
 
     private void handleSituationsResult(ClientBoundTransaction transaction) {
         try {
-          Set<Situation> situations = (Set) transaction.data;
-          this.hqController.displaySituations(situations);
+            if (transaction.result == ConnState.COMMAND_SUCCESS) {
+                Set<Situation> situations = (Set) transaction.data;
+                this.hqController.displaySituations(situations);
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }

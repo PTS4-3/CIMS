@@ -32,11 +32,11 @@ public class UnsortedDatabaseManager extends DatabaseManager {
      * @param data object unsorteddata
      * @return success on attempting to insert unsorted data.
      */
-    public boolean insertToUnsortedData(IData data) {
-        boolean succeed = false;
-
-        if (!openConnection()) {
-            return false;
+    public IData insertToUnsortedData(IData data) {
+        IData output = null;
+        int id = -1;
+        if (!openConnection() || data == null) {
+            return null;
         }
 
         try {
@@ -47,16 +47,16 @@ public class UnsortedDatabaseManager extends DatabaseManager {
             unsortedData.setString(3, data.getLocation());
             unsortedData.setString(4, data.getSource());
             unsortedData.setString(5, Status.NONE.toString());
-            unsortedData.execute();
+            unsortedData.execute();            
 
 //            System.out.println("insertToUnsortedData succeeded");
-            succeed = true;
+            id = super.getMaxID(unsortedDataTable);
         } catch (SQLException ex) {
             System.out.println("insertToUnsortedData failed: " + ex);
         } finally {
             closeConnection();
         }
-        return succeed;
+        return this.getDataItem(id);
     }
 
     /**

@@ -20,23 +20,23 @@ import Shared.Connection.ChangeRequest;
 public class ClientConnection implements Runnable {
 
     // The host:port combination to connect to
-    private InetAddress hostAddress;
-    private int port;
+    private final InetAddress hostAddress;
+    private final int port;
 
     // The selector we'll be monitoring
-    private Selector selector;
+    private final Selector selector;
 
     // The buffer into which we'll read data when it's available
-    private ByteBuffer readBuffer = ByteBuffer.allocate(8192);
+    private final ByteBuffer readBuffer = ByteBuffer.allocate(8192);
 
     // A list of PendingChange instances
-    private List pendingChanges = new LinkedList();
+    private final List pendingChanges = new LinkedList();
 
     // Maps a SocketChannel to a list of ByteBuffer instances
-    private Map pendingData = new HashMap();
+    private final Map pendingData = new HashMap();
 
     // Maps a SocketChannel to a RspHandler
-    private Map rspHandlers = Collections.synchronizedMap(new HashMap());
+    private final Map rspHandlers = Collections.synchronizedMap(new HashMap());
 
     public ClientConnection(InetAddress hostAddress, int port) throws IOException {
         this.hostAddress = hostAddress;
