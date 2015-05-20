@@ -315,7 +315,6 @@ public class UnsortedDatabaseManager extends DatabaseManager {
                 realSource = result.getString("SOURCE");
                 Status status = Status.valueOf(result.getString("STATUS"));
 
-                // TODO Status uitlezen uit database
                 unsorted.add(new UnsortedData(id, title, description, location, realSource, status));
 //                System.out.println("Getting object getSentData succeed");
             }

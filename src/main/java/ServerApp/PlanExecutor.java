@@ -29,8 +29,7 @@ public class PlanExecutor {
     
     public void executeNextStep() {
         if(this.nextStep > 0 && this.nextStep <= this.plan.getSteps().size()) {
-            // TODO
-//            getBuffer().addTask(this.plan.getSteps().get(nextStep - 1));
+            ServerMain.pushHandler.push(this.plan.getSteps().get(nextStep - 1));
             this.nextStep++;
         } else {
             ServerMain.planExecutorHandler.removePlanExecutor(this.plan);
