@@ -17,6 +17,8 @@ import Shared.Tasks.ITask;
 import Shared.Users.UserRole;
 import java.net.Socket;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -60,9 +62,21 @@ public class PushHandler {
         }
     }
 
-    public boolean hasUnsortedSubscribers() {
+    /**
+     * Checks if there are unsorted subscribers to whom can be pushed.
+     *
+     * @param exclude is disregarded to avoid pushing data back to a client
+     * mid-shutdown.
+     * @return
+     */
+    public boolean canPushUnsorted(SocketChannel exclude) {
         synchronized (unsortedSubscribers) {
-            return !unsortedSubscribers.isEmpty();
+            if (exclude == null) {
+                return !unsortedSubscribers.isEmpty();
+            } else {
+                return (unsortedSubscribers.size() > 1
+                        || unsortedSubscribers.iterator().next() != exclude.socket());
+            }
         }
     }
 
@@ -189,8 +203,8 @@ public class PushHandler {
      * @param task
      */
     public void push(ITask task) {
-        ClientBoundTransaction transaction = 
-                new ClientBoundTransaction(ConnCommand.TASKS_GET, task);
+        ClientBoundTransaction transaction
+                = new ClientBoundTransaction(ConnCommand.TASKS_PUSH, task);
         byte[] output = SerializeUtils.serialize(transaction);
         // to chief
         synchronized (chiefConnections) {
@@ -222,24 +236,27 @@ public class PushHandler {
      *
      * @param data
      */
-    public void push(List<IData> data) {
-        ClientBoundTransaction transaction =
-                new ClientBoundTransaction(ConnCommand.UNSORTED_GET, data);
+    public boolean push(List<IData> data, Socket disregard) {
+        ClientBoundTransaction transaction
+                = new ClientBoundTransaction(ConnCommand.UNSORTED_GET, data);
         byte[] output = SerializeUtils.serialize(transaction);
         // pushes it towards the first subscriber it finds in an iterator
         synchronized (unsortedSubscribers) {
             if (!unsortedSubscribers.isEmpty()) {
                 for (Socket socket : unsortedSubscribers) {
-                    if (!this.trySend(socket, output)) {
-                        this.faultySockets.add(socket);
-                    } else {
-                        System.out.println("pushing list of unsorted data");
-                        return;
+                    if (socket != disregard) {
+                        if (!this.trySend(socket, output)) {
+                            this.faultySockets.add(socket);
+                        } else {
+                            System.out.println("pushing list of unsorted data");
+                            return true;
+                        }
                     }
                 }
+                this.cleanFaultySockets();
             }
         }
-        this.cleanFaultySockets();
+        return false;
     }
 
     /**
@@ -247,8 +264,8 @@ public class PushHandler {
      * @param data
      */
     public void push(ISortedData data) {
-        ClientBoundTransaction transaction =
-                new ClientBoundTransaction(ConnCommand.SORTED_GET, data);
+        ClientBoundTransaction transaction
+                = new ClientBoundTransaction(ConnCommand.SORTED_GET, data);
         byte[] output = SerializeUtils.serialize(transaction);
         // sends to chief
         synchronized (chiefConnections) {
@@ -278,8 +295,8 @@ public class PushHandler {
      * @param request
      */
     public void push(IDataRequest request) {
-        ClientBoundTransaction transaction =
-                new ClientBoundTransaction(ConnCommand.UPDATE_REQUEST_GET, request);
+        ClientBoundTransaction transaction
+                = new ClientBoundTransaction(ConnCommand.UPDATE_REQUEST_GET, request);
         byte[] output = SerializeUtils.serialize(transaction);
         // sends to relevant serviceusers
         synchronized (serviceSubscribers) {

@@ -144,5 +144,11 @@ public enum ConnCommand {
      * params: void <br>
      * result: boolean
      */
-    USERS_UNSORTED_UNSUBSCRIBE,
+    USERS_UNSORTED_UNSUBSCRIBE, 
+    /**
+     * Server -> client command <br>
+     * params: void <br>
+     * result: ITask
+     */
+    TASKS_PUSH,
 }

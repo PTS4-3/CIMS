@@ -23,6 +23,7 @@ import Shared.Tasks.IPlan;
 import Shared.Tasks.ITask;
 import Shared.Users.IServiceUser;
 import Shared.Users.IUser;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -77,7 +78,6 @@ class ResponseHandler implements IResponseHandler {
                     }
 
                     switch (transaction.command) {
-
                         default:
                             throw new NetworkException("(Unknown Command) - "
                                     + transaction.command.toString());
@@ -104,6 +104,9 @@ class ResponseHandler implements IResponseHandler {
                             break;
                         case SITUATIONS_GET:
                             this.handleSituationsResult(transaction);
+                            break;
+                        case TASKS_PUSH:
+                            this.handleTaskPush(transaction);
                             break;
                         case USERS_UNSORTED_SUBSCRIBE:
                         case USERS_UNSORTED_UNSUBSCRIBE:
@@ -215,6 +218,17 @@ class ResponseHandler implements IResponseHandler {
             if (transaction.result == ConnState.COMMAND_SUCCESS) {
                 Set<Situation> situations = (Set) transaction.data;
                 this.hqController.displaySituations(situations);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void handleTaskPush(ClientBoundTransaction transaction) {
+        try {
+            if (transaction.result == ConnState.COMMAND_SUCCESS) {
+                ITask task = (ITask) transaction.data;
+                this.hqController.displayTasks(Arrays.asList(new ITask[]{task}));
             }
         } catch (Exception ex) {
             ex.printStackTrace();

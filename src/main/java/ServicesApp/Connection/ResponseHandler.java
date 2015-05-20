@@ -18,6 +18,7 @@ import Shared.Data.ISortedData;
 import Shared.NetworkException;
 import Shared.Tasks.ITask;
 import Shared.Users.IUser;
+import java.util.Arrays;
 import java.util.List;
 
 class ResponseHandler implements IResponseHandler {
@@ -94,6 +95,9 @@ class ResponseHandler implements IResponseHandler {
                             break;
                         case UPDATE_REQUEST_GET:
                             this.handleRequestsResult(transaction);
+                            break;
+                        case TASKS_PUSH:
+                            this.handleTaskPush(transaction);
                             break;
                         case UNSORTED_SEND:
                         case UNSORTED_GET:
@@ -204,6 +208,17 @@ class ResponseHandler implements IResponseHandler {
         try {
             if (transaction.result == ConnState.COMMAND_SUCCESS) {
 
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void handleTaskPush(ClientBoundTransaction transaction) {
+        try {
+            if (transaction.result == ConnState.COMMAND_SUCCESS) {
+                ITask task = (ITask) transaction.data;
+                this.servicesController.displayTasks(Arrays.asList(new ITask[]{task}));
             }
         } catch (Exception ex) {
             ex.printStackTrace();

@@ -328,6 +328,7 @@ public class ServicesController implements Initializable {
             @Override
             public void run() {
                 if (!showingDataItem) {
+                    lvtTasks.getItems().removeAll(tasks);
                     lvtTasks.getItems().addAll(tasks);
                     
                     if (lvtTasks.getSelectionModel().getSelectedItem() == null) {

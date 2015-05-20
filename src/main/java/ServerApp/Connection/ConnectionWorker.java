@@ -88,7 +88,7 @@ public class ConnectionWorker implements Runnable {
                     outgoing = this.saveUnsortedData(incoming);
                     break;
                 case UNSORTED_STATUS_RESET:
-                    outgoing = this.resetUnsortedData(incoming);
+                    outgoing = this.resetUnsortedData(incoming, dataEvent);
                     break;
                 case UNSORTED_UPDATE_SEND:
                     outgoing = this.updateUnsortedData(incoming);
@@ -204,17 +204,16 @@ public class ConnectionWorker implements Runnable {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
         try {
             IData data = (IData) input.objects[0];
-            IData insertedData = null;
             synchronized (UNSORTEDLOCK) {
-                insertedData = ServerMain.unsortedDatabaseManager.insertToUnsortedData(data);
+                data = ServerMain.unsortedDatabaseManager.insertToUnsortedData(data);
                 // pushes getFromUnsorted to set status as it should
-                if (insertedData != null 
-                        && ServerMain.pushHandler.hasUnsortedSubscribers()) {
-                    ServerMain.pushHandler.push(
-                            ServerMain.unsortedDatabaseManager.getFromUnsortedData());
+                // resets if it couldn't push
+                List<IData> newData = ServerMain.unsortedDatabaseManager.getFromUnsortedData();
+                if(!ServerMain.pushHandler.push(newData, null)){
+                    ServerMain.unsortedDatabaseManager.resetUnsortedData(newData);
                 }
             }
-            return output.setResult(insertedData);
+            return output.setResult(data != null);
         } catch (Exception ex) {
             ex.printStackTrace();
             return output.setError();
@@ -224,13 +223,13 @@ public class ConnectionWorker implements Runnable {
     /**
      * Notifies Database that a list of data is no longer being worked on.
      */
-    private ClientBoundTransaction resetUnsortedData(ServerBoundTransaction input) {
+    private ClientBoundTransaction resetUnsortedData(
+            ServerBoundTransaction input, ServerDataEvent dataEvent) {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
         try {
             List<IData> inputList = (List) input.objects[0];
             // first checks if can push to other HQ
-            if (ServerMain.pushHandler.hasUnsortedSubscribers()) {
-                ServerMain.pushHandler.push(inputList);
+            if (ServerMain.pushHandler.push(inputList, dataEvent.socket.socket())) {
                 return output.setResult(true);
             }
             // if not: resets

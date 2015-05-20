@@ -6,6 +6,7 @@
 package ServerApp.Connection;
 
 import Shared.Connection.ChangeRequest;
+import Shared.Connection.SerializeUtils;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -17,6 +18,7 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.SelectorProvider;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -38,6 +40,7 @@ public class ConnectionHandler implements Runnable {
 
     // The buffer into which we'll read data when it's available
     private final ByteBuffer readBuffer = ByteBuffer.allocate(8192);
+    private final ByteBuffer readSizeBuffer = ByteBuffer.allocate(4);
 
     // Used for processing data
     private final HashSet<ConnectionWorker> workers;
@@ -55,7 +58,7 @@ public class ConnectionHandler implements Runnable {
         this.selector = this.initSelector();
 
         this.workers = new HashSet<>();
-        for(int i = 0; i < numWorkers; i++){
+        for (int i = 0; i < numWorkers; i++) {
             ConnectionWorker worker = new ConnectionWorker();
             workers.add(worker);
             Thread t = new Thread(worker);
@@ -69,10 +72,11 @@ public class ConnectionHandler implements Runnable {
      * @param socket
      * @param data
      */
-    public void send(SocketChannel socket, byte[] data) {
+    public synchronized void send(SocketChannel socket, byte[] data) {
         synchronized (this.pendingChanges) {
             // Indicate we want the interest ops set changed
-            this.pendingChanges.add(new ChangeRequest(socket, ChangeRequest.CHANGEOPS, SelectionKey.OP_WRITE));
+            this.pendingChanges.add(new ChangeRequest(
+                    socket, ChangeRequest.CHANGEOPS, SelectionKey.OP_WRITE));
 
             // And queue the data we want written
             synchronized (this.pendingData) {
@@ -81,7 +85,10 @@ public class ConnectionHandler implements Runnable {
                     queue = new ArrayList<>();
                     this.pendingData.put(socket, queue);
                 }
-                queue.add(ByteBuffer.wrap(data));
+                // inserts a preceding int with array size
+                byte[] length = ByteBuffer.allocate(4).putInt(data.length).array();
+                byte[] dataWithLength = SerializeUtils.concat(length, data);
+                queue.add(ByteBuffer.wrap(dataWithLength));
             }
         }
 
@@ -167,12 +174,14 @@ public class ConnectionHandler implements Runnable {
 
         // Clear out our read buffer so it's ready for new data
         this.readBuffer.clear();
+        this.readSizeBuffer.clear();
 
         // Attempt to read off the channel
         int numRead;
         try {
             numRead = socketChannel.read(this.readBuffer);
         } catch (IOException e) {
+            System.out.println("forcibly closing connection");
             // The remote forcibly closed the connection, cancel
             // the selection key and close the channel.
             key.cancel();
@@ -181,6 +190,7 @@ public class ConnectionHandler implements Runnable {
         }
 
         if (numRead == -1) {
+            System.out.println("closing in read");
             // Remote entity shut the socket down cleanly. Do the
             // same from our end and cancel the channel.
             key.channel().close();
@@ -188,8 +198,17 @@ public class ConnectionHandler implements Runnable {
             return;
         }
 
-        // Hand the data off to our worker threads
-        ConnectionWorker.processData(this, socketChannel, this.readBuffer.array(), numRead);
+        readBuffer.position(0);
+        while (numRead - readBuffer.position() > 4) {
+            int size = readBuffer.getInt();
+            if (numRead - readBuffer.position() >= size) {
+                byte[] data = new byte[size];
+                readBuffer.get(data);
+
+                // Hand the data off to our worker threads
+                ConnectionWorker.processData(this, socketChannel, data, size);
+            }
+        }
     }
 
     /**
@@ -224,9 +243,8 @@ public class ConnectionHandler implements Runnable {
     }
 
     /**
-     * 
-     * @return
-     * @throws IOException
+     *
+     * @return @throws IOException
      */
     private Selector initSelector() throws IOException {
         // Create a new selector

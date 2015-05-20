@@ -33,7 +33,7 @@ public class ClientConnection implements Runnable {
     private final List pendingChanges = new LinkedList();
 
     // Maps a SocketChannel to a list of ByteBuffer instances
-    private final Map pendingData = new HashMap();
+    private final List pendingData = new ArrayList<>();
 
     // Maps a SocketChannel to a RspHandler
     private final Map rspHandlers = Collections.synchronizedMap(new HashMap());
@@ -54,26 +54,24 @@ public class ClientConnection implements Runnable {
      * @throws IOException
      */
     public void send(byte[] data, IResponseHandler handler) throws IOException {
-//        if (socket == null || !socket.isConnected()) {
+        if (socket == null || !socket.isConnected()) {
             // Start a new connection
             this.socket = this.initiateConnection();
-//        } else {
-//            synchronized (this.pendingChanges) {
-//                this.pendingChanges.add(new ChangeRequest(
-//                        socket, ChangeRequest.CHANGEOPS, SelectionKey.OP_WRITE));
-//            }
-//        }
-        // Register the response handler
-        this.rspHandlers.put(socket, handler);
+            // Register the response handler
+            this.rspHandlers.put(socket, handler);
+        } else {
+            synchronized (this.pendingChanges) {
+                this.pendingChanges.add(new ChangeRequest(
+                        socket, ChangeRequest.CHANGEOPS, SelectionKey.OP_WRITE));
+            }
+        }
 
         // And queue the data we want written
         synchronized (this.pendingData) {
-            List queue = (List) this.pendingData.get(socket);
-            if (queue == null) {
-                queue = new ArrayList();
-                this.pendingData.put(socket, queue);
-            }
-            queue.add(ByteBuffer.wrap(data));
+            // inserts a preceding int with array size
+            byte[] length = ByteBuffer.allocate(4).putInt(data.length).array();
+            byte[] dataWithLength = SerializeUtils.concat(length, data);
+            this.pendingData.add(ByteBuffer.wrap(dataWithLength));
         }
 
         // Finally, wake up our selecting thread so it can make the required changes
@@ -131,7 +129,6 @@ public class ClientConnection implements Runnable {
     }
 
     private void read(SelectionKey key) throws IOException {
-//        System.out.println("--reading");
         SocketChannel socketChannel = (SocketChannel) key.channel();
 
         // Clear out our read buffer so it's ready for new data
@@ -157,8 +154,17 @@ public class ClientConnection implements Runnable {
             return;
         }
 
-        // Handle the response
-        this.handleResponse(socketChannel, this.readBuffer.array(), numRead);
+        readBuffer.position(0);
+        while (numRead - readBuffer.position() > 4) {
+            int size = readBuffer.getInt();
+            if (numRead - readBuffer.position() >= size) {
+                byte[] data = new byte[size];
+                readBuffer.get(data);
+
+                // Hand the data off to our worker threads
+                this.handleResponse(socketChannel, data, size);
+            }
+        }
     }
 
     private void handleResponse(SocketChannel socketChannel, byte[] data, int numRead) throws IOException {
@@ -169,35 +175,27 @@ public class ClientConnection implements Runnable {
 
         // Look up the handler for this channel
         IResponseHandler handler = (IResponseHandler) this.rspHandlers.get(socketChannel);
-
         // And pass the response to it
-        if (handler.handleResponse(rspData)) {
-            // The handler has seen enough, close the connection
-            // TODO
-//            socketChannel.close();
-//            socketChannel.keyFor(this.selector).cancel();
-        }
+        handler.handleResponse(rspData);
     }
 
     private void write(SelectionKey key) throws IOException {
-//        System.out.println("--writing");
         SocketChannel socketChannel = (SocketChannel) key.channel();
 
         synchronized (this.pendingData) {
-            List queue = (List) this.pendingData.get(socketChannel);
-
+//            List queue = (List) this.pendingData.get(socketChannel);
             // Write until there's not more data ...
-            while (!queue.isEmpty()) {
-                ByteBuffer buf = (ByteBuffer) queue.get(0);
+            while (!pendingData.isEmpty()) {
+                ByteBuffer buf = (ByteBuffer) pendingData.get(0);
                 socketChannel.write(buf);
                 if (buf.remaining() > 0) {
                     // ... or the socket's buffer fills up
                     break;
                 }
-                queue.remove(0);
+                pendingData.remove(0);
             }
 
-            if (queue.isEmpty()) {
+            if (pendingData.isEmpty()) {
                 // We wrote away all data, so we're no longer interested
                 // in writing on this socket. Switch back to waiting for
                 // data.
@@ -213,7 +211,6 @@ public class ClientConnection implements Runnable {
      * @throws IOException
      */
     private void finishConnection(SelectionKey key) throws IOException {
-//        System.out.println("--finishing");
         SocketChannel socketChannel = (SocketChannel) key.channel();
 
         // Finish the connection. If the connection operation failed
