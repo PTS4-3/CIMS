@@ -138,15 +138,15 @@ class ResponseHandler implements IResponseHandler {
     }
 
     private void handleGenericResult(ClientBoundTransaction transaction) {
-        System.err.println("Command result received for "
-                + transaction.command.toString()
-                + ": "
-                + transaction.result.toString());
+//        System.err.println("Command result received for "
+//                + transaction.command.toString()
+//                + ": "
+//                + transaction.result.toString());
     }
 
     private void handleLoginResult(ClientBoundTransaction transaction) {
         try {
-            if (transaction.result == ConnState.COMMAND_SUCCESS) {
+            if (transaction.result != ConnState.COMMAND_ERROR) {
                 IUser user = (IUser) transaction.data;
                 this.loginController.logIn(user);
             }

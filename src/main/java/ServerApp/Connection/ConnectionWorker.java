@@ -10,6 +10,7 @@ import Shared.Connection.Transaction.ClientBoundTransaction;
 import Shared.Connection.Transaction.ConnState;
 import Shared.Connection.Transaction.ServerBoundTransaction;
 import Shared.Connection.SerializeUtils;
+import Shared.Connection.Transaction.ConnCommand;
 import Shared.Data.IData;
 import Shared.Data.IDataRequest;
 import Shared.Data.INewsItem;
@@ -70,6 +71,8 @@ public class ConnectionWorker implements Runnable {
                 incoming = (ServerBoundTransaction) SerializeUtils.deserialize(dataEvent.data);
                 outgoing = null;
             }
+
+            System.out.println(incoming.command.toString()); // debugging
 
             switch (incoming.command) {
                 case SORTED_GET:
@@ -167,25 +170,6 @@ public class ConnectionWorker implements Runnable {
         synchronized (UNSORTEDLOCK) {
             return output.setResult(
                     ServerMain.unsortedDatabaseManager.getFromUnsortedData());
-        }
-    }
-
-    /**
-     * Sends a List of sorted data to given IP.
-     *
-     * @param tags only data with -all- these tag is provided
-     */
-    private ClientBoundTransaction sendSortedData(ServerBoundTransaction input) {
-        ClientBoundTransaction output = new ClientBoundTransaction(input);
-        try {
-            HashSet tags = (HashSet) input.objects[0];
-            synchronized (SORTEDLOCK) {
-                return output.setResult(
-                        ServerMain.sortedDatabaseManager.getFromSortedData(tags));
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return output.setError();
         }
     }
 

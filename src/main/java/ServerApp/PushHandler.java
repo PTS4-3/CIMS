@@ -6,6 +6,8 @@
 package ServerApp;
 
 import Shared.Connection.SerializeUtils;
+import Shared.Connection.Transaction.ClientBoundTransaction;
+import Shared.Connection.Transaction.ConnCommand;
 import Shared.Data.IData;
 import Shared.Data.IDataRequest;
 import Shared.Data.ISortedData;
@@ -187,7 +189,9 @@ public class PushHandler {
      * @param task
      */
     public void push(ITask task) {
-        byte[] output = SerializeUtils.serialize(task);
+        ClientBoundTransaction transaction = 
+                new ClientBoundTransaction(ConnCommand.TASKS_GET, task);
+        byte[] output = SerializeUtils.serialize(transaction);
         // to chief
         synchronized (chiefConnections) {
             for (Socket socket : chiefConnections) {
@@ -219,7 +223,9 @@ public class PushHandler {
      * @param data
      */
     public void push(List<IData> data) {
-        byte[] output = SerializeUtils.serialize(data);
+        ClientBoundTransaction transaction =
+                new ClientBoundTransaction(ConnCommand.UNSORTED_GET, data);
+        byte[] output = SerializeUtils.serialize(transaction);
         // pushes it towards the first subscriber it finds in an iterator
         synchronized (unsortedSubscribers) {
             if (!unsortedSubscribers.isEmpty()) {
@@ -241,7 +247,9 @@ public class PushHandler {
      * @param data
      */
     public void push(ISortedData data) {
-        byte[] output = SerializeUtils.serialize(data);
+        ClientBoundTransaction transaction =
+                new ClientBoundTransaction(ConnCommand.SORTED_GET, data);
+        byte[] output = SerializeUtils.serialize(transaction);
         // sends to chief
         synchronized (chiefConnections) {
             for (Socket socket : chiefConnections) {
@@ -270,7 +278,9 @@ public class PushHandler {
      * @param request
      */
     public void push(IDataRequest request) {
-        byte[] output = SerializeUtils.serialize(request);
+        ClientBoundTransaction transaction =
+                new ClientBoundTransaction(ConnCommand.UPDATE_REQUEST_GET, request);
+        byte[] output = SerializeUtils.serialize(transaction);
         // sends to relevant serviceusers
         synchronized (serviceSubscribers) {
             for (Tag target : request.getTags()) {

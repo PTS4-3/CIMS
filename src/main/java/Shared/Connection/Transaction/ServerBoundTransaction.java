@@ -18,6 +18,7 @@ public class ServerBoundTransaction implements Serializable {
     public Object[] objects;
 
     public ServerBoundTransaction(int ID, ConnCommand command, Object... params){
+        System.out.println("new serverbound transaction: " + command.toString());
         this.ID = ID;
         this.command = command;
         this.objects = params;

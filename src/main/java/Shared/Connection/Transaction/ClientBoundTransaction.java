@@ -31,6 +31,13 @@ public class ClientBoundTransaction implements Serializable {
         this.data = null;
     }
 
+    public ClientBoundTransaction(ConnCommand command, Object data){
+        this.ID = -1;
+        this.command = command;
+        this.result = ConnState.COMMAND_SUCCESS;
+        this.data = data;
+    }
+
     public ClientBoundTransaction setResult(boolean isSuccess) {
         if (isSuccess) {
             this.result = ConnState.COMMAND_SUCCESS;

@@ -48,6 +48,7 @@ public class UnsortedDatabaseManagerTest {
 
     @Before
     public void setUp() {
+        myDB.resetDatabase();
     }
 
     @After
@@ -59,6 +60,15 @@ public class UnsortedDatabaseManagerTest {
         unsortedData = new UnsortedData("title", "desc", "loc", "source");
         assertNotNull("Failed to insert unsorted data", myDB.insertToUnsortedData(unsortedData));       
         assertNotNull("Failed to insert second unsorted data", myDB.insertToUnsortedData(unsortedData));
+    }
+
+    @Test
+    public void testGetUnsortedData(){
+        unsortedData = new UnsortedData("title", "desc", "loc", "source");
+        for(int i = 1; i < 60; i++){
+            myDB.insertToUnsortedData(unsortedData);
+        }
+        assertEquals("Unsorted not limited to 50", 50, myDB.getFromUnsortedData().size());
     }
 
     @Test
@@ -91,26 +101,6 @@ public class UnsortedDatabaseManagerTest {
                     unsortedBatch.get(pos).getDescription().equals(data.getDescription()));
             pos++;
         }
-    }
-
-    @Test
-    public void testUpdateStatusUnsortedData() {
-    }
-
-    @Test
-    public void testUpdateUnsortedData() {
-    }
-
-    @Test
-    public void testDiscardUnsortedData() {
-    }
-
-    @Test
-    public void testGetDataItem() {
-    }
-
-    @Test
-    public void testGetSentData() {
     }
 
 }

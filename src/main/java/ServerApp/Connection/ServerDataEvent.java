@@ -5,7 +5,10 @@
  */
 package ServerApp.Connection;
 
+import java.io.IOException;
 import java.nio.channels.SocketChannel;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 class ServerDataEvent {
 
@@ -17,5 +20,11 @@ class ServerDataEvent {
         this.server = server;
         this.socket = socket;
         this.data = data;
+        try {
+            System.out.println("remote: " + socket.getRemoteAddress().toString()
+                    + " - local: " + socket.getLocalAddress().toString());
+        } catch (IOException ex) {
+            Logger.getLogger(ServerDataEvent.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

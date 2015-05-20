@@ -38,6 +38,9 @@ public class ClientConnection implements Runnable {
     // Maps a SocketChannel to a RspHandler
     private final Map rspHandlers = Collections.synchronizedMap(new HashMap());
 
+    // Currently active socket
+    private SocketChannel socket;
+
     public ClientConnection(InetAddress hostAddress, int port) throws IOException {
         this.hostAddress = hostAddress;
         this.port = port;
@@ -45,15 +48,21 @@ public class ClientConnection implements Runnable {
     }
 
     /**
-     * TODO: retool this to keep the connection open
+     *
      * @param data
      * @param handler
      * @throws IOException
      */
     public void send(byte[] data, IResponseHandler handler) throws IOException {
-        // Start a new connection
-        SocketChannel socket = this.initiateConnection();
-
+//        if (socket == null || !socket.isConnected()) {
+            // Start a new connection
+            this.socket = this.initiateConnection();
+//        } else {
+//            synchronized (this.pendingChanges) {
+//                this.pendingChanges.add(new ChangeRequest(
+//                        socket, ChangeRequest.CHANGEOPS, SelectionKey.OP_WRITE));
+//            }
+//        }
         // Register the response handler
         this.rspHandlers.put(socket, handler);
 
@@ -122,6 +131,7 @@ public class ClientConnection implements Runnable {
     }
 
     private void read(SelectionKey key) throws IOException {
+//        System.out.println("--reading");
         SocketChannel socketChannel = (SocketChannel) key.channel();
 
         // Clear out our read buffer so it's ready for new data
@@ -164,12 +174,13 @@ public class ClientConnection implements Runnable {
         if (handler.handleResponse(rspData)) {
             // The handler has seen enough, close the connection
             // TODO
-            socketChannel.close();
-            socketChannel.keyFor(this.selector).cancel();
+//            socketChannel.close();
+//            socketChannel.keyFor(this.selector).cancel();
         }
     }
 
     private void write(SelectionKey key) throws IOException {
+//        System.out.println("--writing");
         SocketChannel socketChannel = (SocketChannel) key.channel();
 
         synchronized (this.pendingData) {
@@ -195,7 +206,14 @@ public class ClientConnection implements Runnable {
         }
     }
 
+    /**
+     * Doesn't close - finishes the process of connecting.
+     *
+     * @param key
+     * @throws IOException
+     */
     private void finishConnection(SelectionKey key) throws IOException {
+//        System.out.println("--finishing");
         SocketChannel socketChannel = (SocketChannel) key.channel();
 
         // Finish the connection. If the connection operation failed
