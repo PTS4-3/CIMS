@@ -70,9 +70,16 @@ class ResponseHandler implements IResponseHandler {
                 try {
                     ClientBoundTransaction transaction
                             = (ClientBoundTransaction) SerializeUtils.deserialize(rsp);
+                    // notifies handler of completed query.
+                    // pushed transactions have a commandID of -1 and are not relevant
+                    if(transaction.ID > -1){
+                        this.connectionHandler.notifyCommandResponse(transaction.ID);
+                    }
+
                     System.out.println(transaction.command.toString() // debugging println
                             + ": "
                             + transaction.result.toString());
+
                     if (transaction.result == ConnState.COMMAND_ERROR) {
                         throw new NetworkException(transaction.command.toString());
                     }

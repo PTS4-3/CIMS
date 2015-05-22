@@ -25,6 +25,11 @@ class ResponseHandler implements IResponseHandler {
 
     private ServicesController servicesController = null;
     private ServicesLogInController loginController = null;
+    private ConnectionHandler connHandler = null;
+
+    protected ResponseHandler(ConnectionHandler handler){
+        this.connHandler = handler;
+    }
 
     protected void setLoginController(ServicesLogInController loginController) {
         this.loginController = loginController;
@@ -59,6 +64,12 @@ class ResponseHandler implements IResponseHandler {
                 try {
                     ClientBoundTransaction transaction
                             = (ClientBoundTransaction) SerializeUtils.deserialize(rsp);
+
+                    // notifies handler of completed query.
+                    // pushed transactions have a commandID of -1 and are not relevant
+                    if(transaction.ID > -1){
+                        this.connHandler.notifyCommandResponse(transaction.ID);
+                    }
 
                     if (transaction.result == ConnState.COMMAND_ERROR) {
                         throw new NetworkException(transaction.command.toString());

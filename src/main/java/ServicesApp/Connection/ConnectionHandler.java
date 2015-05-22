@@ -20,6 +20,7 @@ import Shared.Users.IServiceUser;
 import Shared.Users.UserRole;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.HashMap;
 import java.util.HashSet;
 
 /**
@@ -32,6 +33,8 @@ public class ConnectionHandler {
     private ResponseHandler responder;
     private ClientConnection client;
     private int commandID;
+
+    private final HashMap<Integer, ConnCommand> inProgressCommands = new HashMap<>();
 
     /**
      * Sets the loginController
@@ -71,7 +74,7 @@ public class ConnectionHandler {
         clientThread.setDaemon(true);
         clientThread.start();
 
-        this.responder = new ResponseHandler();
+        this.responder = new ResponseHandler(this);
         Thread handlerThread = new Thread(responder);
         handlerThread.setDaemon(true);
         handlerThread.start();
@@ -79,6 +82,20 @@ public class ConnectionHandler {
 
     private synchronized int getCommandID() {
         return this.commandID++;
+    }
+
+    private void registerCommandSent(ServerBoundTransaction transaction){
+        synchronized(inProgressCommands){
+            inProgressCommands.put(transaction.ID, transaction.command);
+        }
+    }
+
+    protected void notifyCommandResponse(int ID) {
+        synchronized(inProgressCommands){
+            inProgressCommands.remove(ID);
+            System.out.println("Non-answered commands remaining: "
+                    + inProgressCommands.size());
+        }
     }
 
     /**
@@ -105,6 +122,7 @@ public class ConnectionHandler {
                         UserRole.SERVICE, user.getType(), user.getUsername());
         try {
             this.client.send(SerializeUtils.serialize(transaction), responder);
+            this.registerCommandSent(transaction);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -123,6 +141,7 @@ public class ConnectionHandler {
                         ConnCommand.USERS_SIGN_IN, username, password);
         try {
             this.client.send(SerializeUtils.serialize(transaction), responder);
+            this.registerCommandSent(transaction);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -134,6 +153,7 @@ public class ConnectionHandler {
                         ConnCommand.UPDATE_REQUEST_GET, tags);
         try {
             this.client.send(SerializeUtils.serialize(transaction), responder);
+            this.registerCommandSent(transaction);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -145,6 +165,7 @@ public class ConnectionHandler {
                         ConnCommand.SORTED_GET, tags);
         try {
             this.client.send(SerializeUtils.serialize(transaction), responder);
+            this.registerCommandSent(transaction);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -156,6 +177,7 @@ public class ConnectionHandler {
                         ConnCommand.UNSORTED_GET_SOURCE, username);
         try {
             this.client.send(SerializeUtils.serialize(transaction), responder);
+            this.registerCommandSent(transaction);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -168,6 +190,7 @@ public class ConnectionHandler {
         // empty set because there is no filter
         try {
             this.client.send(SerializeUtils.serialize(transaction), responder);
+            this.registerCommandSent(transaction);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -179,6 +202,7 @@ public class ConnectionHandler {
                         ConnCommand.UNSORTED_SEND, data);
         try {
             this.client.send(SerializeUtils.serialize(transaction), responder);
+            this.registerCommandSent(transaction);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -190,6 +214,7 @@ public class ConnectionHandler {
                         ConnCommand.UNSORTED_UPDATE_SEND, update);
         try {
             this.client.send(SerializeUtils.serialize(transaction), responder);
+            this.registerCommandSent(transaction);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -201,6 +226,7 @@ public class ConnectionHandler {
                         ConnCommand.UNSORTED_GET_ID, requestId);
         try {
             this.client.send(SerializeUtils.serialize(transaction), responder);
+            this.registerCommandSent(transaction);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -212,6 +238,7 @@ public class ConnectionHandler {
                         ConnCommand.TASK_UPDATE, selectedTask);
         try {
             this.client.send(SerializeUtils.serialize(transaction), responder);
+            this.registerCommandSent(transaction);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
