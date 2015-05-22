@@ -30,13 +30,14 @@ import java.util.List;
 public class ConnectionWorker implements Runnable {
 
     private static final List queue = new LinkedList();
-    private static final String 
-            SORTEDLOCK = "",
+    private static final String SORTEDLOCK = "",
             UNSORTEDLOCK = "",
             TASKSLOCK = "";
 
     /**
-     * data arrived over given socket - handled here.
+     * data arrived over given socket, and is put in the queue to be handled by
+     * a worker thread. The queue is static, and might be emptied by any of the
+     * fixed number of worker threads.
      *
      * @param server
      * @param socket
@@ -52,6 +53,13 @@ public class ConnectionWorker implements Runnable {
         }
     }
 
+    /**
+     * Reads byte arrays from the queue, turns them into
+     * ServerBoundTransactions, and handles the transaction. <br>
+     * Every incoming transaction is answered with a ClientBoundTransaction
+     * containing the results of the command. <br> <br>
+     * Where relevant, methods call the PushHandler.
+     */
     @Override
     public void run() {
         ServerDataEvent dataEvent;
@@ -182,7 +190,7 @@ public class ConnectionWorker implements Runnable {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
         try {
             ISortedData data = (ISortedData) input.objects[0];
-            boolean result = false;
+            boolean result;
             synchronized (SORTEDLOCK) {
                 result = ServerMain.sortedDatabaseManager.insertToSortedData(data);
             }
@@ -209,7 +217,7 @@ public class ConnectionWorker implements Runnable {
                 // pushes getFromUnsorted to set status as it should
                 // resets if it couldn't push
                 List<IData> newData = ServerMain.unsortedDatabaseManager.getFromUnsortedData();
-                if(!ServerMain.pushHandler.push(newData, null)){
+                if (!ServerMain.pushHandler.push(newData, null)) {
                     ServerMain.unsortedDatabaseManager.resetUnsortedData(newData);
                 }
             }
@@ -245,9 +253,6 @@ public class ConnectionWorker implements Runnable {
 
     /**
      * Updates piece of unsorted data with given id.
-     *
-     * @throws IOException
-     * @throws ClassNotFoundException
      */
     private ClientBoundTransaction updateUnsortedData(ServerBoundTransaction input) {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
@@ -265,9 +270,6 @@ public class ConnectionWorker implements Runnable {
 
     /**
      * Tells database to mark given piece of IData as discarded.
-     *
-     * @throws IOException
-     * @throws ClassNotFoundException
      */
     private ClientBoundTransaction discardUnsortedData(ServerBoundTransaction input) {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
@@ -306,9 +308,6 @@ public class ConnectionWorker implements Runnable {
 
     /**
      * Provides all datarequests conforming to all given tags.
-     *
-     * @throws IOException
-     * @throws ClassNotFoundException
      */
     private ClientBoundTransaction sendDataRequests(ServerBoundTransaction input) {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
@@ -326,9 +325,6 @@ public class ConnectionWorker implements Runnable {
 
     /**
      * returns IData with given ID
-     *
-     * @throws IOException
-     * @throws ClassNotFoundException
      */
     private ClientBoundTransaction sendDataItem(ServerBoundTransaction input) {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
@@ -346,9 +342,6 @@ public class ConnectionWorker implements Runnable {
 
     /**
      * Returns a list of IData with given source
-     *
-     * @throws IOException
-     * @throws ClassNotFoundException
      */
     private ClientBoundTransaction sendSentData(ServerBoundTransaction input) {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
@@ -366,9 +359,6 @@ public class ConnectionWorker implements Runnable {
 
     /**
      * Saves a task and sends it to the executor
-     *
-     * @throws IOException
-     * @throws ClassNotFoundException
      */
     private ClientBoundTransaction sendTask(ServerBoundTransaction input) {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
@@ -390,9 +380,6 @@ public class ConnectionWorker implements Runnable {
 
     /**
      * Saves a new plan
-     *
-     * @throws IOException
-     * @throws ClassNotFoundException
      */
     private ClientBoundTransaction saveNewPlan(ServerBoundTransaction input) {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
@@ -560,9 +547,6 @@ public class ConnectionWorker implements Runnable {
 
     /**
      * Updates the NewsItem in the database.
-     *
-     * @throws IOException
-     * @throws ClassNotFoundException
      */
     private ClientBoundTransaction updateNewsItem(ServerBoundTransaction input) {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
@@ -580,8 +564,6 @@ public class ConnectionWorker implements Runnable {
 
     /**
      * Get all situations from database
-     *
-     * @throws IOException
      */
     private ClientBoundTransaction getSituations(ServerBoundTransaction input) {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
@@ -600,6 +582,7 @@ public class ConnectionWorker implements Runnable {
      * Subscribes Channel for updates for given user role.
      *
      * @param input
+     * @param event
      * @return
      */
     private ClientBoundTransaction registerUser(

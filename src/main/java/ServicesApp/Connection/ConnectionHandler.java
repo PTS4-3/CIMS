@@ -42,7 +42,6 @@ public class ConnectionHandler {
      * @param controller
      */
     public void setLogInController(ServicesLogInController controller) {
-//        this.loginController = loginController;
         this.responder.setLoginController(controller);
     }
 
@@ -54,11 +53,6 @@ public class ConnectionHandler {
      */
     public void setServicesController(ServicesController controller) {
         this.responder.setServicesController(controller);
-//        this.hqController = hqController;
-//        if (this.collectFuture == null) {
-//            this.getID();
-//            this.startPulling();
-//        }
     }
 
     /**
@@ -84,14 +78,25 @@ public class ConnectionHandler {
         return this.commandID++;
     }
 
-    private void registerCommandSent(ServerBoundTransaction transaction){
-        synchronized(inProgressCommands){
+    /**
+     * Keeps track of transactions sent to server.
+     *
+     * @param transaction
+     */
+    private void registerCommandSent(ServerBoundTransaction transaction) {
+        synchronized (inProgressCommands) {
             inProgressCommands.put(transaction.ID, transaction.command);
         }
     }
 
+    /**
+     * Keeps track of transactions answered by server - called by any response
+     * from server, even if it was an error or a fail.
+     *
+     * @param ID
+     */
     protected void notifyCommandResponse(int ID) {
-        synchronized(inProgressCommands){
+        synchronized (inProgressCommands) {
             inProgressCommands.remove(ID);
             System.out.println("Non-answered commands remaining: "
                     + inProgressCommands.size());
@@ -99,13 +104,9 @@ public class ConnectionHandler {
     }
 
     /**
-     * Terminates the active pool, in preparation for program shutdown.
+     * // TODO: find some use for this
      */
     public void close() {
-//        if (this.collectFuture != null) {
-//            this.collectFuture.cancel(false);
-//        }
-//        pool.shutdown();
     }
 
     /**
@@ -118,7 +119,7 @@ public class ConnectionHandler {
     public void registerForUpdates(IServiceUser user) {
         ServerBoundTransaction transaction
                 = new ServerBoundTransaction(this.getCommandID(),
-                        ConnCommand.USERS_REGISTER, 
+                        ConnCommand.USERS_REGISTER,
                         UserRole.SERVICE, user.getType(), user.getUsername());
         try {
             this.client.send(SerializeUtils.serialize(transaction), responder);

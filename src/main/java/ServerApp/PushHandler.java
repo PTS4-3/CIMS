@@ -33,10 +33,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class PushHandler {
 
-    /**
-     * Note: SocketChannels are not identifying for a connection - the
-     * underlying Socket is.
-     */
     // used for tasks
     private final HashSet<Socket> chiefConnections;
     // all HQ users, including the chief - can be toggled mid-session
@@ -121,7 +117,7 @@ public class PushHandler {
                 return chiefConnections.add(channel.socket());
             }
         } else if (role == UserRole.HQ) {
-            // possibly nothing
+            // HQ users are not subscribed to anything (unsorted is a separate subscription)
             return true;
         } else if (role == UserRole.SERVICE) {
             boolean tasksResult, serviceSubsResult;
@@ -157,7 +153,7 @@ public class PushHandler {
      * @param socket
      */
     public void unsubscribe(Socket socket) {
-        System.out.println("unsubscribing socket");
+        System.out.println("unsubscribing socket"); // debugging
         synchronized (chiefConnections) {
             chiefConnections.remove(socket);
         }
@@ -209,7 +205,7 @@ public class PushHandler {
         // to chief
         synchronized (chiefConnections) {
             for (Socket socket : chiefConnections) {
-                System.out.println("pushing task to chief");
+                System.out.println("pushing task to chief"); // debugging
                 if (!this.trySend(socket, output)) {
                     this.faultySockets.add(socket);
                 }
@@ -221,7 +217,7 @@ public class PushHandler {
             synchronized (taskSubscribers) {
                 if (taskSubscribers.containsKey(userName)) {
                     for (Socket socket : taskSubscribers.get(userName)) {
-                        System.out.println("pushing task");
+                        System.out.println("pushing task"); // debugging
                         if (!this.trySend(socket, output)) {
                             this.faultySockets.add(socket);
                         }
@@ -240,7 +236,8 @@ public class PushHandler {
         ClientBoundTransaction transaction
                 = new ClientBoundTransaction(ConnCommand.UNSORTED_GET, data);
         byte[] output = SerializeUtils.serialize(transaction);
-        // pushes it towards the first subscriber it finds in an iterator
+        // Pushes it towards the first valid subscriber it finds in an iterator
+        // HashSet do not guarantee order, so this should happen semi-randomly
         synchronized (unsortedSubscribers) {
             if (!unsortedSubscribers.isEmpty()) {
                 for (Socket socket : unsortedSubscribers) {
@@ -248,7 +245,7 @@ public class PushHandler {
                         if (!this.trySend(socket, output)) {
                             this.faultySockets.add(socket);
                         } else {
-                            System.out.println("pushing list of unsorted data");
+                            System.out.println("pushing list of unsorted data"); // debugging
                             return true;
                         }
                     }
@@ -270,7 +267,7 @@ public class PushHandler {
         // sends to chief
         synchronized (chiefConnections) {
             for (Socket socket : chiefConnections) {
-                System.out.println("pushing sorted data to chief");
+                System.out.println("pushing sorted data to chief"); // debugging
                 if (!this.trySend(socket, output)) {
                     this.faultySockets.add(socket);
                 }
@@ -280,7 +277,7 @@ public class PushHandler {
         synchronized (serviceSubscribers) {
             for (Tag target : data.getTags()) {
                 for (Socket socket : serviceSubscribers.get(target)) {
-                    System.out.println("pushing sorted data");
+                    System.out.println("pushing sorted data"); // debugging
                     if (!this.trySend(socket, output)) {
                         this.faultySockets.add(socket);
                     }

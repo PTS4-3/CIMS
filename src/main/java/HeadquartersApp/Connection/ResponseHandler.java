@@ -31,10 +31,12 @@ class ResponseHandler implements IResponseHandler {
 
     private HeadquartersController hqController = null;
     private HeadquartersLogInController loginController = null;
-    private ConnectionHandler connectionHandler = null;
+    private final ConnectionHandler connectionHandler;
+    private final ConcurrentLinkedQueue<byte[]> responses;
 
     protected ResponseHandler(ConnectionHandler connHandler) {
         this.connectionHandler = connHandler;
+        this.responses = new ConcurrentLinkedQueue<>();
     }
 
     protected void setLoginController(HeadquartersLogInController loginController) {
@@ -45,8 +47,14 @@ class ResponseHandler implements IResponseHandler {
         this.hqController = hqController;
     }
 
-    private ConcurrentLinkedQueue<byte[]> responses = new ConcurrentLinkedQueue<>();
-
+    /**
+     * Loads given byte array into a queue, waiting to be processed by run().
+     * This method is called by the thread in charge of run() in
+     * ClientConnection.
+     *
+     * @param rsp
+     * @return
+     */
     @Override
     public synchronized boolean handleResponse(byte[] rsp) {
         this.responses.add(rsp);
@@ -54,6 +62,9 @@ class ResponseHandler implements IResponseHandler {
         return true;
     }
 
+    /**
+     * Handles responses in queue on appropriate thread.
+     */
     @Override
     public void run() {
         while (true) {
@@ -72,7 +83,7 @@ class ResponseHandler implements IResponseHandler {
                             = (ClientBoundTransaction) SerializeUtils.deserialize(rsp);
                     // notifies handler of completed query.
                     // pushed transactions have a commandID of -1 and are not relevant
-                    if(transaction.ID > -1){
+                    if (transaction.ID > -1) {
                         this.connectionHandler.notifyCommandResponse(transaction.ID);
                     }
 
@@ -147,6 +158,12 @@ class ResponseHandler implements IResponseHandler {
         }
     }
 
+    /**
+     * Handles command results that do not need any specific handling (boolean
+     * results)
+     * // TODO: notify user of these things
+     * @param transaction
+     */
     private void handleGenericResult(ClientBoundTransaction transaction) {
 //        System.err.println("Command result received for "
 //                + transaction.command.toString()

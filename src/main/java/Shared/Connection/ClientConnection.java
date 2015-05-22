@@ -48,6 +48,9 @@ public class ClientConnection implements Runnable {
     }
 
     /**
+     * Queues up given piece of data. It will be sent to server when the loop in
+     * run() gets around to it. <br>
+     * This is done so that it can be called from multiple threads.
      *
      * @param data
      * @param handler
@@ -78,6 +81,11 @@ public class ClientConnection implements Runnable {
         this.selector.wakeup();
     }
 
+    /**
+     * A constant loop, executing change requests per channel (register, read,
+     * write). Will wait halfway until it is woken up by changerequests
+     * (outgoing or incoming).
+     */
     @Override
     public void run() {
         while (true) {
@@ -128,6 +136,17 @@ public class ClientConnection implements Runnable {
         }
     }
 
+    /**
+     * Reads the channel belonging to given key. The channel may contain
+     * multiple transactions. <br>
+     * The stream will always first contain an int with the size of the next
+     * Transaction object in the stream. <br>
+     * This method is always called from the run() method, as channel keys are
+     * not thread-safe.
+     *
+     * @param key
+     * @throws IOException
+     */
     private void read(SelectionKey key) throws IOException {
         SocketChannel socketChannel = (SocketChannel) key.channel();
 
@@ -154,6 +173,9 @@ public class ClientConnection implements Runnable {
             return;
         }
 
+        // while is repeated for every Transaction currently queued.
+        // A portion of the byte array the size of a transaction is read into a new array
+        // That array is handed off to the channel's responsehandler
         readBuffer.position(0);
         while (numRead - readBuffer.position() > 4) {
             int size = readBuffer.getInt();
@@ -162,28 +184,25 @@ public class ClientConnection implements Runnable {
                 readBuffer.get(data);
 
                 // Hand the data off to our worker threads
-                this.handleResponse(socketChannel, data, size);
+                // Look up the handler for this channel
+                IResponseHandler handler = (IResponseHandler) this.rspHandlers.get(socketChannel);
+                // And pass the response to it
+                handler.handleResponse(data);
             }
         }
     }
 
-    private void handleResponse(SocketChannel socketChannel, byte[] data, int numRead) throws IOException {
-        // Make a correctly sized copy of the data before handing it
-        // to the client
-        byte[] rspData = new byte[numRead];
-        System.arraycopy(data, 0, rspData, 0, numRead);
-
-        // Look up the handler for this channel
-        IResponseHandler handler = (IResponseHandler) this.rspHandlers.get(socketChannel);
-        // And pass the response to it
-        handler.handleResponse(rspData);
-    }
-
+    /**
+     * Writes all queued data into the channel belonging to given key. <br>
+     * This method is only called from run(), as keys are not thread-safe.
+     *
+     * @param key
+     * @throws IOException
+     */
     private void write(SelectionKey key) throws IOException {
         SocketChannel socketChannel = (SocketChannel) key.channel();
 
         synchronized (this.pendingData) {
-//            List queue = (List) this.pendingData.get(socketChannel);
             // Write until there's not more data ...
             while (!pendingData.isEmpty()) {
                 ByteBuffer buf = (ByteBuffer) pendingData.get(0);
@@ -205,8 +224,8 @@ public class ClientConnection implements Runnable {
     }
 
     /**
-     * Doesn't close - finishes the process of connecting.
-     *
+     * Doesn't close - finishes the process of connecting. <br>
+     * Called from the run() method to make sure it only happens on the right thread.
      * @param key
      * @throws IOException
      */
@@ -228,6 +247,13 @@ public class ClientConnection implements Runnable {
         key.interestOps(SelectionKey.OP_WRITE);
     }
 
+    /**
+     * Attempts to connect to the server. This merely queues an attempt, the
+     * connection will not be completed when this method finishes.
+     *
+     * @return
+     * @throws IOException
+     */
     private SocketChannel initiateConnection() throws IOException {
         // Create a non-blocking socket channel
         SocketChannel socketChannel = SocketChannel.open();
@@ -241,7 +267,8 @@ public class ClientConnection implements Runnable {
         // an interest in connection events. These are raised when a channel
         // is ready to complete connection establishment.
         synchronized (this.pendingChanges) {
-            this.pendingChanges.add(new ChangeRequest(socketChannel, ChangeRequest.REGISTER, SelectionKey.OP_CONNECT));
+            this.pendingChanges.add(new ChangeRequest(socketChannel,
+                    ChangeRequest.REGISTER, SelectionKey.OP_CONNECT));
         }
 
         return socketChannel;

@@ -52,11 +52,18 @@ public class ConnectionHandler implements Runnable {
     // Maps a SocketChannel to a list of ByteBuffer instances
     private final Map<SocketChannel, List<ByteBuffer>> pendingData = new HashMap<>();
 
+    /**
+     *
+     * @param hostAddress
+     * @param port
+     * @throws IOException
+     */
     public ConnectionHandler(InetAddress hostAddress, int port) throws IOException {
         this.hostAddress = hostAddress;
         this.port = port;
         this.selector = this.initSelector();
 
+        // A fixed number of worker threads are started to handle transactions
         this.workers = new HashSet<>();
         for (int i = 0; i < numWorkers; i++) {
             ConnectionWorker worker = new ConnectionWorker();
@@ -97,7 +104,9 @@ public class ConnectionHandler implements Runnable {
     }
 
     /**
-     *
+     * The only thread that can make changes to a channel's keys, as they are
+     * not thread-safe. It checks channels for activity (either from send() or
+     * data coming from clients), and acts on it.
      */
     @Override
     public void run() {
@@ -146,6 +155,7 @@ public class ConnectionHandler implements Runnable {
     }
 
     /**
+     * Accepts a connection to a client. Only called by run() thread.
      *
      * @param key
      * @throws IOException
@@ -156,7 +166,6 @@ public class ConnectionHandler implements Runnable {
 
         // Accept the connection and make it non-blocking
         SocketChannel socketChannel = serverSocketChannel.accept();
-        Socket socket = socketChannel.socket();
         socketChannel.configureBlocking(false);
 
         // Register the new SocketChannel with our Selector, indicating
@@ -165,6 +174,8 @@ public class ConnectionHandler implements Runnable {
     }
 
     /**
+     * Reads data from channel belonging to given key. Only called from run()
+     * thread.
      *
      * @param key
      * @throws IOException
@@ -198,6 +209,8 @@ public class ConnectionHandler implements Runnable {
             return;
         }
 
+        // The channel might contain multiple transactions.
+        // An int is read first to get array size that contains the next single transaction.
         readBuffer.position(0);
         while (numRead - readBuffer.position() > 4) {
             int size = readBuffer.getInt();
@@ -212,6 +225,8 @@ public class ConnectionHandler implements Runnable {
     }
 
     /**
+     * Writes data in queue to given key's channel. Only called from run() as
+     * keys are not thread-safe.
      *
      * @param key
      * @throws IOException
@@ -243,6 +258,8 @@ public class ConnectionHandler implements Runnable {
     }
 
     /**
+     * Starts the SocketSelector, which is the control center of all
+     * keys/channels/sockets handled by this server.
      *
      * @return @throws IOException
      */

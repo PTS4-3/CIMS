@@ -20,6 +20,8 @@ class ServerDataEvent {
         this.server = server;
         this.socket = socket;
         this.data = data;
+        
+        // for debugging only
         try {
             System.out.println("remote: " + socket.getRemoteAddress().toString()
                     + " - local: " + socket.getLocalAddress().toString());
