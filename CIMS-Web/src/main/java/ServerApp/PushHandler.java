@@ -199,6 +199,9 @@ public class PushHandler {
      * @param task
      */
     public void push(ITask task) {
+        if(task == null){
+            return;
+        }
         ClientBoundTransaction transaction
                 = new ClientBoundTransaction(ConnCommand.TASKS_PUSH, task);
         byte[] output = SerializeUtils.serialize(transaction);
@@ -233,6 +236,9 @@ public class PushHandler {
      * @param data
      */
     public boolean push(List<IData> data, Socket disregard) {
+        if(data == null || data.isEmpty()){
+            return false;
+        }
         ClientBoundTransaction transaction
                 = new ClientBoundTransaction(ConnCommand.UNSORTED_GET, data);
         byte[] output = SerializeUtils.serialize(transaction);
@@ -261,8 +267,12 @@ public class PushHandler {
      * @param data
      */
     public void push(ISortedData data) {
+        if(data == null){
+            return;
+        }
         ClientBoundTransaction transaction
-                = new ClientBoundTransaction(ConnCommand.SORTED_GET, data);
+                = new ClientBoundTransaction(ConnCommand.SORTED_GET,
+                        Arrays.asList(new ISortedData[]{data}) );
         byte[] output = SerializeUtils.serialize(transaction);
         // sends to chief
         synchronized (chiefConnections) {
@@ -292,6 +302,9 @@ public class PushHandler {
      * @param request
      */
     public void push(IDataRequest request) {
+        if(request == null){
+            return;
+        }
         ClientBoundTransaction transaction
                 = new ClientBoundTransaction(ConnCommand.UPDATE_REQUEST_GET, request);
         byte[] output = SerializeUtils.serialize(transaction);

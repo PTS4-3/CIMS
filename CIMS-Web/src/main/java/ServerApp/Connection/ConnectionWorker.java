@@ -438,6 +438,7 @@ public class ConnectionWorker implements Runnable {
         try {
             String username = (String) input.objects[0];
             HashSet<TaskStatus> statuses = (HashSet<TaskStatus>) input.objects[1];
+            System.out.println("getTasks filter contains: " + statuses.size());
             synchronized (TASKSLOCK) {
                 return output.setResult(
                         ServerMain.tasksDatabaseManager.getTasks(username, statuses));
@@ -460,9 +461,11 @@ public class ConnectionWorker implements Runnable {
 
             synchronized (TASKSLOCK) {
                 success = ServerMain.tasksDatabaseManager.updateTask(task);
+                task = ServerMain.tasksDatabaseManager.getTask(task.getId());
             }
             if (success) {
                 ServerMain.pushHandler.push(task);
+                ServerMain.pushHandler.push(task.getSortedData());
             }
 
             if ((task.getStatus() == TaskStatus.SUCCEEDED

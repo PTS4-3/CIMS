@@ -126,8 +126,7 @@ public class TasksDatabaseManager extends DatabaseManager {
             String outputDeclineReason = rs.getString("REASON");
             Tag outputExecutorTag = Tag.valueOf(rs.getString("TAG"));
             int outputDataID = rs.getInt("DATAID");
-            // gets task executor
-            IServiceUser executor = getTaskExecutor(outputID);
+            
             // gets data (if needs be)
             ISortedData outputData = null;
             if (data != null) {
@@ -137,12 +136,19 @@ public class TasksDatabaseManager extends DatabaseManager {
                         .getFromSortedData(outputDataID);
             }
             ITask outputItem = new Task(outputID, outputTitle, outputDescription,
-                    outputStatus, outputData, outputExecutorTag, executor);
+                    outputStatus, outputData, outputExecutorTag, null);
 //            if (!outputDeclineReason.isEmpty()) {
             outputItem.setDeclineReason(outputDeclineReason);
 //            }
             output.add(outputItem);
         }
+
+        for(ITask task : output) {
+            // gets task executor
+            IServiceUser executor = getTaskExecutor(task.getId());
+            task.setExecutor(executor);
+        }
+
         return output;
     }
 
@@ -162,8 +168,9 @@ public class TasksDatabaseManager extends DatabaseManager {
         // retrieve the executor name
         String execUserName = null;
         query = "SELECT * FROM " + userTaskTable
-                + " WHERE TASKID = " + taskID;
+                + " WHERE TASKID = ?";
         prepStat = conn.prepareStatement(query);
+        prepStat.setInt(1, taskID);
         rs = prepStat.executeQuery();
         while (rs.next()) {
             execUserName = rs.getString("USERNAME");
