@@ -16,3 +16,7 @@ private.properties
 hs_err_pid*
 /build/
 /dist/
+/CIMS-Headquarters/nbproject/
+/CIMS-Headquarters/target/
+/CIMS-Shared/target/
+/CIMS-Services/target/
