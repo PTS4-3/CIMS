@@ -136,16 +136,16 @@ public class SortedDatabaseManagerTest {
         assertNull(myDB.getNewsItems(0, -1));
 
         List<INewsItem> items = myDB.getNewsItems(0, 20);
-        assertTrue("wrong number of items", items.size() == 6);
+        assertEquals("wrong number of items", 6, items.size());
 
         items = myDB.getNewsItems(0, 2);
-        assertTrue("wrong number of limited items", items.size() == 2);
+        assertEquals("wrong number of limited items", 2, items.size());
 
         items = myDB.getNewsItems(4, 2);
-        assertTrue("wrong number of limited items with startindex", items.size() == 2);
+        assertEquals("wrong number of limited items with startindex", 2, items.size());
 
         Set<Situation> situations = myDB.getSituations();
-        assertTrue("wrong number of situations", situations.size() == 10);
+        assertEquals("wrong number of situations", 9, situations.size());
 
         HashMap<Integer, Situation> sitMap = myDB.getSituationsMap();
         Situation sit = sitMap.get(2);
@@ -155,13 +155,13 @@ public class SortedDatabaseManagerTest {
             String expectedDesc = "???????";
             switch (ad.getID()) {
                 case 1:
+                    expectedDesc = "Ga niet bij het rampgebied kijken.";
+                    break;
+                case 2:
+                    expectedDesc = "Volg de aanwijzingen van de hulpverleners.";
+                    break;
+                case 5:
                     expectedDesc = "Sluit ramen en deuren.";
-                    break;
-                case 3:
-                    expectedDesc = "Kom niet in de buurt van de situatie.";
-                    break;
-                case 4:
-                    expectedDesc = "Gebouw proberen te verlaten.";
                     break;
                 default:
                     fail("unrecognised advice ID");
@@ -190,13 +190,13 @@ public class SortedDatabaseManagerTest {
         insertedItem = myDB.insertNewsItem(
                 new NewsItem(expectedTitle, expectedDesc, expectedLoc,
                         expectedSource, (HashSet) situations, expectedVictims));
-        
+
         this.testNewsItem("insertion return", expectedItem, insertedItem);
-        
+
         // runs same tests on newsItem gotten from getNewsItems
         insertedItem = null;
-        for(INewsItem item : myDB.getNewsItems(0, 10)){
-            if(item.getId() == expectedID){
+        for (INewsItem item : myDB.getNewsItems(0, 10)) {
+            if (item.getId() == expectedID) {
                 insertedItem = item;
                 break;
             }
@@ -205,14 +205,14 @@ public class SortedDatabaseManagerTest {
                 expectedItem, insertedItem);
 
         // test update
-        ((NewsItem)insertedItem).addSituation(sitMap.get(2));
-        ((NewsItem)expectedItem).addSituation(sitMap.get(2));
+        ((NewsItem) insertedItem).addSituation(sitMap.get(2));
+        ((NewsItem) expectedItem).addSituation(sitMap.get(2));
         assertTrue(myDB.updateNewsItem(insertedItem));
 
         // and reruns tests
         insertedItem = null;
-        for(INewsItem item : myDB.getNewsItems(0, 10)){
-            if(item.getId() == expectedID){
+        for (INewsItem item : myDB.getNewsItems(0, 10)) {
+            if (item.getId() == expectedID) {
                 insertedItem = item;
                 break;
             }
@@ -223,10 +223,11 @@ public class SortedDatabaseManagerTest {
 
     /**
      * fully tests NewsItems
+     *
      * @param expected
      * @param tested
      */
-    private void testNewsItem(String testDesc, INewsItem expected, INewsItem tested){
+    private void testNewsItem(String testDesc, INewsItem expected, INewsItem tested) {
         String expectedTitle = expected.getTitle(),
                 expectedDesc = expected.getDescription(),
                 expectedLoc = expected.getLocation(),
@@ -246,8 +247,8 @@ public class SortedDatabaseManagerTest {
                 expectedLoc, tested.getLocation());
         assertEquals("wrong victims (" + testDesc + ")",
                 expectedVictims, tested.getVictims());
-        assertEquals("wrong number of situations (" +
-                testDesc + ")", expectedSituations.size(),
+        assertEquals("wrong number of situations ("
+                + testDesc + ")", expectedSituations.size(),
                 tested.getSituations().size());
         long dateMillis = tested.getDate().getTime();
         assertTrue("date was more than an hour off (" + testDesc + ")",

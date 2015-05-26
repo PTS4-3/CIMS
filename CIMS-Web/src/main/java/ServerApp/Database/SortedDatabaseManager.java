@@ -691,4 +691,8 @@ public class SortedDatabaseManager extends DatabaseManager {
         }
         return output;
     }
+
+    public int getNewsItemCount(){
+        return 35;
+    }
 }
