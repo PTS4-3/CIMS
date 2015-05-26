@@ -5,6 +5,7 @@
  */
 package Controller;
 
+import ServerApp.Database.SortedDatabaseManager;
 import ServerApp.ServerMain;
 import Shared.Data.Advice;
 import Shared.Data.INewsItem;
@@ -25,6 +26,8 @@ public class IndexController {
     private List<INewsItem> news = new ArrayList<>();
     private Date date = new Date();
     
+    private SortedDatabaseManager sortedDatabaseManager;
+    
     public IndexController() {
         advices.add(new Advice(100, "Sluit ramen en deuren"));
         situations.add(new Situation(10, advices, "Gevaarlijke stoffen"));
@@ -32,6 +35,7 @@ public class IndexController {
             news.add(new NewsItem(i,"Title" + i, "Description" + i, "Location" + i,
             "Source" + 1, situations, 0, date));
         }
+        sortedDatabaseManager = new SortedDatabaseManager("sorteddatabase.properties");
     }
     
     public List<INewsItem> getNewsItems(int offset, int limit) {
@@ -41,11 +45,11 @@ public class IndexController {
 //            return news.subList(offset, news.size());
 //        }
         
-        return ServerMain.sortedDatabaseManager.getNewsItems(offset, limit);
+        return sortedDatabaseManager.getNewsItems(offset, limit);
     }
     
     public int getNewsItemCount() {
-        //return news.size();
-        return ServerMain.sortedDatabaseManager.getNewsItemCount();
+//        return news.size();
+        return sortedDatabaseManager.getNewsItemCount();
     }
 }
