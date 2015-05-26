@@ -31,7 +31,7 @@
                 <article class="newsitem">				
 
                     <h1><%= item.getTitle()%></h1>
-                    <p class="date"><%= item.getDate().toString()%></p>
+                    <p class="date"><%= item.getDate().toString() %></p>
                     <p><%= item.getLocation()%> - <%= item.getDescription()%></p>				
                     <!--met foto-->
                     <h2>Foto's</h2>
@@ -66,7 +66,7 @@
 
                     <%for (Situation sit : item.getSituations()) {%>
                     <div class="icon">
-                        <img src="<% controller.getIconURL(sit);%>" alt="icon"/>
+                        <img src="<%= controller.getIconURL(sit)%>" alt="icon"/>
                         <p>&nbsp;<%= sit.getDescription()%></p>
                     </div>
                     <%}%>
@@ -79,7 +79,6 @@
                                 <li><%= ad.getDescription() %></li>
                                 <%}
                             }%>
-                        <% }%>
                     </ul>
                 </article>
             </section>
