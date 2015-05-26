@@ -6,8 +6,13 @@
 package Controller;
 
 import ServerApp.ServerMain;
+import Shared.Data.Advice;
 import Shared.Data.INewsItem;
+import Shared.Data.NewsItem;
+import Shared.Data.Situation;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -15,13 +20,27 @@ import java.util.List;
  * @author Alexander
  */
 public class IndexController {
+    private HashSet<Situation> situations = new HashSet<>();
+    private HashSet<Advice> advices = new HashSet<>();
+    private List<INewsItem> news = new ArrayList<>();
+    private Date date = new Date();
     
     public IndexController() {
-        
+        advices.add(new Advice(100, "Sluit ramen en deuren"));
+        situations.add(new Situation(10, advices, "Gevaarlijke stoffen"));
+        for(int i = 1; i < 53; i++) {
+            news.add(new NewsItem(i,"Title" + i, "Description" + i, "Location" + i,
+            "Source" + 1, situations, 0, date));
+        }
     }
     
     public List<INewsItem> getNewsItems(int offset, int limit) {
-        return new ArrayList<>();
+        return news.subList(offset, offset + limit);
         //return ServerMain.sortedDatabaseManager.getNewsItems(offset, limit);
+    }
+    
+    public int getNewsItemCount() {
+        return news.size();
+        //return ServerMain.sortedDatabaseManager.getNewsItemCount();
     }
 }

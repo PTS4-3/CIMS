@@ -17,10 +17,13 @@
         <% IndexController controller = new IndexController();  
            int pagenr = 1;
            int limit = 10;
+           int maxPagenr = 1;
            
            if(request.getParameter("pagenr") != null && !request.getParameter("pagenr").isEmpty()) {
                pagenr = Integer.parseInt(request.getParameter("pagenr"));
            }
+           
+           maxPagenr = (int) Math.ceil((double) controller.getNewsItemCount() / (double) limit);
         %>
     </head>	
     <body>	
@@ -36,18 +39,24 @@
                         </div>
                     <% } %>
 
-                    <h1><%= n.getTitle() %></h1>;
+                    <h1><%= n.getTitle() %></h1>
                     <p class ="date"><%= n.getDate() %></p>
                     <p><% out.println(n.getLocation().toUpperCase() +  " - " + n.getDescription()); %></p>
-                    <a class="read" href="newsItem.jsp?id=" <%= n.getId() %>><b>Lees verder</b> &#10162;</a>
+                    <a class="read" href=<% out.println("newsItem.jsp?id=" + n.getId()); %>><b>Lees verder</b> &#10162;</a>
                 </article>
         <%      }
             } 
-        out.println(pagenr);
-        %>
         
-        <a href=<% out.println("index.jsp?pagenr=" + (pagenr - 1)); %>>Vorige</a>
-        <a href=<% out.println("index.jsp?pagenr=" + (pagenr + 1)); %>>Volgende</a>
+            if(pagenr > 1) { %>
+                <a href=<% out.println("index.jsp?pagenr=" + (pagenr - 1)); %>>Vorige</a> <%
+            }
+            
+            out.print(pagenr);
+            
+            if(pagenr < maxPagenr) { %>
+                <a href=<% out.println("index.jsp?pagenr=" + (pagenr + 1)); %>>Volgende</a> <%
+            }
+        %>
     </body>
 </html>
 
