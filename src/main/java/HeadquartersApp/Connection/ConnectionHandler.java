@@ -109,33 +109,8 @@ public class ConnectionHandler {
     }
 
     /**
-     * Testing only. Takes place in lieu of unit tests.
-     */
-    private void testMethods() {
-        this.getData();
-        this.discardUnsortedData(new UnsortedData("discardTitle", "discardDesc", "discardLoc", "discardSource"));
-        HashSet<Tag> tags = new HashSet<>();
-        tags.add(Tag.POLICE);
-        this.requestUpdate(new DataRequest(1, "requestTitle", "reqDesc", "recLoc", "recSource", 2, tags));
-        tags.add(Tag.AMBULANCE);
-        ISortedData sortedData = new SortedData(2, "sortTitle", "sortDesc", "sortLoc", "sortSource", 3, 2, 1, tags);
-        this.sendSortedData(sortedData);
-        ArrayList<IData> data = new ArrayList<>();
-        data.add(new UnsortedData(3, "resetTitle", "resetDesc", "resetLoc", "resetSource", Status.NONE));
-        this.stopWorkingOnData(data);
-
-        List<IStep> steps = new ArrayList<>();
-        ITask task = new Task(-1, "newTaskTitle", "newTaskDesc", TaskStatus.INPROCESS, null, Tag.POLICE, null);
-        steps.add(new Step(task.getId(), task.getTitle(), task.getDescription(), task.getStatus(), task.getSortedData(), task.getTargetExecutor(), task.getExecutor(), 1, ""));
-
-        this.sendTask(task);
-        HashSet<String> keywords = new HashSet<>();
-        keywords.add("Brand");
-        this.sendNewPlan(new Plan(-1, "newPlanTitle", "newPlanDesc", keywords, steps, true));
-    }
-
-    /**
      * Terminates the active pool, in preparation for program shutdown.
+     * //TODO
      */
     public void close() {
 //        if (this.collectFuture != null) {
