@@ -32,30 +32,22 @@
 
                     <h1><%= item.getTitle()%></h1>
                     <p class="date"><%= item.getDate().toString() %></p>
-                    <p><%= item.getLocation()%> - <%= item.getDescription()%></p>				
+                    <p><%= item.getLocation()%> - <%= item.getDescription()%></p>
+                    <%//if(item.getPictures()!= null){ } %>
+                    
                     <!--met foto-->
-                    <h2>Foto's</h2>
+                    <!--<h2>Foto's</h2>
                     <br />
-                    <a href="images/foto1.jpg" data-lightbox="news"><img src="images/foto1.jpg" alt="foto"/></a>
-
                     <a href="images/foto1.jpg" data-lightbox="news">
-                        <img src="images/foto1.jpg" alt="foto"/>
-                    </a>
-                    <a href="images/foto2.jpg" data-lightbox="news">
-                        <img src="images/foto2.jpg" alt="foto"/>
-                    </a>
+                        <img src="images/foto1.jpg" alt="foto"/></a>
                     <a href="images/foto1.jpg" data-lightbox="news">
-                        <img src="images/foto1.jpg" alt="foto"/>
-                    </a>
+                        <img src="images/foto1.jpg" alt="foto"/></a>
                     <a href="images/foto1.jpg" data-lightbox="news">
-                        <img src="images/foto1.jpg" alt="foto"/>
-                    </a>
+                        <img src="images/foto1.jpg" alt="foto"/></a>
                     <a href="images/foto1.jpg" data-lightbox="news">
-                        <img src="images/foto1.jpg" alt="foto"/>
-                    </a>
-                    <a href="images/foto2.jpg" data-lightbox="news">
-                        <img src="images/foto2.jpg" alt="foto"/>
-                    </a>
+                        <img src="images/foto1.jpg" alt="foto"/></a>
+                    <a href="images/foto1.jpg" data-lightbox="news">
+                        <img src="images/foto1.jpg" alt="foto"/></a>-->
                 </article>
                 <article class="advice">
                     <h2>Informatie</h2>
