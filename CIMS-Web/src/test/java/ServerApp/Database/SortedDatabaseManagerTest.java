@@ -136,7 +136,8 @@ public class SortedDatabaseManagerTest {
         assertNull(myDB.getNewsItems(0, -1));
 
         List<INewsItem> items = myDB.getNewsItems(0, 20);
-        assertEquals("wrong number of items", 6, items.size());
+        assertEquals("wrong number of items", 15, items.size());
+        assertEquals("getNewsItemCount incorrect", items.size(), myDB.getNewsItemCount());
 
         items = myDB.getNewsItems(0, 2);
         assertEquals("wrong number of limited items", 2, items.size());
