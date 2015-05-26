@@ -15,6 +15,7 @@ import Shared.Users.IServiceUser;
  * @author Alexander
  */
 public class Step extends Task implements IStep {
+
     private int planId;
     private int stepnr;
     private String condition;
@@ -26,51 +27,51 @@ public class Step extends Task implements IStep {
      * @param stepNr has to be greater than 0
      * @param condition
      */
-    public Step(ITask task, int stepNr, String condition){
+    public Step(ITask task, int stepNr, String condition) {
         this(task.getId(), task.getTitle(), task.getDescription(),
                 task.getStatus(), task.getSortedData(), task.getTargetExecutor(),
                 task.getExecutor(), stepNr, condition);
     }
-    
+
     /**
-     * 
+     *
      * @param id
      * @param title cannot be null or empty
-     * @param description 
-     * @param status 
+     * @param description
+     * @param status
      * @param sortedData null if this task is not linked yet
      * @param targetExecutor the target executor for this task
      * @param executor the current executor of this task
      * @param stepnr has to be greater than 0
      * @param condition
      */
-    public Step(int id, String title, String description, TaskStatus status, 
+    public Step(int id, String title, String description, TaskStatus status,
             ISortedData sortedData, Tag targetExecutor, IServiceUser executor,
             int stepnr, String condition) {
         super(id, title, description, status, sortedData, targetExecutor, executor);
-        if(stepnr <= 0) {
+        if (stepnr <= 0) {
             throw new IllegalArgumentException("Stapnummer moet groter zijn dan 0");
         }
         this.stepnr = stepnr;
         this.condition = condition;
         this.planId = -1;
     }
-    
+
     @Override
     public int getStepnr() {
         return this.stepnr;
     }
-    
+
     @Override
     public void setStepnr(int nr) {
         this.stepnr = nr;
     }
-    
+
     @Override
     public int getPlanId() {
         return this.planId;
     }
-    
+
     @Override
     public void setPlanId(int planId) {
         this.planId = planId;

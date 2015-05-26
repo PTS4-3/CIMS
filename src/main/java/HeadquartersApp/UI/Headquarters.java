@@ -72,7 +72,7 @@ public class Headquarters extends Application {
             Scene scene = new Scene(root);
 
             stage.setScene(scene);
-            stage.setTitle("Headquarters CIMS");
+            stage.setTitle("Headquarters CIMS - " + user.getName());
             stage.show();
         } else {
             showDialog("Foutmelding", "User bestaat niet", true);

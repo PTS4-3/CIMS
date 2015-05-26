@@ -362,7 +362,7 @@ public class SortedDatabaseManager extends DatabaseManager {
      * @param ID
      * @return SortedData with given ID. null if unknown.
      */
-    ISortedData getFromSortedData(int ID) {
+    public ISortedData getFromSortedData(int ID) {
         if (!openConnection() || (ID == -1)) {
             return null;
         }
@@ -414,8 +414,10 @@ public class SortedDatabaseManager extends DatabaseManager {
                 tags.add(Tag.valueOf(rs.getString("TAGNAME")));
             }
             output = new SortedData(outputID, outputTitle, outputDesc,
-                    outputLocation, outputLocation, outputRelevance,
+                    outputLocation, outputSource, outputRelevance,
                     outputReliability, outputQuality, tags);
+
+            output.setTasks(ServerMain.tasksDatabaseManager.getSortedDataTasks(output));
         } catch (SQLException ex) {
             System.out.println("failed to getFromSortedData by ID: " + ex.getMessage());
             Logger.getLogger(SortedDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
@@ -485,10 +487,11 @@ public class SortedDatabaseManager extends DatabaseManager {
 
     /**
      *
+     * @param startIndex index of first item shown, starts at 0
      * @param limit must be >= 1
      * @return news items from database
      */
-    public List<INewsItem> getNewsItems(int limit) {
+    public List<INewsItem> getNewsItems(int startIndex, int limit) {
         if (!openConnection() || limit < 1) {
             return null;
         }
@@ -506,12 +509,13 @@ public class SortedDatabaseManager extends DatabaseManager {
         try {
             query = "SELECT ni.*, ns.*"
                     + " FROM (SELECT * FROM " + newsItemTable
-                    + " ORDER BY ITEMDATE LIMIT ?) AS ni"
+                    + " ORDER BY ITEMDATE LIMIT ?,?) AS ni"
                     + " LEFT JOIN " + newsSituationsTable + " AS ns"
                     + " ON ni.ID = ns.NEWSID"
                     + " ORDER BY ni.ID";
             prepStat = conn.prepareCall(query);
-            prepStat.setInt(1, limit);
+            prepStat.setInt(1, startIndex);
+            prepStat.setInt(2, limit);
             rs = prepStat.executeQuery();
 
             newsItems = new HashMap<>();

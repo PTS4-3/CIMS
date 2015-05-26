@@ -62,7 +62,7 @@ public class Services extends Application {
         Scene scene = new Scene(root);
 
         stage.setScene(scene);
-        stage.setTitle("Services CIMS");
+        stage.setTitle("Services CIMS - " + user.getName());
         logIn = false;
         stage.show();
     }

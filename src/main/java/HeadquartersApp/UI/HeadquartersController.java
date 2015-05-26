@@ -29,6 +29,7 @@ import Shared.Users.ServiceUser;
 import Shared.Users.UserRole;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -170,6 +171,8 @@ public class HeadquartersController implements Initializable {
     private IUser user = null;
     private Headquarters main;
 
+    private HashMap<Integer, Task> displayedTasks;
+
     public void setApp(Headquarters application) {
         this.main = application;
     }
@@ -178,6 +181,7 @@ public class HeadquartersController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         this.requestData = null;
         this.sortedData = null;
+        this.displayedTasks = new HashMap<>();
 
         // Add ChangeListeners
         lvuUnsortedData.getSelectionModel().selectedItemProperty().addListener(
@@ -580,11 +584,13 @@ public class HeadquartersController implements Initializable {
 
             @Override
             public void run() {
+                lvsSortedData.getItems().removeAll(sortedData);
                 lvsSortedData.getItems().addAll(sortedData);
                 if (lvsSortedData.getSelectionModel().getSelectedItem() == null) {
                     lvsSortedData.getSelectionModel().selectFirst();
                 }
-                
+
+                lvnSorted.getItems().removeAll(sortedData);
                 lvnSorted.getItems().addAll(sortedData);
                 if(lvnSorted.getSelectionModel().getSelectedItem() == null) {
                     lvnSorted.getSelectionModel().selectFirst();
@@ -1209,6 +1215,7 @@ public class HeadquartersController implements Initializable {
 
             @Override
             public void run() {
+                lvtTasks.getItems().removeAll(tasks);
                 lvtTasks.getItems().addAll(tasks);
                 if (lvtTasks.getSelectionModel().getSelectedItem() == null) {
                     lvtTasks.getSelectionModel().selectFirst();

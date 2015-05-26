@@ -132,14 +132,17 @@ public class SortedDatabaseManagerTest {
 
     @Test
     public void testNewsItems() {
-        assertNull(myDB.getNewsItems(0));
-        assertNull(myDB.getNewsItems(-1));
+        assertNull(myDB.getNewsItems(0, 0));
+        assertNull(myDB.getNewsItems(0, -1));
 
-        List<INewsItem> items = myDB.getNewsItems(20);
+        List<INewsItem> items = myDB.getNewsItems(0, 20);
         assertTrue("wrong number of items", items.size() == 6);
 
-        items = myDB.getNewsItems(2);
+        items = myDB.getNewsItems(0, 2);
         assertTrue("wrong number of limited items", items.size() == 2);
+
+        items = myDB.getNewsItems(4, 2);
+        assertTrue("wrong number of limited items with startindex", items.size() == 2);
 
         Set<Situation> situations = myDB.getSituations();
         assertTrue("wrong number of situations", situations.size() == 10);
@@ -192,7 +195,7 @@ public class SortedDatabaseManagerTest {
         
         // runs same tests on newsItem gotten from getNewsItems
         insertedItem = null;
-        for(INewsItem item : myDB.getNewsItems(10)){
+        for(INewsItem item : myDB.getNewsItems(0, 10)){
             if(item.getId() == expectedID){
                 insertedItem = item;
                 break;
@@ -208,7 +211,7 @@ public class SortedDatabaseManagerTest {
 
         // and reruns tests
         insertedItem = null;
-        for(INewsItem item : myDB.getNewsItems(10)){
+        for(INewsItem item : myDB.getNewsItems(0, 10)){
             if(item.getId() == expectedID){
                 insertedItem = item;
                 break;

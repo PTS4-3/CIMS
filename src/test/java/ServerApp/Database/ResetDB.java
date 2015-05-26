@@ -26,9 +26,9 @@ public class ResetDB {
         if(ServerMain.sortedDatabaseManager == null){
             ServerMain.startDatabases();
         }
-        ServerMain.sortedDatabaseManager.resetDatabase();
-        ServerMain.tasksDatabaseManager.resetDatabase();
-        ServerMain.unsortedDatabaseManager.resetDatabase();
+        assertTrue(ServerMain.sortedDatabaseManager.resetDatabase());
+        assertTrue(ServerMain.tasksDatabaseManager.resetDatabase());
+        assertTrue(ServerMain.unsortedDatabaseManager.resetDatabase());
     }
 
     @After
