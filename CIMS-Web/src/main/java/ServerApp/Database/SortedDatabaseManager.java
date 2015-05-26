@@ -692,7 +692,31 @@ public class SortedDatabaseManager extends DatabaseManager {
         return output;
     }
 
+    /**
+     *
+     * @return total number of newsitems present in database.
+     */
     public int getNewsItemCount(){
-        return 35;
+        if(!openConnection()){
+            return -1;
+        }
+
+        String query;
+        ResultSet rs;
+        Integer output = -1;
+
+        try {
+            query = "SELECT COUNT(ID) FROM " + newsItemTable;
+            rs = conn.prepareStatement(query).executeQuery();
+            while(rs.next()){
+                output = rs.getInt("COUNT(ID)");
+            }
+        } catch (SQLException ex) {
+            System.out.println("failed to get newsitem count: " + ex.getMessage());
+            Logger.getLogger(SortedDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            closeConnection();
+        }
+        return output;
     }
 }
