@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="580.0" prefWidth="796.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="ServicesApp.UI.ServicesController">
+  <children>
+    <TabPane fx:id="tabPane" layoutX="0.0" layoutY="24.0" prefHeight="556.0" prefWidth="796.0" tabClosingPolicy="UNAVAILABLE">
+      <tabs>
+        <Tab fx:id="tabSendInfo" text="Informatie versturen">
+          <content>
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <children>
+                <Label layoutX="28.0" layoutY="25.0" text="Titel" />
+                <TextField fx:id="tfnTitle" layoutX="164.0" layoutY="22.0" prefWidth="603.0" />
+                <Label layoutX="28.0" layoutY="65.0" text="Beschrijving" />
+                <TextArea fx:id="tanDescription" layoutX="164.0" layoutY="65.0" prefHeight="238.0" prefWidth="603.0" wrapText="true" />
+                <Label layoutX="28.0" layoutY="317.0" text="Locatie" />
+                <TextField fx:id="tfnLocation" layoutX="162.0" layoutY="314.0" prefWidth="603.0" />
+                <Label layoutX="28.0" layoutY="357.0" text="Bron" />
+                <TextField fx:id="tfnSource" disable="false" editable="false" layoutX="162.0" layoutY="354.0" prefWidth="603.0" />
+                <Button layoutX="670.0" layoutY="463.0" mnemonicParsing="false" onAction="#sendUnsortedData" text="Verzenden" />
+                <Label fx:id="lblMessageSend" layoutX="28.0" layoutY="405.0" text="Melding">
+                  <font>
+                    <Font name="System Bold" size="14.0" fx:id="x2" />
+                  </font>
+                </Label>
+              </children>
+            </AnchorPane>
+          </content>
+        </Tab>
+        <Tab fx:id="tabUpdateInfo" text="Informatie updaten">
+          <content>
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <children>
+                <ListView fx:id="lvuSentData" layoutX="14.0" layoutY="50.0" prefHeight="451.0" prefWidth="340.0" />
+                <Label layoutX="14.0" layoutY="14.0" text="Verzonden data" underline="false">
+                  <font>
+                    <Font size="18.0" fx:id="x1" />
+                  </font>
+                </Label>
+                <Label layoutX="378.0" layoutY="26.0" text="Titel" />
+                <TextField fx:id="tfuTitle" layoutX="490.0" layoutY="23.0" prefWidth="289.0" />
+                <Label layoutX="378.0" layoutY="62.0" text="Beschrijving" />
+                <TextArea fx:id="tauDescription" layoutX="490.0" layoutY="59.0" prefHeight="258.0" prefWidth="289.0" wrapText="true" />
+                <Label layoutX="380.0" layoutY="332.0" text="Locatie" />
+                <TextField fx:id="tfuLocation" layoutX="490.0" layoutY="329.0" prefWidth="289.0" />
+                <Label layoutX="380.0" layoutY="368.0" text="Bron" />
+                <TextField fx:id="tfuSource" disable="false" editable="false" layoutX="490.0" layoutY="365.0" prefWidth="289.0" visible="true" />
+                <Button layoutX="589.0" layoutY="465.0" mnemonicParsing="false" onAction="#resetSentData" text="Reset" />
+                <Button layoutX="670.0" layoutY="465.0" mnemonicParsing="false" onAction="#sendUpdate" text="Verzenden" />
+                <Label fx:id="lblMessageUpdate" font="$x2" layoutX="499.0" layoutY="407.0" text="Het verzenden van de update is geslaagd" />
+              </children>
+            </AnchorPane>
+          </content>
+        </Tab>
+        <Tab fx:id="tabReadSortedData" text="Informatie uitlezen">
+          <content>
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <children>
+                <Label font="$x1" layoutX="14.0" layoutY="14.0" text="Gesorteerde data" underline="false" />
+                <TableView fx:id="tvData" layoutX="14.0" layoutY="14.0" prefHeight="487.0" prefWidth="352.0" visible="false">
+                  <columns>
+                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="171.0" text="Titel" />
+                    <TableColumn prefWidth="60.0" text="Relevantie" />
+                    <TableColumn prefWidth="60.0" text="Betrouwbaarheid" />
+                    <TableColumn prefWidth="60.0" text="Kwaliteit" />
+                  </columns>
+                </TableView>
+                <ListView id="lvSortedData" fx:id="lvsSortedData" layoutX="14.0" layoutY="48.0" prefHeight="453.0" prefWidth="341.0" />
+                <Label layoutX="396.0" layoutY="28.0" text="Weergave" />
+                <CheckBox fx:id="chbsData" layoutX="518.0" layoutY="28.0" mnemonicParsing="false" onAction="#changeDisplay" selected="true" text="Data" />
+                <CheckBox id="chbsRequest" fx:id="chbsRequests" layoutX="518.0" layoutY="58.0" mnemonicParsing="false" onAction="#changeDisplay" selected="true" text="Meldingen" />
+                <Label layoutX="396.0" layoutY="113.0" text="Titel" />
+                <TextField fx:id="tfsTitle" disable="false" editable="false" layoutX="518.0" layoutY="110.0" prefWidth="257.0" />
+                <Label layoutX="396.0" layoutY="153.0" text="Beschrijving" />
+                <TextArea id="tas" fx:id="tasDescription" disable="false" editable="false" layoutX="518.0" layoutY="153.0" prefWidth="256.9999000000025" wrapText="true" />
+                <Label layoutX="398.0" layoutY="379.0" text="Locatie" />
+                <TextField fx:id="tfsLocation" disable="false" editable="false" layoutX="518.0" layoutY="376.0" prefWidth="257.0" />
+                <Label layoutX="398.0" layoutY="419.0" text="Bron" />
+                <TextField fx:id="tfsSource" disable="false" editable="false" layoutX="518.0" layoutY="416.0" prefWidth="257.0" />
+                <Button fx:id="btnAnswerRequest" layoutX="614.0" layoutY="464.0" mnemonicParsing="false" onAction="#goToSendUpdate" text="Reageer op melding" />
+              </children>
+            </AnchorPane>
+          </content>
+        </Tab>
+        <Tab id="tabReadTask" fx:id="tabReadTask" text="Taken uitlezen">
+          <content>
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <children>
+                <Label font="$x1" layoutX="14.0" layoutY="14.0" text="Taken" underline="false" />
+                <ListView id="lvSortedData" fx:id="lvtTasks" layoutX="14.0" layoutY="48.0" prefHeight="453.0" prefWidth="341.0" />
+                <Label layoutX="384.0" layoutY="28.0" text="Titel" />
+                <Label layoutX="384.0" layoutY="65.0" text="Beschrijving" />
+                <Label layoutX="384.0" layoutY="295.0" text="Pre-Conditie" />
+                <TextField fx:id="tftTaskTitle" disable="false" editable="false" layoutX="525.0" layoutY="28.0" prefWidth="249.0" />
+                <TextArea fx:id="tatDescription" disable="false" editable="false" layoutX="525.0" layoutY="65.0" prefHeight="219.0" prefWidth="249.0" wrapText="true" />
+                <TextArea fx:id="tatCondition" disable="false" editable="false" layoutX="525.0" layoutY="295.0" prefHeight="66.0" prefWidth="249.0" wrapText="true" />
+                <Button fx:id="btnDismissTask" layoutX="591.0" layoutY="382.0" mnemonicParsing="false" onAction="#dismissTask" prefWidth="181.0" styleClass="ButtonDismiss" text="Weigeren" visible="false">
+                  <stylesheets>
+                    <URL value="@../Style.css" />
+                  </stylesheets>
+                </Button>
+                <Button fx:id="btnAcceptTask" layoutX="382.0" layoutY="382.0" mnemonicParsing="false" onAction="#acceptTask" prefWidth="195.0" styleClass="ButtonAccept" text="Accepteren" textOverrun="CLIP" underline="false" visible="false">
+                  <stylesheets>
+                    <URL value="@../Style.css" />
+                  </stylesheets>
+                </Button>
+                <Button fx:id="btnSucceed" layoutX="591.0" layoutY="427.0" mnemonicParsing="false" onAction="#succeedTask" prefWidth="181.0" text="Geslaagd" visible="false" />
+                <Button fx:id="btnFailed" layoutX="384.0" layoutY="427.0" mnemonicParsing="false" onAction="#failedTask" prefWidth="195.0" text="Niet uitgevoerd / Gefaald" visible="false" />
+                <Label fx:id="lblMessageTask" font="$x2" layoutX="384.0" layoutY="472.0" text="Melding" />
+              </children>
+            </AnchorPane>
+          </content>
+        </Tab>
+      </tabs>
+    </TabPane>
+    <MenuBar fx:id="menuServices" layoutX="0.0" layoutY="0.0" minHeight="26.999908447265625" prefHeight="26.999908447265625" prefWidth="796.0">
+      <menus>
+        <Menu mnemonicParsing="false" text="Log uit" fx:id="btnLogOut">
+          <items>
+            <MenuItem mnemonicParsing="false" onAction="#logOutClick" text="Log uit" fx:id="btnLogout" />
+          </items>
+        </Menu>
+      </menus>
+    </MenuBar>
+  </children>
+</AnchorPane>

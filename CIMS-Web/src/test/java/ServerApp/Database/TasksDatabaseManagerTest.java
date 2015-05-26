@@ -101,7 +101,7 @@ public class TasksDatabaseManagerTest {
 
         // get tasks // TODO 
         List<ITask> tasks = myDB.getTasks(executor.getUsername(), new HashSet<>());
-        assertTrue("wrong number of tasks", tasks.size() == 2);
+        assertEquals("wrong number of tasks", 3, tasks.size());
 
         // tests if tasks are correct
         for (ITask taskItem : tasks) {
@@ -126,10 +126,10 @@ public class TasksDatabaseManagerTest {
                 expectedDescription = "Beklim de ladder en haal de kat uit de boom.";
                 expectedReason = "Allergisch voor katten";
                 expectedTag = Tag.FIREDEPARTMENT;
-                expectedHasData = false;
-                expectedDataID = -1;
+                expectedHasData = true;
+                expectedDataID = 3;
                 expectedStatus = TaskStatus.REFUSED;
-            } else if (taskItem.getId() == 13) {
+            } else if (taskItem.getId() == 11) {
                 expectedTitle = task2.getTitle();
                 expectedDescription = task2.getDescription();
                 expectedReason = task2.getDeclineReason();
@@ -141,19 +141,23 @@ public class TasksDatabaseManagerTest {
                 fail("no recognized task ID");
             }
 
-            assertEquals("different title", expectedTitle, taskItem.getTitle());
-            assertEquals("different description",
+            assertEquals("different title " + taskItem.getId(),
+                    expectedTitle, taskItem.getTitle());
+            assertEquals("different description " + taskItem.getId(),
                     expectedDescription, taskItem.getDescription());
-            assertEquals("different decline reason",
+            assertEquals("different decline reason " + taskItem.getId(),
                     expectedReason, taskItem.getDeclineReason());
-            assertEquals("different tag", expectedTag, taskItem.getTargetExecutor());
+            assertEquals("different tag " + taskItem.getId(),
+                    expectedTag, taskItem.getTargetExecutor());
             if (expectedHasData) {
-                assertEquals("different Data",
+                assertEquals("different Data" + taskItem.getId(),
                         expectedDataID, taskItem.getSortedData().getId());
             } else {
-                assertNull("has data when he shouldn't", taskItem.getSortedData());
+                assertNull("has data when he shouldn't " + taskItem.getId(),
+                        taskItem.getSortedData());
             }
-            assertEquals("different status", expectedStatus, taskItem.getStatus());
+            assertEquals("different status " + taskItem.getId(),
+                    expectedStatus, taskItem.getStatus());
         }
 
         // gets only active tasks
@@ -236,7 +240,7 @@ public class TasksDatabaseManagerTest {
             int expectedKeywordsCount = -1;
             int expectedStepCount = -1;
             // sets expected
-            if (planItem.getId() == 1 || planItem.getId() == 3) {
+            if (planItem.getId() == 1) {
                 expectedTitle = "Brand";
                 expectedDesc = "Brand in een gebouw met 3 verdiepingen.";
                 expectedKeywordsCount = 3;
@@ -248,7 +252,7 @@ public class TasksDatabaseManagerTest {
                         + " autos en troep op de weg.";
                 expectedKeywordsCount = 6;
                 expectedStepCount = 4;
-            } else if (planItem.getId() == 4 || planItem.getId() == 5) {
+            } else if (planItem.getId() == 3 || planItem.getId() == 4) {
                 expectedTitle = plan.getTitle();
                 expectedDesc = plan.getDescription();
                 expectedKeywordsCount = plan.getKeywords().size();

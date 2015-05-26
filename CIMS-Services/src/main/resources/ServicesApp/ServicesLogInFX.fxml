@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="300.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ServicesApp.UI.ServicesLogInController">
+  <children>
+    <Pane layoutX="0.0" layoutY="0.0" prefHeight="300.0" prefWidth="450.0">
+      <children>
+        <Label layoutX="116.0" layoutY="66.0" prefHeight="23.94140625" prefWidth="218.0" text="Welkom bij hulpdiensten">
+          <font>
+            <Font size="18.0" />
+          </font>
+        </Label>
+        <Label layoutX="113.0" layoutY="114.0" text="Gebruikersnaam" />
+        <Label layoutX="113.0" layoutY="150.0" text="Wachtwoord" />
+        <TextField fx:id="tfsUsername" layoutX="225.0" layoutY="111.0" prefWidth="133.0" />
+        <PasswordField fx:id="pfPassword" layoutX="225.0" layoutY="141.0" prefWidth="133.0" />
+        <Button fx:id="btnLogIn" defaultButton="true" layoutX="225.0" layoutY="181.0" mnemonicParsing="false" onAction="#onClickLogIn" prefWidth="133.0" text="Inloggen" />  
+      </children>
+    </Pane>
+  </children>
+</AnchorPane>

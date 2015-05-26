@@ -180,7 +180,7 @@ public class SortedDatabaseManagerTest {
                 expectedLoc = "loc",
                 expectedSource = "source";
         int expectedVictims = 9001;
-        int expectedID = 7;
+        int expectedID = 16;
         long expectedTime = System.currentTimeMillis();
 
         expectedItem = new NewsItem(expectedID, expectedTitle, expectedDesc,
@@ -196,7 +196,7 @@ public class SortedDatabaseManagerTest {
 
         // runs same tests on newsItem gotten from getNewsItems
         insertedItem = null;
-        for (INewsItem item : myDB.getNewsItems(0, 10)) {
+        for (INewsItem item : myDB.getNewsItems(10, 10)) {
             if (item.getId() == expectedID) {
                 insertedItem = item;
                 break;
@@ -212,7 +212,7 @@ public class SortedDatabaseManagerTest {
 
         // and reruns tests
         insertedItem = null;
-        for (INewsItem item : myDB.getNewsItems(0, 10)) {
+        for (INewsItem item : myDB.getNewsItems(10, 10)) {
             if (item.getId() == expectedID) {
                 insertedItem = item;
                 break;
@@ -229,6 +229,8 @@ public class SortedDatabaseManagerTest {
      * @param tested
      */
     private void testNewsItem(String testDesc, INewsItem expected, INewsItem tested) {
+        assertNotNull("tested item was null (" + testDesc + ")", tested);
+
         String expectedTitle = expected.getTitle(),
                 expectedDesc = expected.getDescription(),
                 expectedLoc = expected.getLocation(),

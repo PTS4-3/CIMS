@@ -36,7 +36,6 @@ public class ServerMain {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        planExecutorHandler = new PlanExecutorHandler();
         startDatabases();
         startConnection();
     }
@@ -45,6 +44,8 @@ public class ServerMain {
         sortedDatabaseManager = new SortedDatabaseManager("sorteddatabase.properties");
         unsortedDatabaseManager = new UnsortedDatabaseManager("unsorteddatabase.properties");
         tasksDatabaseManager = new TasksDatabaseManager("taskdatabase.properties");
+
+        planExecutorHandler = new PlanExecutorHandler();
 
         dummyDatabaseManager = new DummyDatabaseManager();
     }
