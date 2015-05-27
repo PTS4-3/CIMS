@@ -47,17 +47,28 @@
                 </article>
         <%      }
             } 
-        
-            if(pagenr > 1) { %>
-                <a href=<% out.println("index.jsp?pagenr=" + (pagenr - 1)); %>>Vorige</a> <%
-            }
-            
-            out.print(pagenr);
-            
-            if(pagenr < maxPagenr) { %>
-                <a href=<% out.println("index.jsp?pagenr=" + (pagenr + 1)); %>>Volgende</a> <%
-            }
         %>
+                <div id="pagenumbers">
+                    <ul>
+                        <li>
+                            <% if(pagenr > 1) { %>
+                                <a href=<% out.println("index.jsp?pagenr=" + (pagenr - 1)); %>>&#8678; Vorige</a> <%
+                            } else { %>
+                                &nbsp; <%
+                            } %>
+                        </li>
+                        <li style="width:50px">
+                            <% out.print(pagenr); %>
+                        </li>
+                        <li> <%
+                            if(pagenr < maxPagenr) { %>
+                                <a href=<% out.println("index.jsp?pagenr=" + (pagenr + 1)); %>>Volgende &#8680;</a> <%
+                            } else { %>
+                                &nbsp; <%
+                            } %>
+                        </li>
+                    </ul>
+                </div>
     </body>
 </html>
 
