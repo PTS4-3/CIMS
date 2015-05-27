@@ -26,12 +26,12 @@
             }
         %>
 
-        <script type='text/javascript' src="lightbox/js/jquery-1.11.0.min.js"></script>
-        <script type='text/javascript' src="lightbox/js/lightbox.min.js"></script>
+        <script type='text/javascript'  src="lightbox/js/jquery-1.11.0.min.js"></script>
+        <script type='text/javascript'  src="lightbox/js/lightbox.min.js"></script>
 
         <!--Google maps link-->
-        <script  type='text/javascript' src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
-        <script type='text/javascript'>
+        <script  type='text/javascript'  src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+        <script type='text/javascript' >
             function initialize() {
                 geocoder = new google.maps.Geocoder();
                 var mapCanvas = document.getElementById('mapcanvas');
@@ -79,7 +79,15 @@
                     <h1><%= item.getTitle()%></h1>
                     <p class="date"><%= item.getDate().toString()%></p>
                     <p><%= item.getLocation()%> - <%= item.getDescription()%></p>
+                    <!--met foto-->
+                    <div id="pics" >
+                    </div>
 
+                    <div id="map" >
+                        <h2>Locatie</h2>
+                        <div id="mapcanvas">
+                        </div>
+                    </div>
                     <%} else {%>
                     <h1>Titel1</h1>
                     <p class="date"><%= new Date()%></p>
@@ -108,14 +116,14 @@
                         <a href="images/foto2.jpg" data-lightbox="news">
                             <img src="images/foto2.jpg" alt="foto"/>
                         </a>
-                        <%}%>
-                    </div>
+                        </div>
 
                     <div id="map" >
                         <h2>Locatie</h2>
                         <div id="mapcanvas">
                         </div>
                     </div>
+                        <%}%>
                 </article>
                 <article class="advice">
                     <% if (item != null) {%>

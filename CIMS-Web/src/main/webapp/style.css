@@ -4,7 +4,7 @@ body {
 	color: #000000;
 	font-family: "Trebuchet MS", Helvetica, sans-serif;
 	font-size: 14px;
-	float: center;
+	float:  center;
 	background-color: #ffffff;
 }
 
@@ -189,12 +189,7 @@ footer {
 #pics {
 	float: left;
 	width: 630px;	
-}
-
-.pic {
-	float: left;
-	height: 110px;
-	overflow: hidden;
+        overflow: hidden;
 }
 
 #map {
