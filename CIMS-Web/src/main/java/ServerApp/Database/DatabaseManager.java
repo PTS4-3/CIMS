@@ -5,8 +5,10 @@
  */
 package ServerApp.Database;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -42,6 +44,7 @@ class DatabaseManager {
      */
     private void configure(String fileName) {
         props = new Properties();
+        
         try (FileInputStream in = new FileInputStream(fileName)) {
             props.load(in);
 

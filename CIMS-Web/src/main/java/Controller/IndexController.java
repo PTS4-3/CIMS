@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import javax.servlet.ServletContext;
 
 /**
  *
@@ -28,14 +29,14 @@ public class IndexController {
     
     private SortedDatabaseManager sortedDatabaseManager;
     
-    public IndexController() {
+    public IndexController(ServletContext servletContext) {
         advices.add(new Advice(100, "Sluit ramen en deuren"));
         situations.add(new Situation(10, advices, "Gevaarlijke stoffen"));
         for(int i = 1; i <= 53; i++) {
             news.add(new NewsItem(i,"Title" + i, "Description" + i, "Location" + i,
             "Source" + 1, situations, 0, date));
         }
-        sortedDatabaseManager = new SortedDatabaseManager("sorteddatabase.properties");
+        sortedDatabaseManager = new SortedDatabaseManager(servletContext.getRealPath("/WEB-INF/sorteddatabase.properties"));
     }
     
     public List<INewsItem> getNewsItems(int offset, int limit) {

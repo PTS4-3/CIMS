@@ -5,6 +5,7 @@
 --%>
 
 
+<%@page import="com.sun.glass.ui.Application"%>
 <%@page import="Shared.Data.INewsItem"%>
 <%@page import="Controller.IndexController"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -14,7 +15,7 @@
 <html>
     <head>
         <title>Algemeen</title>
-        <% IndexController controller = new IndexController();  
+        <% IndexController controller = new IndexController(application);  
            int pagenr = 1;
            int limit = 10;
            int maxPagenr = 1;
