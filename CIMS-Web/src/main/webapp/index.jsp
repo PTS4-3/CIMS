@@ -17,7 +17,7 @@
         <title>Algemeen</title>
         <% IndexController controller = new IndexController(application);  
            int pagenr = 1;
-           int limit = 10;
+           int limit = 5;
            int maxPagenr = 1;
            
            if(request.getParameter("pagenr") != null && !request.getParameter("pagenr").isEmpty()) {
