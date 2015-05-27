@@ -78,7 +78,7 @@
                     <% if (item != null) {%>
                     <h1><%= item.getTitle()%></h1>
                     <p class="date"><%= item.getDate().toString()%></p>
-                    <p><%= item.getLocation()%> - <%= item.getDescription()%></p>
+                    <p><%= item.getLocation().toUpperCase() %> - <%= item.getDescription()%></p>
                     <!--met foto-->
                     <div id="pics" >
                     </div>
@@ -91,7 +91,7 @@
                     <%} else {%>
                     <h1>Titel1</h1>
                     <p class="date"><%= new Date()%></p>
-                    <p>Plaats - Beschrijving</p>                    
+                    <p>PLAATS - Beschrijving</p>                    
                     <!--met foto-->
                     <div id="pics" >
                         <h2>Foto's</h2>
