@@ -30,7 +30,7 @@ public class IndexController {
     private List<INewsItem> news = new ArrayList<>();
     private Date date = new Date();
     
-    private SortedDatabaseManager sortedDatabaseManager;
+//    private SortedDatabaseManager sortedDatabaseManager;
     
     public IndexController(ServletContext servletContext) {
         advices.add(new Advice(100, "Sluit ramen en deuren"));
@@ -40,7 +40,7 @@ public class IndexController {
             "Source" + 1, situations, 0, date));
         }
 
-        ServerMain.startDatabases(servletContext.getRealPath("/WEB-INF/"));
+//        ServerMain.startDatabases(servletContext.getRealPath("/WEB-INF/"));
 //        sortedDatabaseManager = new SortedDatabaseManager(servletContext.getRealPath("/WEB-INF/sorteddatabase.properties"));
     }
     

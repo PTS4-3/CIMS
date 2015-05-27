@@ -14,12 +14,14 @@ import ServerApp.Database.UnsortedDatabaseManager;
 import ServerApp.Database.UnsortedDatabaseManager;
 import java.io.IOException;
 import java.net.InetAddress;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 
 /**
  *
  * @author Kargathia
  */
-public class ServerMain {
+public class ServerMain extends HttpServlet{
     
     public static String SERVER_ADDRESS = "127.0.0.1";
 
@@ -31,6 +33,14 @@ public class ServerMain {
     public static PushHandler pushHandler = null;
 
     public static DummyDatabaseManager dummyDatabaseManager = null;
+
+    @Override
+    public void init() throws ServletException {
+
+        System.out.println("ServerMain servlet init");
+        startDatabases(getServletContext().getRealPath("/WEB-INF/"));
+        startConnection();
+    }
 
     /**
      * @param args the command line arguments
