@@ -74,7 +74,7 @@
             </AnchorPane>
           </content>
         </Tab>
-        <Tab fx:id="tabNews" text="Nieuwsbericht">
+        <Tab fx:id="tabNews" text="Nieuws publiceren">
           <content>
             <AnchorPane id="Content" fx:id="apnPane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
               <children>
@@ -99,7 +99,7 @@
                 <TextField id="" fx:id="tfnLocationSorted" editable="false" layoutX="535.0" layoutY="286.0" prefWidth="247.0" />
                 <Label font="$x1" layoutX="818.0" layoutY="18.0" text="Nieuwbericht" underline="false" />
                 <Label layoutX="819.0" layoutY="325.0" prefHeight="22.0" prefWidth="80.0" text="Situatie" />
-                <Button id="btnAddRoadMap" fx:id="btnSendNews" layoutX="993.0" layoutY="416.0" mnemonicParsing="false" onAction="#sendNewsItem" prefWidth="193.0" text="Verzenden" />
+                <Button id="btnAddRoadMap" fx:id="btnSendNews" layoutX="1018.0" layoutY="416.0" mnemonicParsing="false" onAction="#sendNewsItem" prefWidth="168.0" text="Verzenden" />
                 <Label id="lblProcessSortedData" fx:id="lblnMessage" font="$x2" layoutX="818.0" layoutY="376.0" prefHeight="22.0" prefWidth="368.0" text="Melding" />
                 <Label layoutX="819.0" layoutY="55.0" text="Titel" />
                 <TextField id="tfuTitle" fx:id="tfnTitle" editable="true" layoutX="924.0" layoutY="52.0" prefWidth="262.0" />
@@ -109,6 +109,36 @@
                 <Label layoutX="819.0" layoutY="249.0" text="Locatie" />
                 <TextField id="tfuLocation" fx:id="tfnVictims" editable="true" layoutX="924.0" layoutY="286.0" prefWidth="262.0" />
                 <Label layoutX="818.0" layoutY="289.0" text="Slachtoffers" />
+              </children>
+            </AnchorPane>
+          </content>
+        </Tab>
+        <Tab fx:id="tabNewsUpdate" text="Nieuws updaten">
+          <content>
+            <AnchorPane id="Content" fx:id="apbPane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <children>
+                <Button id="btnAddRoadMap" fx:id="btnUpdate" layoutX="1036.0" layoutY="418.0" mnemonicParsing="false" onAction="#updateNewsItem" prefWidth="150.0" text="Updaten" />
+                <Label id="lblProcessSortedData" fx:id="lblbMessage" font="$x2" layoutX="630.0" layoutY="375.0" prefHeight="22.0" prefWidth="545.0" text="Melding" />
+                <Label font="$x1" layoutX="14.0" layoutY="19.0" text="Nieuwsberichten" />
+                <ListView id="lvSortedData" fx:id="lvbNews" layoutX="14.0" layoutY="52.0" prefHeight="393.0" prefWidth="586.0" />
+                <Label layoutX="630.0" layoutY="55.0" text="Titel" />
+                <Label layoutX="630.0" layoutY="94.0" text="Beschrijving" />
+                <Label layoutX="630.0" layoutY="341.0" text="Situatie" />
+                <Label layoutX="630.0" layoutY="297.0" text="Slachtoffers" />
+                <Label layoutX="630.0" layoutY="259.0" text="Locatie" />
+                <TextField fx:id="tfbTitle" layoutX="790.0" layoutY="52.0" prefWidth="396.0" />
+                <TextField layoutX="790.0" layoutY="256.0" onAction="#tfbLocation" prefWidth="396.0" />
+                <TextField layoutX="790.0" layoutY="294.0" onAction="#tfbVictims" prefWidth="396.0" />
+                <TextArea fx:id="tabDescription" layoutX="790.0" layoutY="91.0" prefHeight="148.0" prefWidth="396.0" wrapText="true" />
+                <ComboBox layoutX="790.0" layoutY="333.0" prefWidth="396.0">
+                  <items>
+                    <FXCollections fx:factory="observableArrayList">
+                      <String fx:value="Item 1" />
+                      <String fx:value="Item 2" />
+                      <String fx:value="Item 3" />
+                    </FXCollections>
+                  </items>
+                </ComboBox>
               </children>
             </AnchorPane>
           </content>
@@ -236,7 +266,7 @@
                 <Label fx:id="lblApplyPlan" font="$x2" layoutX="844.0" layoutY="376.0" prefWidth="343.0" text="Melding" />
                 <TextField id="tfuTitle" fx:id="tfaTaskCondition" layoutX="966.0" layoutY="305.0" prefWidth="223.0" />
                 <Label layoutX="846.0" layoutY="305.0" text="Pre-conditie" />
-                <Button id="btnSearchRoadmap" fx:id="btnResetSortedData" layoutX="298.0" layoutY="417.0" mnemonicParsing="false" onAction="#resetApplyPlan" prefHeight="31.0" prefWidth="97.0" text="Reset Data" />
+                <Button id="btnSearchRoadmap" fx:id="btnResetSortedData" layoutX="275.0" layoutY="417.0" mnemonicParsing="false" onAction="#resetApplyPlan" prefHeight="31.0" prefWidth="120.0" text="Reset Data" />
               </children>
             </AnchorPane>
           </content>

@@ -108,6 +108,17 @@ public class HeadquartersController implements Initializable {
     @FXML CheckComboBox ccnSituations;
     @FXML Label lblnMessage;
     @FXML AnchorPane apnPane;
+    
+    // UpdateNewsItems
+    @FXML Tab tabNewsUpdate;
+    @FXML ListView lvbNews;
+    @FXML TextField tfbTitle;
+    @FXML TextArea tabDescription;
+    @FXML TextField tfbLocation;
+    @FXML TextField tfbVictims;
+    @FXML CheckComboBox ccbSituations;
+    @FXML Label lblbMessage;
+    @FXML AnchorPane apbPane;
 
     // ProcessSortedData
     @FXML Tab tabProcessSortedData;
@@ -247,6 +258,14 @@ public class HeadquartersController implements Initializable {
                         selectNewsSorted();
                     }
                 });
+        
+        lvbNews.getSelectionModel().selectedItemProperty().addListener(
+                new ChangeListener() {
+                    @Override
+                    public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                        selectNewsItem();
+                    }
+                });
     }
 
     /**
@@ -364,6 +383,16 @@ public class HeadquartersController implements Initializable {
                     ccnSituations.prefHeight(25);
                     ccnSituations.setMaxSize(262, 25);
                     apnPane.getChildren().add(ccnSituations);
+                }
+                
+                if(ccbSituations == null) {
+                    ccbSituations = new CheckComboBox(FXCollections.observableArrayList(situations));
+                    ccbSituations.setLayoutX(790);
+                    ccbSituations.setLayoutY(333);
+                    ccbSituations.prefWidth(396);
+                    ccbSituations.prefHeight(25);
+                    ccbSituations.setMaxSize(262, 25);
+                    apbPane.getChildren().add(ccbSituations);
                 }
             }
             
@@ -1380,6 +1409,78 @@ public class HeadquartersController implements Initializable {
             showDialog("Fout", ex.getMessage(), false);
             ex.printStackTrace();
         }
+    }
+    
+    // News Update ----------------------------------------------------------
+    /**
+     * Fills the GUI with information of the selected newsitem
+     */
+    public void selectNewsItem() {
+        INewsItem news = (INewsItem) lvbNews.getSelectionModel().getSelectedItem();
+        if (news != null) {
+            // Fill GUI with information
+            tfbTitle.setText(news.getTitle());
+            tabDescription.setText(news.getDescription());
+            tfbLocation.setText(news.getLocation());
+            tfbVictims.setText(String.valueOf(news.getVictims()));
+            
+            for (Situation s : news.getSituations()) {
+                ccbSituations.getCheckModel().check(s);
+            }
+        } else {
+            // Clear GUI
+            tfbTitle.clear();
+            tabDescription.clear();
+            tfbLocation.clear();
+            tfbVictims.clear();
+            ccbSituations.getCheckModel().clearChecks();
+        }
+
+        lblbMessage.setVisible(false);
+    }
+    
+    public void updateNewsItem() {
+        /**
+        try {
+            if(connectionManager == null) {
+                throw new NetworkException("Kon data niet wegschrijven");
+            }
+            
+            // Load values from GUI
+            String title = tfbTitle.getText();
+            String description = tabDescription.getText();
+            String location = tfbLocation.getText();
+            String source = this.user.getUsername();
+            int victims = Integer.parseInt(tfbVictims.getText());
+            HashSet<Situation> situations = new HashSet<>();
+            situations.addAll(ccbSituations.getCheckModel().getCheckedItems());
+            
+            // Make and send new NewsItem
+            INewsItem newsItem = new NewsItem(title, description, location, 
+                    source, situations, victims);
+            this.connectionManager.sendNewsItem(newsItem);
+            
+            // Show message
+            lblnMessage.setVisible(true);
+            lblnMessage.setText("Nieuwsbericht is succesvol verzonden");
+            
+            // Reset GUI
+            tfnTitle.clear();
+            tanDescription.clear();
+            tfnLocation.clear();
+            tfnVictims.clear();
+            ccnSituations.getCheckModel().clearChecks();
+        } catch (NumberFormatException nfEx) {
+            showDialog("Onjuiste invoer", "Voer een getal in bij aantal slachtoffers", false);
+        } catch (IllegalArgumentException iaEx) {
+            showDialog("Onjuiste invoer", iaEx.getMessage(), false);
+        } catch (NetworkException nEx) {
+            showDialog("Geen verbinding met server", nEx.getMessage(), true);
+        } catch (Exception ex) {
+            showDialog("Fout", ex.getMessage(), false);
+            ex.printStackTrace();
+        }
+        **/
     }
 
     public void logOutClick() {
