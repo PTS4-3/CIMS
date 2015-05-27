@@ -15,22 +15,61 @@
     <head>
         <meta charset="UTF-8">
         <title>CIMS 112 Nieuws</title>
-        <link href="style.css" rel="stylesheet" type="text/css" />
         <%
             webController controller = new webController();
             String ID = request.getParameter("id");
             NewsItem item = null;
-            try{
-            item = controller.getNewsWithID(ID);
-            }
-            catch(Exception ex){
-                item=null;
+            try {
+                item = controller.getNewsWithID(ID);
+            } catch (Exception ex) {
+                item = null;
             }
         %>
-        <link href="lightbox/css/lightbox.css" rel="stylesheet" />
 
-        <script src="lightbox/js/jquery-1.11.0.min.js"></script>
-        <script src="lightbox/js/lightbox.min.js"></script>
+        <script type='text/javascript' src="lightbox/js/jquery-1.11.0.min.js"></script>
+        <script type='text/javascript' src="lightbox/js/lightbox.min.js"></script>
+
+        <!--Google maps link-->
+        <script  type='text/javascript' src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+        <script type='text/javascript'>
+            function initialize() {
+                geocoder = new google.maps.Geocoder();
+                var mapCanvas = document.getElementById('mapcanvas');
+                var mapOptions = {
+                    zoom: 14,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                };
+                var map = new google.maps.Map(mapCanvas, mapOptions);
+
+                var addressFromDB = "";
+            <%if (item != null) {%>
+                addressFromDB = <%item.getLocation();%>
+            <%} else {%>
+                addressFromDB = "Nederland";
+            <% }%>
+                var address = addressFromDB + ", Nederland";
+                geocoder.geocode({'address': address}, function (results, status) {
+                    if (status === google.maps.GeocoderStatus.OK) {
+                        map.setCenter(results[0].geometry.location);
+
+                        //Add location mark
+                        var marker = new google.maps.Marker({
+                            map: map,
+                            position: results[0].geometry.location
+                        });
+                        var addressinfo = addressFromDB.replace(",", "<br />");
+                        infowindow = new google.maps.InfoWindow({content: addressinfo});
+                        google.maps.event.addListener(marker, "click", function () {
+                            infowindow.open(map, marker);
+                        });
+                        infowindow.open(map, marker);
+                    } else {
+                        alert("Geocode was not successful for the following reason: " + status);
+                    }
+                });
+            }
+            google.maps.event.addDomListener(window, 'load', initialize);
+        </script>
     </head>	
     <body>	
         <div id="page">		
@@ -40,39 +79,43 @@
                     <h1><%= item.getTitle()%></h1>
                     <p class="date"><%= item.getDate().toString()%></p>
                     <p><%= item.getLocation()%> - <%= item.getDescription()%></p>
-                    <%//if(item.getPictures()!= null){ } %>
 
-                    <!--met foto-->
-                    <!--<h2>Foto's</h2>
-                    <br />
-                    <a href="images/foto1.jpg" data-lightbox="news">
-                        <img src="images/foto1.jpg" alt="foto"/></a>
-                    <a href="images/foto1.jpg" data-lightbox="news">
-                        <img src="images/foto1.jpg" alt="foto"/></a>
-                    <a href="images/foto1.jpg" data-lightbox="news">
-                        <img src="images/foto1.jpg" alt="foto"/></a>
-                    <a href="images/foto1.jpg" data-lightbox="news">
-                        <img src="images/foto1.jpg" alt="foto"/></a>
-                    <a href="images/foto1.jpg" data-lightbox="news">
-                        <img src="images/foto1.jpg" alt="foto"/></a>-->
-                    <%} else{%>
+                    <%} else {%>
                     <h1>Titel1</h1>
                     <p class="date"><%= new Date()%></p>
                     <p>Plaats - Beschrijving</p>                    
                     <!--met foto-->
-                    <h2>Foto's</h2>
-                    <br />
-                    <a href="images/foto1.jpg" data-lightbox="news">
-                        <img src="images/foto1.jpg" alt="foto"/></a>
-                    <a href="images/foto1.jpg" data-lightbox="news">
-                        <img src="images/foto1.jpg" alt="foto"/></a>
-                    <a href="images/foto1.jpg" data-lightbox="news">
-                        <img src="images/foto1.jpg" alt="foto"/></a>
-                    <a href="images/foto1.jpg" data-lightbox="news">
-                        <img src="images/foto1.jpg" alt="foto"/></a>
-                    <a href="images/foto1.jpg" data-lightbox="news">
-                        <img src="images/foto1.jpg" alt="foto"/></a>
+                    <div id="pics" >
+                        <h2>Foto's</h2>
+                        <a href="images/foto1.jpg" data-lightbox="news">
+                            <img src="images/foto1.jpg" alt="foto"/>
+                        </a>
+                        <a href="images/foto1.jpg" data-lightbox="news">
+                            <img src="images/foto1.jpg" alt="foto"/>
+                        </a>
+                        <a href="images/foto2.jpg" data-lightbox="news">
+                            <img src="images/foto2.jpg" alt="foto"/>
+                        </a>
+                        <a href="images/foto1.jpg" data-lightbox="news">
+                            <img src="images/foto1.jpg" alt="foto"/>
+                        </a>
+                        <a href="images/foto1.jpg" data-lightbox="news">
+                            <img src="images/foto1.jpg" alt="foto"/>
+                        </a>
+                        <a href="images/foto1.jpg" data-lightbox="news">
+                            <img src="images/foto1.jpg" alt="foto"/>
+                        </a>
+                        <a href="images/foto2.jpg" data-lightbox="news">
+                            <img src="images/foto2.jpg" alt="foto"/>
+                        </a>
                         <%}%>
+                    </div>
+
+                    <div id="map" >
+                        <h2>Locatie</h2>
+                        <div id="mapcanvas">
+                        </div>
+                    </div>
                 </article>
                 <article class="advice">
                     <% if (item != null) {%>
@@ -96,7 +139,7 @@
                                 for (Advice ad : sit.getAdvices()) {%>
                         <li><%= ad.getDescription()%></li>
                             <%}
-                                    }%>
+                                }%>
                     </ul>
                     <%} else {%>
                     <h2>Informatie</h2>
