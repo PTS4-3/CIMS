@@ -1496,25 +1496,10 @@ public class HeadquartersController implements Initializable {
     }
 
     // News Update ----------------------------------------------------------
-    public void displayNewsItems(List<INewsItem> news) {
-        Platform.runLater(new Runnable() {
-
-            @Override
-            public void run() {
-                lvbNews.getItems().removeAll(news);
-                lvbNews.getItems().addAll(news);
-                if (lvbNews.getSelectionModel().getSelectedItem() == null) {
-                    lvbNews.getSelectionModel().selectFirst();
-                }
-            }
-
-        });
-    }
-
     /**
      * Fills the GUI with information of the selected newsitem
      */
-    public void displayNews(List<INewsItem> news) {
+    public void displayNewsItems(List<INewsItem> news) {
         Platform.runLater(new Runnable() {
 
             @Override
