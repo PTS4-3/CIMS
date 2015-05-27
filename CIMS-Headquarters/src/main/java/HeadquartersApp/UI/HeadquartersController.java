@@ -70,108 +70,196 @@ public class HeadquartersController implements Initializable {
     TabPane tabPane;
 
     // ProcessInfo
-    @FXML Tab tabProcessInfo;
-    @FXML ListView lvuUnsortedData;
-    @FXML TextField tfuTitle;
-    @FXML TextArea tauDescription;
-    @FXML TextField tfuSource;
-    @FXML TextField tfuLocation;
-    @FXML Slider suRelevance;
-    @FXML Slider suReliability;
-    @FXML Slider suQuality;
-    @FXML AnchorPane apuPane;
-    @FXML CheckComboBox ccuTags;
-    @FXML Label lblUnsortedReport;
+    @FXML
+    Tab tabProcessInfo;
+    @FXML
+    ListView lvuUnsortedData;
+    @FXML
+    TextField tfuTitle;
+    @FXML
+    TextArea tauDescription;
+    @FXML
+    TextField tfuSource;
+    @FXML
+    TextField tfuLocation;
+    @FXML
+    Slider suRelevance;
+    @FXML
+    Slider suReliability;
+    @FXML
+    Slider suQuality;
+    @FXML
+    AnchorPane apuPane;
+    @FXML
+    CheckComboBox ccuTags;
+    @FXML
+    Label lblUnsortedReport;
 
     // RequestInfo
-    @FXML Tab tabRequestInfo;
-    @FXML TextField tfrRequestTitle;
-    @FXML TextField tfrTitle;
-    @FXML TextArea tarDescription;
-    @FXML TextField tfrSource;
-    @FXML TextField tfrLocation;
-    @FXML AnchorPane aprPane;
-    @FXML CheckComboBox ccrTags;
-    @FXML Label lblInformationReport;
-    
+    @FXML
+    Tab tabRequestInfo;
+    @FXML
+    TextField tfrRequestTitle;
+    @FXML
+    TextField tfrTitle;
+    @FXML
+    TextArea tarDescription;
+    @FXML
+    TextField tfrSource;
+    @FXML
+    TextField tfrLocation;
+    @FXML
+    AnchorPane aprPane;
+    @FXML
+    CheckComboBox ccrTags;
+    @FXML
+    Label lblInformationReport;
+
     // SendNewsItems
-    @FXML Tab tabNews;
-    @FXML ListView lvnSorted;
-    @FXML TextField tfnTitleSorted;
-    @FXML TextArea tanDescriptionSorted;
-    @FXML TextField tfnSourceSorted;
-    @FXML TextField tfnLocationSorted;
-    @FXML TextField tfnTitle;
-    @FXML TextArea tanDescription;
-    @FXML TextField tfnLocation;
-    @FXML TextField tfnVictims;
-    @FXML CheckComboBox ccnSituations;
-    @FXML Label lblnMessage;
-    @FXML AnchorPane apnPane;
-    
+    @FXML
+    Tab tabNews;
+    @FXML
+    ListView lvnSorted;
+    @FXML
+    TextField tfnTitleSorted;
+    @FXML
+    TextArea tanDescriptionSorted;
+    @FXML
+    TextField tfnSourceSorted;
+    @FXML
+    TextField tfnLocationSorted;
+    @FXML
+    TextField tfnTitle;
+    @FXML
+    TextArea tanDescription;
+    @FXML
+    TextField tfnLocation;
+    @FXML
+    TextField tfnVictims;
+    @FXML
+    CheckComboBox ccnSituations;
+    @FXML
+    Label lblnMessage;
+    @FXML
+    AnchorPane apnPane;
+
     // UpdateNewsItems
-    @FXML Tab tabNewsUpdate;
-    @FXML ListView lvbNews;
-    @FXML TextField tfbTitle;
-    @FXML TextArea tabDescription;
-    @FXML TextField tfbLocation;
-    @FXML TextField tfbVictims;
-    @FXML CheckComboBox ccbSituations;
-    @FXML Label lblbMessage;
-    @FXML AnchorPane apbPane;
+    @FXML
+    Tab tabNewsUpdate;
+    @FXML
+    ListView lvbNews;
+    @FXML
+    TextField tfbTitle;
+    @FXML
+    TextArea tabDescription;
+    @FXML
+    TextField tfbLocation;
+    @FXML
+    TextField tfbVictims;
+    @FXML
+    CheckComboBox ccbSituations;
+    @FXML
+    Label lblbMessage;
+    @FXML
+    AnchorPane apbPane;
 
     // ProcessSortedData
-    @FXML Tab tabProcessSortedData;
-    @FXML ListView lvsSortedData;
-    @FXML TextField tfsSortedDataTitle;
-    @FXML TextArea tasSortedDataDescription;
-    @FXML TextField tfsSource;
-    @FXML TextField tfsLocation;
-    @FXML ListView lvsTasks;
-    @FXML TextField tfsTaskTitle;
-    @FXML TextArea tasTaskDescription;
-    @FXML ComboBox cbsExecutor;
-    @FXML Label lblProcessSortedData;
-    @FXML Button btnAddSortedTask;
-    @FXML Button btnAddRoadMap;
+    @FXML
+    Tab tabProcessSortedData;
+    @FXML
+    ListView lvsSortedData;
+    @FXML
+    TextField tfsSortedDataTitle;
+    @FXML
+    TextArea tasSortedDataDescription;
+    @FXML
+    TextField tfsSource;
+    @FXML
+    TextField tfsLocation;
+    @FXML
+    ListView lvsTasks;
+    @FXML
+    TextField tfsTaskTitle;
+    @FXML
+    TextArea tasTaskDescription;
+    @FXML
+    ComboBox cbsExecutor;
+    @FXML
+    Label lblProcessSortedData;
+    @FXML
+    Button btnAddSortedTask;
+    @FXML
+    Button btnAddRoadMap;
 
     // SendPlan
-    @FXML Tab tabSendPlan;
-    @FXML TextField tfpPlanTitle;
-    @FXML TextArea tapPlanDescription;
-    @FXML TextArea tapKeyWords;
-    @FXML ListView lvpTasks;
-    @FXML TextField tfpTaskTitle;
-    @FXML TextArea tapTaskDescription;
-    @FXML ComboBox cbExecutor;
-    @FXML TextField tfpCondition;
-    @FXML Label lblSendPlan;
+    @FXML
+    Tab tabSendPlan;
+    @FXML
+    TextField tfpPlanTitle;
+    @FXML
+    TextArea tapPlanDescription;
+    @FXML
+    TextArea tapKeyWords;
+    @FXML
+    ListView lvpTasks;
+    @FXML
+    TextField tfpTaskTitle;
+    @FXML
+    TextArea tapTaskDescription;
+    @FXML
+    ComboBox cbExecutor;
+    @FXML
+    TextField tfpCondition;
+    @FXML
+    Label lblSendPlan;
 
     // ApplyPlan
-    @FXML Tab tabApplyPlan;
-    @FXML TextField tfaDataTitle;
-    @FXML TextArea taaDataDescription;
-    @FXML TextField tfaSearch;
-    @FXML ListView lvaPlans;
-    @FXML ListView lvaSteps;
-    @FXML TextField tfaTaskTitle;
-    @FXML TextArea tfaTaskDescription;
-    @FXML TextField tfaTaskCondition;
-    @FXML ComboBox cbaExecutor;
-    @FXML Label lblApplyPlan;
+    @FXML
+    Tab tabApplyPlan;
+    @FXML
+    TextField tfaDataTitle;
+    @FXML
+    TextArea taaDataDescription;
+    @FXML
+    TextField tfaSearch;
+    @FXML
+    ListView lvaPlans;
+    @FXML
+    ListView lvaSteps;
+    @FXML
+    TextField tfaTaskTitle;
+    @FXML
+    TextArea tfaTaskDescription;
+    @FXML
+    TextField tfaTaskCondition;
+    @FXML
+    ComboBox cbaExecutor;
+    @FXML
+    Label lblApplyPlan;
 
     // Tasks
-    @FXML Tab tabTask;
-    @FXML ListView lvtTasks;
-    @FXML TextField tftTaskTitle;
-    @FXML TextArea tatTaskDescription;
-    @FXML TextField tftTitle;
-    @FXML TextArea tatDescription;
-    @FXML TextField tftExecutor;
-    @FXML TextField tftReason;
-    @FXML ComboBox cbtNewExecutor;
-    @FXML Label lblTasks;
-    @FXML Button btnNewTask;
+    @FXML
+    Tab tabTask;
+    @FXML
+    ListView lvtTasks;
+    @FXML
+    TextField tftTaskTitle;
+    @FXML
+    TextArea tatTaskDescription;
+    @FXML
+    TextField tftTitle;
+    @FXML
+    TextArea tatDescription;
+    @FXML
+    TextField tftExecutor;
+    @FXML
+    TextField tftReason;
+    @FXML
+    ComboBox cbtNewExecutor;
+    @FXML
+    Label lblTasks;
+    @FXML
+    Button btnNewTask;
 
     private IData requestData;
     private ISortedData sortedData;
@@ -250,7 +338,7 @@ public class HeadquartersController implements Initializable {
                         selectTask();
                     }
                 });
-        
+
         lvnSorted.getSelectionModel().selectedItemProperty().addListener(
                 new ChangeListener() {
                     @Override
@@ -258,7 +346,7 @@ public class HeadquartersController implements Initializable {
                         selectNewsSorted();
                     }
                 });
-        
+
         lvbNews.getSelectionModel().selectedItemProperty().addListener(
                 new ChangeListener() {
                     @Override
@@ -300,7 +388,7 @@ public class HeadquartersController implements Initializable {
         ccrTags.prefHeight(25);
         ccrTags.setMaxSize(395, 25);
         aprPane.getChildren().add(ccrTags);
-        
+
         this.cbExecutor.setItems(FXCollections.observableArrayList(Tag.values()));
         this.cbExecutor.getItems().remove(Tag.CITIZENS);
         if (this.cbExecutor.getSelectionModel().getSelectedItem() == null) {
@@ -369,13 +457,13 @@ public class HeadquartersController implements Initializable {
 
         });
     }
-    
+
     public void displaySituations(Set<Situation> situations) {
         Platform.runLater(new Runnable() {
 
             @Override
             public void run() {
-                if(ccnSituations == null) {
+                if (ccnSituations == null) {
                     ccnSituations = new CheckComboBox(FXCollections.observableArrayList(situations));
                     ccnSituations.setLayoutX(924);
                     ccnSituations.setLayoutY(325);
@@ -384,8 +472,8 @@ public class HeadquartersController implements Initializable {
                     ccnSituations.setMaxSize(262, 25);
                     apnPane.getChildren().add(ccnSituations);
                 }
-                
-                if(ccbSituations == null) {
+
+                if (ccbSituations == null) {
                     ccbSituations = new CheckComboBox(FXCollections.observableArrayList(situations));
                     ccbSituations.setLayoutX(790);
                     ccbSituations.setLayoutY(333);
@@ -395,7 +483,7 @@ public class HeadquartersController implements Initializable {
                     apbPane.getChildren().add(ccbSituations);
                 }
             }
-            
+
         });
     }
 
@@ -483,7 +571,7 @@ public class HeadquartersController implements Initializable {
 
             // Update ListView
             this.updateLvuUnsortedData(unsortedData);
-            
+
             lblUnsortedReport.setVisible(true);
             lblUnsortedReport.setText("Data is verzonden naar de database");
 
@@ -516,7 +604,7 @@ public class HeadquartersController implements Initializable {
 
             // Update ListView
             this.updateLvuUnsortedData(unsortedData);
-            
+
             lblUnsortedReport.setVisible(true);
             lblUnsortedReport.setText("Data is verwijderd uit de database");
 
@@ -578,7 +666,7 @@ public class HeadquartersController implements Initializable {
 
             // Reset tab
             resetRequest();
-            
+
             lblInformationReport.setVisible(true);
             lblInformationReport.setText("Verzoek is verstuurd");
 
@@ -621,7 +709,7 @@ public class HeadquartersController implements Initializable {
 
                 lvnSorted.getItems().removeAll(sortedData);
                 lvnSorted.getItems().addAll(sortedData);
-                if(lvnSorted.getSelectionModel().getSelectedItem() == null) {
+                if (lvnSorted.getSelectionModel().getSelectedItem() == null) {
                     lvnSorted.getSelectionModel().selectFirst();
                 }
             }
@@ -738,35 +826,33 @@ public class HeadquartersController implements Initializable {
             tfsSource.setText(sorted.getSource());
             tfsLocation.setText(sorted.getLocation());
             displaySortedDataTasks(sorted.getTasks());
-            
+
             boolean plan = false;
             boolean tasks = false;
-            
-            if (sorted.getTasks() != null) {                             
+
+            if (sorted.getTasks() != null) {
                 for (ITask t : sorted.getTasks()) {
-                    tasks = true;    
-                    
+                    tasks = true;
+
                     try {
-                        IStep s = (IStep)t;
+                        IStep s = (IStep) t;
                         plan = true;
-                    } catch (ClassCastException ex) {                               
+                    } catch (ClassCastException ex) {
                     }
-                    
+
                     if (t instanceof IStep) {
                         plan = true;
                     }
                 }
-            }                
-            
+            }
+
             if (plan) {
                 btnAddSortedTask.setDisable(true);
                 btnAddRoadMap.setDisable(true);
-            }
-            else if (tasks) {
+            } else if (tasks) {
                 btnAddSortedTask.setDisable(false);
                 btnAddRoadMap.setDisable(true);
-            }
-            else {
+            } else {
                 btnAddSortedTask.setDisable(false);
                 btnAddRoadMap.setDisable(false);
             }
@@ -828,15 +914,14 @@ public class HeadquartersController implements Initializable {
                 Task task = new Task(-1, title, description, TaskStatus.SENT, (ISortedData) lvsSortedData.getSelectionModel().getSelectedItem(), executor.getType(), executor);
 
                 connectionManager.sendTask(task);
-                
-                
+
                 List<ITask> tempTasks = new ArrayList();
                 tempTasks.addAll(data.getTasks());
                 tempTasks.add(task);
 
                 data.setTasks(tempTasks);
                 displaySortedDataTasks(data.getTasks());
-                
+
                 lblProcessSortedData.setVisible(true);
                 lblProcessSortedData.setText("Taak is verzonden naar de database");
             } else {
@@ -925,22 +1010,22 @@ public class HeadquartersController implements Initializable {
             tempSteps = observableArrayList();
             step = 1;
         }
-        
+
         boolean correct = true;
-        
-        for(IStep s : tempSteps) {
-            if(s.getTitle().equals(title)) {
+
+        for (IStep s : tempSteps) {
+            if (s.getTitle().equals(title)) {
                 correct = false;
             }
         }
 
-        if(correct) {
+        if (correct) {
             try {
-                tempSteps.add(new Step(step, title, description, TaskStatus.UNASSIGNED, null, (Tag)this.cbExecutor.getSelectionModel().getSelectedItem(), null, step, condition));
+                tempSteps.add(new Step(step, title, description, TaskStatus.UNASSIGNED, null, (Tag) this.cbExecutor.getSelectionModel().getSelectedItem(), null, step, condition));
                 tfpTaskTitle.clear();
                 tapTaskDescription.clear();
                 tfpCondition.clear();
-            } catch(IllegalArgumentException iaEx) {
+            } catch (IllegalArgumentException iaEx) {
                 showDialog("Foutmelding", iaEx.getMessage(), true);
             }
         } else {
@@ -954,7 +1039,7 @@ public class HeadquartersController implements Initializable {
         IStep step = (IStep) lvpTasks.getSelectionModel().getSelectedItem();
         if (step != null) {
             tempSteps.remove(step);
-            for(int i = 0; i < tempSteps.size(); i++) {
+            for (int i = 0; i < tempSteps.size(); i++) {
                 tempSteps.get(i).setStepnr(i + 1);
             }
             lvpTasks.setItems(tempSteps);
@@ -986,10 +1071,10 @@ public class HeadquartersController implements Initializable {
                 if (title != null) {
                     List<IStep> steps = new ArrayList<>();
                     steps.addAll(tempSteps);
-                    
+
                     connectionManager.sendNewPlan(new Plan(-1, title, description, keywords, steps, true));
                     resetPlanInfo();
-                    
+
                     lblSendPlan.setVisible(true);
                     lblSendPlan.setText("Plan is verzonden naar de database");
                 } else {
@@ -1008,7 +1093,7 @@ public class HeadquartersController implements Initializable {
     // ApplyPlan----------------------------------------------------------------
     public void resetApplyPlan() {
         sortedData = null;
-        
+
         tfaDataTitle.clear();
         taaDataDescription.clear();
         lvaPlans.getItems().clear();
@@ -1017,8 +1102,8 @@ public class HeadquartersController implements Initializable {
         tfaTaskDescription.clear();
         lblApplyPlan.setVisible(false);
     }
-    
-    public void resetPlansList(){
+
+    public void resetPlansList() {
         lvaPlans.getItems().clear();
         lvaSteps.getItems().clear();
         tfaTaskTitle.clear();
@@ -1035,7 +1120,7 @@ public class HeadquartersController implements Initializable {
         Platform.runLater(new Runnable() {
 
             @Override
-            public void run() {               
+            public void run() {
                 resetPlansList();
                 lvaPlans.getItems().addAll(plans);
                 if (lvaPlans.getSelectionModel().getSelectedItem() == null) {
@@ -1052,17 +1137,17 @@ public class HeadquartersController implements Initializable {
     public void displaySteps() {
         IPlan plan = (IPlan) lvaPlans.getSelectionModel().getSelectedItem();
         List<IStep> steps = new ArrayList<>();
-        for(IStep s : plan.getSteps()) {
-            steps.add(new Step(-1, String.valueOf(s.getTitle()), 
-                    String.valueOf(s.getDescription()), 
-                    TaskStatus.SENT, sortedData, 
-                    s.getTargetExecutor(), 
-                    null, 
-                    s.getStepnr(), 
+        for (IStep s : plan.getSteps()) {
+            steps.add(new Step(-1, String.valueOf(s.getTitle()),
+                    String.valueOf(s.getDescription()),
+                    TaskStatus.SENT, sortedData,
+                    s.getTargetExecutor(),
+                    null,
+                    s.getStepnr(),
                     s.getCondition()));
         }
         tempPlan = new Plan(-1, plan.getTitle(), plan.getDescription(), plan.getKeywords(), steps, false);
-        
+
         if (tempPlan != null) {
             Platform.runLater(new Runnable() {
                 IPlan p = (IPlan) lvaPlans.getSelectionModel().getSelectedItem();
@@ -1086,9 +1171,9 @@ public class HeadquartersController implements Initializable {
      * Search for plans with similar keywords and display them in the listview.
      */
     public void searchPlan() {
-        
+
         String s = tfaSearch.getText();
-        
+
         if (!s.isEmpty()) {
             HashSet<String> keywords = new HashSet();
             String[] array = uniformString(s).split(" ");
@@ -1098,13 +1183,12 @@ public class HeadquartersController implements Initializable {
                 }
             }
             resetPlansList();
-            connectionManager.searchPlans(keywords);        
-        }  
-        else {
+            connectionManager.searchPlans(keywords);
+        } else {
             showDialog("Foutmelding", "Vul een of meer keywords in", true);
         }
     }
-    
+
     /**
      * Show all plans
      */
@@ -1134,35 +1218,34 @@ public class HeadquartersController implements Initializable {
                 throw new NetworkException("Kon data niet wegschrijven");
             }
             if (sortedData != null) {
-                if(tempPlan != null){
-                List<IStep> steps = tempPlan.getSteps();
-                if (steps != null) {
-                    boolean done = true;
+                if (tempPlan != null) {
+                    List<IStep> steps = tempPlan.getSteps();
+                    if (steps != null) {
+                        boolean done = true;
 
-                    for (IStep s : steps) {
-                        if (s.getExecutor() == null) {
-                            done = false;
+                        for (IStep s : steps) {
+                            if (s.getExecutor() == null) {
+                                done = false;
+                            }
                         }
-                    }
 
-                    if (done) {
-                        List<ITask> tasks = new ArrayList<>();
-                        tasks.addAll(tempPlan.getSteps());
-                        sortedData.setTasks(tasks);
-                        connectionManager.applyPlan(tempPlan);
-                        resetApplyPlan();
-                        
-                        
-                        lblApplyPlan.setVisible(true);
-                        lblApplyPlan.setText("Plan is in werking gezet");
+                        if (done) {
+                            List<ITask> tasks = new ArrayList<>();
+                            tasks.addAll(tempPlan.getSteps());
+                            sortedData.setTasks(tasks);
+                            connectionManager.applyPlan(tempPlan);
+                            resetApplyPlan();
+
+                            lblApplyPlan.setVisible(true);
+                            lblApplyPlan.setText("Plan is in werking gezet");
+                        } else {
+                            showDialog("Foutmelding", "Niet alle stappen hebben een uitvoerder", true);
+                        }
+
                     } else {
-                        showDialog("Foutmelding", "Niet alle stappen hebben een uitvoerder", true);
+                        showDialog("Foutmelding", "Het plan heeft geen stappen", true);
                     }
-                
                 } else {
-                    showDialog("Foutmelding", "Het plan heeft geen stappen", true);
-                }
-                }else{
                     showDialog("Foutmelding", "Er is geen plan geselecteerd", true);
                 }
             } else {
@@ -1208,9 +1291,9 @@ public class HeadquartersController implements Initializable {
             } else {
                 showDialog("Foutmelding", "Geen uitvoerder geselecteerd", true);
             }
-            
+
             s.setSortedData(sortedData);
-           
+
             lvaSteps.getItems().remove(s);
         } else {
             showDialog("Foutmelding", "Selecteer een stap voordat je een stap toekent.", true);
@@ -1227,9 +1310,9 @@ public class HeadquartersController implements Initializable {
         if (s != null) {
             tempPlan.getSteps().remove(s.getStepnr() - 1);
             lvaSteps.getItems().remove(s);
-            for(int i = 0; i < tempPlan.getSteps().size(); i++) {
+            for (int i = 0; i < tempPlan.getSteps().size(); i++) {
                 tempPlan.getSteps().get(i).setStepnr(i + 1);
-                ((IStep)lvaSteps.getItems().get(i)).setStepnr(i + 1);
+                ((IStep) lvaSteps.getItems().get(i)).setStepnr(i + 1);
             }
         } else {
             showDialog("Foutmelding", "Selecteer een stap voordat je een stap verwijdert.", true);
@@ -1258,7 +1341,7 @@ public class HeadquartersController implements Initializable {
         ITask task
                 = (ITask) lvtTasks.getSelectionModel().getSelectedItem();
         if (task != null) {
-            if(task.getSortedData() != null) {
+            if (task.getSortedData() != null) {
                 tftTaskTitle.setText(task.getSortedData().getTitle());
                 tatTaskDescription.setText(task.getSortedData().getDescription());
             } else {
@@ -1271,9 +1354,9 @@ public class HeadquartersController implements Initializable {
             if (task.getExecutor() != null) {
                 tftExecutor.setText(task.getExecutor().toString());
             }
-            
-            if(task.getStatus() != TaskStatus.REFUSED && task.getStatus() != TaskStatus.FAILED){
-                
+
+            if (task.getStatus() != TaskStatus.REFUSED && task.getStatus() != TaskStatus.FAILED) {
+
                 cbtNewExecutor.setDisable(true);
                 btnNewTask.setDisable(true);
                 tftReason.setDisable(true);
@@ -1307,7 +1390,7 @@ public class HeadquartersController implements Initializable {
         } catch (NetworkException nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
-        
+
         lblTasks.setVisible(true);
         lblTasks.setText("Taak is gelezen");
     }
@@ -1327,16 +1410,16 @@ public class HeadquartersController implements Initializable {
                     task.setStatus(TaskStatus.SENT);
                     task.setDeclineReason(null);
                     connectionManager.sendTask(task);
-                    
+
                     lvtTasks.getItems().remove(lvtTasks.getSelectionModel().getSelectedItem());
                     lvtTasks.getSelectionModel().selectFirst();
-                    
+
                     lblTasks.setVisible(true);
                     lblTasks.setText("Taak is up-to-date");
                 } else {
                     showDialog("Foutmelding", "Geen uitvoerder geselecteerd", true);
                 }
-                
+
             }
         } catch (IllegalArgumentException iaEx) {
             showDialog("", iaEx.getMessage(), false);
@@ -1344,7 +1427,7 @@ public class HeadquartersController implements Initializable {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
     }
-    
+
     // News ----------------------------------------------------------
     /**
      * Fills the GUI with information of the selected sorted data
@@ -1368,13 +1451,13 @@ public class HeadquartersController implements Initializable {
 
         lblnMessage.setVisible(false);
     }
-    
+
     public void sendNewsItem() {
         try {
-            if(connectionManager == null) {
+            if (connectionManager == null) {
                 throw new NetworkException("Kon data niet wegschrijven");
             }
-            
+
             // Load values from GUI
             String title = tfnTitle.getText();
             String description = tanDescription.getText();
@@ -1383,16 +1466,16 @@ public class HeadquartersController implements Initializable {
             int victims = Integer.parseInt(tfnVictims.getText());
             HashSet<Situation> situations = new HashSet<>();
             situations.addAll(ccnSituations.getCheckModel().getCheckedItems());
-            
+
             // Make and send new NewsItem
-            INewsItem newsItem = new NewsItem(title, description, location, 
+            INewsItem newsItem = new NewsItem(title, description, location,
                     source, situations, victims);
             this.connectionManager.sendNewsItem(newsItem);
-            
+
             // Show message
             lblnMessage.setVisible(true);
             lblnMessage.setText("Nieuwsbericht is succesvol verzonden");
-            
+
             // Reset GUI
             tfnTitle.clear();
             tanDescription.clear();
@@ -1410,7 +1493,7 @@ public class HeadquartersController implements Initializable {
             ex.printStackTrace();
         }
     }
-    
+
     // News Update ----------------------------------------------------------
     /**
      * Fills the GUI with information of the selected newsitem
@@ -1423,7 +1506,7 @@ public class HeadquartersController implements Initializable {
             tabDescription.setText(news.getDescription());
             tfbLocation.setText(news.getLocation());
             tfbVictims.setText(String.valueOf(news.getVictims()));
-            
+
             for (Situation s : news.getSituations()) {
                 ccbSituations.getCheckModel().check(s);
             }
@@ -1438,14 +1521,13 @@ public class HeadquartersController implements Initializable {
 
         lblbMessage.setVisible(false);
     }
-    
+
     public void updateNewsItem() {
-        /**
         try {
-            if(connectionManager == null) {
+            if (connectionManager == null) {
                 throw new NetworkException("Kon data niet wegschrijven");
             }
-            
+
             // Load values from GUI
             String title = tfbTitle.getText();
             String description = tabDescription.getText();
@@ -1454,16 +1536,16 @@ public class HeadquartersController implements Initializable {
             int victims = Integer.parseInt(tfbVictims.getText());
             HashSet<Situation> situations = new HashSet<>();
             situations.addAll(ccbSituations.getCheckModel().getCheckedItems());
-            
+
             // Make and send new NewsItem
-            INewsItem newsItem = new NewsItem(title, description, location, 
+            INewsItem newsItem = new NewsItem(title, description, location,
                     source, situations, victims);
-            this.connectionManager.sendNewsItem(newsItem);
-            
+            this.connectionManager.updateNewsItem(newsItem);
+
             // Show message
             lblnMessage.setVisible(true);
             lblnMessage.setText("Nieuwsbericht is succesvol verzonden");
-            
+
             // Reset GUI
             tfnTitle.clear();
             tanDescription.clear();
@@ -1480,7 +1562,6 @@ public class HeadquartersController implements Initializable {
             showDialog("Fout", ex.getMessage(), false);
             ex.printStackTrace();
         }
-        **/
     }
 
     public void logOutClick() {
