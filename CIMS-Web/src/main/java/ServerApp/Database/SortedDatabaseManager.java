@@ -127,7 +127,6 @@ public class SortedDatabaseManager extends DatabaseManager {
             sortedData.setInt(8, sorted.getQuality());
             sortedData.execute();
 
-//            System.out.println("Insert sortedData succeeded");
             Iterator it = tags.iterator();
             while (it.hasNext()) {
                 // Get element
@@ -142,8 +141,6 @@ public class SortedDatabaseManager extends DatabaseManager {
             }
 
             ServerMain.unsortedDatabaseManager.updateStatusUnsortedData(sorted);
-
-//            System.out.println("insertToSortedData succeeded");
             succeed = true;
         } catch (SQLException ex) {
             System.out.println("insertToSortedData failed: " + ex);
@@ -241,13 +238,9 @@ public class SortedDatabaseManager extends DatabaseManager {
                                 .getSortedDataTasks(sortedItem));
 
                         sorted.add(sortedItem);
-//                        System.out.println("Getting sorted object  succeed");
-
                     }
                 }
-
             }
-//            System.out.println("Getting sorted object getFromSortedData succeed");
         } catch (SQLException ex) {
             System.out.println("getFromSortedData failed: " + ex);
             return null;
@@ -280,17 +273,8 @@ public class SortedDatabaseManager extends DatabaseManager {
             requestData.execute();
 
             //Find id from this object
-            int id = 0;
-            query = "SELECT MAX(ID) FROM " + requestsTable;
-            PreparedStatement readData = conn.prepareStatement(query);
-            ResultSet result = readData.executeQuery();
+            int id = super.getMaxID(requestsTable);
 
-            //getting unsorteddata
-            while (result.next()) {
-                id = result.getInt(1);
-            }
-
-//            System.out.println("insertDataRequest object insert");
             Iterator it = tags.iterator();
             while (it.hasNext()) {
                 // Get tagid
@@ -303,7 +287,6 @@ public class SortedDatabaseManager extends DatabaseManager {
                 requestData.setString(2, element.toString());
                 requestData.execute();
             }
-//            System.out.println("insertDataRequest succeeded");
             succeed = true;
         } catch (SQLException ex) {
             System.out.println("insertDataRequest failed: " + ex);

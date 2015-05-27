@@ -23,8 +23,8 @@ import javax.servlet.http.HttpServlet;
  */
 public class ServerMain {
     
-    public static String SERVER_ADDRESS = "127.0.0.1";
-    public static int SERVER_PORT = 9090;
+    public static final String SERVER_ADDRESS = "127.0.0.1";
+    public static final int SERVER_PORT = 9090;
 
     public static SortedDatabaseManager sortedDatabaseManager = null;
     public static UnsortedDatabaseManager unsortedDatabaseManager = null;

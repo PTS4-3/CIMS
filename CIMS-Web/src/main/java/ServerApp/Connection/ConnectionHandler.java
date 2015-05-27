@@ -10,15 +10,14 @@ import Shared.Connection.SerializeUtils;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.nio.channels.ClosedSelectorException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.SelectorProvider;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -103,6 +102,14 @@ public class ConnectionHandler implements Runnable {
         this.selector.wakeup();
     }
 
+    public synchronized void close() {
+        try {
+            this.selector.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
     /**
      * The only thread that can make changes to a channel's keys, as they are
      * not thread-safe. It checks channels for activity (either from send() or
@@ -110,7 +117,8 @@ public class ConnectionHandler implements Runnable {
      */
     @Override
     public void run() {
-        while (true) {
+        boolean isRunning = true;
+        while (isRunning) {
             try {
                 // Process any pending changes
                 synchronized (this.pendingChanges) {
@@ -147,6 +155,14 @@ public class ConnectionHandler implements Runnable {
                     } else if (key.isWritable()) {
                         this.write(key);
                     }
+                }
+            } catch (ClosedSelectorException ex) {
+                // Thrown by Servlet shutting down
+                try {
+                    isRunning = false;
+                    this.serverChannel.close();
+                } catch (IOException ex1) {
+                    ex1.printStackTrace();
                 }
             } catch (Exception e) {
                 e.printStackTrace();

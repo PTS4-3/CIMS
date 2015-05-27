@@ -137,9 +137,7 @@ public class TasksDatabaseManager extends DatabaseManager {
             }
             ITask outputItem = new Task(outputID, outputTitle, outputDescription,
                     outputStatus, outputData, outputExecutorTag, null);
-//            if (!outputDeclineReason.isEmpty()) {
             outputItem.setDeclineReason(outputDeclineReason);
-//            }
             output.add(outputItem);
         }
 
@@ -173,7 +171,7 @@ public class TasksDatabaseManager extends DatabaseManager {
         String execUserName = null;
         query = "SELECT * FROM " + userTaskTable
                 + " WHERE TASKID = ?";
-        prepStat = conn.prepareStatement(query);
+        prepStat = super.conn.prepareStatement(query);
         prepStat.setInt(1, taskID);
         rs = prepStat.executeQuery();
         while (rs.next()) {

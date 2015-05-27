@@ -14,38 +14,19 @@ import javax.servlet.http.HttpServlet;
  *
  * @author Kargathia
  */
-public class ServerMainServlet extends HttpServlet{
+public class ServerMainServlet extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-
-        System.out.println("ServerMain servlet init");
         ServerMain.startDatabases(getServletContext().getRealPath("/WEB-INF/"));
         ServerMain.startConnection();
-
-
-        ServletContextListener listener = new ServletContextListener() {
-
-            @Override
-            public void contextInitialized(ServletContextEvent sce) {
-                System.out.println("-----CONTEXT INIT");
-            }
-
-            @Override
-            public void contextDestroyed(ServletContextEvent sce) {
-                System.out.println("------- CONTEXT DESTROYED");
-                System.exit(0);
-            }
-        };
-
-        getServletContext().addListener(listener);
     }
 
     @Override
     public void destroy() {
-//        super.destroy();
-        System.out.println("------------ SERVLET DESTROYED");
-        System.exit(0);
+//        System.out.println("------------ SERVLET DESTROYED");
+        ServerMain.connectionHandler.close();
+        super.destroy();
     }
 
 }

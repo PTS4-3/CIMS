@@ -17,6 +17,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,6 +31,7 @@ class DatabaseManager {
 
     protected Connection conn;
     private Properties props;
+    private final Lock lock = new ReentrantLock();
 
     /**
      *
@@ -97,12 +101,15 @@ class DatabaseManager {
      */
     protected boolean openConnection() {
         try {
+            if(!this.lock.tryLock(5000, TimeUnit.MILLISECONDS)){
+                System.out.println("ERROR: Database lock timeout");
+                return false;
+            }
             System.setProperty("jdbc.drivers", props.getProperty("driver"));
             this.conn = DriverManager.getConnection(
                     (String) props.get("url"),
                     (String) props.get("username"),
                     (String) props.get("password"));
-//            System.out.println("Connection open succeeded");
             return true;
         } catch (Exception ex) {
             System.out.println("Connection open failed: " + ex);
@@ -115,13 +122,13 @@ class DatabaseManager {
      * closing connection
      */
     protected void closeConnection() {
+        this.lock.unlock();
         if (conn == null) {
             return;
         }
 
         try {
             conn.close();
-//            System.out.println("Connection close succeeded");
         } catch (SQLException ex) {
             System.out.println("Connection close failed: " + ex);
         } finally {
