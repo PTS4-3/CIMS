@@ -47,11 +47,13 @@ class DatabaseManager {
         
         try (FileInputStream in = new FileInputStream(fileName)) {
             props.load(in);
-
+            Class.forName("com.mysql.jdbc.Driver");
         } catch (FileNotFoundException ex) {
             System.out.println("file not found in database configure: " + ex.getMessage());
         } catch (IOException ex) {
             System.out.println("IOException in database configure: " + ex.getMessage());
+        } catch (ClassNotFoundException ex) {
+            System.out.println("ClassNotFoundException in database configure: " + ex.getMessage());
         }
 
         try {

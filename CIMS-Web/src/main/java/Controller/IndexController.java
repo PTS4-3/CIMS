@@ -11,10 +11,13 @@ import Shared.Data.Advice;
 import Shared.Data.INewsItem;
 import Shared.Data.NewsItem;
 import Shared.Data.Situation;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 
 /**
@@ -36,6 +39,7 @@ public class IndexController {
             news.add(new NewsItem(i,"Title" + i, "Description" + i, "Location" + i,
             "Source" + 1, situations, 0, date));
         }
+        
         sortedDatabaseManager = new SortedDatabaseManager(servletContext.getRealPath("/WEB-INF/sorteddatabase.properties"));
     }
     
