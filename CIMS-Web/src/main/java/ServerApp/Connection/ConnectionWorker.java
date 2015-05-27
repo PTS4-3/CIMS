@@ -571,7 +571,7 @@ public class ConnectionWorker implements Runnable {
     private ClientBoundTransaction getNewsItems(ServerBoundTransaction input) {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
         try {
-            synchronized (TASKSLOCK) {
+            synchronized (SORTEDLOCK) {
                 return output.setResult(
                         ServerMain.sortedDatabaseManager.getNewsItems());
             }
