@@ -573,7 +573,7 @@ public class ConnectionWorker implements Runnable {
         try {
             synchronized (TASKSLOCK) {
                 return output.setResult(
-                        ServerMain.tasksDatabaseManager.getNewsItems());
+                        ServerMain.sortedDatabaseManager.getNewsItems());
             }
         } catch (Exception ex) {
             ex.printStackTrace();

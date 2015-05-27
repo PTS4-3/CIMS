@@ -579,6 +579,40 @@ public class SortedDatabaseManager extends DatabaseManager {
 
         return this.assignSituations(newsItems);
     }
+    
+    /**
+     *
+     * @return all NewsItems
+     */
+    public List<INewsItem> getNewsItems() {
+        if (!openConnection()) {
+            return null;
+        }
+
+        // key: newsItem ID, value = situation IDs
+        HashMap<NewsItem, Set<Integer>> newsItems;
+
+        List<INewsItem> output = null;
+        String query;
+        PreparedStatement prepStat;
+        ResultSet rs;
+
+        try {
+            query = "SELECT * FROM " + newsItemTable;
+            prepStat = conn.prepareCall(query);
+            rs = prepStat.executeQuery();
+            newsItems = this.extractNewsItems(rs);
+
+        } catch (SQLException ex) {
+            System.out.println("failed to get news items: " + ex.getMessage());
+            Logger.getLogger(SortedDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
+            newsItems = null;
+        } finally {
+            closeConnection();
+        }
+
+        return this.assignSituations(newsItems);
+    }
 
     /**
      * Inserts given item. Returns item including ID.
