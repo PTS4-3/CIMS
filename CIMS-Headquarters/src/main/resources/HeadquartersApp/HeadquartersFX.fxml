@@ -127,18 +127,9 @@
                 <Label layoutX="630.0" layoutY="297.0" text="Slachtoffers" />
                 <Label layoutX="630.0" layoutY="259.0" text="Locatie" />
                 <TextField fx:id="tfbTitle" layoutX="790.0" layoutY="52.0" prefWidth="396.0" />
-                <TextField layoutX="790.0" layoutY="256.0" onAction="#tfbLocation" prefWidth="396.0" />
-                <TextField layoutX="790.0" layoutY="294.0" onAction="#tfbVictims" prefWidth="396.0" />
+                <TextField fx:id="tfbLocation" layoutX="790.0" layoutY="256.0" prefWidth="396.0" />
+                <TextField fx:id="tfbVictims" layoutX="790.0" layoutY="294.0" prefWidth="396.0" />
                 <TextArea fx:id="tabDescription" layoutX="790.0" layoutY="91.0" prefHeight="148.0" prefWidth="396.0" wrapText="true" />
-                <ComboBox layoutX="790.0" layoutY="333.0" prefWidth="396.0">
-                  <items>
-                    <FXCollections fx:factory="observableArrayList">
-                      <String fx:value="Item 1" />
-                      <String fx:value="Item 2" />
-                      <String fx:value="Item 3" />
-                    </FXCollections>
-                  </items>
-                </ComboBox>
               </children>
             </AnchorPane>
           </content>

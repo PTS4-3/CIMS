@@ -421,6 +421,7 @@ public class HeadquartersController implements Initializable {
             this.connectionManager.getData();
             this.connectionManager.getAllSortedData();
             this.connectionManager.getSituations();
+            //this.connectionManager.getNewsItems();
             UserRole role = UserRole.HQ;
 
             if (user instanceof IHQChief) {
@@ -1498,6 +1499,21 @@ public class HeadquartersController implements Initializable {
     /**
      * Fills the GUI with information of the selected newsitem
      */
+    public void displayNews(List<INewsItem> news) {
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                lvbNews.getItems().removeAll(news);
+                lvbNews.getItems().addAll(news);
+                if (lvbNews.getSelectionModel().getSelectedItem() == null) {
+                    lvbNews.getSelectionModel().selectFirst();
+                }
+            }
+
+        });
+    }
+    
     public void selectNewsItem() {
         INewsItem news = (INewsItem) lvbNews.getSelectionModel().getSelectedItem();
         if (news != null) {
