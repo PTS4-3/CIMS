@@ -421,7 +421,7 @@ public class HeadquartersController implements Initializable {
             this.connectionManager.getData();
             this.connectionManager.getAllSortedData();
             this.connectionManager.getSituations();
-            //this.connectionManager.getNewsItems();
+            this.connectionManager.getNewsItems();
             UserRole role = UserRole.HQ;
 
             if (user instanceof IHQChief) {

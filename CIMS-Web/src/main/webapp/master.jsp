@@ -31,7 +31,6 @@
                 <nav>
                     <ul>
                         <li><a href="index.jsp">Home</a></li>
-                        <li><a href="newsItem.jsp">Test</a></li>
                     </ul>
                 </nav>
             </div>
