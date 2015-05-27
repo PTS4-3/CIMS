@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServlet;
 public class ServerMain {
     
     public static String SERVER_ADDRESS = "127.0.0.1";
+    public static int SERVER_PORT = 9090;
 
     public static SortedDatabaseManager sortedDatabaseManager = null;
     public static UnsortedDatabaseManager unsortedDatabaseManager = null;
@@ -61,8 +62,10 @@ public class ServerMain {
     public static void startConnection() {
         try {
             connectionHandler = new ConnectionHandler(
-                    InetAddress.getByName(SERVER_ADDRESS), 9090);
-            new Thread(connectionHandler).start();         
+                    InetAddress.getByName(SERVER_ADDRESS), SERVER_PORT);
+            Thread t = new Thread(connectionHandler);
+            t.setDaemon(true);
+            t.start();
             pushHandler = new PushHandler();
             System.out.println("connection started");
         } catch (IOException e) {
