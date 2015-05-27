@@ -40,8 +40,8 @@ public class IndexController {
             "Source" + 1, situations, 0, date));
         }
 
-        ServerMain.startDatabases(servletContext.getRealPath("/WEB-INF/"));
-//        sortedDatabaseManager = new SortedDatabaseManager(servletContext.getRealPath("/WEB-INF/sorteddatabase.properties"));
+        //ServerMain.startDatabases(servletContext.getRealPath("/WEB-INF/"));
+        sortedDatabaseManager = new SortedDatabaseManager(servletContext.getRealPath("/WEB-INF/sorteddatabase.properties"));
     }
     
     public List<INewsItem> getNewsItems(int offset, int limit) {
@@ -51,11 +51,11 @@ public class IndexController {
 //            return news.subList(offset, news.size());
 //        }
         
-        return ServerMain.sortedDatabaseManager.getNewsItems(offset, limit);
+        return sortedDatabaseManager.getNewsItems(offset, limit);
     }
     
     public int getNewsItemCount() {
 //        return news.size();
-        return ServerMain.sortedDatabaseManager.getNewsItemCount();
+        return sortedDatabaseManager.getNewsItemCount();
     }
 }
