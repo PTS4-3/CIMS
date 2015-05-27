@@ -31,11 +31,11 @@ public class webController extends HttpServlet{
     public webController(){
         advices.add(new Advice(100, "Sluit ramen en deuren"));
         situations.add(new Situation(10, advices, "Gevaarlijke stoffen"));
-        news.add(new NewsItem(1,"Title1", "Description1", "Location1",
+        news.add(new NewsItem(1,"Title1", "Description1", "Rachelsmolen, Eindhoven",
             "Source1", situations, 0, date));
-        news.add(new NewsItem(2,"Title2", "Description2", "Location2",
+        news.add(new NewsItem(2,"Title2", "Description2", "Rachelsmolen, Eindhoven",
             "Source2", situations, 1, date));
-        news.add(new NewsItem(3,"Title3", "Description3", "Location3",
+        news.add(new NewsItem(3,"Title3", "Description3", "Rachelsmolen, Eindhoven",
             "Source3", situations, 2, date));
 
     }

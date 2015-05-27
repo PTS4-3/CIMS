@@ -20,6 +20,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <title>CIMS 112 Nieuws - <decorator:title/></title>
         <link href="style.css" rel="stylesheet" type="text/css" />
+        <link href="lightbox/css/lightbox.css" rel="stylesheet" type="text/css" />
     </head>
     <body>
         <header>
