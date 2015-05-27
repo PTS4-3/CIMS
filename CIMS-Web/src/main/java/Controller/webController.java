@@ -5,6 +5,7 @@
  */
 package Controller;
 
+import ServerApp.ServerMain;
 import Shared.Data.Advice;
 import Shared.Data.NewsItem;
 import Shared.Data.Situation;
@@ -38,15 +39,6 @@ public class webController extends HttpServlet{
         news.add(new NewsItem(3,"Title3", "Description3", "Rachelsmolen, Eindhoven",
             "Source3", situations, 2, date));
 
-    }
-    
-    public String goToNews(){
-        String redirectURL = "news.jsp";
-        return redirectURL;
-    }
-    
-    public List<NewsItem> getNews(){
-        return news;
     }
     
     public NewsItem getNewsWithID(String ID){
@@ -99,7 +91,7 @@ public class webController extends HttpServlet{
             return "images/icon_weer.png";
         }
         else{
-        return null;
+            return null;
         }
     }
 }
