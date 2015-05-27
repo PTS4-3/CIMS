@@ -146,6 +146,9 @@ public class ConnectionWorker implements Runnable {
                 case NEWSITEM_UPDATE:
                     outgoing = this.updateNewsItem(incoming);
                     break;
+                case NEWSITEMS_GET:
+                    outgoing = this.getNewsItems(incoming);
+                    break;
                 case SITUATIONS_GET:
                     outgoing = this.getSituations(incoming);
                     break;
@@ -558,6 +561,19 @@ public class ConnectionWorker implements Runnable {
             synchronized (SORTEDLOCK) {
                 return output.setResult(
                         ServerMain.sortedDatabaseManager.updateNewsItem(item));
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return output.setError();
+        }
+    }
+    
+    private ClientBoundTransaction getNewsItems(ServerBoundTransaction input) {
+        ClientBoundTransaction output = new ClientBoundTransaction(input);
+        try {
+            synchronized (TASKSLOCK) {
+                return output.setResult(
+                        ServerMain.tasksDatabaseManager.getNewsItems());
             }
         } catch (Exception ex) {
             ex.printStackTrace();

@@ -10,12 +10,10 @@ import HeadquartersApp.UI.HeadquartersLogInController;
 import Shared.Connection.Transaction.ClientBoundTransaction;
 import Shared.Connection.Transaction.ConnState;
 import Shared.Connection.IResponseHandler;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import Shared.Connection.SerializeUtils;
-import Shared.Connection.Transaction.ConnCommand;
 import Shared.Data.IData;
+import Shared.Data.INewsItem;
 import Shared.Data.ISortedData;
 import Shared.Data.Situation;
 import Shared.NetworkException;
@@ -119,6 +117,9 @@ class ResponseHandler implements IResponseHandler {
                             break;
                         case USERS_SIGN_IN:
                             this.handleLoginResult(transaction);
+                            break;
+                        case NEWSITEMS_GET:
+                            this.handleNewsItemsResult(transaction);
                             break;
                         case SITUATIONS_GET:
                             this.handleSituationsResult(transaction);
@@ -231,6 +232,17 @@ class ResponseHandler implements IResponseHandler {
             if (transaction.result == ConnState.COMMAND_SUCCESS) {
                 List<ITask> tasks = (List) transaction.data;
                 this.hqController.displayTasks(tasks);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    private void handleNewsItemsResult(ClientBoundTransaction transaction) {
+        try {
+            if (transaction.result == ConnState.COMMAND_SUCCESS) {
+                List<INewsItem> news = (List) transaction.data;
+                this.hqController.displayNewsItems(news);
             }
         } catch (Exception ex) {
             ex.printStackTrace();

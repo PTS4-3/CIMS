@@ -428,6 +428,22 @@ public class ConnectionHandler {
             ex.printStackTrace();
         }
     }
+    
+    /**
+     * Gets all NewsItems from server and sends returnvalue to
+     * hqController.displayNewsItems()
+     */
+    public void getNewsItems() {
+        ServerBoundTransaction transaction
+                = new ServerBoundTransaction(this.getCommandID(),
+                        ConnCommand.NEWSITEMS_GET);
+        try {
+            this.client.send(SerializeUtils.serialize(transaction), responder);
+            this.registerCommandSent(transaction);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 
     /**
      * Gets all situations from server and sends the returnvalue to

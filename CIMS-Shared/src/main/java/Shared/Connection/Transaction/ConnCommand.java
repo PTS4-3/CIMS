@@ -126,6 +126,11 @@ public enum ConnCommand {
     NEWSITEM_UPDATE,
     /**
      * params: void <br>
+     * result: List&lt;NewsItem&gt;
+     */
+    NEWSITEMS_GET,
+    /**
+     * params: void <br>
      * result: List&lt;Situation&gt;
      */
     SITUATIONS_GET,
