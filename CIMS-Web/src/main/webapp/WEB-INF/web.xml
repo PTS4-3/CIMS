@@ -11,7 +11,7 @@
     </servlet>
     <servlet>
         <servlet-name>ServerMain</servlet-name>
-        <servlet-class>ServerApp.ServerMain</servlet-class>
+        <servlet-class>ServerApp.ServerMainServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>

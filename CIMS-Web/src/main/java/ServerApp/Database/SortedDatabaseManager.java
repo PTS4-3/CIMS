@@ -51,6 +51,58 @@ public class SortedDatabaseManager extends DatabaseManager {
         super(propsFileName);
     }
 
+    private HashMap<NewsItem, Set<Integer>> extractNewsItems(ResultSet rs) throws SQLException {
+        // key: newsItem ID
+        HashMap<Integer, NewsItem> newsItems;
+        // key: newsItem ID, value = situation IDs
+        HashMap<NewsItem, Set<Integer>> newsSituations;
+
+        newsItems = new HashMap<>();
+        newsSituations = new HashMap<>();
+        while (rs.next()) {
+                // query will display items as a completely expanded tree
+            // with total number of rows being the sum of all newsitem situations
+
+            // first checks newsitems
+            // only generates a new item if ID is not duplicate
+            int newsID = rs.getInt("ni.ID");
+            if (newsItems.get(newsID) == null) {
+                String title = rs.getString("ni.TITLE");
+                String newsDesc = rs.getString("ni.DESCRIPTION");
+                String loc = rs.getString("ni.LOCATION");
+                String source = rs.getString("ni.SOURCE");
+                int victims = rs.getInt("ni.VICTIMS");
+                Date date = rs.getDate("ni.ITEMDATE");
+                NewsItem item = new NewsItem(newsID, title, newsDesc,
+                        loc, source, null, victims, date);
+                newsItems.put(newsID, item);
+                newsSituations.put(item, new HashSet<>());
+            }
+            // adds situation ID
+            int sitID = rs.getInt("ns.SITUATIONID");
+            if (sitID > 0) {
+                newsSituations.get(newsItems.get(newsID)).add(sitID);
+            }
+        }
+        return newsSituations;
+    }
+
+    private List<INewsItem> assignSituations(HashMap<NewsItem, Set<Integer>> newsItems) {
+        if (newsItems == null) {
+            return null;
+        }
+
+        // gets all unique situations from database, then assigns them on ID
+        // prevents constantly regenerating a limited number of situations/advices
+        HashMap<Integer, Situation> situations = this.getSituationsMap();
+        for (NewsItem item : newsItems.keySet()) {
+            for (int sitID : newsItems.get(item)) {
+                item.addSituation(situations.get(sitID));
+            }
+        }
+        return new ArrayList<>(newsItems.keySet());
+    }
+
     /**
      * @param sorted object sorteddata
      * @return succeed on attempting to insert sorted data.
@@ -496,10 +548,8 @@ public class SortedDatabaseManager extends DatabaseManager {
             return null;
         }
 
-        // key: newsItem ID
-        HashMap<Integer, NewsItem> newsItems;
         // key: newsItem ID, value = situation IDs
-        HashMap<Integer, Set<Integer>> newsSituations;
+        HashMap<NewsItem, Set<Integer>> newsItems;
 
         List<INewsItem> output = null;
         String query;
@@ -517,56 +567,17 @@ public class SortedDatabaseManager extends DatabaseManager {
             prepStat.setInt(1, startIndex);
             prepStat.setInt(2, limit);
             rs = prepStat.executeQuery();
+            newsItems = this.extractNewsItems(rs);
 
-            newsItems = new HashMap<>();
-            newsSituations = new HashMap<>();
-            while (rs.next()) {
-                // query will display items as a completely expanded tree
-                // with total number of rows being the sum of all newsitem situations
-
-                // first checks newsitems
-                // only generates a new item if ID is not duplicate
-                int newsID = rs.getInt("ni.ID");
-                if (newsItems.get(newsID) == null) {
-                    String title = rs.getString("ni.TITLE");
-                    String newsDesc = rs.getString("ni.DESCRIPTION");
-                    String loc = rs.getString("ni.LOCATION");
-                    String source = rs.getString("ni.SOURCE");
-                    int victims = rs.getInt("ni.VICTIMS");
-                    Date date = rs.getDate("ni.ITEMDATE");
-                    newsItems.put(newsID, new NewsItem(newsID, title, newsDesc,
-                            loc, source, null, victims, date));
-                    newsSituations.put(newsID, new HashSet<>());
-                }
-                // adds situation ID
-                int sitID = rs.getInt("ns.SITUATIONID");
-                if (sitID > 0) {
-                    newsSituations.get(newsID).add(sitID);
-                }
-            }
         } catch (SQLException ex) {
             System.out.println("failed to get news items: " + ex.getMessage());
             Logger.getLogger(SortedDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
             newsItems = null;
-            newsSituations = null;
         } finally {
             closeConnection();
         }
 
-        // assigns situations to newsitems
-        if (newsItems != null) {
-            // gets all unique situations from database, then assigns them on ID
-            // prevents constantly regenerating a limited number of situations/advices
-            // done outside open connection as this opens a new one
-            HashMap<Integer, Situation> situations = this.getSituationsMap();
-            for (int newsID : newsSituations.keySet()) {
-                for (int sitID : newsSituations.get(newsID)) {
-                    newsItems.get(newsID).addSituation(situations.get(sitID));
-                }
-            }
-            output = new ArrayList<>(newsItems.values());
-        }
-        return output;
+        return this.assignSituations(newsItems);
     }
 
     /**
@@ -696,8 +707,8 @@ public class SortedDatabaseManager extends DatabaseManager {
      *
      * @return total number of newsitems present in database.
      */
-    public int getNewsItemCount(){
-        if(!openConnection()){
+    public int getNewsItemCount() {
+        if (!openConnection()) {
             return -1;
         }
 
@@ -708,7 +719,7 @@ public class SortedDatabaseManager extends DatabaseManager {
         try {
             query = "SELECT COUNT(ID) FROM " + newsItemTable;
             rs = conn.prepareStatement(query).executeQuery();
-            while(rs.next()){
+            while (rs.next()) {
                 output = rs.getInt("COUNT(ID)");
             }
         } catch (SQLException ex) {
@@ -716,6 +727,44 @@ public class SortedDatabaseManager extends DatabaseManager {
             Logger.getLogger(SortedDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             closeConnection();
+        }
+        return output;
+    }
+
+    public INewsItem getNewsItemByID(int ID) {
+        if (ID < 0 || !openConnection()) {
+            return null;
+        }
+
+        // key: newsItem ID, value = situation IDs
+        HashMap<NewsItem, Set<Integer>> newsItems = null;
+
+        INewsItem output = null;
+        String query;
+        PreparedStatement prepStat;
+        ResultSet rs;
+
+        try {
+            query = "SELECT ni.*, ns.*"
+                    + " FROM (SELECT * FROM " + newsItemTable
+                    + " WHERE ID = ?) AS ni"
+                    + " LEFT JOIN " + newsSituationsTable + " AS ns"
+                    + " ON ni.ID = ns.NEWSID"
+                    + " ORDER BY ni.ID";
+            prepStat = conn.prepareStatement(query);
+            prepStat.setInt(1, ID);
+            rs = prepStat.executeQuery();
+            newsItems = this.extractNewsItems(rs);
+        } catch (SQLException ex) {
+            System.out.println("failed to get newsitem by ID " + ID);
+            ex.printStackTrace();
+        } finally {
+            closeConnection();
+        }
+
+        List<INewsItem> outputList = this.assignSituations(newsItems);
+        if (outputList != null) {
+            output = outputList.get(0);
         }
         return output;
     }

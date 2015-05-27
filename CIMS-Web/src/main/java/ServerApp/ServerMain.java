@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServlet;
  *
  * @author Kargathia
  */
-public class ServerMain extends HttpServlet{
+public class ServerMain {
     
     public static String SERVER_ADDRESS = "127.0.0.1";
 
@@ -33,14 +33,6 @@ public class ServerMain extends HttpServlet{
     public static PushHandler pushHandler = null;
 
     public static DummyDatabaseManager dummyDatabaseManager = null;
-
-    @Override
-    public void init() throws ServletException {
-
-        System.out.println("ServerMain servlet init");
-        startDatabases(getServletContext().getRealPath("/WEB-INF/"));
-        startConnection();
-    }
 
     /**
      * @param args the command line arguments
