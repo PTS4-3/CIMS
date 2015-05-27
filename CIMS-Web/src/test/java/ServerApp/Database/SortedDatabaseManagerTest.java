@@ -50,7 +50,7 @@ public class SortedDatabaseManagerTest {
     @BeforeClass
     public static void setUpClass() {
         if (ServerMain.sortedDatabaseManager == null) {
-            ServerMain.startDatabases();
+            ServerMain.startDatabases(null);
         }
         myDB = ServerMain.sortedDatabaseManager;
         myDB.resetDatabase();

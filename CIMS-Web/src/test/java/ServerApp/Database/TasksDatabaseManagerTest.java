@@ -45,7 +45,7 @@ public class TasksDatabaseManagerTest {
     @BeforeClass
     public static void setUpClass() {
         if (ServerMain.sortedDatabaseManager == null) {
-            ServerMain.startDatabases();
+            ServerMain.startDatabases(null);
         }
         myDB = ServerMain.tasksDatabaseManager;
         ServerMain.sortedDatabaseManager.resetDatabase();

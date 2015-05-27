@@ -35,7 +35,7 @@ public class UnsortedDatabaseManagerTest {
     @BeforeClass
     public static void setUpClass() {
         if(ServerMain.sortedDatabaseManager == null){
-            ServerMain.startDatabases();
+            ServerMain.startDatabases(null);
         }   
         myDB = ServerMain.unsortedDatabaseManager;
         myDB.resetDatabase();

@@ -24,7 +24,7 @@ public class ResetDB {
     @BeforeClass
     public static void setUp() {
         if(ServerMain.sortedDatabaseManager == null){
-            ServerMain.startDatabases();
+            ServerMain.startDatabases(null);
         }
         assertTrue(ServerMain.sortedDatabaseManager.resetDatabase());
         assertTrue(ServerMain.tasksDatabaseManager.resetDatabase());

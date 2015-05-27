@@ -36,14 +36,20 @@ public class ServerMain {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        startDatabases();
+        startDatabases(null);
         startConnection();
     }
 
-    public static void startDatabases() {
-        sortedDatabaseManager = new SortedDatabaseManager("sorteddatabase.properties");
-        unsortedDatabaseManager = new UnsortedDatabaseManager("unsorteddatabase.properties");
-        tasksDatabaseManager = new TasksDatabaseManager("taskdatabase.properties");
+    public static void startDatabases(String baseDir) {
+        if(baseDir == null){
+            baseDir = "";
+        } else if (!baseDir.endsWith("\\")){
+            baseDir+= "\\";
+        }
+        System.out.println("baseDir: " + baseDir);
+        sortedDatabaseManager = new SortedDatabaseManager(baseDir + "sorteddatabase.properties");
+        unsortedDatabaseManager = new UnsortedDatabaseManager(baseDir + "unsorteddatabase.properties");
+        tasksDatabaseManager = new TasksDatabaseManager(baseDir + "taskdatabase.properties");
 
         planExecutorHandler = new PlanExecutorHandler();
 
