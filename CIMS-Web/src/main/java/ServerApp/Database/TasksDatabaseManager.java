@@ -208,6 +208,7 @@ public class TasksDatabaseManager extends DatabaseManager {
      */
     public ITask insertNewTask(ITask newTask) {
         if (!openConnection() || (newTask == null)) {
+            closeConnection();
             return null;
         }
         ITask output = null;
@@ -282,6 +283,7 @@ public class TasksDatabaseManager extends DatabaseManager {
         }
 
         if (!openConnection() || (input == null)) {
+            closeConnection();
             return null;
         }
 
@@ -344,6 +346,7 @@ public class TasksDatabaseManager extends DatabaseManager {
      */
     public ITask getTask(int ID) {
         if (!openConnection() || (ID == -1)) {
+            closeConnection();
             return null;
         }
         ITask output = null;
@@ -378,6 +381,7 @@ public class TasksDatabaseManager extends DatabaseManager {
      */
     public boolean updateTask(ITask input) {
         if (!openConnection() || (input == null)) {
+            closeConnection();
             return false;
         }
         boolean output = false;
@@ -427,6 +431,7 @@ public class TasksDatabaseManager extends DatabaseManager {
      */
     public IUser getUser(String userName) {
         if (!openConnection() || (userName == null)) {
+            closeConnection();
             return null;
         }
         IUser output = null;
@@ -462,6 +467,7 @@ public class TasksDatabaseManager extends DatabaseManager {
      */
     public List<IServiceUser> getServiceUsers() {
         if (!openConnection()) {
+            closeConnection();
             return null;
         }
         List<IServiceUser> output = null;
@@ -505,6 +511,7 @@ public class TasksDatabaseManager extends DatabaseManager {
      */
     public List<ITask> getTasks(String execUserName, HashSet<TaskStatus> filter) {
         if (!openConnection() || filter == null) {
+            closeConnection();
             return null;
         }
         List<ITask> output = null;
@@ -571,6 +578,7 @@ public class TasksDatabaseManager extends DatabaseManager {
      */
     public IUser loginUser(String userName, String password) {
         if (!openConnection() || (userName == null) || (password == null)) {
+            closeConnection();
             return null;
         }
         IUser output = null;
@@ -612,6 +620,7 @@ public class TasksDatabaseManager extends DatabaseManager {
      */
     public List<IPlan> getTemplatePlans(HashSet<String> keywords) {
         if (!openConnection() || (keywords == null)) {
+            closeConnection();
             return null;
         }
         List<IPlan> output = null;
@@ -757,6 +766,7 @@ public class TasksDatabaseManager extends DatabaseManager {
      */
     public List<ITask> getSortedDataTasks(ISortedData input) {
         if (!openConnection() || (input == null)) {
+            closeConnection();
             return null;
         }
         HashMap<Integer, ITask> output = null;

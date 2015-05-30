@@ -73,6 +73,7 @@ public class UnsortedDatabaseManager extends DatabaseManager {
         String source;
 
         if (!openConnection()) {
+            closeConnection();
             return null;
         }
 
@@ -122,6 +123,7 @@ public class UnsortedDatabaseManager extends DatabaseManager {
             return true;
         }
         if (!openConnection()) {
+            closeConnection();
             return false;
         }
 
@@ -154,6 +156,7 @@ public class UnsortedDatabaseManager extends DatabaseManager {
      */
     public boolean updateStatusUnsortedData(IData data) {
         if (!openConnection()) {
+            closeConnection();
             return false;
         }
 
@@ -186,6 +189,7 @@ public class UnsortedDatabaseManager extends DatabaseManager {
      */
     public boolean updateUnsortedData(IData iData) {
         if (!openConnection()) {
+            closeConnection();
             return false;
         }
 
@@ -219,6 +223,7 @@ public class UnsortedDatabaseManager extends DatabaseManager {
      */
     public boolean discardUnsortedData(IData iData) {
         if (!openConnection()) {
+            closeConnection();
             return false;
         }
 
@@ -248,6 +253,7 @@ public class UnsortedDatabaseManager extends DatabaseManager {
      */
     public IData getDataItem(int id) {
         if (!openConnection()) {
+            closeConnection();
             return null;
         }
         IData unsorted = null;
@@ -287,6 +293,7 @@ public class UnsortedDatabaseManager extends DatabaseManager {
      */
     public List<IData> getSentData(String source) {
         if (!openConnection()) {
+            closeConnection();
             return null;
         }
         List<IData> unsorted = new ArrayList();

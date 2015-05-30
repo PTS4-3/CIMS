@@ -109,6 +109,7 @@ public class SortedDatabaseManager extends DatabaseManager {
      */
     public boolean insertToSortedData(ISortedData sorted) {
         if (!openConnection()) {
+            closeConnection();
             return false;
         }
         Set<Tag> tags = sorted.getTags();
@@ -157,6 +158,7 @@ public class SortedDatabaseManager extends DatabaseManager {
      */
     public List<ISortedData> getFromSortedData(HashSet<Tag> info) {
         if (!openConnection()) {
+            closeConnection();
             return null;
         }
 
@@ -256,6 +258,7 @@ public class SortedDatabaseManager extends DatabaseManager {
      */
     public boolean insertDataRequest(IDataRequest data) {
         if (!openConnection()) {
+            closeConnection();
             return false;
         }
 
@@ -304,6 +307,7 @@ public class SortedDatabaseManager extends DatabaseManager {
      */
     public List<IDataRequest> getUpdateRequests(HashSet tags) {
         if (!openConnection()) {
+            closeConnection();
             return null;
         }
 
@@ -399,6 +403,7 @@ public class SortedDatabaseManager extends DatabaseManager {
      */
     public ISortedData getFromSortedData(int ID) {
         if (!openConnection() || (ID == -1)) {
+            closeConnection();
             return null;
         }
 
@@ -482,6 +487,7 @@ public class SortedDatabaseManager extends DatabaseManager {
      */
     public HashMap<Integer, Situation> getSituationsMap() {
         if (!openConnection()) {
+            closeConnection();
             return null;
         }
 
@@ -528,6 +534,7 @@ public class SortedDatabaseManager extends DatabaseManager {
      */
     public List<INewsItem> getNewsItems(int startIndex, int limit) {
         if (!openConnection() || limit < 1) {
+            closeConnection();
             return null;
         }
 
@@ -569,6 +576,7 @@ public class SortedDatabaseManager extends DatabaseManager {
      */
     public List<INewsItem> getNewsItems() {
         if (!openConnection()) {
+            closeConnection();
             return null;
         }
 
@@ -605,6 +613,7 @@ public class SortedDatabaseManager extends DatabaseManager {
      */
     public INewsItem insertNewsItem(INewsItem item) {
         if (!openConnection() || item == null) {
+            closeConnection();
             return null;
         }
 
@@ -667,6 +676,7 @@ public class SortedDatabaseManager extends DatabaseManager {
      */
     public boolean updateNewsItem(INewsItem item) {
         if (!openConnection() || item == null || item.getId() == -1) {
+            closeConnection();
             return false;
         }
 
@@ -726,6 +736,7 @@ public class SortedDatabaseManager extends DatabaseManager {
      */
     public int getNewsItemCount() {
         if (!openConnection()) {
+            closeConnection();
             return -1;
         }
 
