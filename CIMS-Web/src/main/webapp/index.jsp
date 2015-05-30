@@ -43,7 +43,7 @@
                     <h1><%= n.getTitle() %></h1>
                     <p class ="date"><%= n.getDate() %></p>
                     <p><% out.println(n.getLocation().toUpperCase() +  " - " + n.getDescription()); %></p>
-                    <a class="read" href=<% out.println("news.jsp?id=" + n.getId()); %>><b>Lees verder</b> &#10162;</a>
+                    <a class="read" href=<% out.println("news.jsp?newsid=" + n.getId()); %>><b>Lees verder</b> &#10162;</a>
                 </article>
         <%      }
             } 
