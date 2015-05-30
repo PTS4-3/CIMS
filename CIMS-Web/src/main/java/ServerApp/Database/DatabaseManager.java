@@ -31,13 +31,15 @@ class DatabaseManager {
 
     protected Connection conn;
     private Properties props;
-    private final Lock lock = new ReentrantLock();
+    private static final ReentrantLock lock = new ReentrantLock(true);
+    private String managerName;
 
     /**
      *
      * @param fileName
      */
     public DatabaseManager(String fileName) {
+        this.managerName = fileName;
         this.configure(fileName);
     }
 
@@ -48,7 +50,7 @@ class DatabaseManager {
      */
     private void configure(String fileName) {
         props = new Properties();
-        
+
         try (FileInputStream in = new FileInputStream(fileName)) {
             props.load(in);
             Class.forName("com.mysql.jdbc.Driver");
@@ -99,12 +101,26 @@ class DatabaseManager {
      *
      * @return
      */
-    protected boolean openConnection() {
+    protected synchronized boolean openConnection() {
+
         try {
-            if(!this.lock.tryLock(5000, TimeUnit.MILLISECONDS)){
-                System.out.println("ERROR: Database lock timeout");
+            if(conn != null && !conn.isClosed()){
+//                System.out.println("connection already open");
+                return true;
+            }
+//            System.out.println("-trying to acquire lock for "
+//                        + Thread.currentThread().getName()
+//                        + " on " + managerName);
+            if (!lock.isHeldByCurrentThread()
+                    && !lock.tryLock(10000, TimeUnit.MILLISECONDS)) {
+                System.out.println("------ERROR: Database lock timeout for "
+                        + Thread.currentThread().getName()
+                        + " on " + managerName);
                 return false;
             }
+//            System.out.println("--lock acquired for "
+//                    + Thread.currentThread().getName()
+//                    + " on " + managerName);
             System.setProperty("jdbc.drivers", props.getProperty("driver"));
             this.conn = DriverManager.getConnection(
                     (String) props.get("url"),
@@ -121,23 +137,30 @@ class DatabaseManager {
     /**
      * closing connection
      */
-    protected void closeConnection() {
-        this.lock.unlock();
+    protected synchronized void closeConnection() {
+        if (!lock.isHeldByCurrentThread()) {
+            return;
+        }
+        lock.unlock();
+//        System.out.println("---lock released for "
+//                + Thread.currentThread().getName()
+//                + " on " + managerName);
         if (conn == null) {
             return;
         }
 
-        try {
-            conn.close();
-        } catch (SQLException ex) {
-            System.out.println("Connection close failed: " + ex);
-        } finally {
-            conn = null;
-        }
+//        try {
+//            conn.close();
+//        } catch (SQLException ex) {
+//            System.out.println("Connection close failed: " + ex);
+//        } finally {
+//            conn = null;
+//        }
     }
 
     /**
      * gets max ID from given table. Does not open its own connection.
+     *
      * @param tableName
      * @return
      * @throws SQLException

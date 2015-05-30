@@ -38,7 +38,8 @@ public class ConnectionHandler implements Runnable {
     private final Selector selector;
 
     // The buffer into which we'll read data when it's available
-    private final ByteBuffer readBuffer = ByteBuffer.allocate(8192);
+    private final int bufferCapacity = 10485760;
+    private final ByteBuffer readBuffer = ByteBuffer.allocate(bufferCapacity);
     private final ByteBuffer readSizeBuffer = ByteBuffer.allocate(4);
 
     // Used for processing data
@@ -164,7 +165,12 @@ public class ConnectionHandler implements Runnable {
                 } catch (IOException ex1) {
                     ex1.printStackTrace();
                 }
-            } catch (Exception e) {
+            } catch (NullPointerException ex) {
+                System.out.println("Null pointer thrown in main loop ConnectionHandler");
+                ex.printStackTrace();
+                isRunning = false;
+            }
+            catch (Exception e) {
                 e.printStackTrace();
             }
         }

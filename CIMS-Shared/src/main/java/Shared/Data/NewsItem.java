@@ -122,4 +122,11 @@ public class NewsItem implements INewsItem {
     public void addSituation(Situation sit){
         this.situations.add(sit);
     }
+
+    @Override
+    public String toString() {
+        return title;
+    }
+
+
 }

@@ -27,7 +27,8 @@ public class ClientConnection implements Runnable {
     private final Selector selector;
 
     // The buffer into which we'll read data when it's available
-    private final ByteBuffer readBuffer = ByteBuffer.allocate(8192);
+    private final int bufferCapacity = 10485760;
+    private final ByteBuffer readBuffer = ByteBuffer.allocate(bufferCapacity);
 
     // A list of PendingChange instances
     private final List pendingChanges = new LinkedList();

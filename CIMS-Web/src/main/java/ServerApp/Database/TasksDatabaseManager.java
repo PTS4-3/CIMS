@@ -158,9 +158,9 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @return IServiceUser currently slated to execute given task.
      */
     private IServiceUser getTaskExecutor(int taskID) throws SQLException {
-        if(conn == null){
-            openConnection();
-        }
+//        if(conn == null){
+//            openConnection();
+//        }
 
         IServiceUser output = null;
         String query;
