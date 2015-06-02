@@ -10,19 +10,17 @@ import Shared.Connection.Transaction.ClientBoundTransaction;
 import Shared.Connection.Transaction.ConnCommand;
 import Shared.Data.IData;
 import Shared.Data.IDataRequest;
+import Shared.Data.INewsItem;
 import Shared.Data.ISortedData;
-import Shared.Data.SortedData;
 import Shared.Tag;
 import Shared.Tasks.ITask;
 import Shared.Users.UserRole;
 import java.net.Socket;
 import java.nio.channels.SocketChannel;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,6 +35,8 @@ public class PushHandler {
     private final HashSet<Socket> chiefConnections;
     // all HQ users, including the chief - can be toggled mid-session
     private final HashSet<Socket> unsortedSubscribers;
+    // all HQ users, including the chief
+    private final HashSet<Socket> newsSubscribers;
     // key: username (ServiceUser)
     private final HashMap<String, Set<Socket>> taskSubscribers;
     // service users subscribing by tag - used for sorted data + requests
@@ -51,6 +51,7 @@ public class PushHandler {
         this.faultySockets = Collections.newSetFromMap(new ConcurrentHashMap<>());
         chiefConnections = new HashSet<>();
         unsortedSubscribers = new HashSet<>();
+        newsSubscribers = new HashSet<>();
         taskSubscribers = new HashMap<>();
         serviceSubscribers = new HashMap<>();
         for (Tag tag : Tag.values()) {
@@ -113,12 +114,18 @@ public class PushHandler {
         }
 
         if (role == UserRole.CHIEF) {
+            boolean newsResult, chiefSubsResult;
             synchronized (chiefConnections) {
-                return chiefConnections.add(channel.socket());
+                chiefSubsResult = chiefConnections.add(channel.socket());
             }
+            synchronized (newsSubscribers) {
+                newsResult = newsSubscribers.add(channel.socket());
+            }
+            return (newsResult && chiefSubsResult);
         } else if (role == UserRole.HQ) {
-            // HQ users are not subscribed to anything (unsorted is a separate subscription)
-            return true;
+            synchronized (newsSubscribers) {
+                return newsSubscribers.add(channel.socket());
+            }
         } else if (role == UserRole.SERVICE) {
             boolean tasksResult, serviceSubsResult;
             synchronized (taskSubscribers) {
@@ -160,6 +167,9 @@ public class PushHandler {
         synchronized (unsortedSubscribers) {
             unsortedSubscribers.remove(socket);
         }
+        synchronized (newsSubscribers) {
+            newsSubscribers.remove(socket);
+        }
         synchronized (taskSubscribers) {
             for (String username : taskSubscribers.keySet()) {
                 taskSubscribers.get(username).remove(socket);
@@ -199,7 +209,7 @@ public class PushHandler {
      * @param task
      */
     public void push(ITask task) {
-        if(task == null){
+        if (task == null) {
             return;
         }
         ClientBoundTransaction transaction
@@ -236,7 +246,7 @@ public class PushHandler {
      * @param data
      */
     public boolean push(List<IData> data, Socket disregard) {
-        if(data == null || data.isEmpty()){
+        if (data == null || data.isEmpty()) {
             return false;
         }
         ClientBoundTransaction transaction
@@ -267,12 +277,12 @@ public class PushHandler {
      * @param data
      */
     public void push(ISortedData data) {
-        if(data == null){
+        if (data == null) {
             return;
         }
         ClientBoundTransaction transaction
                 = new ClientBoundTransaction(ConnCommand.SORTED_GET,
-                        Arrays.asList(new ISortedData[]{data}) );
+                        Arrays.asList(new ISortedData[]{data}));
         byte[] output = SerializeUtils.serialize(transaction);
         // sends to chief
         synchronized (chiefConnections) {
@@ -302,7 +312,7 @@ public class PushHandler {
      * @param request
      */
     public void push(IDataRequest request) {
-        if(request == null){
+        if (request == null) {
             return;
         }
         ClientBoundTransaction transaction
@@ -316,6 +326,26 @@ public class PushHandler {
                     if (!this.trySend(socket, output)) {
                         this.faultySockets.add(socket);
                     }
+                }
+            }
+        }
+        this.cleanFaultySockets();
+    }
+
+    public void push(INewsItem item) {
+        if (item == null) {
+            return;
+        }
+        ClientBoundTransaction transaction
+                = new ClientBoundTransaction(ConnCommand.NEWSITEMS_GET,
+                        Arrays.asList(new INewsItem[]{item}));
+        byte[] output = SerializeUtils.serialize(transaction);
+        // sends newsitems
+        synchronized (newsSubscribers) {
+            for (Socket socket : newsSubscribers) {
+                System.out.println("pushing newsitems"); // debugging
+                if (!this.trySend(socket, output)) {
+                    this.faultySockets.add(socket);
                 }
             }
         }

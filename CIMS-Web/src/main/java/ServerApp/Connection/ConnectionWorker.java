@@ -494,8 +494,9 @@ public class ConnectionWorker implements Runnable {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
         try {
             INewsItem item = (INewsItem) input.objects[0];
-            return output.setResult(
-                    ServerMain.sortedDatabaseManager.insertNewsItem(item));
+            output.setResult(ServerMain.sortedDatabaseManager.insertNewsItem(item));
+            ServerMain.pushHandler.push(item);
+            return output;
         } catch (Exception ex) {
             ex.printStackTrace();
             return output.setError();
@@ -509,8 +510,9 @@ public class ConnectionWorker implements Runnable {
         ClientBoundTransaction output = new ClientBoundTransaction(input);
         try {
             INewsItem item = (INewsItem) input.objects[0];
-            return output.setResult(
-                    ServerMain.sortedDatabaseManager.updateNewsItem(item));
+            output.setResult(ServerMain.sortedDatabaseManager.updateNewsItem(item));
+            ServerMain.pushHandler.push(item);
+            return output;
         } catch (Exception ex) {
             ex.printStackTrace();
             return output.setError();
