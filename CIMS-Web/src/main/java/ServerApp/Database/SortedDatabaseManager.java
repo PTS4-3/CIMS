@@ -52,11 +52,13 @@ public class SortedDatabaseManager extends DatabaseManager {
         super(propsFileName);
     }
 
-    private HashMap<NewsItem, Set<Integer>> extractNewsItems(ResultSet rs) throws SQLException {
+    private List<INewsItem> extractNewsItems(ResultSet rs) throws SQLException {
         // key: newsItem ID
         HashMap<Integer, NewsItem> newsItems;
         // key: newsItem ID, value = situation IDs
         HashMap<NewsItem, Set<Integer>> newsSituations;
+        List<Integer> order = new ArrayList<>();
+        List<INewsItem> output = new ArrayList<>();
 
         newsItems = new HashMap<>();
         newsSituations = new HashMap<>();
@@ -68,6 +70,7 @@ public class SortedDatabaseManager extends DatabaseManager {
             // only generates a new item if ID is not duplicate
             int newsID = rs.getInt("ni.ID");
             if (newsItems.get(newsID) == null) {
+                order.add(newsID);
                 String title = rs.getString("ni.TITLE");
                 String newsDesc = rs.getString("ni.DESCRIPTION");
                 String loc = rs.getString("ni.LOCATION");
@@ -86,13 +89,25 @@ public class SortedDatabaseManager extends DatabaseManager {
                 newsSituations.get(newsItems.get(newsID)).add(sitID);
             }
         }
-        return newsSituations;
+
+        HashMap<Integer, INewsItem> itemsMap = assignSituations(newsSituations);
+        for(int id : order){
+            output.add(itemsMap.get(id));
+        }
+
+        return output;
     }
 
-    private List<INewsItem> assignSituations(HashMap<NewsItem, Set<Integer>> newsItems) {
+    /**
+     *
+     * @param newsItems
+     * @return
+     */
+    private HashMap<Integer, INewsItem> assignSituations(HashMap<NewsItem, Set<Integer>> newsItems) {
         if (newsItems == null) {
             return null;
         }
+        HashMap<Integer, INewsItem> output = new HashMap<>();
 
         // gets all unique situations from database, then assigns them on ID
         // prevents constantly regenerating a limited number of situations/advices
@@ -101,8 +116,9 @@ public class SortedDatabaseManager extends DatabaseManager {
             for (int sitID : newsItems.get(item)) {
                 item.addSituation(situations.get(sitID));
             }
+            output.put(item.getId(), item);
         }
-        return new ArrayList<>(newsItems.keySet());
+        return output;
     }
 
     /**
@@ -551,15 +567,15 @@ public class SortedDatabaseManager extends DatabaseManager {
         try {
             query = "SELECT ni.*, ns.*"
                     + " FROM (SELECT * FROM " + newsItemTable
-                    + " ORDER BY ITEMDATE LIMIT ?,?) AS ni"
+                    + " ORDER BY ITEMDATE DESC, TITLE LIMIT ?,?) AS ni"
                     + " LEFT JOIN " + newsSituationsTable + " AS ns"
                     + " ON ni.ID = ns.NEWSID"
-                    + " ORDER BY ni.ID, ni.title";
+                    + " ORDER BY ni.ITEMDATE DESC, ni.TITLE";
             prepStat = conn.prepareCall(query);
             prepStat.setInt(1, startIndex);
             prepStat.setInt(2, limit);
             rs = prepStat.executeQuery();
-            newsItems = this.extractNewsItems(rs);
+            output = this.extractNewsItems(rs);
 
         } catch (SQLException ex) {
             System.out.println("failed to get news items: " + ex.getMessage());
@@ -569,7 +585,7 @@ public class SortedDatabaseManager extends DatabaseManager {
             closeConnection();
         }
 
-        return this.assignSituations(newsItems);
+        return output;
     }
     
     /**
@@ -740,7 +756,7 @@ public class SortedDatabaseManager extends DatabaseManager {
         }
 
         // key: newsItem ID, value = situation IDs
-        HashMap<NewsItem, Set<Integer>> newsItems = null;
+        List<INewsItem> outputList = new ArrayList<>();
 
         INewsItem output = null;
         String query;
@@ -757,7 +773,7 @@ public class SortedDatabaseManager extends DatabaseManager {
             prepStat = conn.prepareStatement(query);
             prepStat.setInt(1, ID);
             rs = prepStat.executeQuery();
-            newsItems = this.extractNewsItems(rs);
+            outputList = this.extractNewsItems(rs);
         } catch (SQLException ex) {
             System.out.println("failed to get newsitem by ID " + ID);
             ex.printStackTrace();
@@ -765,8 +781,7 @@ public class SortedDatabaseManager extends DatabaseManager {
             closeConnection();
         }
 
-        List<INewsItem> outputList = this.assignSituations(newsItems);
-        if (outputList != null) {
+        if (outputList != null && !outputList.isEmpty()) {
             output = outputList.get(0);
         }
         return output;
