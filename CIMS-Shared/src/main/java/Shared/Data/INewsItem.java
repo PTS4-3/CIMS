@@ -16,6 +16,7 @@ public interface INewsItem extends IData {
     public Set<Situation> getSituations();
     public int getVictims();
     public Date getDate();
+    public String getDateString();
     public void setID(int ID);
     public void setDate(Date date);
 }

@@ -4,6 +4,8 @@
     Author     : Linda
 --%>
 
+<%@page import="java.util.HashSet"%>
+<%@page import="java.util.Calendar"%>
 <%@page import="Shared.Data.INewsItem"%>
 <%@page import="java.util.Date"%>
 <%@page import="Shared.Data.Advice"%>
@@ -25,6 +27,13 @@
             } catch (Exception ex) {
                 item = null;
             }
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(new Date());
+            String datum = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)) +"-"+
+                       String.valueOf(calendar.get(Calendar.MONTH)+1)+"-"+
+                       String.valueOf(calendar.get(Calendar.YEAR)) +" om "+
+                       String.valueOf(calendar.get(Calendar.HOUR_OF_DAY)) +":"+
+                       String.valueOf(calendar.get(Calendar.MINUTE));
         %>
     </head>	
     <body>	
@@ -33,7 +42,7 @@
                 <article class="newsitem">				
                     <% if (item != null) {%>
                     <h1><%= item.getTitle()%></h1>
-                    <p class="date"><%= item.getDate().toString()%></p>
+                    <p class="date"><%= item.getDateString() %></p>
                     <p><%= item.getLocation().toUpperCase() %> - <%= item.getDescription()%></p>
                     <!--met foto-->
                     <div id="pics" >
@@ -46,7 +55,8 @@
                     </div>
                     <%} else {%>
                     <h1>Titel1</h1>
-                    <p class="date"><%= new Date()%></p>
+                    <p class="date"><%= datum%>
+                    </p>
                     <p>PLAATS - Beschrijving</p>                    
                     <!--met foto-->
                     <div id="pics" >
@@ -83,6 +93,7 @@
                 </article>
                 <article class="advice">
                     <% if (item != null) {%>
+                    <!-- item is not null -->
                     <h2>Informatie</h2>
                     <p>Slachtoffers: <%= Integer.toString(item.getVictims())%></p>
 
@@ -99,13 +110,17 @@
                     <br />
                     <h3>Advies</h3>
                     <ul>
-                        <% for (Situation sit : item.getSituations()) {
-                                for (Advice ad : sit.getAdvices()) {%>
-                        <li><%= ad.getDescription()%></li>
-                            <%}
-                                }%>
+                        <% 
+                            HashSet<Advice> set = controller.getAdvices(item);
+
+                            for(Advice ad : set){%>
+                            <li><%= ad.getDescription() %></li>
+                            <% } %>
                     </ul>
+                    
                     <%} else {%>
+                    
+                    <!-- item is null-->
                     <h2>Informatie</h2>
                     <p>Slachtoffers: 1</p>
 

@@ -6,6 +6,7 @@
 package Shared.Data;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  *
@@ -29,4 +30,31 @@ public class Advice implements Serializable {
         this.description = description;
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 97 * hash + Objects.hashCode(this.description);
+        hash = 97 * hash + this.ID;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Advice other = (Advice) obj;
+        if (!Objects.equals(this.description, other.description)) {
+            return false;
+        }
+        if (this.ID != other.ID) {
+            return false;
+        }
+        return true;
+    }
+
+    
 }

@@ -5,6 +5,7 @@
  */
 package Shared.Data;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 
@@ -68,6 +69,18 @@ public class NewsItem implements INewsItem {
     public Date getDate() {
         return date;
     }
+    
+    @Override
+    public String getDateString() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(this.date);
+        String dateString = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)) +"-"+
+                       String.valueOf(calendar.get(Calendar.MONTH)+1)+"-"+
+                       String.valueOf(calendar.get(Calendar.YEAR)) +" om "+
+                       String.valueOf(calendar.get(Calendar.HOUR_OF_DAY)) +":"+
+                       String.valueOf(calendar.get(Calendar.MINUTE));
+        return dateString;
+    }
 
     /**
      * id specified
@@ -127,6 +140,4 @@ public class NewsItem implements INewsItem {
     public String toString() {
         return title;
     }
-
-
 }
