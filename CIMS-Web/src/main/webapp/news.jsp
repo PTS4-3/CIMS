@@ -27,13 +27,6 @@
             } catch (Exception ex) {
                 item = null;
             }
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(new Date());
-            String datum = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)) +"-"+
-                       String.valueOf(calendar.get(Calendar.MONTH)+1)+"-"+
-                       String.valueOf(calendar.get(Calendar.YEAR)) +" om "+
-                       String.valueOf(calendar.get(Calendar.HOUR_OF_DAY)) +":"+
-                       String.valueOf(calendar.get(Calendar.MINUTE));
         %>
     </head>	
     <body>	
@@ -55,7 +48,7 @@
                     </div>
                     <%} else {%>
                     <h1>Titel1</h1>
-                    <p class="date"><%= datum%>
+                    <p class="date"><%= controller.getDate() %>
                     </p>
                     <p>PLAATS - Beschrijving</p>                    
                     <!--met foto-->

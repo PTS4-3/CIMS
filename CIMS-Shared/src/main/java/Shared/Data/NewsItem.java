@@ -5,6 +5,8 @@
  */
 package Shared.Data;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -72,14 +74,10 @@ public class NewsItem implements INewsItem {
     
     @Override
     public String getDateString() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(this.date);
-        String dateString = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)) +"-"+
-                       String.valueOf(calendar.get(Calendar.MONTH)+1)+"-"+
-                       String.valueOf(calendar.get(Calendar.YEAR)) +" om "+
-                       String.valueOf(calendar.get(Calendar.HOUR_OF_DAY)) +":"+
-                       String.valueOf(calendar.get(Calendar.MINUTE));
-        return dateString;
+        DateFormat date = new SimpleDateFormat("dd-MM-yyyy");
+        DateFormat time = new SimpleDateFormat("HH:mm");
+
+        return date.format(this.date) + " om " + time.format(this.date);
     }
 
     /**
@@ -140,4 +138,28 @@ public class NewsItem implements INewsItem {
     public String toString() {
         return title;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 89 * hash + this.ID;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final NewsItem other = (NewsItem) obj;
+        if (this.ID != other.ID) {
+            return false;
+        }
+        return true;
+    }
+    
+    
 }

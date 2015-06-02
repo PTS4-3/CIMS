@@ -44,7 +44,7 @@
         <dependency>
             <groupId>s413</groupId>
             <artifactId>CIMS-Shared</artifactId>
-            <version>sprint3.3</version>
+            <version>sprint3.4</version>
         </dependency>
         <dependency>
             <groupId>javax</groupId>

@@ -11,7 +11,10 @@ import Shared.Data.INewsItem;
 import Shared.Data.NewsItem;
 import Shared.Data.Situation;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -78,5 +81,13 @@ public class webController extends HttpServlet {
             }
         }
         return set;
+    }
+    
+    public String getDate(){
+        Date newsDate = new Date();
+        DateFormat date = new SimpleDateFormat("dd-MM-yyyy");
+        DateFormat time = new SimpleDateFormat("HH:mm");
+            
+        return date.format(newsDate) + " om " + time.format(newsDate);
     }
 }
