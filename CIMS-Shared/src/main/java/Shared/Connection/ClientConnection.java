@@ -29,6 +29,7 @@ public class ClientConnection implements Runnable {
     // The buffer into which we'll read data when it's available
     private final int bufferCapacity = 10485760;
     private final ByteBuffer readBuffer = ByteBuffer.allocate(bufferCapacity);
+    private final ByteBuffer overflowBuffer = ByteBuffer.allocate(bufferCapacity);
 
     // A list of PendingChange instances
     private final List pendingChanges = new LinkedList();
@@ -152,7 +153,11 @@ public class ClientConnection implements Runnable {
         SocketChannel socketChannel = (SocketChannel) key.channel();
 
         // Clear out our read buffer so it's ready for new data
+        this.overflowBuffer.flip();
         this.readBuffer.clear();
+        this.readBuffer.put(overflowBuffer);
+        this.overflowBuffer.clear();
+        System.out.println("overflowBuffer found: " + readBuffer.position());
 
         // Attempt to read off the channel
         int numRead;
@@ -177,10 +182,11 @@ public class ClientConnection implements Runnable {
         // while is repeated for every Transaction currently queued.
         // A portion of the byte array the size of a transaction is read into a new array
         // That array is handed off to the channel's responsehandler
-        readBuffer.position(0);
-        while (numRead - readBuffer.position() > 4) {
+        readBuffer.flip();
+        while (readBuffer.limit() - readBuffer.position() > 4) {
             int size = readBuffer.getInt();
-            if (numRead - readBuffer.position() >= size) {
+            System.out.println("transaction size: " + size + " - numRead: " + numRead);
+            if (readBuffer.limit() - readBuffer.position() >= size) {
                 byte[] data = new byte[size];
                 readBuffer.get(data);
 
@@ -189,6 +195,10 @@ public class ClientConnection implements Runnable {
                 IResponseHandler handler = (IResponseHandler) this.rspHandlers.get(socketChannel);
                 // And pass the response to it
                 handler.handleResponse(data);
+            } else {
+                readBuffer.position(readBuffer.position() - 4);
+                overflowBuffer.put(readBuffer.slice());
+                readBuffer.position(readBuffer.limit());
             }
         }
     }
