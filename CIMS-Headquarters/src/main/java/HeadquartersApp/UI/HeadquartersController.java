@@ -1508,6 +1508,7 @@ public class HeadquartersController implements Initializable {
                 lvbNews.getItems().addAll(news);
                 if (lvbNews.getSelectionModel().getSelectedItem() == null) {
                     lvbNews.getSelectionModel().selectFirst();
+                    selectNewsItem();
                 }
             }
 
@@ -1524,6 +1525,7 @@ public class HeadquartersController implements Initializable {
             tfbVictims.setText(String.valueOf(news.getVictims()));
 
             for (Situation s : news.getSituations()) {
+                ccbSituations.getCheckModel().clearChecks();
                 Object t = ccbSituations.getCheckModel().getItem(s.getID());
                 ccbSituations.getCheckModel().check(t);
             }
