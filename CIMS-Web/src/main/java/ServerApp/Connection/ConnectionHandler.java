@@ -206,12 +206,13 @@ public class ConnectionHandler implements Runnable {
     private void read(SelectionKey key) throws IOException {
         SocketChannel socketChannel = (SocketChannel) key.channel();
 
-        // Clear out our read buffer so it's ready for new data
         this.overflowBuffer.flip();
         this.readBuffer.clear();
         this.readBuffer.put(overflowBuffer);
         this.overflowBuffer.clear();
-        System.out.println("overflowBuffer found: " + readBuffer.position());
+        if(this.readBuffer.position() > 0){
+            System.out.println("overflowBuffer found: " + readBuffer.position());
+        }
 
         // Attempt to read off the channel
         int numRead;
