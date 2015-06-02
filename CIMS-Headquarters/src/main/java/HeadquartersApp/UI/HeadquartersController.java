@@ -1524,21 +1524,24 @@ public class HeadquartersController implements Initializable {
             tabDescription.setText(news.getDescription());
             tfbLocation.setText(news.getLocation());
             tfbVictims.setText(String.valueOf(news.getVictims()));
-            ccbSituations.getCheckModel().clearChecks();
+            
+            if (ccbSituations != null) {
+                ccbSituations.getCheckModel().clearChecks();
+                
+                for (Situation s : news.getSituations()) {
+                    Situation t = null;
 
-            for (Situation s : news.getSituations()) {
-                Situation t = null;
-                
-                for (Situation o : (ObservableList<Situation>)ccbSituations.getItems()) {
-                    if (o.getID() == s.getID()) {
-                        t = o;
-                    }                        
+                    for (Situation o : (ObservableList<Situation>)ccbSituations.getItems()) {
+                        if (o.getID() == s.getID()) {
+                            t = o;
+                        }                        
+                    }
+
+                    if (t != null) {
+                        ccbSituations.getCheckModel().check(t);
+                    }
                 }
-                
-                if (t != null) {
-                    ccbSituations.getCheckModel().check(t);
-                }
-            }
+            }            
         } else {
             // Clear GUI
             tfbTitle.clear();
