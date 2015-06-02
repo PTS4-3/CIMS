@@ -19,7 +19,7 @@ public class ServerMainServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         ServerMain.startDatabases(getServletContext().getRealPath("/WEB-INF/"));
-        ServerMain.startConnection();
+        ServerMain.startConnection(true);
     }
 
     @Override

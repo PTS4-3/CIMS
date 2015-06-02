@@ -40,7 +40,7 @@ public class ServerMain {
      */
     public static void main(String[] args) {
         startDatabases(null);
-        startConnection();
+        startConnection(false);
     }
 
     public static void startDatabases(String baseDir) {
@@ -59,12 +59,12 @@ public class ServerMain {
         dummyDatabaseManager = new DummyDatabaseManager();
     }
 
-    public static void startConnection() {
+    public static void startConnection(boolean isDaemon) {
         try {
             connectionHandler = new ConnectionHandler(
                     InetAddress.getByName(SERVER_ADDRESS), SERVER_PORT);
             Thread t = new Thread(connectionHandler);
-            t.setDaemon(true);
+            t.setDaemon(isDaemon);
             t.start();
             pushHandler = new PushHandler();
             System.out.println("connection started");
