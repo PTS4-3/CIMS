@@ -1526,9 +1526,18 @@ public class HeadquartersController implements Initializable {
             tfbVictims.setText(String.valueOf(news.getVictims()));
             ccbSituations.getCheckModel().clearChecks();
 
-            for (Situation s : news.getSituations()) {                
-                Object t = ccbSituations.getCheckModel().getItem(s.getID());
-                ccbSituations.getCheckModel().check(t);
+            for (Situation s : news.getSituations()) {
+                Situation t = null;
+                
+                for (Situation o : (ObservableList<Situation>)ccbSituations.getItems()) {
+                    if (o.getID() == s.getID()) {
+                        t = o;
+                    }                        
+                }
+                
+                if (t != null) {
+                    ccbSituations.getCheckModel().check(t);
+                }
             }
         } else {
             // Clear GUI
