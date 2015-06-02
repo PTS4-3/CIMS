@@ -12,7 +12,7 @@
 <%@taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jstl/fmt" prefix="fn" %>
 
-<%@page import="Shared.Data.NewsItem"%>
+<%@page import="Shared.Data.INewsItem"%>
 <%@page import="Controller.webController"%>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
@@ -31,7 +31,7 @@
             
             if(ID != null && !ID.isEmpty()) {
                 webController controller = new webController();
-                NewsItem item = null;
+                INewsItem item = null;
                 try {
                     item = controller.getNewsWithID(ID);
                 } catch (Exception ex) {

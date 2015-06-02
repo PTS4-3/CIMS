@@ -4,6 +4,7 @@
     Author     : Linda
 --%>
 
+<%@page import="Shared.Data.INewsItem"%>
 <%@page import="java.util.Date"%>
 <%@page import="Shared.Data.Advice"%>
 <%@page import="Shared.Data.Situation"%>
@@ -18,7 +19,7 @@
         <%
             webController controller = new webController();
             String ID = request.getParameter("newsid");
-            NewsItem item = null;
+            INewsItem item = null;
             try {
                 item = controller.getNewsWithID(ID);
             } catch (Exception ex) {

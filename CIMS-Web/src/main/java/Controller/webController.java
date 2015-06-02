@@ -7,6 +7,7 @@ package Controller;
 
 import ServerApp.ServerMain;
 import Shared.Data.Advice;
+import Shared.Data.INewsItem;
 import Shared.Data.NewsItem;
 import Shared.Data.Situation;
 import java.io.IOException;
@@ -26,7 +27,7 @@ public class webController extends HttpServlet{
     
     private HashSet<Situation> situations = new HashSet<Situation>();
     private HashSet<Advice> advices = new HashSet<Advice>();
-    private List<NewsItem> news = new ArrayList<NewsItem>();
+    private List<INewsItem> news = new ArrayList<INewsItem>();
     private Date date = new Date();
     
     public webController(){
@@ -41,16 +42,8 @@ public class webController extends HttpServlet{
 
     }
     
-    public NewsItem getNewsWithID(String ID){
-        NewsItem item = null;
-        int id = (Integer.parseInt(ID));
-        for(NewsItem x : news){
-            if(x.getId()== id)
-            {
-                return x;
-            }
-        }
-        return item;   
+    public INewsItem getNewsWithID(String ID){
+        return ServerMain.sortedDatabaseManager.getNewsItemByID(Integer.parseInt(ID));   
     }
     
     public String getIconURL(Situation situation){
