@@ -1524,7 +1524,8 @@ public class HeadquartersController implements Initializable {
             tfbVictims.setText(String.valueOf(news.getVictims()));
 
             for (Situation s : news.getSituations()) {
-                ccbSituations.getCheckModel().check(s);
+                Object t = ccbSituations.getCheckModel().getItem(s.getID());
+                ccbSituations.getCheckModel().check(t);
             }
         } else {
             // Clear GUI
@@ -1543,6 +1544,9 @@ public class HeadquartersController implements Initializable {
             if (connectionManager == null) {
                 throw new NetworkException("Kon data niet wegschrijven");
             }
+            
+            INewsItem n = (INewsItem)lvbNews.getSelectionModel().getSelectedItem();
+            int id = n.getId();
 
             // Load values from GUI
             String title = tfbTitle.getText();
@@ -1556,6 +1560,7 @@ public class HeadquartersController implements Initializable {
             // Make and send new NewsItem
             INewsItem newsItem = new NewsItem(title, description, location,
                     source, situations, victims);
+            newsItem.setID(id);
             this.connectionManager.updateNewsItem(newsItem);
 
             // Show message
