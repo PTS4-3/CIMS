@@ -20,6 +20,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -72,7 +73,8 @@ public class SortedDatabaseManager extends DatabaseManager {
                 String loc = rs.getString("ni.LOCATION");
                 String source = rs.getString("ni.SOURCE");
                 int victims = rs.getInt("ni.VICTIMS");
-                Date date = rs.getDate("ni.ITEMDATE");
+                Timestamp stamp = rs.getTimestamp("ni.ITEMDATE");
+                Date date = new Date(stamp.getTime());
                 NewsItem item = new NewsItem(newsID, title, newsDesc,
                         loc, source, null, victims, date);
                 newsItems.put(newsID, item);
