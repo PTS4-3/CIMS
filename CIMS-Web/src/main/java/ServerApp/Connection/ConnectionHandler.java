@@ -233,10 +233,10 @@ public class ConnectionHandler implements Runnable {
 
         // The channel might contain multiple transactions.
         // An int is read first to get array size that contains the next single transaction.
-        readBuffer.position(0);
-        while (numRead - readBuffer.position() > 4) {
+        readBuffer.flip();
+        while (readBuffer.limit() - readBuffer.position() > 4) {
             int size = readBuffer.getInt();
-            if (numRead - readBuffer.position() >= size) {
+            if (readBuffer.limit() - readBuffer.position() >= size) {
                 byte[] data = new byte[size];
                 readBuffer.get(data);
 
