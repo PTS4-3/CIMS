@@ -40,7 +40,7 @@ public class ConnectionHandler implements Runnable {
     // The buffer into which we'll read data when it's available
     private final int bufferCapacity = 10485760;
     private final ByteBuffer readBuffer = ByteBuffer.allocate(bufferCapacity);
-    private final ByteBuffer readSizeBuffer = ByteBuffer.allocate(4);
+    private final ByteBuffer overflowBuffer = ByteBuffer.allocate(bufferCapacity);
 
     // Used for processing data
     private final HashSet<ConnectionWorker> workers;
@@ -207,15 +207,17 @@ public class ConnectionHandler implements Runnable {
         SocketChannel socketChannel = (SocketChannel) key.channel();
 
         // Clear out our read buffer so it's ready for new data
+        this.overflowBuffer.flip();
         this.readBuffer.clear();
-        this.readSizeBuffer.clear();
+        this.readBuffer.put(overflowBuffer);
+        this.overflowBuffer.clear();
+        System.out.println("overflowBuffer found: " + readBuffer.position());
 
         // Attempt to read off the channel
         int numRead;
         try {
             numRead = socketChannel.read(this.readBuffer);
         } catch (IOException e) {
-            System.out.println("forcibly closing connection");
             // The remote forcibly closed the connection, cancel
             // the selection key and close the channel.
             key.cancel();
@@ -224,7 +226,6 @@ public class ConnectionHandler implements Runnable {
         }
 
         if (numRead == -1) {
-            System.out.println("closing in read");
             // Remote entity shut the socket down cleanly. Do the
             // same from our end and cancel the channel.
             key.channel().close();
@@ -232,17 +233,24 @@ public class ConnectionHandler implements Runnable {
             return;
         }
 
-        // The channel might contain multiple transactions.
-        // An int is read first to get array size that contains the next single transaction.
+        // while is repeated for every Transaction currently queued.
+        // A portion of the byte array the size of a transaction is read into a new array
+        // That array is handed off to the channel's responsehandler
         readBuffer.flip();
         while (readBuffer.limit() - readBuffer.position() > 4) {
             int size = readBuffer.getInt();
+            System.out.println("transaction size: " + size + " - numRead: " + numRead);
             if (readBuffer.limit() - readBuffer.position() >= size) {
                 byte[] data = new byte[size];
                 readBuffer.get(data);
 
                 // Hand the data off to our worker threads
+                // Look up the handler for this channel
                 ConnectionWorker.processData(this, socketChannel, data, size);
+            } else {
+                readBuffer.position(readBuffer.position() - 4);
+                overflowBuffer.put(readBuffer.slice());
+                readBuffer.position(readBuffer.limit());
             }
         }
     }
