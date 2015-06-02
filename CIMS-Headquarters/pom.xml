@@ -40,7 +40,7 @@
         <dependency>
             <groupId>s413</groupId>
             <artifactId>CIMS-Shared</artifactId>
-            <version>sprint3.4</version>
+            <version>sprint3.5</version>
         </dependency>
 
     </dependencies>

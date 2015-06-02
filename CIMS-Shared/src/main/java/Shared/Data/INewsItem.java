@@ -19,4 +19,5 @@ public interface INewsItem extends IData {
     public String getDateString();
     public void setID(int ID);
     public void setDate(Date date);
+    public String getCity();
 }

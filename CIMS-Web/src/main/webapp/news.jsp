@@ -27,6 +27,7 @@
             } catch (Exception ex) {
                 item = null;
             }
+            
         %>
     </head>	
     <body>	
@@ -36,7 +37,7 @@
                     <% if (item != null) {%>
                     <h1><%= item.getTitle()%></h1>
                     <p class="date"><%= item.getDateString() %></p>
-                    <p><%= item.getLocation().toUpperCase() %> - <%= item.getDescription()%></p>
+                    <p><%= item.getCity().toUpperCase() %> - <%= item.getDescription()%></p>
                     <!--met foto-->
                     <div id="pics" >
                     </div>

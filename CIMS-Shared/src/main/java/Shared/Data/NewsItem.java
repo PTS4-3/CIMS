@@ -79,6 +79,12 @@ public class NewsItem implements INewsItem {
 
         return date.format(this.date) + " om " + time.format(this.date);
     }
+    
+    @Override
+    public String getCity(){
+        String[] city = this.location.split(",");
+        return city[1];
+    }
 
     /**
      * id specified
