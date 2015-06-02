@@ -552,7 +552,7 @@ public class SortedDatabaseManager extends DatabaseManager {
                     + " ORDER BY ITEMDATE LIMIT ?,?) AS ni"
                     + " LEFT JOIN " + newsSituationsTable + " AS ns"
                     + " ON ni.ID = ns.NEWSID"
-                    + " ORDER BY ni.ID";
+                    + " ORDER BY ni.ID, ni.title";
             prepStat = conn.prepareCall(query);
             prepStat.setInt(1, startIndex);
             prepStat.setInt(2, limit);
