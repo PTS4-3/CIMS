@@ -1517,15 +1517,16 @@ public class HeadquartersController implements Initializable {
     
     public void selectNewsItem() {
         INewsItem news = (INewsItem) lvbNews.getSelectionModel().getSelectedItem();
+        
         if (news != null) {
             // Fill GUI with information
             tfbTitle.setText(news.getTitle());
             tabDescription.setText(news.getDescription());
             tfbLocation.setText(news.getLocation());
             tfbVictims.setText(String.valueOf(news.getVictims()));
+            ccbSituations.getCheckModel().clearChecks();
 
-            for (Situation s : news.getSituations()) {
-                ccbSituations.getCheckModel().clearChecks();
+            for (Situation s : news.getSituations()) {                
                 Object t = ccbSituations.getCheckModel().getItem(s.getID());
                 ccbSituations.getCheckModel().check(t);
             }
