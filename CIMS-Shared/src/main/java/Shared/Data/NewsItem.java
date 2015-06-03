@@ -82,10 +82,33 @@ public class NewsItem implements INewsItem {
     
     @Override
     public String getCity(){
-        String[] city = this.location.split(",");
+        String[] location = this.location.split(",");
         
-        if (city.length > 1) {
-            return city[1];
+        if (location.length > 1) {
+            String l = location[1];
+            
+            if (l.length() > 0) {
+                l.trim();
+            }
+            
+            return l;
+        }
+        
+        return "";
+    }
+    
+    @Override
+    public String getStreet(){
+        String[] location = this.location.split(",");
+        
+        if (location.length > 1) {
+            String l = location[0];
+            
+            if (l.length() > 0) {
+                l.trim();
+            }
+            
+            return l;
         }
         
         return "";

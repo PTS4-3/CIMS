@@ -1535,12 +1535,14 @@ public class HeadquartersController implements Initializable {
             // Fill GUI with information
             tfbTitle.setText(news.getTitle());
             tabDescription.setText(news.getDescription());
-            String[] location = news.getLocation().split(",");
             
-            if (location.length > 1) {
-                tfnStreet.setText(location[0]);
-                tfnCity.setText(location[1]);
-            }            
+            if (!news.getCity().isEmpty()) {
+                tfbCity.setText(news.getCity());
+            }  
+            
+            if (!news.getStreet().isEmpty()) {
+                tfbStreet.setText(news.getStreet());
+            }
             
             tfbVictims.setText(String.valueOf(news.getVictims()));
             
