@@ -31,11 +31,11 @@ import java.util.logging.Logger;
  */
 class DatabaseManager {
 
-    protected Connection conn;
+//    protected Connection conn;
     private Properties props;
-    private static final ReentrantLock lock = new ReentrantLock(true);
+//    private static final ReentrantLock lock = new ReentrantLock(true);
     private String managerName;
-    ComboPooledDataSource cpds = new ComboPooledDataSource();
+    ComboPooledDataSource connPool = new ComboPooledDataSource();
 
     /**
      *
@@ -53,7 +53,7 @@ class DatabaseManager {
      */
     private void configure(String fileName) {
         props = new Properties();
-
+        Connection conn = null;
         
 
         try (FileInputStream in = new FileInputStream(fileName)) {
@@ -67,12 +67,19 @@ class DatabaseManager {
             System.out.println("ClassNotFoundException in database configure: " + ex.getMessage());
         }
 
+
         try {
-            cpds.setDriverClass("org.postgresql.Driver"); //loads the jdbc driver
-            cpds.setJdbcUrl("jdbc:postgresql://localhost/testdb");
-            cpds.setUser("swaldman");
-            cpds.setPassword("test-password");
-            if (!openConnection() || conn == null || conn.isClosed()) {
+            connPool = new ComboPooledDataSource();
+            connPool.setDriverClass("com.mysql.jdbc.Driver"); //loads the jdbc driver
+            connPool.setJdbcUrl(props.getProperty("url"));
+            connPool.setUser(props.getProperty("username"));
+            connPool.setPassword(props.getProperty("password"));
+
+            connPool.setContextClassLoaderSource("library");
+            connPool.setPrivilegeSpawnedThreads(true);
+
+            conn = connPool.getConnection();
+            if (!conn.isValid(2)) {
                 throw new SQLException("Connection was null or closed");
             }
         } catch (SQLException ex) {
@@ -80,7 +87,7 @@ class DatabaseManager {
         } catch (PropertyVetoException ex) {
             System.out.println("failed to init connection pool: " + ex.getMessage());
         } finally {
-            closeConnection();
+            closeConnection(conn);
         }
     }
 
@@ -90,20 +97,16 @@ class DatabaseManager {
      * @return
      */
     protected boolean resetDatabase() {
-        if (!openConnection()) {
-            return false;
-        }
-
-        try {
-            CallableStatement cs = this.conn.prepareCall("{call ResetDatabase()}");
+//        Connection conn = null;
+        try (Connection conn = connPool.getConnection()) {
+//            conn = connPool.getConnection();
+            CallableStatement cs = conn.prepareCall("{call ResetDatabase()}");
             cs.executeQuery();
             return true;
         } catch (SQLException ex) {
             System.out.println("Failed to reset database: " + ex.getMessage());
             Logger.getLogger(DatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
             return false;
-        } finally {
-            closeConnection();
         }
     }
 
@@ -112,23 +115,23 @@ class DatabaseManager {
      *
      * @return
      */
-    protected synchronized boolean openConnection() {
+    protected synchronized Connection openConnection() {
 
         try {
-            if (conn != null && !conn.isClosed()) {
-//                System.out.println("connection already open");
-                return true;
-            }
+//            if (conn != null && !conn.isClosed()) {
+////                System.out.println("connection already open");
+//                return true;
+//            }
 //            System.out.println("-trying to acquire lock for "
 //                        + Thread.currentThread().getName()
 //                        + " on " + managerName);
-            if (!lock.isHeldByCurrentThread()
-                    && !lock.tryLock(10000, TimeUnit.MILLISECONDS)) {
-                System.out.println("------ERROR: Database lock timeout for "
-                        + Thread.currentThread().getName()
-                        + " on " + managerName);
-                return false;
-            }
+//            if (!lock.isHeldByCurrentThread()
+//                    && !lock.tryLock(10000, TimeUnit.MILLISECONDS)) {
+//                System.out.println("------ERROR: Database lock timeout for "
+//                        + Thread.currentThread().getName()
+//                        + " on " + managerName);
+//                return null;
+//            }
 //            System.out.println("--lock acquired for "
 //                    + Thread.currentThread().getName()
 //                    + " on " + managerName);
@@ -138,22 +141,24 @@ class DatabaseManager {
 //                    (String) props.get("username"),
 //                    (String) props.get("password"));
             
-            return true;
+//            return true;
+            return connPool.getConnection();
         } catch (Exception ex) {
             System.out.println("Connection open failed: " + ex);
-            closeConnection();
-            return false;
+            return null;
+//            return false;
         }
     }
 
     /**
      * closing connection
      */
-    protected synchronized void closeConnection() {
-        if (!lock.isHeldByCurrentThread()) {
-            return;
-        }
-        lock.unlock();
+    @Deprecated
+    protected synchronized void closeConnection(Connection conn) {
+//        if (!lock.isHeldByCurrentThread()) {
+//            return;
+//        }
+//        lock.unlock();
 //        System.out.println("---lock released for "
 //                + Thread.currentThread().getName()
 //                + " on " + managerName);
@@ -161,25 +166,25 @@ class DatabaseManager {
             return;
         }
 
-//        try {
-//            conn.close();
-//        } catch (SQLException ex) {
-//            System.out.println("Connection close failed: " + ex);
-//        } finally {
-//            conn = null;
-//        }
-    }
-
-    public void shutDownConnection() {
-        if (conn == null) {
-            return;
-        }
         try {
             conn.close();
         } catch (SQLException ex) {
             System.out.println("Connection close failed: " + ex);
         } finally {
             conn = null;
+        }
+    }
+
+    public void shutDownConnection() {
+        if (connPool == null) {
+            return;
+        }
+        try {
+            connPool.close();
+        } catch (Exception ex) {
+            System.out.println("Connection close failed: " + ex);
+        } finally {
+            connPool = null;
         }
     }
 
@@ -190,7 +195,7 @@ class DatabaseManager {
      * @return
      * @throws SQLException
      */
-    protected int getMaxID(String tableName) throws SQLException {
+    protected int getMaxID(Connection conn, String tableName) throws SQLException {
         int output = -1;
         // Gets assigned ID. Throws Exception if not found
         String query = "SELECT MAX(ID) FROM " + tableName;

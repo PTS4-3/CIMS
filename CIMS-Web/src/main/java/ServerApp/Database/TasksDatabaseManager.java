@@ -23,6 +23,7 @@ import Shared.Users.IServiceUser;
 import Shared.Users.IUser;
 import Shared.Users.ServiceUser;
 import Shared.Users.UserRole;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -116,7 +117,7 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @return
      * @throws SQLException
      */
-    private List<ITask> extractTasks(ResultSet rs, ISortedData data) throws SQLException {
+    private List<ITask> extractTasks(Connection conn, ResultSet rs, ISortedData data) throws SQLException {
         List<ITask> output = new ArrayList<>();
         while (rs.next()) {
             int outputID = rs.getInt("ID");
@@ -143,7 +144,7 @@ public class TasksDatabaseManager extends DatabaseManager {
 
         for(ITask task : output) {
             // gets task executor
-            IServiceUser executor = getTaskExecutor(task.getId());
+            IServiceUser executor = getTaskExecutor(conn, task.getId());
             task.setExecutor(executor);
         }
 
@@ -157,7 +158,7 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @param taskID
      * @return IServiceUser currently slated to execute given task.
      */
-    private IServiceUser getTaskExecutor(int taskID) throws SQLException {
+    private IServiceUser getTaskExecutor(Connection conn, int taskID) throws SQLException {
 //        if(conn == null){
 //            openConnection();
 //        }
@@ -171,7 +172,7 @@ public class TasksDatabaseManager extends DatabaseManager {
         String execUserName = null;
         query = "SELECT * FROM " + userTaskTable
                 + " WHERE TASKID = ?";
-        prepStat = super.conn.prepareStatement(query);
+        prepStat = conn.prepareStatement(query);
         prepStat.setInt(1, taskID);
         rs = prepStat.executeQuery();
         while (rs.next()) {
@@ -207,8 +208,7 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @return
      */
     public ITask insertNewTask(ITask newTask) {
-        if (!openConnection() || (newTask == null)) {
-            closeConnection();
+        if ((newTask == null)) {
             return null;
         }
         ITask output = null;
@@ -216,7 +216,7 @@ public class TasksDatabaseManager extends DatabaseManager {
         PreparedStatement prepStat;
         ResultSet rs;
 
-        try {
+        try (Connection conn = openConnection()) {
             // Inserts Task object
             query = "INSERT INTO " + taskTable
                     + " (ID, TITLE, DESCRIPTION, TAG, DATAID, STATUS, REASON)"
@@ -237,7 +237,7 @@ public class TasksDatabaseManager extends DatabaseManager {
             prepStat.execute();
 
             // Gets assigned ID. Throws Exception if not found
-            newTask.setId(getMaxID(taskTable));
+            newTask.setId(getMaxID(conn, taskTable));
             if (newTask.getId() == -1) {
                 throw new SQLException("assigned ID not found");
             }
@@ -256,8 +256,6 @@ public class TasksDatabaseManager extends DatabaseManager {
             System.out.println("failed to execute insertNewTask: " + ex.getMessage());
             output = null;
             Logger.getLogger(TasksDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            closeConnection();
         }
         return output;
     }
@@ -282,8 +280,7 @@ public class TasksDatabaseManager extends DatabaseManager {
             }
         }
 
-        if (!openConnection() || (input == null)) {
-            closeConnection();
+        if (input == null) {
             return null;
         }
 
@@ -292,7 +289,7 @@ public class TasksDatabaseManager extends DatabaseManager {
         PreparedStatement prepStat;
         ResultSet rs;
 
-        try {
+        try (Connection conn = openConnection()) {
             // inserts plan itself
             query = "INSERT INTO " + planTable + " VALUES (ID, ?, ?, ?)";
             prepStat = conn.prepareStatement(query);
@@ -302,7 +299,7 @@ public class TasksDatabaseManager extends DatabaseManager {
             prepStat.execute();
 
             // Gets assigned ID. Throws Exception if not found
-            input.setId(getMaxID(planTable));
+            input.setId(getMaxID(conn, planTable));
             if (input.getId() == -1) {
                 throw new SQLException("assigned ID not found");
             }
@@ -333,8 +330,6 @@ public class TasksDatabaseManager extends DatabaseManager {
             System.out.println("failed to insert new plan: " + ex.getMessage());
             output = null;
             Logger.getLogger(TasksDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            closeConnection();
         }
         return output;
     }
@@ -345,8 +340,7 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @return Task with given ID. Null if ID == -1 or no Task found.
      */
     public ITask getTask(int ID) {
-        if (!openConnection() || (ID == -1)) {
-            closeConnection();
+        if (ID == -1) {
             return null;
         }
         ITask output = null;
@@ -354,21 +348,19 @@ public class TasksDatabaseManager extends DatabaseManager {
         PreparedStatement prepStat;
         ResultSet rs;
 
-        try {
+        try (Connection conn = openConnection()) {
             query = "SELECT * FROM " + taskTable
                     + " WHERE ID = ?";
             prepStat = conn.prepareStatement(query);
             prepStat.setInt(1, ID);
             rs = prepStat.executeQuery();
             // delegates actually extracting said tasks
-            output = this.extractTasks(rs, null).get(0);
+            output = this.extractTasks(conn, rs, null).get(0);
 
         } catch (SQLException ex) {
             System.out.println("failed to get task with id " + ID + ": " + ex.getMessage());
             Logger.getLogger(TasksDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
             output = null;
-        } finally {
-            closeConnection();
         }
         return output;
     }
@@ -380,15 +372,14 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @return
      */
     public boolean updateTask(ITask input) {
-        if (!openConnection() || (input == null)) {
-            closeConnection();
+        if (input == null) {
             return false;
         }
         boolean output = false;
         String query;
         PreparedStatement prepStat;
 
-        try {
+        try (Connection conn = openConnection()) {
             // updates task itself
             query = "UPDATE " + taskTable
                     + " SET TITLE = ?, DESCRIPTION = ?, STATUS = ?, REASON = ?"
@@ -417,8 +408,6 @@ public class TasksDatabaseManager extends DatabaseManager {
             System.out.println("failed to update task: " + ex.getMessage());
             Logger.getLogger(TasksDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
             output = false;
-        } finally {
-            closeConnection();
         }
         return output;
     }
@@ -430,8 +419,7 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @return ServiceUser/HQChief/HQUser with given name
      */
     public IUser getUser(String userName) {
-        if (!openConnection() || (userName == null)) {
-            closeConnection();
+        if (userName == null) {
             return null;
         }
         IUser output = null;
@@ -439,7 +427,7 @@ public class TasksDatabaseManager extends DatabaseManager {
         PreparedStatement prepStat;
         ResultSet rs;
 
-        try {
+        try (Connection conn = openConnection()) {
             query = "SELECT * FROM " + userTable + " WHERE BINARY USERNAME = ?";
             prepStat = conn.prepareStatement(query);
             prepStat.setString(1, userName);
@@ -455,8 +443,6 @@ public class TasksDatabaseManager extends DatabaseManager {
                     + ex.getMessage());
             Logger.getLogger(TasksDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
             output = null;
-        } finally {
-            closeConnection();
         }
         return output;
     }
@@ -466,16 +452,12 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @return all ServiceUsers
      */
     public List<IServiceUser> getServiceUsers() {
-        if (!openConnection()) {
-            closeConnection();
-            return null;
-        }
         List<IServiceUser> output = null;
         String query;
         PreparedStatement prepStat;
         ResultSet rs;
 
-        try {
+        try (Connection conn = openConnection()) {
             query = "SELECT * FROM " + userTable + " WHERE ROLE = ?";
             prepStat = conn.prepareStatement(query);
             prepStat.setString(1, UserRole.SERVICE.toString());
@@ -497,8 +479,6 @@ public class TasksDatabaseManager extends DatabaseManager {
             Logger.getLogger(TasksDatabaseManager.class.getName())
                     .log(Level.SEVERE, null, ex);
             output = null;
-        } finally {
-            closeConnection();
         }
         return output;
     }
@@ -510,8 +490,7 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @return
      */
     public List<ITask> getTasks(String execUserName, HashSet<TaskStatus> filter) {
-        if (!openConnection() || filter == null) {
-            closeConnection();
+        if (filter == null) {
             return null;
         }
         List<ITask> output = null;
@@ -519,7 +498,7 @@ public class TasksDatabaseManager extends DatabaseManager {
         PreparedStatement prepStat;
         ResultSet rs;
 
-        try {
+        try (Connection conn = openConnection()) {
             query = "SELECT * FROM " + taskTable;
             int count = 1;
             if (execUserName != null && !execUserName.isEmpty()) {
@@ -553,7 +532,7 @@ public class TasksDatabaseManager extends DatabaseManager {
             rs = prepStat.executeQuery();
 
             // Delegates extracting tasks
-            output = this.extractTasks(rs, null);
+            output = this.extractTasks(conn, rs, null);
         } catch (SQLException ex) {
             if (execUserName != null && !execUserName.isEmpty()) {
                 System.out.print("(given IServiceUser: "
@@ -563,8 +542,6 @@ public class TasksDatabaseManager extends DatabaseManager {
             Logger.getLogger(TasksDatabaseManager.class.getName())
                     .log(Level.SEVERE, null, ex);
             output = null;
-        } finally {
-            closeConnection();
         }
         return output;
     }
@@ -577,8 +554,7 @@ public class TasksDatabaseManager extends DatabaseManager {
      * @return null if not found
      */
     public IUser loginUser(String userName, String password) {
-        if (!openConnection() || (userName == null) || (password == null)) {
-            closeConnection();
+        if ((userName == null) || (password == null)) {
             return null;
         }
         IUser output = null;
@@ -586,7 +562,7 @@ public class TasksDatabaseManager extends DatabaseManager {
         PreparedStatement prepStat;
         ResultSet rs;
 
-        try {
+        try (Connection conn = openConnection()) {
             query = "SELECT * FROM " + userTable
                     + " WHERE BINARY USERNAME = ? AND BINARY PASSWORD = ?";
             prepStat = conn.prepareStatement(query);
@@ -605,8 +581,6 @@ public class TasksDatabaseManager extends DatabaseManager {
             Logger.getLogger(TasksDatabaseManager.class.getName())
                     .log(Level.SEVERE, null, ex);
             output = null;
-        } finally {
-            closeConnection();
         }
         return output;
     }
@@ -619,8 +593,7 @@ public class TasksDatabaseManager extends DatabaseManager {
      * only returns templates
      */
     public List<IPlan> getTemplatePlans(HashSet<String> keywords) {
-        if (!openConnection() || (keywords == null)) {
-            closeConnection();
+        if ((keywords == null)) {
             return null;
         }
         List<IPlan> output = null;
@@ -630,7 +603,7 @@ public class TasksDatabaseManager extends DatabaseManager {
 
         HashMap<Integer, PlanStruct> outputPlanStructs = new HashMap<>();
 
-        try {
+        try (Connection conn = openConnection()) {
             // builds query, depending on how many keywords are provided
             query = "SELECT * FROM " + planTable
                     + " WHERE TEMPLATE = 1";
@@ -729,7 +702,7 @@ public class TasksDatabaseManager extends DatabaseManager {
                 }
                 rs = prepStat.executeQuery();
                 // Delegates extracting tasks, adds them to struct
-                for (ITask task : this.extractTasks(rs, null)) {
+                for (ITask task : this.extractTasks(conn, rs, null)) {
                     int stepNr = struct.stepNumbers.get(task.getId());
                     String stepCondition = struct.stepConditions.get(task.getId());
                     struct.steps.add(new Step(task, stepNr, stepCondition));
@@ -752,8 +725,6 @@ public class TasksDatabaseManager extends DatabaseManager {
             Logger.getLogger(TasksDatabaseManager.class.getName())
                     .log(Level.SEVERE, null, ex);
             output = null;
-        } finally {
-            closeConnection();
         }
         return output;
     }
@@ -765,8 +736,7 @@ public class TasksDatabaseManager extends DatabaseManager {
      * steps
      */
     public List<ITask> getSortedDataTasks(ISortedData input) {
-        if (!openConnection() || (input == null)) {
-            closeConnection();
+        if ((input == null)) {
             return null;
         }
         HashMap<Integer, ITask> output = null;
@@ -774,7 +744,7 @@ public class TasksDatabaseManager extends DatabaseManager {
         PreparedStatement prepStat;
         ResultSet rs;
 
-        try {
+        try (Connection conn = openConnection()) {
             query = "SELECT * FROM " + taskTable + " WHERE DATAID = ?";
             prepStat = conn.prepareStatement(query);
             prepStat.setInt(1, input.getId());
@@ -782,7 +752,7 @@ public class TasksDatabaseManager extends DatabaseManager {
 
             // delegates actually extracting tasks, puts them in hashmap for access
             output = new HashMap<>();
-            for (ITask task : this.extractTasks(rs, input)) {
+            for (ITask task : this.extractTasks(conn, rs, input)) {
                 output.put(task.getId(), task);
             }
 
@@ -819,8 +789,6 @@ public class TasksDatabaseManager extends DatabaseManager {
             System.out.println("Failed to retrieve sorted data task IDs: " + ex.getMessage());
             Logger.getLogger(TasksDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
             output = null;
-        } finally {
-            closeConnection();
         }
         if (output != null) {
             return new ArrayList<>(output.values());

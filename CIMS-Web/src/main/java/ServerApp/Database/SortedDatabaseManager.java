@@ -126,13 +126,11 @@ public class SortedDatabaseManager extends DatabaseManager {
      * @return succeed on attempting to insert sorted data.
      */
     public boolean insertToSortedData(ISortedData sorted) {
-        if (!openConnection()) {
-            closeConnection();
-            return false;
+        if (sorted == null) {
         }
         Set<Tag> tags = sorted.getTags();
         boolean succeed = false;
-        try {
+        try (Connection conn = openConnection()) {
             //insert to sorteddata
             String query = "INSERT INTO " + sortedDataTable + " VALUES (?,?,?,?,?,?,?,?)";
             PreparedStatement sortedData = conn.prepareStatement(query);
@@ -164,8 +162,6 @@ public class SortedDatabaseManager extends DatabaseManager {
         } catch (SQLException ex) {
             System.out.println("insertToSortedData failed: " + ex);
             succeed = false;
-        } finally {
-            closeConnection();
         }
         return succeed;
     }
@@ -175,8 +171,7 @@ public class SortedDatabaseManager extends DatabaseManager {
      * @return List sorteddata
      */
     public List<ISortedData> getFromSortedData(HashSet<Tag> info) {
-        if (!openConnection()) {
-            closeConnection();
+        if (info == null) {
             return null;
         }
 
@@ -194,7 +189,7 @@ public class SortedDatabaseManager extends DatabaseManager {
         int quality;
         HashSet<Tag> newTags = new HashSet<Tag>();
 
-        try {
+        try (Connection conn = openConnection()) {
             String query = "SELECT DATAID FROM " + sortedDataTagsTable + " ";
             int sizeList = info.size();
             Iterator it = info.iterator();
@@ -264,8 +259,6 @@ public class SortedDatabaseManager extends DatabaseManager {
         } catch (SQLException ex) {
             System.out.println("getFromSortedData failed: " + ex);
             return null;
-        } finally {
-            closeConnection();
         }
         return sorted;
     }
@@ -275,13 +268,12 @@ public class SortedDatabaseManager extends DatabaseManager {
      * @return succeed if succeeded
      */
     public boolean insertDataRequest(IDataRequest data) {
-        if (!openConnection()) {
-            closeConnection();
+        if (data == null) {
             return false;
         }
 
         boolean succeed = false;
-        try {
+        try (Connection conn = openConnection()) {
             Set<Tag> tags = data.getTags();
             //insert to sorteddata
             String query = "INSERT INTO " + requestsTable + " VALUES (ID,?,?,?,?,?)";
@@ -294,7 +286,7 @@ public class SortedDatabaseManager extends DatabaseManager {
             requestData.execute();
 
             //Find id from this object
-            int id = super.getMaxID(requestsTable);
+            int id = super.getMaxID(conn, requestsTable);
 
             Iterator it = tags.iterator();
             while (it.hasNext()) {
@@ -312,10 +304,7 @@ public class SortedDatabaseManager extends DatabaseManager {
         } catch (SQLException ex) {
             System.out.println("insertDataRequest failed: " + ex);
             succeed = false;
-        } finally {
-            closeConnection();
         }
-
         return succeed;
     }
 
@@ -324,8 +313,7 @@ public class SortedDatabaseManager extends DatabaseManager {
      * @return succeed if succeeded
      */
     public List<IDataRequest> getUpdateRequests(HashSet tags) {
-        if (!openConnection()) {
-            closeConnection();
+        if (tags == null) {
             return null;
         }
 
@@ -341,7 +329,7 @@ public class SortedDatabaseManager extends DatabaseManager {
         int dataID;
         HashSet<Tag> newTags = new HashSet<Tag>();
 
-        try {
+        try (Connection conn = openConnection()) {
             //build a string with all tha tags
             String query = "SELECT REQUESTID FROM " + requestTagsTable + " ";
             int sizeList = tags.size();
@@ -407,10 +395,7 @@ public class SortedDatabaseManager extends DatabaseManager {
         } catch (SQLException ex) {
             System.out.println("getUpdateRequests failed: " + ex);
             return null;
-        } finally {
-            closeConnection();
         }
-
         return request;
     }
 
@@ -420,8 +405,7 @@ public class SortedDatabaseManager extends DatabaseManager {
      * @return SortedData with given ID. null if unknown.
      */
     public ISortedData getFromSortedData(int ID) {
-        if (!openConnection() || (ID == -1)) {
-            closeConnection();
+        if ((ID == -1)) {
             return null;
         }
 
@@ -430,7 +414,7 @@ public class SortedDatabaseManager extends DatabaseManager {
         PreparedStatement prepStat;
         ResultSet rs;
 
-        try {
+        try (Connection conn = openConnection()) {
             // gets sorted data
             query = "SELECT * FROM " + sortedDataTable + " WHERE ID = ?";
             prepStat = conn.prepareStatement(query);
@@ -480,8 +464,6 @@ public class SortedDatabaseManager extends DatabaseManager {
             System.out.println("failed to getFromSortedData by ID: " + ex.getMessage());
             Logger.getLogger(SortedDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
             output = null;
-        } finally {
-            closeConnection();
         }
         return output;
     }
@@ -504,17 +486,12 @@ public class SortedDatabaseManager extends DatabaseManager {
      * @return all situations as HashMap, key being their ID
      */
     public HashMap<Integer, Situation> getSituationsMap() {
-        if (!openConnection()) {
-            closeConnection();
-            return null;
-        }
-
         HashMap<Integer, Situation> output = null;
         String query;
         PreparedStatement prepStat;
         ResultSet rs;
 
-        try {
+        try (Connection conn = openConnection()) {
             query = "SELECT ad.*, st.* FROM " + situationsTable + " AS st"
                     + " LEFT JOIN " + situationsAdviceTable + " AS sa"
                     + " ON st.ID = sa.SITUATIONID"
@@ -538,8 +515,6 @@ public class SortedDatabaseManager extends DatabaseManager {
             System.out.println("failed to get situations: " + ex.getMessage());
             Logger.getLogger(SortedDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
             output = null;
-        } finally {
-            closeConnection();
         }
         return output;
     }
@@ -551,8 +526,7 @@ public class SortedDatabaseManager extends DatabaseManager {
      * @return news items from database
      */
     public List<INewsItem> getNewsItems(int startIndex, int limit) {
-        if (!openConnection() || limit < 1) {
-            closeConnection();
+        if (limit < 1) {
             return null;
         }
 
@@ -564,7 +538,7 @@ public class SortedDatabaseManager extends DatabaseManager {
         PreparedStatement prepStat;
         ResultSet rs;
 
-        try {
+        try (Connection conn = openConnection()) {
             query = "SELECT ni.*, ns.*"
                     + " FROM (SELECT * FROM " + newsItemTable
                     + " ORDER BY ITEMDATE DESC, TITLE LIMIT ?,?) AS ni"
@@ -581,8 +555,6 @@ public class SortedDatabaseManager extends DatabaseManager {
             System.out.println("failed to get news items: " + ex.getMessage());
             Logger.getLogger(SortedDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
             newsItems = null;
-        } finally {
-            closeConnection();
         }
 
         return output;
@@ -603,8 +575,7 @@ public class SortedDatabaseManager extends DatabaseManager {
      * @return
      */
     public INewsItem insertNewsItem(INewsItem item) {
-        if (!openConnection() || item == null) {
-            closeConnection();
+        if (item == null) {
             return null;
         }
 
@@ -613,7 +584,7 @@ public class SortedDatabaseManager extends DatabaseManager {
         PreparedStatement prepStat;
         ResultSet rs;
 
-        try {
+        try (Connection conn = openConnection()) {
             // inserts news item
             query = "INSERT INTO " + newsItemTable
                     + " (TITLE, DESCRIPTION, LOCATION, SOURCE, VICTIMS)"
@@ -627,7 +598,7 @@ public class SortedDatabaseManager extends DatabaseManager {
             prepStat.execute();
 
             // gets ID and Date
-            item.setID(super.getMaxID(newsItemTable));
+            item.setID(super.getMaxID(conn, newsItemTable));
             query = "SELECT ITEMDATE FROM " + newsItemTable
                     + " WHERE ID = ?";
             prepStat = conn.prepareStatement(query);
@@ -653,8 +624,6 @@ public class SortedDatabaseManager extends DatabaseManager {
         } catch (SQLException ex) {
             System.out.println("failed to insert newsitem: " + ex.getMessage());
             Logger.getLogger(SortedDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            closeConnection();
         }
         return output;
     }
@@ -666,8 +635,7 @@ public class SortedDatabaseManager extends DatabaseManager {
      * @return
      */
     public boolean updateNewsItem(INewsItem item) {
-        if (!openConnection() || item == null || item.getId() == -1) {
-            closeConnection();
+        if (item == null || item.getId() == -1) {
             return false;
         }
 
@@ -675,7 +643,7 @@ public class SortedDatabaseManager extends DatabaseManager {
         String query;
         PreparedStatement prepStat;
 
-        try {
+        try (Connection conn = openConnection()) {
             query = "UPDATE " + newsItemTable + " SET"
                     + " TITLE = ?,"
                     + " DESCRIPTION = ?,"
@@ -715,8 +683,6 @@ public class SortedDatabaseManager extends DatabaseManager {
             System.out.println("failed to update newsitem: " + ex.getMessage());
             Logger.getLogger(SortedDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
             output = false;
-        } finally {
-            closeConnection();
         }
         return output;
     }
@@ -726,16 +692,11 @@ public class SortedDatabaseManager extends DatabaseManager {
      * @return total number of newsitems present in database.
      */
     public int getNewsItemCount() {
-        if (!openConnection()) {
-            closeConnection();
-            return -1;
-        }
-
         String query;
         ResultSet rs;
         Integer output = -1;
 
-        try {
+        try (Connection conn = openConnection()) {
             query = "SELECT COUNT(ID) FROM " + newsItemTable;
             rs = conn.prepareStatement(query).executeQuery();
             while (rs.next()) {
@@ -744,14 +705,17 @@ public class SortedDatabaseManager extends DatabaseManager {
         } catch (SQLException ex) {
             System.out.println("failed to get newsitem count: " + ex.getMessage());
             Logger.getLogger(SortedDatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            closeConnection();
         }
         return output;
     }
 
+    /**
+     *
+     * @param ID
+     * @return
+     */
     public INewsItem getNewsItemByID(int ID) {
-        if (ID < 0 || !openConnection()) {
+        if (ID < 0) {
             return null;
         }
 
@@ -763,7 +727,7 @@ public class SortedDatabaseManager extends DatabaseManager {
         PreparedStatement prepStat;
         ResultSet rs;
 
-        try {
+        try (Connection conn = openConnection()) {
             query = "SELECT ni.*, ns.*"
                     + " FROM (SELECT * FROM " + newsItemTable
                     + " WHERE ID = ?) AS ni"
@@ -777,8 +741,6 @@ public class SortedDatabaseManager extends DatabaseManager {
         } catch (SQLException ex) {
             System.out.println("failed to get newsitem by ID " + ID);
             ex.printStackTrace();
-        } finally {
-            closeConnection();
         }
 
         if (outputList != null && !outputList.isEmpty()) {

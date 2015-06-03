@@ -8,6 +8,7 @@ package ServerApp.Database;
 import Shared.Data.IData;
 import Shared.Data.Status;
 import Shared.Data.UnsortedData;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -35,11 +36,11 @@ public class UnsortedDatabaseManager extends DatabaseManager {
     public IData insertToUnsortedData(IData data) {
         IData output = null;
         int id = -1;
-        if (!openConnection() || data == null) {
+        if (data == null) {
             return null;
         }
 
-        try {
+        try (Connection conn = openConnection()) {
             String query = "INSERT INTO " + unsortedDataTable + " VALUES (ID,?,?,?,?,?)";
             PreparedStatement unsortedData = conn.prepareStatement(query);
             unsortedData.setString(1, data.getTitle());
@@ -50,11 +51,9 @@ public class UnsortedDatabaseManager extends DatabaseManager {
             unsortedData.execute();            
 
 //            System.out.println("insertToUnsortedData succeeded");
-            id = super.getMaxID(unsortedDataTable);
+            id = super.getMaxID(conn, unsortedDataTable);
         } catch (SQLException ex) {
             System.out.println("insertToUnsortedData failed: " + ex);
-        } finally {
-            closeConnection();
         }
         return this.getDataItem(id);
     }
@@ -72,12 +71,7 @@ public class UnsortedDatabaseManager extends DatabaseManager {
         String location;
         String source;
 
-        if (!openConnection()) {
-            closeConnection();
-            return null;
-        }
-
-        try {
+        try (Connection conn = openConnection()) {
             String query = "SELECT * FROM " + unsortedDataTable + " WHERE STATUS "
                     + " = 'NONE' ORDER BY ID  LIMIT 50";
             PreparedStatement readData = conn.prepareStatement(query);
@@ -108,8 +102,6 @@ public class UnsortedDatabaseManager extends DatabaseManager {
 //            System.out.println("getFromUnsortedData succeed");
         } catch (SQLException ex) {
             System.out.println("getFromUnsortedData failed: " + ex);
-        } finally {
-            closeConnection();
         }
         return unsorted;
     }
@@ -122,14 +114,9 @@ public class UnsortedDatabaseManager extends DatabaseManager {
         if(data.isEmpty()){
             return true;
         }
-        if (!openConnection()) {
-            closeConnection();
-            return false;
-        }
-
         boolean succeed = false;
 
-        try {
+        try (Connection conn = openConnection()) {
             for (IData x : data) {
                 String query = "UPDATE " + unsortedDataTable + " SET STATUS = '"
                         + Status.NONE.toString() + "' WHERE id = " + x.getId();
@@ -144,8 +131,6 @@ public class UnsortedDatabaseManager extends DatabaseManager {
         } catch (SQLException ex) {
             System.out.println("resetUnsortedData failed: " + ex);
             succeed = false;
-        } finally {
-            closeConnection();
         }
         return succeed;
     }
@@ -155,13 +140,8 @@ public class UnsortedDatabaseManager extends DatabaseManager {
      * @return succeed reset status unsorted data to Completed
      */
     public boolean updateStatusUnsortedData(IData data) {
-        if (!openConnection()) {
-            closeConnection();
-            return false;
-        }
-
         boolean succeed = false;
-        try {
+        try (Connection conn = openConnection()) {
             String query = "UPDATE " + unsortedDataTable + " SET STATUS = '"
                     + Status.COMPLETED.toString() + "' WHERE id = " + data.getId();
 
@@ -173,8 +153,6 @@ public class UnsortedDatabaseManager extends DatabaseManager {
             succeed = true;
         } catch (SQLException ex) {
             System.out.println("updateStatusUnsortedData failed: " + ex);
-        } finally {
-            closeConnection();
         }
 
         return succeed;
@@ -188,13 +166,12 @@ public class UnsortedDatabaseManager extends DatabaseManager {
      * @return false if id not found
      */
     public boolean updateUnsortedData(IData iData) {
-        if (!openConnection()) {
-            closeConnection();
+        if (iData == null) {
             return false;
         }
 
         boolean succeed = false;
-        try {
+        try (Connection conn = openConnection()) {
             String query = "UPDATE " + unsortedDataTable + " SET TITLE = '"
                     + iData.getTitle() + "', DESCRIPTION = '"
                     + iData.getDescription() + "', LOCATION = '"
@@ -210,10 +187,7 @@ public class UnsortedDatabaseManager extends DatabaseManager {
             succeed = true;
         } catch (SQLException ex) {
             System.out.println("updateUnsortedData failed: " + ex);
-        } finally {
-            closeConnection();
         }
-
         return succeed;
     }
 
@@ -222,13 +196,12 @@ public class UnsortedDatabaseManager extends DatabaseManager {
      * @return succeed reset status unsorted data to Discard
      */
     public boolean discardUnsortedData(IData iData) {
-        if (!openConnection()) {
-            closeConnection();
+        if (iData == null) {
             return false;
         }
 
         boolean succeed = false;
-        try {
+        try (Connection conn = openConnection()) {
             String query = "UPDATE " + unsortedDataTable + " SET STATUS = '"
                     + Status.DISCARDED.toString() + "' WHERE id = " + iData.getId();
 
@@ -240,10 +213,7 @@ public class UnsortedDatabaseManager extends DatabaseManager {
             succeed = true;
         } catch (SQLException ex) {
             System.out.println("discardUnsortedData failed: " + ex);
-        } finally {
-            closeConnection();
         }
-
         return succeed;
     }
 
@@ -252,8 +222,7 @@ public class UnsortedDatabaseManager extends DatabaseManager {
      * @return unsorted-object with correct id
      */
     public IData getDataItem(int id) {
-        if (!openConnection()) {
-            closeConnection();
+        if (id < 1) {
             return null;
         }
         IData unsorted = null;
@@ -263,7 +232,7 @@ public class UnsortedDatabaseManager extends DatabaseManager {
         String location;
         String source;
 
-        try {
+        try (Connection conn = openConnection()) {
             String query = "SELECT * FROM " + unsortedDataTable + " WHERE ID = " + id;
             PreparedStatement readData = conn.prepareStatement(query);
             ResultSet result = readData.executeQuery();
@@ -281,8 +250,6 @@ public class UnsortedDatabaseManager extends DatabaseManager {
             }
         } catch (SQLException ex) {
             System.out.println("getDataItem failed: " + ex);
-        } finally {
-            closeConnection();
         }
         return unsorted;
     }
@@ -292,8 +259,7 @@ public class UnsortedDatabaseManager extends DatabaseManager {
      * @return list unsorted-objects with correct source
      */
     public List<IData> getSentData(String source) {
-        if (!openConnection()) {
-            closeConnection();
+        if (source == null) {
             return null;
         }
         List<IData> unsorted = new ArrayList();
@@ -304,7 +270,7 @@ public class UnsortedDatabaseManager extends DatabaseManager {
         String location;
         String realSource;
 
-        try {
+        try (Connection conn = openConnection()) {
             String query = "SELECT * FROM " + unsortedDataTable + " ";
             if (!source.isEmpty()) {
                 query += "WHERE SOURCE = '" + source + "' ";
@@ -328,8 +294,6 @@ public class UnsortedDatabaseManager extends DatabaseManager {
 
         } catch (SQLException ex) {
             System.out.println("getSentData failed: " + ex);
-        } finally {
-            closeConnection();
         }
         return unsorted;
     }
