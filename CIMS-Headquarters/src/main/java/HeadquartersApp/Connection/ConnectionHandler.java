@@ -47,6 +47,7 @@ public class ConnectionHandler {
     private ResponseHandler responder;
     private ClientConnection client;
     private int commandID;
+    private boolean subscribedUnsorted; 
 
     private final HashMap<Integer, ConnCommand> inProgressCommands = new HashMap<>();
 
@@ -88,6 +89,10 @@ public class ConnectionHandler {
         handlerThread.start();
 
 //        this.testMethods();
+    }
+    
+    public void setSubscribedUnsorted(boolean subscribedUnsorted) {
+        this.subscribedUnsorted = subscribedUnsorted;
     }
 
     private synchronized int getCommandID() {
@@ -480,6 +485,10 @@ public class ConnectionHandler {
      * Tries to unsubscribe to unsorted data from server.
      */
     public void unsubscribeUnsorted() {
+        if(!this.subscribedUnsorted) {
+            return;
+        }
+        
         ServerBoundTransaction transaction
                 = new ServerBoundTransaction(this.getCommandID(),
                         ConnCommand.USERS_UNSORTED_UNSUBSCRIBE);
