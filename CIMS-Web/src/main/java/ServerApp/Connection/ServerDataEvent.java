@@ -22,11 +22,11 @@ class ServerDataEvent {
         this.data = data;
         
         // for debugging only
-        try {
-            System.out.println("remote: " + socket.getRemoteAddress().toString()
-                    + " - local: " + socket.getLocalAddress().toString());
-        } catch (IOException ex) {
-            Logger.getLogger(ServerDataEvent.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        try {
+//            System.out.println("remote: " + socket.getRemoteAddress().toString()
+//                    + " - local: " + socket.getLocalAddress().toString());
+//        } catch (IOException ex) {
+//            Logger.getLogger(ServerDataEvent.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }
 }

@@ -196,7 +196,8 @@ public class SortedDatabaseManagerTest {
 
         // runs same tests on newsItem gotten from getNewsItems
         insertedItem = null;
-        for (INewsItem item : myDB.getNewsItems(10, 10)) {
+        List<INewsItem> items2 = myDB.getNewsItems(0, 10);
+        for (INewsItem item : items2) {
             if (item.getId() == expectedID) {
                 insertedItem = item;
                 break;
@@ -212,7 +213,7 @@ public class SortedDatabaseManagerTest {
 
         // and reruns tests
         insertedItem = null;
-        for (INewsItem item : myDB.getNewsItems(10, 10)) {
+        for (INewsItem item : myDB.getNewsItems(0, 10)) {
             if (item.getId() == expectedID) {
                 insertedItem = item;
                 break;

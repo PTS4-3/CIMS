@@ -240,7 +240,7 @@ public class ConnectionHandler implements Runnable {
         readBuffer.flip();
         while (readBuffer.limit() - readBuffer.position() > 4) {
             int size = readBuffer.getInt();
-            System.out.println("transaction size: " + size + " - numRead: " + numRead);
+//            System.out.println("transaction size: " + size + " - numRead: " + numRead);
             if (readBuffer.limit() - readBuffer.position() >= size) {
                 byte[] data = new byte[size];
                 readBuffer.get(data);

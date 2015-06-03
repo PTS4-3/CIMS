@@ -33,8 +33,6 @@ class DatabaseManager {
 
 //    protected Connection conn;
     private Properties props;
-//    private static final ReentrantLock lock = new ReentrantLock(true);
-    private String managerName;
     ComboPooledDataSource connPool = new ComboPooledDataSource();
 
     /**
@@ -42,7 +40,6 @@ class DatabaseManager {
      * @param fileName
      */
     public DatabaseManager(String fileName) {
-        this.managerName = fileName;
         this.configure(fileName);
     }
 
@@ -54,7 +51,6 @@ class DatabaseManager {
     private void configure(String fileName) {
         props = new Properties();
         Connection conn = null;
-        
 
         try (FileInputStream in = new FileInputStream(fileName)) {
             props.load(in);
@@ -66,7 +62,6 @@ class DatabaseManager {
         } catch (ClassNotFoundException ex) {
             System.out.println("ClassNotFoundException in database configure: " + ex.getMessage());
         }
-
 
         try {
             connPool = new ComboPooledDataSource();
@@ -87,7 +82,10 @@ class DatabaseManager {
         } catch (PropertyVetoException ex) {
             System.out.println("failed to init connection pool: " + ex.getMessage());
         } finally {
-            closeConnection(conn);
+            try {
+                conn.close();
+            } catch (SQLException ex) {
+            }
         }
     }
 
@@ -116,66 +114,15 @@ class DatabaseManager {
      * @return
      */
     protected synchronized Connection openConnection() {
-
         try {
-//            if (conn != null && !conn.isClosed()) {
-////                System.out.println("connection already open");
-//                return true;
-//            }
-//            System.out.println("-trying to acquire lock for "
-//                        + Thread.currentThread().getName()
-//                        + " on " + managerName);
-//            if (!lock.isHeldByCurrentThread()
-//                    && !lock.tryLock(10000, TimeUnit.MILLISECONDS)) {
-//                System.out.println("------ERROR: Database lock timeout for "
-//                        + Thread.currentThread().getName()
-//                        + " on " + managerName);
-//                return null;
-//            }
-//            System.out.println("--lock acquired for "
-//                    + Thread.currentThread().getName()
-//                    + " on " + managerName);
-//            System.setProperty("jdbc.drivers", props.getProperty("driver"));
-//            this.conn = DriverManager.getConnection(
-//                    (String) props.get("url"),
-//                    (String) props.get("username"),
-//                    (String) props.get("password"));
-            
-//            return true;
             return connPool.getConnection();
         } catch (Exception ex) {
             System.out.println("Connection open failed: " + ex);
             return null;
-//            return false;
         }
     }
 
-    /**
-     * closing connection
-     */
-    @Deprecated
-    protected synchronized void closeConnection(Connection conn) {
-//        if (!lock.isHeldByCurrentThread()) {
-//            return;
-//        }
-//        lock.unlock();
-//        System.out.println("---lock released for "
-//                + Thread.currentThread().getName()
-//                + " on " + managerName);
-        if (conn == null) {
-            return;
-        }
-
-        try {
-            conn.close();
-        } catch (SQLException ex) {
-            System.out.println("Connection close failed: " + ex);
-        } finally {
-            conn = null;
-        }
-    }
-
-    public void shutDownConnection() {
+    public void shutDownManager() {
         if (connPool == null) {
             return;
         }
@@ -195,7 +142,7 @@ class DatabaseManager {
      * @return
      * @throws SQLException
      */
-    protected int getMaxID(Connection conn, String tableName) throws SQLException {
+    protected synchronized int getMaxID(Connection conn, String tableName) throws SQLException {
         int output = -1;
         // Gets assigned ID. Throws Exception if not found
         String query = "SELECT MAX(ID) FROM " + tableName;

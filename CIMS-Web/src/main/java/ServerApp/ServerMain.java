@@ -61,13 +61,13 @@ public class ServerMain {
 
     public static void stopDatabases(){
         if(sortedDatabaseManager != null){
-            sortedDatabaseManager.shutDownConnection();
+            sortedDatabaseManager.shutDownManager();
         }
         if(unsortedDatabaseManager != null){
-            unsortedDatabaseManager.shutDownConnection();
+            unsortedDatabaseManager.shutDownManager();
         }
         if(tasksDatabaseManager != null){
-            tasksDatabaseManager.shutDownConnection();
+            tasksDatabaseManager.shutDownManager();
         }
     }
 

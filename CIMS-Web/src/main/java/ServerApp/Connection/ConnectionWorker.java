@@ -74,8 +74,8 @@ public class ConnectionWorker implements Runnable {
                 incoming = (ServerBoundTransaction) SerializeUtils.deserialize(dataEvent.data);
                 outgoing = null;
             }
-//            System.out.println(incoming.command.toString() + " - "
-//                    + Thread.currentThread().getName()); // debugging
+            System.out.println(incoming.command.toString() + " - "
+                    + Thread.currentThread().getName()); // debugging
 
             switch (incoming.command) {
                 case SORTED_GET:
