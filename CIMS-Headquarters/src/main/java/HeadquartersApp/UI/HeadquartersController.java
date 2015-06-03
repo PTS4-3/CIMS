@@ -133,7 +133,9 @@ public class HeadquartersController implements Initializable {
     @FXML
     TextArea tanDescription;
     @FXML
-    TextField tfnLocation;
+    TextField tfnStreet;
+    @FXML
+    TextField tfnCity;
     @FXML
     TextField tfnVictims;
     @FXML
@@ -153,7 +155,9 @@ public class HeadquartersController implements Initializable {
     @FXML
     TextArea tabDescription;
     @FXML
-    TextField tfbLocation;
+    TextField tfbStreet;
+    @FXML
+    TextField tfbCity;
     @FXML
     TextField tfbVictims;
     @FXML
@@ -1462,7 +1466,14 @@ public class HeadquartersController implements Initializable {
             // Load values from GUI
             String title = tfnTitle.getText();
             String description = tanDescription.getText();
-            String location = tfnLocation.getText();
+            String location = null;
+            
+            if (!tfnCity.getText().isEmpty()) {
+                location = tfnStreet.getText() + ", " + tfnCity.getText();                
+            } else {
+                throw new IllegalArgumentException("Plaats niet ingevoerd");
+            }
+            
             String source = this.user.getUsername();
             int victims = Integer.parseInt(tfnVictims.getText());
             HashSet<Situation> situations = new HashSet<>();
@@ -1480,7 +1491,10 @@ public class HeadquartersController implements Initializable {
             // Reset GUI
             tfnTitle.clear();
             tanDescription.clear();
-            tfnLocation.clear();
+            tfnStreet.clear();
+            tfnStreet.setPromptText("Straat");
+            tfnCity.clear();
+            tfnCity.setPromptText("Plaats");
             tfnVictims.clear();
             ccnSituations.getCheckModel().clearChecks();
         } catch (NumberFormatException nfEx) {
@@ -1522,7 +1536,13 @@ public class HeadquartersController implements Initializable {
             // Fill GUI with information
             tfbTitle.setText(news.getTitle());
             tabDescription.setText(news.getDescription());
-            tfbLocation.setText(news.getLocation());
+            String[] location = news.getLocation().split(",");
+            
+            if (location.length > 1) {
+                tfnStreet.setText(location[0]);
+                tfnCity.setText(location[1]);
+            }            
+            
             tfbVictims.setText(String.valueOf(news.getVictims()));
             
             if (ccbSituations != null) {
@@ -1546,7 +1566,10 @@ public class HeadquartersController implements Initializable {
             // Clear GUI
             tfbTitle.clear();
             tabDescription.clear();
-            tfbLocation.clear();
+            tfbStreet.clear();
+            tfbStreet.setPromptText("Straat");
+            tfbCity.clear();
+            tfbCity.setPromptText("Plaats");
             tfbVictims.clear();
             ccbSituations.getCheckModel().clearChecks();
         }
@@ -1566,7 +1589,14 @@ public class HeadquartersController implements Initializable {
             // Load values from GUI
             String title = tfbTitle.getText();
             String description = tabDescription.getText();
-            String location = tfbLocation.getText();
+            String location = null;
+            
+            if (!tfbCity.getText().isEmpty()) {
+                location = tfbStreet.getText() + ", " + tfbCity.getText();                
+            } else {
+                throw new IllegalArgumentException("Plaats niet ingevoerd");
+            }
+            
             String source = this.user.getUsername();
             int victims = Integer.parseInt(tfbVictims.getText());
             HashSet<Situation> situations = new HashSet<>();
@@ -1579,15 +1609,18 @@ public class HeadquartersController implements Initializable {
             this.connectionManager.updateNewsItem(newsItem);
 
             // Show message
-            lblnMessage.setVisible(true);
-            lblnMessage.setText("Nieuwsbericht is succesvol verzonden");
+            lblbMessage.setVisible(true);
+            lblbMessage.setText("Nieuwsbericht is succesvol verzonden");
 
             // Reset GUI
-            tfnTitle.clear();
-            tanDescription.clear();
-            tfnLocation.clear();
-            tfnVictims.clear();
-            ccnSituations.getCheckModel().clearChecks();
+            tfbTitle.clear();
+            tabDescription.clear();
+            tfbStreet.clear();
+            tfbStreet.setPromptText("Straat");
+            tfbCity.clear();
+            tfbCity.setPromptText("Plaats");
+            tfbVictims.clear();
+            ccbSituations.getCheckModel().clearChecks();
         } catch (NumberFormatException nfEx) {
             showDialog("Onjuiste invoer", "Voer een getal in bij aantal slachtoffers", false);
         } catch (IllegalArgumentException iaEx) {
