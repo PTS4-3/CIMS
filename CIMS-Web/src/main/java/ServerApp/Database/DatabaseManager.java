@@ -5,6 +5,7 @@
  */
 package ServerApp.Database;
 
+import com.mchange.v2.c3p0.ComboPooledDataSource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -33,6 +34,7 @@ class DatabaseManager {
     private Properties props;
     private static final ReentrantLock lock = new ReentrantLock(true);
     private String managerName;
+    ComboPooledDataSource cpds = new ComboPooledDataSource();
 
     /**
      *
@@ -50,6 +52,8 @@ class DatabaseManager {
      */
     private void configure(String fileName) {
         props = new Properties();
+
+        
 
         try (FileInputStream in = new FileInputStream(fileName)) {
             props.load(in);
@@ -121,11 +125,15 @@ class DatabaseManager {
 //            System.out.println("--lock acquired for "
 //                    + Thread.currentThread().getName()
 //                    + " on " + managerName);
-            System.setProperty("jdbc.drivers", props.getProperty("driver"));
-            this.conn = DriverManager.getConnection(
-                    (String) props.get("url"),
-                    (String) props.get("username"),
-                    (String) props.get("password"));
+//            System.setProperty("jdbc.drivers", props.getProperty("driver"));
+//            this.conn = DriverManager.getConnection(
+//                    (String) props.get("url"),
+//                    (String) props.get("username"),
+//                    (String) props.get("password"));
+            cpds.setDriverClass("org.postgresql.Driver"); //loads the jdbc driver
+            cpds.setJdbcUrl("jdbc:postgresql://localhost/testdb");
+            cpds.setUser("swaldman");
+            cpds.setPassword("test-password");
             return true;
         } catch (Exception ex) {
             System.out.println("Connection open failed: " + ex);
