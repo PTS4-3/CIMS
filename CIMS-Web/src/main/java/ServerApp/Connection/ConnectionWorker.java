@@ -374,6 +374,9 @@ public class ConnectionWorker implements Runnable {
         try {
             IPlan plan = (IPlan) input.objects[0];
             if (plan != null) {
+                plan = ServerMain.tasksDatabaseManager.insertNewPlan(plan);
+            }
+            if (plan != null) {
                 ServerMain.planExecutorHandler.addPlanExecutor(plan);
             }
             return output.setResult(plan != null);
