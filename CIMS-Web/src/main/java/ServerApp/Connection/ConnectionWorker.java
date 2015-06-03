@@ -342,7 +342,8 @@ public class ConnectionWorker implements Runnable {
             ITask task = (ITask) input.objects[0];
             ITask insertedTask = ServerMain.tasksDatabaseManager.insertNewTask(task);
             if (insertedTask != null) {
-                ServerMain.pushHandler.push(insertedTask);
+                ServerMain.pushHandler.pushTaskToChief(insertedTask);
+                ServerMain.pushHandler.pushTaskToService(insertedTask);
             }
             return output.setResult(insertedTask);
         } catch (Exception ex) {
@@ -429,8 +430,8 @@ public class ConnectionWorker implements Runnable {
             boolean success = ServerMain.tasksDatabaseManager.updateTask(task);
             task = ServerMain.tasksDatabaseManager.getTask(task.getId());
             if (success) {
-                if (task.getStatus() != TaskStatus.READ && task.getStatus() != TaskStatus.SENT) {
-                    ServerMain.pushHandler.push(task);
+                if (task.getStatus() != TaskStatus.READ && task.getStatus() != TaskStatus.UNASSIGNED) {
+                    ServerMain.pushHandler.pushTaskToChief(task);
                 }
             }
 

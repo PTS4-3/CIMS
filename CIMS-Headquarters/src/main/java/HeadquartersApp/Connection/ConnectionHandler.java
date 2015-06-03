@@ -350,7 +350,7 @@ public class ConnectionHandler {
     public void getTasks() {
         HashSet<TaskStatus> statuses = new HashSet<TaskStatus>();
         for(TaskStatus ts : TaskStatus.values()) {
-            if(ts != TaskStatus.READ  && ts != TaskStatus.SENT && ts != TaskStatus.UNASSIGNED) {
+            if(ts != TaskStatus.READ && ts != TaskStatus.UNASSIGNED) {
                 statuses.add(ts);
             }
         }
