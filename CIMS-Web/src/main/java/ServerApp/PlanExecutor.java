@@ -30,6 +30,7 @@ public class PlanExecutor {
     public void executeNextStep() {
         if(this.nextStep > 0 && this.nextStep <= this.plan.getSteps().size()) {
             ServerMain.pushHandler.pushTaskToService(this.plan.getSteps().get(nextStep - 1));
+            ServerMain.pushHandler.pushTaskToChief(this.plan.getSteps().get(nextStep - 1));
             this.nextStep++;
         } else {
             ServerMain.planExecutorHandler.removePlanExecutor(this.plan);
