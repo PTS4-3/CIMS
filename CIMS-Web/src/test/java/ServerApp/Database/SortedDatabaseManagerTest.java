@@ -136,7 +136,7 @@ public class SortedDatabaseManagerTest {
         assertNull(myDB.getNewsItems(0, -1));
 
         List<INewsItem> items = myDB.getNewsItems(0, 20);
-        assertEquals("wrong number of items", 17, items.size());
+        assertEquals("wrong number of items", 18, items.size());
         assertEquals("getNewsItemCount incorrect", items.size(), myDB.getNewsItemCount());
 
         items = myDB.getNewsItems(0, 2);
@@ -180,7 +180,7 @@ public class SortedDatabaseManagerTest {
                 expectedLoc = "loc",
                 expectedSource = "source";
         int expectedVictims = 9001;
-        int expectedID = 18;
+        int expectedID = 19;
         long expectedTime = System.currentTimeMillis();
 
         expectedItem = new NewsItem(expectedID, expectedTitle, expectedDesc,

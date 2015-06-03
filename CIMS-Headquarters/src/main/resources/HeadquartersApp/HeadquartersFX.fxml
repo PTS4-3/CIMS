@@ -104,11 +104,12 @@
                 <Label layoutX="819.0" layoutY="55.0" text="Titel" />
                 <TextField id="tfuTitle" fx:id="tfnTitle" editable="true" layoutX="924.0" layoutY="52.0" prefWidth="262.0" />
                 <Label layoutX="819.0" layoutY="94.0" text="Beschrijving" />
-                <TextArea id="tauDescription" fx:id="tanDescription" editable="true" layoutX="924.0" layoutY="84.0" prefHeight="146.0" prefWidth="262.0" wrapText="true" />
-                <TextField id="tfuSource" fx:id="tfnLocation" disable="false" editable="true" layoutX="924.0" layoutY="249.0" prefWidth="262.0" />
-                <Label layoutX="819.0" layoutY="249.0" text="Locatie" />
+                <TextArea id="tauDescription" fx:id="tanDescription" editable="true" layoutX="924.0" layoutY="89.0" prefHeight="146.0" prefWidth="262.0" wrapText="true" />
+                <TextField id="tfuSource" fx:id="tfnStreet" disable="false" editable="true" layoutX="924.0" layoutY="249.0" prefWidth="122.0" promptText="Straat" />
+                <Label id="Straat" layoutX="819.0" layoutY="249.0" text="Locatie" />
                 <TextField id="tfuLocation" fx:id="tfnVictims" editable="true" layoutX="924.0" layoutY="286.0" prefWidth="262.0" />
                 <Label layoutX="818.0" layoutY="289.0" text="Slachtoffers" />
+                <TextField fx:id="tfnCity" layoutX="1057.0" layoutY="249.0" prefWidth="129.0" promptText="Plaats" />
               </children>
             </AnchorPane>
           </content>
@@ -127,9 +128,10 @@
                 <Label layoutX="630.0" layoutY="297.0" text="Slachtoffers" />
                 <Label layoutX="630.0" layoutY="259.0" text="Locatie" />
                 <TextField fx:id="tfbTitle" layoutX="790.0" layoutY="52.0" prefWidth="396.0" />
-                <TextField fx:id="tfbLocation" layoutX="790.0" layoutY="256.0" prefWidth="396.0" />
+                <TextField id="tfbLocation" fx:id="tfbStreet" layoutX="790.0" layoutY="256.0" prefWidth="190.0" promptText="Straat" />
                 <TextField fx:id="tfbVictims" layoutX="790.0" layoutY="294.0" prefWidth="396.0" />
                 <TextArea fx:id="tabDescription" layoutX="790.0" layoutY="91.0" prefHeight="148.0" prefWidth="396.0" wrapText="true" />
+                <TextField fx:id="tfbCity" layoutX="996.0" layoutY="256.0" prefWidth="190.0" promptText="Plaats" />
               </children>
             </AnchorPane>
           </content>

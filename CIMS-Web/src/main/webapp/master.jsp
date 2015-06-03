@@ -39,9 +39,12 @@
                 }
 
                 if(item != null) {
-                    location = item.getLocation();
-                } else {
-                    location = "Nederland";
+                    if (!item.getStreet().equals("") && !item.getCity().equals("")) {
+                        location = item.getLocation();
+                    }
+                    else if (!item.getCity().equals("")) {
+                        location = item.getCity();
+                    }
                 }
             }
         %>
@@ -68,17 +71,23 @@
                         if (status === google.maps.GeocoderStatus.OK) {
                             map.setCenter(results[0].geometry.location);
 
-                            //Add location mark
+                            //Add location mark                            
                             var marker = new google.maps.Marker({
                                 map: map,
                                 position: results[0].geometry.location
                             });
-                            var addressinfo = addressFromDB.replace(",", "<br />");
-                            infowindow = new google.maps.InfoWindow({content: addressinfo});
-                            google.maps.event.addListener(marker, "click", function () {
+                            
+                            <% if(!location.equals("")) { %>
+                                var addressinfo = addressFromDB;
+                                <% if(location.contains(",")) { %>
+                                    addressinfo = addressFromDB.replace(",", "<br />");
+                                <% } %>
+                                infowindow = new google.maps.InfoWindow({content: addressinfo});                                 
+                                google.maps.event.addListener(marker, "click", function () {
+                                    infowindow.open(map, marker);
+                                });
                                 infowindow.open(map, marker);
-                            });
-                            infowindow.open(map, marker);
+                            <% } %>
                         } else {
                             alert("Geocode was not successful for the following reason: " + status);
                         }

@@ -157,7 +157,10 @@ public class ClientConnection implements Runnable {
         this.readBuffer.clear();
         this.readBuffer.put(overflowBuffer);
         this.overflowBuffer.clear();
-        System.out.println("overflowBuffer found: " + readBuffer.position());
+        if(readBuffer.position() > 0){
+            System.out.println("overflowBuffer found: " + readBuffer.position());
+        }
+        
 
         // Attempt to read off the channel
         int numRead;
@@ -185,7 +188,7 @@ public class ClientConnection implements Runnable {
         readBuffer.flip();
         while (readBuffer.limit() - readBuffer.position() > 4) {
             int size = readBuffer.getInt();
-            System.out.println("transaction size: " + size + " - numRead: " + numRead);
+//            System.out.println("transaction size: " + size + " - numRead: " + numRead);
             if (readBuffer.limit() - readBuffer.position() >= size) {
                 byte[] data = new byte[size];
                 readBuffer.get(data);

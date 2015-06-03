@@ -16,6 +16,7 @@ import Shared.Data.Status;
 import Shared.NetworkException;
 import Shared.Tag;
 import Shared.Tasks.ITask;
+import Shared.Tasks.TaskStatus;
 import Shared.Users.IServiceUser;
 import Shared.Users.UserRole;
 import java.io.IOException;
@@ -185,9 +186,13 @@ public class ConnectionHandler {
     }
 
     public void getTasks(String username) {
+        HashSet<TaskStatus> statusses = new HashSet<>();
+        statusses.add(TaskStatus.INPROCESS);
+        statusses.add(TaskStatus.SENT);
+        
         ServerBoundTransaction transaction
                 = new ServerBoundTransaction(this.getCommandID(),
-                        ConnCommand.TASKS_GET, username, new HashSet<Status>());
+                        ConnCommand.TASKS_GET, username, statusses);
         // empty set because there is no filter
         try {
             this.client.send(SerializeUtils.serialize(transaction), responder);

@@ -128,7 +128,11 @@ class ResponseHandler implements IResponseHandler {
                             this.handleTaskPush(transaction);
                             break;
                         case USERS_UNSORTED_SUBSCRIBE:
+                            this.handleSubscribeUnsorted(transaction);
+                            break;
                         case USERS_UNSORTED_UNSUBSCRIBE:
+                            this.handleUnsubscribeUnsorted(transaction);
+                            break;
                         case UNSORTED_GET_ID:
                         case UNSORTED_SEND:
                         case UNSORTED_GET_SOURCE:
@@ -271,4 +275,15 @@ class ResponseHandler implements IResponseHandler {
         }
     }
 
+    private void handleSubscribeUnsorted(ClientBoundTransaction transaction) {
+        if(transaction.result == ConnState.COMMAND_SUCCESS) {
+            this.connectionHandler.setSubscribedUnsorted(true);
+        }
+    }
+    
+    private void handleUnsubscribeUnsorted(ClientBoundTransaction transaction) {
+        if(transaction.result == ConnState.COMMAND_SUCCESS) {
+            this.connectionHandler.setSubscribedUnsorted(false);
+        }
+    }
 }

@@ -11,22 +11,10 @@ import HeadquartersApp.UI.HeadquartersLogInController;
 import Shared.Connection.Transaction.ConnCommand;
 import Shared.Connection.SerializeUtils;
 import Shared.Connection.Transaction.ServerBoundTransaction;
-import Shared.Data.DataRequest;
-import Shared.Data.IData;
-import Shared.Data.IDataRequest;
-import Shared.Data.INewsItem;
-import Shared.Data.ISortedData;
-import Shared.Data.SortedData;
-import Shared.Data.Status;
-import Shared.Data.UnsortedData;
+import Shared.Data.*;
 import Shared.NetworkException;
 import Shared.Tag;
-import Shared.Tasks.IPlan;
-import Shared.Tasks.IStep;
-import Shared.Tasks.ITask;
-import Shared.Tasks.Plan;
-import Shared.Tasks.Step;
-import Shared.Tasks.Task;
+import Shared.Tasks.*;
 import Shared.Tasks.TaskStatus;
 import Shared.Users.UserRole;
 import java.io.IOException;
@@ -34,8 +22,6 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  *
@@ -47,6 +33,7 @@ public class ConnectionHandler {
     private ResponseHandler responder;
     private ClientConnection client;
     private int commandID;
+    private boolean subscribedUnsorted; 
 
     private final HashMap<Integer, ConnCommand> inProgressCommands = new HashMap<>();
 
@@ -88,6 +75,10 @@ public class ConnectionHandler {
         handlerThread.start();
 
 //        this.testMethods();
+    }
+    
+    public void setSubscribedUnsorted(boolean subscribedUnsorted) {
+        this.subscribedUnsorted = subscribedUnsorted;
     }
 
     private synchronized int getCommandID() {
@@ -357,9 +348,16 @@ public class ConnectionHandler {
      * Gets all tasks Sends returnvalue to hqController.displayTasks()
      */
     public void getTasks() {
+        HashSet<TaskStatus> statuses = new HashSet<TaskStatus>();
+        for(TaskStatus ts : TaskStatus.values()) {
+            if(ts != TaskStatus.READ && ts != TaskStatus.UNASSIGNED) {
+                statuses.add(ts);
+            }
+        }
+        
         ServerBoundTransaction transaction
                 = new ServerBoundTransaction(this.getCommandID(),
-                        ConnCommand.TASKS_GET, null, new HashSet<TaskStatus>());
+                        ConnCommand.TASKS_GET, null, statuses);
         try {
             this.client.send(SerializeUtils.serialize(transaction), responder);
             this.registerCommandSent(transaction);
@@ -480,6 +478,10 @@ public class ConnectionHandler {
      * Tries to unsubscribe to unsorted data from server.
      */
     public void unsubscribeUnsorted() {
+        if(!this.subscribedUnsorted) {
+            return;
+        }
+        
         ServerBoundTransaction transaction
                 = new ServerBoundTransaction(this.getCommandID(),
                         ConnCommand.USERS_UNSORTED_UNSUBSCRIBE);

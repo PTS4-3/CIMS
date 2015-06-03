@@ -74,8 +74,8 @@ public class ConnectionWorker implements Runnable {
                 incoming = (ServerBoundTransaction) SerializeUtils.deserialize(dataEvent.data);
                 outgoing = null;
             }
-            System.out.println(incoming.command.toString() + " - "
-                    + Thread.currentThread().getName()); // debugging
+//            System.out.println(incoming.command.toString() + " - "
+//                    + Thread.currentThread().getName()); // debugging
 
             switch (incoming.command) {
                 case SORTED_GET:
@@ -342,7 +342,8 @@ public class ConnectionWorker implements Runnable {
             ITask task = (ITask) input.objects[0];
             ITask insertedTask = ServerMain.tasksDatabaseManager.insertNewTask(task);
             if (insertedTask != null) {
-                ServerMain.pushHandler.push(insertedTask);
+                ServerMain.pushHandler.pushTaskToChief(insertedTask);
+                ServerMain.pushHandler.pushTaskToService(insertedTask);
             }
             return output.setResult(insertedTask);
         } catch (Exception ex) {
@@ -374,6 +375,7 @@ public class ConnectionWorker implements Runnable {
         try {
             IPlan plan = (IPlan) input.objects[0];
             if (plan != null) {
+                plan = ServerMain.tasksDatabaseManager.insertNewPlan(plan);
                 ServerMain.planExecutorHandler.addPlanExecutor(plan);
             }
             return output.setResult(plan != null);
@@ -426,11 +428,13 @@ public class ConnectionWorker implements Runnable {
             boolean success = ServerMain.tasksDatabaseManager.updateTask(task);
             task = ServerMain.tasksDatabaseManager.getTask(task.getId());
             if (success) {
-                ServerMain.pushHandler.push(task);
-                ServerMain.pushHandler.push(task.getSortedData());
+                if (task.getStatus() != TaskStatus.READ && task.getStatus() != TaskStatus.UNASSIGNED) {
+                    ServerMain.pushHandler.pushTaskToChief(task);
+                }
             }
 
-            if ((task.getStatus() == TaskStatus.SUCCEEDED
+            if (success 
+                    && (task.getStatus() == TaskStatus.SUCCEEDED
                     || task.getStatus() == TaskStatus.FAILED)
                     && task instanceof IStep) {
                 // Execute next step of plan
