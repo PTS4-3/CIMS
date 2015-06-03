@@ -6,6 +6,7 @@
 package ServerApp.Database;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
+import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -67,11 +68,17 @@ class DatabaseManager {
         }
 
         try {
+            cpds.setDriverClass("org.postgresql.Driver"); //loads the jdbc driver
+            cpds.setJdbcUrl("jdbc:postgresql://localhost/testdb");
+            cpds.setUser("swaldman");
+            cpds.setPassword("test-password");
             if (!openConnection() || conn == null || conn.isClosed()) {
                 throw new SQLException("Connection was null or closed");
             }
         } catch (SQLException ex) {
             System.out.println("failed to init connection: " + ex.getMessage());
+        } catch (PropertyVetoException ex) {
+            System.out.println("failed to init connection pool: " + ex.getMessage());
         } finally {
             closeConnection();
         }
@@ -130,10 +137,7 @@ class DatabaseManager {
 //                    (String) props.get("url"),
 //                    (String) props.get("username"),
 //                    (String) props.get("password"));
-            cpds.setDriverClass("org.postgresql.Driver"); //loads the jdbc driver
-            cpds.setJdbcUrl("jdbc:postgresql://localhost/testdb");
-            cpds.setUser("swaldman");
-            cpds.setPassword("test-password");
+            
             return true;
         } catch (Exception ex) {
             System.out.println("Connection open failed: " + ex);
