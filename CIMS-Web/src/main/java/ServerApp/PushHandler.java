@@ -208,7 +208,7 @@ public class PushHandler {
      *
      * @param task
      */
-    public void push(ITask task) {
+    public void pushTaskToChief(ITask task) {
         if (task == null) {
             return;
         }
@@ -224,6 +224,21 @@ public class PushHandler {
                 }
             }
         }
+        this.cleanFaultySockets();
+    }
+
+    /**
+     *
+     * @param task
+     */
+    public void pushTaskToService(ITask task){
+        if(task == null){
+            return;
+        }
+        ClientBoundTransaction transaction
+                = new ClientBoundTransaction(ConnCommand.TASKS_PUSH, task);
+        byte[] output = SerializeUtils.serialize(transaction);
+
         // to relevant serviceuser
         if (task.getExecutor() != null) {
             String userName = task.getExecutor().getUsername();
