@@ -59,6 +59,18 @@ public class ServerMain {
         dummyDatabaseManager = new DummyDatabaseManager();
     }
 
+    public static void stopDatabases(){
+        if(sortedDatabaseManager != null){
+            sortedDatabaseManager.shutDownConnection();
+        }
+        if(unsortedDatabaseManager != null){
+            unsortedDatabaseManager.shutDownConnection();
+        }
+        if(tasksDatabaseManager != null){
+            tasksDatabaseManager.shutDownConnection();
+        }
+    }
+
     public static void startConnection(boolean isDaemon) {
         try {
             connectionHandler = new ConnectionHandler(

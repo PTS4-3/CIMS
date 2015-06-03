@@ -104,7 +104,7 @@ class DatabaseManager {
     protected synchronized boolean openConnection() {
 
         try {
-            if(conn != null && !conn.isClosed()){
+            if (conn != null && !conn.isClosed()) {
 //                System.out.println("connection already open");
                 return true;
             }
@@ -156,6 +156,19 @@ class DatabaseManager {
 //        } finally {
 //            conn = null;
 //        }
+    }
+
+    public void shutDownConnection() {
+        if (conn == null) {
+            return;
+        }
+        try {
+            conn.close();
+        } catch (SQLException ex) {
+            System.out.println("Connection close failed: " + ex);
+        } finally {
+            conn = null;
+        }
     }
 
     /**

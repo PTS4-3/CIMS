@@ -26,6 +26,7 @@ public class ServerMainServlet extends HttpServlet {
     public void destroy() {
 //        System.out.println("------------ SERVLET DESTROYED");
         ServerMain.connectionHandler.close();
+        ServerMain.stopDatabases();
         super.destroy();
     }
 
