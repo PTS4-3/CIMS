@@ -430,7 +430,8 @@ public class ConnectionWorker implements Runnable {
                 ServerMain.pushHandler.push(task.getSortedData());
             }
 
-            if ((task.getStatus() == TaskStatus.SUCCEEDED
+            if (success 
+                    && (task.getStatus() == TaskStatus.SUCCEEDED
                     || task.getStatus() == TaskStatus.FAILED)
                     && task instanceof IStep) {
                 // Execute next step of plan
