@@ -429,8 +429,9 @@ public class ConnectionWorker implements Runnable {
             boolean success = ServerMain.tasksDatabaseManager.updateTask(task);
             task = ServerMain.tasksDatabaseManager.getTask(task.getId());
             if (success) {
-                ServerMain.pushHandler.push(task);
-                ServerMain.pushHandler.push(task.getSortedData());
+                if (task.getStatus() != TaskStatus.READ && task.getStatus() != TaskStatus.SENT) {
+                    ServerMain.pushHandler.push(task);
+                }
             }
 
             if (success 

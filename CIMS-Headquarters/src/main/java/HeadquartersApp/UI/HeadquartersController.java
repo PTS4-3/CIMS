@@ -1389,14 +1389,14 @@ public class HeadquartersController implements Initializable {
 
                 connectionManager.updateTask(task);
             }
+            
+            lblTasks.setVisible(true);
+            lblTasks.setText("Taak is gelezen");
         } catch (IllegalArgumentException iaEx) {
             showDialog("", iaEx.getMessage(), false);
         } catch (NetworkException nEx) {
             showDialog("Geen verbinding met server", nEx.getMessage(), true);
         }
-
-        lblTasks.setVisible(true);
-        lblTasks.setText("Taak is gelezen");
     }
 
     public void updateTask() {
