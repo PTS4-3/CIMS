@@ -13,5 +13,4 @@ public enum Tag {
     POLICE,
     AMBULANCE,
     FIREDEPARTMENT,
-    CITIZENS
 }

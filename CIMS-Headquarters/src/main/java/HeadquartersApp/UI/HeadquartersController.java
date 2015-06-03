@@ -394,7 +394,6 @@ public class HeadquartersController implements Initializable {
         aprPane.getChildren().add(ccrTags);
 
         this.cbExecutor.setItems(FXCollections.observableArrayList(Tag.values()));
-        this.cbExecutor.getItems().remove(Tag.CITIZENS);
         if (this.cbExecutor.getSelectionModel().getSelectedItem() == null) {
             this.cbExecutor.getSelectionModel().selectFirst();
         }

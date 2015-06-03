@@ -93,7 +93,7 @@ public class ConnectionHandler implements Runnable {
                     this.pendingData.put(socket, queue);
                 }
                 // inserts a preceding int with array size
-                System.out.println("transaction size: " + data.length);
+//                System.out.println("transaction size: " + data.length);
                 byte[] length = ByteBuffer.allocate(4).putInt(data.length).array();
                 byte[] dataWithLength = SerializeUtils.concat(length, data);
                 queue.add(ByteBuffer.wrap(dataWithLength));
